@@ -46,6 +46,7 @@ def main():
         latest_snapshot = latest_date.strftime("%m/%d/%Y") if pd.notna(latest_date) else ""
 
     logo_uri = get_logo_data_uri()
+    masterlist_sheet_url = MASTERLIST_CSV.replace("/pub?", "/pubhtml?").replace("&output=csv", "")
 
     html = f"""
 <!DOCTYPE html>
@@ -130,21 +131,40 @@ def main():
     }}
 
     .tab-button {{
+        --tab-accent: var(--blue);
         border: 1px solid #CBD5E1;
         border-bottom: 3px solid transparent;
         background: white;
-        color: var(--dark-blue);
+        color: var(--tab-accent);
         border-radius: 8px 8px 0 0;
         padding: 10px 16px;
         font-size: 13px;
         font-weight: 800;
         cursor: pointer;
+        transition: background .18s ease, color .18s ease, border-color .18s ease;
+    }}
+
+    .tab-button[data-tab="masterlist"] {{
+        --tab-accent: var(--blue);
+    }}
+
+    .tab-button[data-tab="coaching"] {{
+        --tab-accent: var(--green);
+    }}
+
+    .tab-button[data-tab="quality"] {{
+        --tab-accent: var(--dark-blue);
+    }}
+
+    .tab-button:hover {{
+        border-color: var(--tab-accent);
+        background: #F8FAFC;
     }}
 
     .tab-button.active {{
-        border-color: var(--green);
-        border-bottom-color: var(--blue);
-        color: var(--blue);
+        border-color: var(--tab-accent);
+        background: var(--tab-accent);
+        color: white;
     }}
 
     .masterlist-controls.hidden {{
@@ -276,6 +296,46 @@ def main():
         border-radius: 8px;
     }}
 
+    .table-heading {{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin: 4px 0 12px;
+    }}
+
+    .table-heading h3 {{
+        color: var(--blue);
+        margin: 0;
+    }}
+
+    .table-actions {{
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }}
+
+    .table-action {{
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 32px;
+        border: 1px solid var(--green);
+        border-radius: 8px;
+        padding: 7px 12px;
+        background: var(--green);
+        color: white;
+        font-size: 12px;
+        font-weight: 800;
+        text-decoration: none;
+    }}
+
+    .table-action.secondary {{
+        border-color: var(--blue);
+        background: white;
+        color: var(--blue);
+    }}
+
     .full {{
         grid-column: 1 / -1;
     }}
@@ -332,6 +392,11 @@ def main():
 
         .donut-chart-row {{
             grid-template-columns: 1fr;
+        }}
+
+        .table-heading {{
+            align-items: flex-start;
+            flex-direction: column;
         }}
     }}
 </style>
@@ -405,7 +470,13 @@ def main():
     <div class="chart-card"><div id="changeTypeDonut"></div></div>
     <div class="chart-card"><div id="weeklyLine"></div></div>
     <div class="chart-card full">
-        <h3 style="color:#004C97;margin:4px 0 12px;">Master List</h3>
+        <div class="table-heading">
+            <h3>Master List</h3>
+            <div class="table-actions">
+                <a class="table-action" href="{masterlist_sheet_url}" target="_blank" rel="noopener">Open Google Sheet</a>
+                <a class="table-action secondary" href="{MASTERLIST_CSV}" target="_blank" rel="noopener">Download CSV</a>
+            </div>
+        </div>
         <div id="masterlistTable"></div>
     </div>
     <div class="chart-card full">
