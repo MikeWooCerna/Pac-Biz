@@ -122,6 +122,54 @@ def main():
         font-size: 12px;
     }}
 
+    .tabs {{
+        display: flex;
+        gap: 8px;
+        padding: 10px 18px 0;
+        background: var(--bg);
+    }}
+
+    .tab-button {{
+        border: 1px solid #CBD5E1;
+        border-bottom: 3px solid transparent;
+        background: white;
+        color: var(--dark-blue);
+        border-radius: 8px 8px 0 0;
+        padding: 10px 16px;
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+    }}
+
+    .tab-button.active {{
+        border-color: var(--green);
+        border-bottom-color: var(--blue);
+        color: var(--blue);
+    }}
+
+    .masterlist-controls.hidden {{
+        display: none;
+    }}
+
+    .tab-panel {{
+        display: none;
+    }}
+
+    .tab-panel.active {{
+        display: block;
+    }}
+
+    .under-construction {{
+        min-height: calc(100vh - 180px);
+        display: grid;
+        place-items: center;
+        color: var(--dark-blue);
+        font-size: 28px;
+        font-weight: 900;
+        text-align: center;
+        padding: 36px;
+    }}
+
     .filters {{
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -303,6 +351,13 @@ def main():
     </div>
 </div>
 
+<div class="tabs" role="tablist" aria-label="Dashboard sections">
+    <button class="tab-button active" type="button" data-tab="masterlist" role="tab" aria-selected="true">Masterlist</button>
+    <button class="tab-button" type="button" data-tab="coaching" role="tab" aria-selected="false">Coaching</button>
+    <button class="tab-button" type="button" data-tab="quality" role="tab" aria-selected="false">Quality</button>
+</div>
+
+<div class="masterlist-controls" id="masterlistControls">
 <div class="filters">
     <div class="filter-box">
         <label>Department</label>
@@ -333,7 +388,9 @@ def main():
     <div class="card"><div class="label">Managers</div><div class="value" id="managers">0</div></div>
 </div>
 </div>
+</div>
 
+<div class="tab-panel active" id="masterlistPanel" data-tab="masterlist" role="tabpanel">
 <div class="grid">
     <div class="donut-chart-row">
         <div class="chart-card"><div id="deptDonut"></div></div>
@@ -355,6 +412,15 @@ def main():
         <h3 style="color:#004C97;margin:4px 0 12px;">Recent Employee Movements</h3>
         <div id="recentMovements"></div>
     </div>
+</div>
+</div>
+
+<div class="tab-panel" id="coachingPanel" data-tab="coaching" role="tabpanel">
+    <div class="under-construction">Under Construction</div>
+</div>
+
+<div class="tab-panel" id="qualityPanel" data-tab="quality" role="tabpanel">
+    <div class="under-construction">Under Construction</div>
 </div>
 
 <div class="footer">
@@ -580,6 +646,31 @@ function render() {{
     masterlistTable(data);
     recentMovementsTable();
 }}
+
+function switchTab(tabName) {{
+    const masterlistControls = document.getElementById("masterlistControls");
+    const isMasterlist = tabName === "masterlist";
+
+    document.querySelectorAll(".tab-button").forEach(button => {{
+        const active = button.dataset.tab === tabName;
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-selected", active ? "true" : "false");
+    }});
+
+    document.querySelectorAll(".tab-panel").forEach(panel => {{
+        panel.classList.toggle("active", panel.dataset.tab === tabName);
+    }});
+
+    masterlistControls.classList.toggle("hidden", !isMasterlist);
+
+    if (isMasterlist) {{
+        setTimeout(() => window.dispatchEvent(new Event("resize")), 0);
+    }}
+}}
+
+document.querySelectorAll(".tab-button").forEach(button => {{
+    button.addEventListener("click", () => switchTab(button.dataset.tab));
+}});
 
 populateFilter("departmentFilter", "Department");
 populateFilter("accountFilter", "LOB / Account");
