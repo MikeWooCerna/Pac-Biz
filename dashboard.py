@@ -1293,7 +1293,7 @@ def main():
             <h3>Coaching Logs</h3>
             <div class="table-actions">
                 <button class="table-action" type="button" id="downloadCoachingExcel">Download Excel</button>
-                <button class="table-action secondary" type="button" id="openCoachingSheets">Google Sheets</button>
+                <button class="table-action secondary" type="button" id="openCoachingSheets">Copy to Sheets</button>
                 <span class="table-meta" id="coachingLoadedMeta">{len(coaching):,} records loaded</span>
             </div>
         </div>
@@ -1552,10 +1552,14 @@ function populateFilter(id, field) {{
     sel.addEventListener("change", render);
 }}
 
+const NONE_SELECTED = "__NONE_SELECTED__";
+
 function setMultiSummary(summaryId, selectedSet) {{
     const summary = document.getElementById(summaryId);
     if (!summary) return;
-    if (selectedSet.size === 0) {{
+    if (selectedSet.has(NONE_SELECTED)) {{
+        summary.textContent = "None";
+    }} else if (selectedSet.size === 0) {{
         summary.textContent = "All";
     }} else if (selectedSet.size === 1) {{
         const value = [...selectedSet][0];
@@ -1570,15 +1574,16 @@ function syncMultiFilterOptions(optionsId, selectedSet, allValues) {{
     const selectAll = box?.querySelector("input[data-select-all='true']");
     if (!selectAll) return;
 
-    if (selectedSet.size === allValues.length) {{
+    if (!selectedSet.has(NONE_SELECTED) && selectedSet.size === allValues.length) {{
         selectedSet.clear();
     }}
 
-    const allSelected = selectedSet.size === 0;
+    const noneSelected = selectedSet.has(NONE_SELECTED);
+    const allSelected = !noneSelected && selectedSet.size === 0;
     selectAll.checked = allSelected;
-    selectAll.indeterminate = !allSelected && selectedSet.size < allValues.length;
+    selectAll.indeterminate = !noneSelected && !allSelected && selectedSet.size < allValues.length;
     box.querySelectorAll("input[type='checkbox']:not([data-select-all='true'])").forEach(checkbox => {{
-        checkbox.checked = allSelected || selectedSet.has(checkbox.value);
+        checkbox.checked = !noneSelected && (allSelected || selectedSet.has(checkbox.value));
     }});
 }}
 
@@ -1600,6 +1605,9 @@ function populateMultiFilter(optionsId, summaryId, values, selectedSet) {{
     selectAllCheckbox.dataset.selectAll = "true";
     selectAllCheckbox.addEventListener("change", () => {{
         selectedSet.clear();
+        if (!selectAllCheckbox.checked) {{
+            selectedSet.add(NONE_SELECTED);
+        }}
         syncMultiFilterOptions(optionsId, selectedSet, allValues);
         setMultiSummary(summaryId, selectedSet);
         renderCoaching();
@@ -1620,15 +1628,22 @@ function populateMultiFilter(optionsId, summaryId, values, selectedSet) {{
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         checkbox.value = value;
-        checkbox.checked = selectedSet.size === 0 || selectedSet.has(value);
+        checkbox.checked = !selectedSet.has(NONE_SELECTED) && (selectedSet.size === 0 || selectedSet.has(value));
         checkbox.addEventListener("change", () => {{
-            if (selectedSet.size === 0) {{
+            const wasAllSelected = !selectedSet.has(NONE_SELECTED) && selectedSet.size === 0;
+            if (selectedSet.has(NONE_SELECTED)) {{
+                selectedSet.clear();
+            }}
+            if (wasAllSelected && !checkbox.checked) {{
                 allValues.forEach(v => selectedSet.add(v));
             }}
             if (checkbox.checked) {{
                 selectedSet.add(value);
             }} else {{
                 selectedSet.delete(value);
+                if (selectedSet.size === 0) {{
+                    selectedSet.add(NONE_SELECTED);
+                }}
             }}
             syncMultiFilterOptions(optionsId, selectedSet, allValues);
             setMultiSummary(summaryId, selectedSet);
@@ -1726,11 +1741,16 @@ function filteredCoachingData() {{
     return coachingData.filter(r => {{
         const monthKey = coachingMonthKey(r["Coaching Date"]);
         return (
-            (COACHING_FILTERS.emp.size === 0 || COACHING_FILTERS.emp.has(norm(r["Emp Name"]))) &&
-            (COACHING_FILTERS.leader.size === 0 || COACHING_FILTERS.leader.has(norm(r["Coached by"]))) &&
-            (COACHING_FILTERS.month.size === 0 || COACHING_FILTERS.month.has(monthKey))
+            filterMatches(COACHING_FILTERS.emp, norm(r["Emp Name"])) &&
+            filterMatches(COACHING_FILTERS.leader, norm(r["Coached by"])) &&
+            filterMatches(COACHING_FILTERS.month, monthKey)
         );
     }});
+}}
+
+function filterMatches(selectedSet, value) {{
+    if (selectedSet.has(NONE_SELECTED)) return false;
+    return selectedSet.size === 0 || selectedSet.has(value);
 }}
 
 function countBy(data, field) {{
@@ -2036,10 +2056,10 @@ function coachingConfidenceGauge(data) {{
             <svg viewBox="0 0 600 320" role="img" aria-label="AI Confidence Level Detection ${{value}} percent">
                 <text x="300" y="24" text-anchor="middle" style="font: 700 15px Arial; fill: #004C97;">AI Confidence Level Detection</text>
                 ${{segmentMarkup}}
-                <path d="${{gaugeNeedlePath(cx, cy, needleAngle, 150, 18)}}" fill="#050505" />
-                <circle cx="${{cx}}" cy="${{cy}}" r="32" fill="#050505" />
-                <circle cx="${{cx}}" cy="${{cy}}" r="18" fill="white" />
-                <circle cx="${{cx}}" cy="${{cy}}" r="6" fill="#050505" />
+                <path d="${{gaugeNeedlePath(cx, cy, needleAngle, 122, 10)}}" fill="#050505" />
+                <circle cx="${{cx}}" cy="${{cy}}" r="22" fill="#050505" />
+                <circle cx="${{cx}}" cy="${{cy}}" r="12" fill="white" />
+                <circle cx="${{cx}}" cy="${{cy}}" r="4" fill="#050505" />
                 <text class="gauge-value" x="300" y="302" text-anchor="middle">${{value}}% - ${{confidenceBand(value)}}</text>
             </svg>
         </div>
@@ -2148,23 +2168,30 @@ function downloadCoachingExcel() {{
 
 async function openCoachingSheets() {{
     const button = document.getElementById("openCoachingSheets");
-    const originalText = button?.textContent || "Google Sheets";
-    window.open("https://sheets.new", "_blank", "noopener");
+    const originalText = button?.textContent || "Copy to Sheets";
+    const exportText = coachingExportText("\\t");
 
     try {{
-        await navigator.clipboard.writeText(coachingExportText("\\t"));
+        await navigator.clipboard.writeText(exportText);
+        window.open("https://sheets.new", "_blank", "noopener");
         if (button) {{
-            button.textContent = "Copied for Sheets";
+            button.textContent = "Copied - Paste in Sheets";
             setTimeout(() => {{
                 button.textContent = originalText;
-            }}, 1800);
+            }}, 2600);
         }}
     }} catch (error) {{
         downloadBlob(
             `coaching_logs_${{new Date().toISOString().slice(0, 10)}}.tsv`,
-            coachingExportText("\\t"),
+            exportText,
             "text/tab-separated-values;charset=utf-8"
         );
+        if (button) {{
+            button.textContent = "Downloaded TSV";
+            setTimeout(() => {{
+                button.textContent = originalText;
+            }}, 2600);
+        }}
     }}
 }}
 
