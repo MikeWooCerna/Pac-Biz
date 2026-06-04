@@ -765,6 +765,70 @@ def main():
         color: var(--text);
     }}
 
+    .coaching-filters {{
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        padding: 14px 18px 8px;
+    }}
+
+    .multi-filter {{
+        position: relative;
+    }}
+
+    .multi-filter summary {{
+        list-style: none;
+        cursor: pointer;
+        color: var(--text);
+        font-size: 13px;
+        min-height: 22px;
+    }}
+
+    .multi-filter summary::-webkit-details-marker {{
+        display: none;
+    }}
+
+    .multi-filter summary::after {{
+        content: "v";
+        float: right;
+        color: var(--blue);
+        font-size: 11px;
+        margin-top: 2px;
+    }}
+
+    .multi-filter[open] summary::after {{
+        content: "^";
+    }}
+
+    .multi-options {{
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: calc(100% + 8px);
+        z-index: 20;
+        max-height: 230px;
+        overflow: auto;
+        background: white;
+        border: 1px solid #CBD5E1;
+        border-radius: 8px;
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.18);
+        padding: 8px;
+    }}
+
+    .multi-option {{
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 8px;
+        border-radius: 6px;
+        font-size: 12px;
+        color: var(--text);
+    }}
+
+    .multi-option:hover {{
+        background: #F1F5F9;
+    }}
+
     .cards {{
         display: grid;
         grid-template-columns: repeat(8, 1fr);
@@ -801,11 +865,35 @@ def main():
         font-weight: 900;
     }}
 
+    .coaching-cards {{
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }}
+
+    .card.completed-card {{
+        border-top-color: var(--green);
+    }}
+
+    .card.completed-card .value {{
+        color: var(--green);
+    }}
+
+    .card.pending-card {{
+        border-top-color: #FFC000;
+    }}
+
+    .card.pending-card .value {{
+        color: #FFC000;
+    }}
+
     .grid {{
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 12px;
         padding: 0 18px 20px;
+    }}
+
+    .coaching-grid {{
+        padding-top: 8px;
     }}
 
     .chart-card {{
@@ -833,6 +921,13 @@ def main():
 
     .donut-chart-row .chart-card {{
         min-height: 295px;
+    }}
+
+    .coaching-chart-row {{
+        display: grid;
+        grid-column: 1 / -1;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
     }}
 
     .chart-stack {{
@@ -916,6 +1011,18 @@ def main():
         z-index: 1;
     }}
 
+    th.sortable {{
+        cursor: pointer;
+        user-select: none;
+    }}
+
+    .sort-indicator {{
+        display: inline-block;
+        min-width: 12px;
+        margin-left: 4px;
+        opacity: .9;
+    }}
+
     td {{
         padding: 7px 8px;
         border-bottom: 1px solid #E5E7EB;
@@ -931,6 +1038,19 @@ def main():
 
     .nowrap {{
         white-space: nowrap;
+    }}
+
+    .disclaimer {{
+        grid-column: 1 / -1;
+        color: var(--muted);
+        font-size: 12px;
+        font-style: italic;
+        padding: 0 2px 4px;
+    }}
+
+    .disclaimer .completed-word {{
+        color: var(--green);
+        font-weight: 800;
     }}
 
     tr:nth-child(even) td {{
@@ -956,6 +1076,12 @@ def main():
 
         .filters {{
             grid-template-columns: repeat(2, 1fr);
+        }}
+
+        .coaching-filters,
+        .coaching-cards,
+        .coaching-chart-row {{
+            grid-template-columns: 1fr;
         }}
 
         .bar-chart-row {{
@@ -1064,12 +1190,53 @@ def main():
 </div>
 
 <div class="tab-panel" id="coachingPanel" data-tab="coaching" role="tabpanel">
-<div class="grid">
+<div class="coaching-filters">
+    <div class="filter-box">
+        <label>Emp Name</label>
+        <details class="multi-filter" id="coachingEmpFilter">
+            <summary id="coachingEmpFilterSummary">All</summary>
+            <div class="multi-options" id="coachingEmpOptions"></div>
+        </details>
+    </div>
+    <div class="filter-box">
+        <label>Coached by</label>
+        <details class="multi-filter" id="coachingLeaderFilter">
+            <summary id="coachingLeaderFilterSummary">All</summary>
+            <div class="multi-options" id="coachingLeaderOptions"></div>
+        </details>
+    </div>
+    <div class="filter-box">
+        <label>Month Yr</label>
+        <details class="multi-filter" id="coachingMonthFilter">
+            <summary id="coachingMonthFilterSummary">All</summary>
+            <div class="multi-options" id="coachingMonthOptions"></div>
+        </details>
+    </div>
+</div>
+
+<div class="cards coaching-cards">
+    <div class="card"><div class="label">Coaching Count</div><div class="value" id="coachingCount">0</div></div>
+    <div class="card completed-card"><div class="label">Completed</div><div class="value" id="coachingCompleted">0</div></div>
+    <div class="card pending-card"><div class="label">Pending</div><div class="value" id="coachingPending">0</div></div>
+</div>
+
+<div class="grid coaching-grid">
+    <div class="coaching-chart-row">
+        <div class="chart-card"><div id="coachingCategoryDonut"></div></div>
+        <div class="chart-card"><div id="coachingConfidenceGauge"></div></div>
+    </div>
+    <div class="chart-card full">
+        <div class="table-heading">
+            <h3>Summary</h3>
+        </div>
+        <div id="coachingSummaryTable"></div>
+        <div class="disclaimer">Coaching will be only be counted once status is <span class="completed-word">Completed</span></div>
+    </div>
     <div class="chart-card full">
         <div class="table-heading">
             <h3>Coaching Logs</h3>
             <div class="table-actions">
-                <span class="table-meta">{len(coaching):,} records loaded</span>
+                <span class="table-meta" id="coachingLoadedMeta">{len(coaching):,} records loaded</span>
             </div>
         </div>
         <div id="coachingTable"></div>
@@ -1107,17 +1274,22 @@ const MASTERLIST_COLUMNS = [
 ];
 const COACHING_COLUMNS = [
     {{label: "Coaching ID", field: "Coaching ID", className: "nowrap"}},
-    {{label: "Emp Name", field: "Emp Name", className: "nowrap"}},
-    {{label: "Coached by", field: "Coached by", className: "nowrap"}},
+    {{label: "Emp Name", field: "Emp Name", className: "nowrap", sortable: true}},
+    {{label: "Coached by", field: "Coached by", className: "nowrap", sortable: true}},
     {{label: "Coaching Details", field: "Coaching Details", className: "long-text"}},
     {{label: "Remarks/Comment", field: "Remarks/Comment", className: "long-text"}},
     {{label: "Coaching Category", field: "Coaching Category", className: "nowrap"}},
     {{label: "Confidence Level", field: "Confidence Level", className: "nowrap"}},
     {{label: "Reason", field: "Reason", className: "long-text"}},
-    {{label: "Coaching Date", field: "Coaching Date", className: "nowrap"}},
+    {{label: "Coaching Date", field: "Coaching Date", className: "nowrap", sortable: true, sortType: "date"}},
     {{label: "Coaching Status", field: "Coaching Status", className: "nowrap"}},
-    {{label: "Created Date", field: "Created Date", className: "nowrap"}},
+    {{label: "Created Date", field: "Created Date", className: "nowrap", sortable: true, sortType: "date"}},
     {{label: "Created Time", field: "Created Time", className: "nowrap"}},
+];
+const COACHING_SUMMARY_COLUMNS = [
+    {{label: "Team Leader", field: "Team Leader", className: "nowrap"}},
+    {{label: "Week", field: "Week", className: "nowrap"}},
+    {{label: "Completed Coaching", field: "Completed Coaching", className: "nowrap"}},
 ];
 const TENURE_GROUPS = [
     {{name: "0-30 Days", maxDays: 30}},
@@ -1138,6 +1310,16 @@ const AGE_GROUPS = [
     {{name: "40-49", min: 40, max: 49}},
     {{name: "50+", min: 50, max: Infinity}},
 ];
+const MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const COACHING_FILTERS = {{
+    emp: new Set(),
+    leader: new Set(),
+    month: new Set(),
+}};
+const coachingSortState = {{
+    field: "Coaching Date",
+    direction: "desc",
+}};
 
 function norm(v) {{
     return (v ?? "").toString().trim();
@@ -1224,6 +1406,49 @@ function formatDateOnly(v) {{
     return parsed.toLocaleDateString("en-US");
 }}
 
+function coachingMonthKey(v) {{
+    const parsed = parseDateValue(v);
+    if (!parsed) return "";
+    return `${{parsed.getFullYear()}}-${{String(parsed.getMonth() + 1).padStart(2, "0")}}`;
+}}
+
+function coachingMonthLabelFromKey(key) {{
+    const match = norm(key).match(/^(\\d{{4}})-(\\d{{2}})$/);
+    if (!match) return "";
+    const year = Number(match[1]);
+    const month = Number(match[2]) - 1;
+    return `${{MONTH_LABELS[month]}} '${{String(year).slice(-2)}}`;
+}}
+
+function statusKey(v) {{
+    return norm(v).toUpperCase().replace(/\\s+/g, " ");
+}}
+
+function isCompletedStatus(v) {{
+    return statusKey(v) === "COMPLETED";
+}}
+
+function isPendingStatus(v) {{
+    const value = statusKey(v);
+    return value === "FOR ACKNOWLEDGEMENT" || value === "FOR ACKNOWLEDGMENT";
+}}
+
+function weekRangeLabel(v) {{
+    const parsed = parseDateValue(v);
+    if (!parsed) return "";
+    const start = new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+    const day = start.getDay();
+    const mondayOffset = day === 0 ? -6 : 1 - day;
+    start.setDate(start.getDate() + mondayOffset);
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    return `${{formatShortDate(start)}} - ${{formatShortDate(end)}}`;
+}}
+
+function formatShortDate(date) {{
+    return `${{MONTH_LABELS[date.getMonth()]}} ${{date.getDate()}}, '${{String(date.getFullYear()).slice(-2)}}`;
+}}
+
 function escapeHtml(v) {{
     return norm(v)
         .replaceAll("&", "&amp;")
@@ -1253,6 +1478,80 @@ function populateFilter(id, field) {{
     sel.addEventListener("change", render);
 }}
 
+function setMultiSummary(summaryId, selectedSet) {{
+    const summary = document.getElementById(summaryId);
+    if (!summary) return;
+    if (selectedSet.size === 0) {{
+        summary.textContent = "All";
+    }} else if (selectedSet.size === 1) {{
+        const value = [...selectedSet][0];
+        summary.textContent = summaryId === "coachingMonthFilterSummary" ? coachingMonthLabelFromKey(value) : value;
+    }} else {{
+        summary.textContent = `${{selectedSet.size}} selected`;
+    }}
+}}
+
+function populateMultiFilter(optionsId, summaryId, values, selectedSet) {{
+    const box = document.getElementById(optionsId);
+    if (!box) return;
+    box.innerHTML = "";
+
+    values.forEach(item => {{
+        const value = typeof item === "string" ? item : item.value;
+        const label = typeof item === "string" ? item : item.label;
+        const option = document.createElement("label");
+        option.className = "multi-option";
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.value = value;
+        checkbox.checked = selectedSet.has(value);
+        checkbox.addEventListener("change", () => {{
+            if (checkbox.checked) {{
+                selectedSet.add(value);
+            }} else {{
+                selectedSet.delete(value);
+            }}
+            setMultiSummary(summaryId, selectedSet);
+            renderCoaching();
+        }});
+
+        const text = document.createElement("span");
+        text.textContent = label;
+
+        option.appendChild(checkbox);
+        option.appendChild(text);
+        box.appendChild(option);
+    }});
+
+    setMultiSummary(summaryId, selectedSet);
+}}
+
+function populateCoachingFilters() {{
+    populateMultiFilter(
+        "coachingEmpOptions",
+        "coachingEmpFilterSummary",
+        uniqueValues(coachingData, "Emp Name"),
+        COACHING_FILTERS.emp
+    );
+    populateMultiFilter(
+        "coachingLeaderOptions",
+        "coachingLeaderFilterSummary",
+        uniqueValues(coachingData, "Coached by"),
+        COACHING_FILTERS.leader
+    );
+
+    const monthValues = [...new Set(coachingData.map(r => coachingMonthKey(r["Coaching Date"])).filter(Boolean))]
+        .sort()
+        .map(value => ({{value, label: coachingMonthLabelFromKey(value)}}));
+    populateMultiFilter(
+        "coachingMonthOptions",
+        "coachingMonthFilterSummary",
+        monthValues,
+        COACHING_FILTERS.month
+    );
+}}
+
 function filteredMasterlist() {{
     const dept = document.getElementById("departmentFilter").value;
     const acc = document.getElementById("accountFilter").value;
@@ -1267,6 +1566,17 @@ function filteredMasterlist() {{
     );
 }}
 
+function filteredCoachingData() {{
+    return coachingData.filter(r => {{
+        const monthKey = coachingMonthKey(r["Coaching Date"]);
+        return (
+            (COACHING_FILTERS.emp.size === 0 || COACHING_FILTERS.emp.has(norm(r["Emp Name"]))) &&
+            (COACHING_FILTERS.leader.size === 0 || COACHING_FILTERS.leader.has(norm(r["Coached by"]))) &&
+            (COACHING_FILTERS.month.size === 0 || COACHING_FILTERS.month.has(monthKey))
+        );
+    }});
+}}
+
 function countBy(data, field) {{
     const out = {{}};
     data.forEach(r => {{
@@ -1276,14 +1586,75 @@ function countBy(data, field) {{
     return Object.entries(out).map(([name, count]) => ({{name, count}})).sort((a,b) => b.count - a.count);
 }}
 
+function sortedCoachingRows(data) {{
+    const column = COACHING_COLUMNS.find(c => c.field === coachingSortState.field) || {{}};
+    const direction = coachingSortState.direction === "asc" ? 1 : -1;
+    return [...data].sort((a, b) => {{
+        let av = a[coachingSortState.field];
+        let bv = b[coachingSortState.field];
+
+        if (column.sortType === "date") {{
+            av = parseDateValue(av)?.getTime() || 0;
+            bv = parseDateValue(bv)?.getTime() || 0;
+            return (av - bv) * direction;
+        }}
+
+        return norm(av).localeCompare(norm(bv), undefined, {{sensitivity: "base"}}) * direction;
+    }});
+}}
+
+function confidenceScore(level) {{
+    const value = norm(level).toUpperCase();
+    if (value === "HIGH") return 100;
+    if (value === "MEDIUM") return 65;
+    if (value === "LOW") return 35;
+    return 0;
+}}
+
+function coachingConfidenceAverage(data) {{
+    if (data.length === 0) return 0;
+    const total = data.reduce((sum, row) => sum + confidenceScore(row["Confidence Level"]), 0);
+    return Math.round(total / data.length);
+}}
+
+function coachingSummaryRows(data) {{
+    const grouped = {{}};
+    data.filter(r => isCompletedStatus(r["Coaching Status"])).forEach(r => {{
+        const leader = norm(r["Coached by"]) || "Blank";
+        const week = weekRangeLabel(r["Coaching Date"]) || "No Coaching Date";
+        const key = `${{leader}}|${{week}}`;
+        if (!grouped[key]) {{
+            grouped[key] = {{
+                "Team Leader": leader,
+                "Week": week,
+                "Completed Coaching": 0,
+                "_sortDate": parseDateValue(r["Coaching Date"])?.getTime() || 0,
+            }};
+        }}
+        grouped[key]["Completed Coaching"] += 1;
+    }});
+
+    return Object.values(grouped)
+        .sort((a, b) => b._sortDate - a._sortDate || a["Team Leader"].localeCompare(b["Team Leader"]))
+        .map(r => ({{
+            "Team Leader": r["Team Leader"],
+            "Week": r["Week"],
+            "Completed Coaching": r["Completed Coaching"],
+        }}));
+}}
+
 function setText(id, value) {{
     document.getElementById(id).textContent = Number(value).toLocaleString();
 }}
 
-function renderDataTable(id, rows, columns) {{
+function renderDataTable(id, rows, columns, sortState = null) {{
     let html = "<div class='table-scroll'><table><thead><tr>";
     columns.forEach(c => {{
-        html += `<th>${{escapeHtml(c.label)}}</th>`;
+        const sortableClass = c.sortable ? " class='sortable'" : "";
+        const sortField = c.sortable ? ` data-sort-field="${{escapeHtml(c.field)}}"` : "";
+        const active = sortState && sortState.field === c.field;
+        const indicator = c.sortable ? `<span class="sort-indicator">${{active ? (sortState.direction === "asc" ? "^" : "v") : ""}}</span>` : "";
+        html += `<th${{sortableClass}}${{sortField}}>${{escapeHtml(c.label)}}${{indicator}}</th>`;
     }});
     html += "</tr></thead><tbody>";
 
@@ -1436,12 +1807,81 @@ function weeklyChart() {{
     }}, {{responsive: true}});
 }}
 
+function coachingCategoryChart(data) {{
+    donut("coachingCategoryDonut", "Coaching Category", countBy(data, "Coaching Category"));
+}}
+
+function coachingConfidenceGauge(data) {{
+    const value = coachingConfidenceAverage(data);
+    Plotly.newPlot("coachingConfidenceGauge", [{{
+        type: "indicator",
+        mode: "gauge+number",
+        value,
+        number: {{suffix: "%", font: {{color: "#002B5C", size: 34}}}},
+        title: {{text: "AI Confidence Level Detection", font: {{color: "#004C97", size: 15}}}},
+        gauge: {{
+            axis: {{range: [0, 100], tickwidth: 1, tickcolor: "#64748B"}},
+            bar: {{color: "#004C97"}},
+            bgcolor: "white",
+            borderwidth: 1,
+            bordercolor: "#E5E7EB",
+            steps: [
+                {{range: [0, 45], color: "#FEE2E2"}},
+                {{range: [45, 75], color: "#FEF3C7"}},
+                {{range: [75, 100], color: "#DCFCE7"}},
+            ],
+            threshold: {{
+                line: {{color: "#39B54A", width: 4}},
+                thickness: 0.75,
+                value,
+            }},
+        }},
+    }}], {{
+        height: 280,
+        margin: {{l: 28, r: 28, t: 55, b: 20}},
+        paper_bgcolor: "white",
+        font: {{family: "Arial", size: 11}},
+    }}, {{responsive: true}});
+}}
+
 function masterlistTable(data) {{
     renderDataTable("masterlistTable", data, MASTERLIST_COLUMNS);
 }}
 
-function coachingTable() {{
-    renderDataTable("coachingTable", coachingData, COACHING_COLUMNS);
+function coachingTable(data) {{
+    renderDataTable("coachingTable", sortedCoachingRows(data), COACHING_COLUMNS, coachingSortState);
+    document.querySelectorAll("#coachingTable th.sortable").forEach(th => {{
+        th.addEventListener("click", () => {{
+            const field = th.dataset.sortField;
+            if (coachingSortState.field === field) {{
+                coachingSortState.direction = coachingSortState.direction === "asc" ? "desc" : "asc";
+            }} else {{
+                coachingSortState.field = field;
+                coachingSortState.direction = field.includes("Date") ? "desc" : "asc";
+            }}
+            renderCoaching();
+        }});
+    }});
+}}
+
+function renderCoaching() {{
+    const data = filteredCoachingData();
+    const completed = data.filter(r => isCompletedStatus(r["Coaching Status"])).length;
+    const pending = data.filter(r => isPendingStatus(r["Coaching Status"])).length;
+
+    setText("coachingCount", data.length);
+    setText("coachingCompleted", completed);
+    setText("coachingPending", pending);
+
+    const meta = document.getElementById("coachingLoadedMeta");
+    if (meta) {{
+        meta.textContent = `${{data.length.toLocaleString()}} of ${{coachingData.length.toLocaleString()}} records shown`;
+    }}
+
+    coachingCategoryChart(data);
+    coachingConfidenceGauge(data);
+    renderDataTable("coachingSummaryTable", coachingSummaryRows(data), COACHING_SUMMARY_COLUMNS);
+    coachingTable(data);
 }}
 
 function recentMovementsTable() {{
@@ -1515,7 +1955,7 @@ function switchTab(tabName) {{
 
     masterlistControls.classList.toggle("hidden", !isMasterlist);
 
-    if (isMasterlist) {{
+    if (isMasterlist || tabName === "coaching") {{
         setTimeout(() => window.dispatchEvent(new Event("resize")), 0);
     }}
 }}
@@ -1528,7 +1968,8 @@ populateFilter("departmentFilter", "Department");
 populateFilter("accountFilter", "LOB / Account");
 populateFilter("managerFilter", "Manager");
 populateFilter("supervisorFilter", "Immediate Supervisor");
-coachingTable();
+populateCoachingFilters();
+renderCoaching();
 render();
 </script>
 
