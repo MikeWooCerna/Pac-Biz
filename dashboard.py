@@ -1,7 +1,12 @@
 import base64
 import json
+import os
+import re
+import subprocess
+import sys
 from pathlib import Path
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 
@@ -14,6 +19,25 @@ GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/18hKmm2SmlWqB23osiV3J
 OUTPUT_FILE = "masterlist_dashboard.html"
 LOGO_FILE = "pacbiz_logo.png"
 FAVICON_FILE = "pacbiz_favicon.png"
+
+COACHING_DIR = Path(os.getenv("COACHING_DIR", r"C:\Users\Mike Woo Cerna\Documents\PB\Coaching"))
+COACHING_SCRIPT = Path(os.getenv("COACHING_SCRIPT", str(COACHING_DIR / "asana_pull.py")))
+COACHING_CONFIG = Path(os.getenv("COACHING_CONFIG", str(COACHING_DIR / "config.json")))
+COACHING_OUTPUT_FILE = Path(os.getenv("COACHING_OUTPUT_FILE", str(COACHING_DIR / "Output" / "coaching_logs.xlsx")))
+COACHING_TIMEZONE = ZoneInfo("Asia/Manila")
+COACHING_TIMEZONE_NAME = "Asia/Manila"
+EXCLUDED_COACHING_GIDS = {
+    "1215293220797391",
+    "1215291356597096",
+    "1215276162401539",
+    "1215275720566322",
+    "1215275719365880",
+    "1215275643385621",
+    "1215275244346197",
+    "1215275011155202",
+    "1215275011105001",
+    "1215274826340895",
+}
 
 PACBIZ_BLUE = "#004C97"
 PACBIZ_GREEN = "#39B54A"
@@ -33,13 +57,525 @@ def get_image_data_uri(filename):
 
 
 def to_records(df):
-    return json.dumps(df.to_dict(orient="records"), ensure_ascii=False)
+    return json.dumps(df.to_dict(orient="records"), ensure_ascii=False, default=str)
+
+
+def cell_text(value):
+    if value is None:
+        return ""
+    try:
+        if pd.isna(value):
+            return ""
+    except (TypeError, ValueError):
+        pass
+    if isinstance(value, pd.Timestamp):
+        return value.strftime("%m/%d/%Y")
+    if isinstance(value, datetime):
+        return value.strftime("%m/%d/%Y %I:%M %p")
+    if isinstance(value, float) and value.is_integer():
+        return str(int(value))
+    return str(value).strip()
+
+
+def normalize_email(value):
+    return cell_text(value).lower()
+
+
+def normalize_spaces(value):
+    return " ".join(cell_text(value).split())
+
+
+def format_asana_date_time(value):
+    if not value:
+        return "", ""
+
+    text = cell_text(value)
+
+    if len(text) == 10 and text[4] == "-" and text[7] == "-":
+        dt = pd.to_datetime(text, errors="coerce")
+        if pd.isna(dt):
+            return text, ""
+        return dt.strftime("%m/%d/%Y"), ""
+
+    dt = pd.to_datetime(text, errors="coerce", utc=True)
+
+    if pd.isna(dt):
+        return text, ""
+
+    dt = dt.tz_convert(COACHING_TIMEZONE_NAME)
+    return dt.strftime("%m/%d/%Y"), dt.strftime("%I:%M %p")
+
+
+def get_asana_custom_value(field):
+    return (
+        field.get("display_value")
+        or field.get("text_value")
+        or (field.get("date_value") or {}).get("date_time")
+        or (field.get("date_value") or {}).get("date")
+        or ((field.get("enum_value") or {}).get("name"))
+        or ""
+    )
+
+
+def get_coaching_asana_config():
+    token = os.getenv("ASANA_TOKEN", "").strip()
+    project_id = (
+        os.getenv("ASANA_PROJECT_ID", "").strip()
+        or os.getenv("COACHING_PROJECT_ID", "").strip()
+    )
+
+    if token and project_id:
+        return token, project_id
+
+    if not COACHING_CONFIG.exists():
+        return "", ""
+
+    try:
+        config = json.loads(COACHING_CONFIG.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        print(f"Skipping Coaching config load: {exc}")
+        return "", ""
+
+    return config.get("asana_token", ""), config.get("project_id", "")
+
+
+def pull_coaching_from_asana():
+    token, project_id = get_coaching_asana_config()
+    if not token or not project_id:
+        return pd.DataFrame()
+
+    try:
+        import requests
+    except ImportError:
+        print("Skipping Coaching Asana pull: requests is not installed.")
+        return pd.DataFrame()
+
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/json",
+    }
+    rows = []
+    offset = None
+
+    while True:
+        params = {
+            "project": project_id,
+            "limit": 100,
+            "opt_fields": ",".join([
+                "gid",
+                "name",
+                "completed",
+                "created_at",
+                "modified_at",
+                "created_by.name",
+                "created_by.email",
+                "custom_fields.name",
+                "custom_fields.display_value",
+                "custom_fields.text_value",
+                "custom_fields.date_value",
+                "custom_fields.enum_value.name",
+            ]),
+        }
+
+        if offset:
+            params["offset"] = offset
+
+        try:
+            response = requests.get(
+                "https://app.asana.com/api/1.0/tasks",
+                headers=headers,
+                params=params,
+                timeout=30,
+            )
+            response.raise_for_status()
+        except requests.RequestException as exc:
+            print(f"Skipping Coaching Asana pull: {exc}")
+            return pd.DataFrame()
+
+        data = response.json()
+
+        for task in data.get("data", []):
+            custom_fields = {}
+            for field in task.get("custom_fields", []):
+                custom_fields[field.get("name")] = get_asana_custom_value(field)
+
+            coaching_date, coaching_time = format_asana_date_time(
+                custom_fields.get("Date & Time of Coaching", "")
+            )
+            created_date, created_time = format_asana_date_time(task.get("created_at"))
+            modified_date, modified_time = format_asana_date_time(task.get("modified_at"))
+
+            rows.append({
+                "Task GID": task.get("gid"),
+                "Task Name": task.get("name"),
+                "Completed": task.get("completed"),
+                "Employee Name": custom_fields.get("Employee Name", ""),
+                "Coaching Date": coaching_date,
+                "Coaching Time": coaching_time,
+                "Status": custom_fields.get("Status", ""),
+                "Employee Email": custom_fields.get("Employee Email", ""),
+                "Supervisor Email": (
+                    custom_fields.get("Supervisors Email", "")
+                    or custom_fields.get("Supervisor Email", "")
+                ),
+                "Agreed Action Steps": (
+                    custom_fields.get("Agreed Action Steps:", "")
+                    or custom_fields.get("Agreed Action Steps", "")
+                ),
+                "Improvement Timeline / Follow-Up Date": (
+                    custom_fields.get("Improvement Timeline / Follow-Up Date:", "")
+                    or custom_fields.get("Improvement Timeline / Follow-Up Date", "")
+                    or custom_fields.get("Improvement Timeline/Follow-Up Date:", "")
+                    or custom_fields.get("Improvement Timeline/Follow-Up Date", "")
+                ),
+                "Created By": (task.get("created_by") or {}).get("name", ""),
+                "Created By Email": (task.get("created_by") or {}).get("email", ""),
+                "Created Date": created_date,
+                "Created Time": created_time,
+                "Modified Date": modified_date,
+                "Modified Time": modified_time,
+                "Last Refreshed": datetime.now(COACHING_TIMEZONE).strftime("%m/%d/%Y %I:%M %p"),
+            })
+
+        next_page = data.get("next_page")
+        if not next_page:
+            break
+        offset = next_page["offset"]
+
+    print(f"Coaching rows pulled from Asana: {len(rows)}")
+    return clean_columns(pd.DataFrame(rows))
+
+
+def refresh_coaching_output():
+    if not COACHING_SCRIPT.exists():
+        return False
+
+    try:
+        result = subprocess.run(
+            [sys.executable, str(COACHING_SCRIPT)],
+            cwd=str(COACHING_SCRIPT.parent),
+            capture_output=True,
+            text=True,
+            timeout=240,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        print(f"Skipping Coaching script refresh: {exc}")
+        return False
+
+    if result.returncode != 0:
+        message = result.stderr.strip() or result.stdout.strip() or "No details returned."
+        print(f"Skipping Coaching script refresh: {message}")
+        return False
+
+    if result.stdout.strip():
+        print(result.stdout.strip())
+    return True
+
+
+def read_coaching_workbook():
+    if not COACHING_OUTPUT_FILE.exists():
+        return pd.DataFrame()
+
+    try:
+        return clean_columns(pd.read_excel(COACHING_OUTPUT_FILE))
+    except Exception as exc:
+        print(f"Skipping Coaching workbook load: {exc}")
+        return pd.DataFrame()
+
+
+def load_existing_records_from_html(variable_name):
+    output_path = Path(OUTPUT_FILE)
+    if not output_path.exists():
+        return pd.DataFrame()
+
+    try:
+        html = output_path.read_text(encoding="utf-8")
+    except OSError:
+        return pd.DataFrame()
+
+    marker = f"const {variable_name} = "
+    start = html.find(marker)
+    if start < 0:
+        return pd.DataFrame()
+
+    start += len(marker)
+    end = html.find(";\n", start)
+    if end < 0:
+        return pd.DataFrame()
+
+    try:
+        return clean_columns(pd.DataFrame(json.loads(html[start:end])))
+    except (json.JSONDecodeError, ValueError):
+        return pd.DataFrame()
+
+
+COACHING_CATEGORY_RULES = {
+    "Behavioral": [
+        ("professionalism", 3, "professionalism"),
+        ("accountability", 3, "accountability"),
+        ("attitude", 3, "attitude"),
+        ("engagement", 2, "engagement"),
+        ("engaged", 2, "engagement"),
+        ("responsiveness", 3, "responsiveness"),
+        ("ownership", 3, "ownership"),
+        ("workplace conduct", 3, "workplace conduct"),
+        ("conduct", 2, "conduct"),
+        ("attentive", 2, "attentiveness"),
+    ],
+    "Communication": [
+        ("notify", 3, "failure to notify"),
+        ("notification", 2, "notification"),
+        ("communicate", 3, "communication"),
+        ("communication", 3, "communication"),
+        ("message", 2, "messaging"),
+        ("messaging", 2, "messaging"),
+        ("unclear", 2, "unclear messaging"),
+        ("clarify", 3, "clarification"),
+        ("clarifying", 3, "clarification"),
+        ("clarification", 3, "clarification"),
+        ("confirm my understanding", 3, "confirmation gap"),
+        ("channel", 2, "communication channel"),
+    ],
+    "Attendance & Adherence": [
+        ("break", 3, "break adherence"),
+        ("breaks", 3, "break adherence"),
+        ("bio break", 4, "break adherence"),
+        ("terminal break", 4, "break adherence"),
+        ("tardy", 4, "tardiness"),
+        ("tardiness", 4, "tardiness"),
+        ("late", 2, "tardiness"),
+        ("schedule adherence", 4, "schedule adherence"),
+        ("adherence", 2, "adherence"),
+        ("log in", 3, "login/logout"),
+        ("login", 3, "login/logout"),
+        ("log out", 3, "login/logout"),
+        ("logout", 3, "login/logout"),
+        ("attendance", 4, "attendance"),
+        ("shift", 2, "shift compliance"),
+    ],
+    "Process Compliance": [
+        ("sop", 4, "SOP"),
+        ("workflow", 4, "workflow"),
+        ("procedure", 3, "procedure"),
+        ("procedures", 3, "procedure"),
+        ("required steps", 3, "required steps"),
+        ("documentation", 3, "documentation"),
+        ("document", 2, "documentation"),
+        ("account-specific", 4, "account instruction"),
+        ("account specific", 4, "account instruction"),
+        ("account instruction", 4, "account instruction"),
+        ("account requirements", 3, "account requirement"),
+        ("process", 2, "process"),
+    ],
+    "Performance & Quality": [
+        ("qa score", 4, "QA score"),
+        ("quality", 3, "quality standard"),
+        ("accuracy", 4, "accuracy"),
+        ("productivity", 4, "productivity"),
+        ("call handling", 4, "call handling"),
+        ("call", 2, "call handling"),
+        ("score", 2, "score"),
+        ("error", 3, "accuracy"),
+        ("missed", 2, "missed standard"),
+        ("standard", 2, "standard"),
+        ("standards", 2, "standard"),
+    ],
+    "Knowledge & Training": [
+        ("product knowledge", 4, "product knowledge"),
+        ("lack of knowledge", 4, "knowledge gap"),
+        ("knowledge", 2, "knowledge"),
+        ("process understanding", 4, "process understanding"),
+        ("understanding", 2, "understanding"),
+        ("training", 4, "training need"),
+        ("skill gap", 4, "skill gap"),
+        ("coaching for skill", 4, "skill gap"),
+    ],
+    "Policy Compliance": [
+        ("company policy", 4, "company policy"),
+        ("company policies", 4, "company policy"),
+        ("policy violation", 4, "policy violation"),
+        ("policy", 3, "policy"),
+        ("incident report", 4, "incident report"),
+        ("hr", 3, "HR escalation"),
+        ("non-compliance", 4, "non-compliance"),
+        ("repeated non-compliance", 5, "repeated non-compliance"),
+    ],
+    "Customer Experience": [
+        ("empathy", 4, "empathy"),
+        ("tone", 4, "tone"),
+        ("customer satisfaction", 4, "customer satisfaction"),
+        ("customer handling", 4, "customer handling"),
+        ("customer", 2, "customer handling"),
+        ("customers", 2, "customer handling"),
+        ("service delivery", 4, "service delivery"),
+        ("client", 2, "client impact"),
+        ("partner relations", 3, "partner relations"),
+    ],
+}
+
+COACHING_OUTPUT_COLUMNS = [
+    "Coaching ID",
+    "Emp Name",
+    "Coached by",
+    "Coaching Details",
+    "Remarks/Comment",
+    "Coaching Category",
+    "Confidence Level",
+    "Reason",
+    "Coaching Date",
+    "Coaching Status",
+    "Created Date",
+    "Created Time",
+]
+
+
+def join_reason_labels(labels):
+    unique_labels = []
+    for label in labels:
+        if label not in unique_labels:
+            unique_labels.append(label)
+
+    if "adherence" in unique_labels and any(
+        label != "adherence" and "adherence" in label for label in unique_labels
+    ):
+        unique_labels = [label for label in unique_labels if label != "adherence"]
+
+    if not unique_labels:
+        return "matched indicators"
+    if len(unique_labels) == 1:
+        return unique_labels[0]
+    if len(unique_labels) == 2:
+        return f"{unique_labels[0]} and {unique_labels[1]}"
+    return f"{unique_labels[0]}, {unique_labels[1]}, and {unique_labels[2]}"
+
+
+def indicator_matches(text, needle):
+    pattern = rf"(?<![A-Za-z0-9]){re.escape(needle)}(?![A-Za-z0-9])"
+    return re.search(pattern, text) is not None
+
+
+def classify_coaching_details(action_steps):
+    text = normalize_spaces(action_steps)
+    if len(text) < 12:
+        return "Other / Review Required", "Low", "Text is too vague for reliable classification."
+
+    lowered = text.lower()
+    matches = []
+
+    for category, indicators in COACHING_CATEGORY_RULES.items():
+        score = 0
+        labels = []
+        for needle, weight, label in indicators:
+            if indicator_matches(lowered, needle):
+                score += weight
+                labels.append(label)
+        if score:
+            matches.append((category, score, labels))
+
+    if not matches:
+        return "Other / Review Required", "Low", "No reliable category indicators found."
+
+    matches.sort(key=lambda item: (-item[1], item[0]))
+    top_category, top_score, top_labels = matches[0]
+    second_category = matches[1][0] if len(matches) > 1 else ""
+    second_score = matches[1][1] if len(matches) > 1 else 0
+
+    if top_score <= 1:
+        return "Other / Review Required", "Low", "Only weak indicators found; review manually."
+
+    if (top_score >= 4 and top_score >= second_score + 2) or (top_score >= 3 and second_score == 0):
+        confidence = "High"
+        reason = f"Clear cues: {join_reason_labels(top_labels)}."
+    else:
+        confidence = "Medium"
+        overlap = f"; overlaps with {second_category}" if second_category else ""
+        reason = f"Primary cues: {join_reason_labels(top_labels)}{overlap}."
+
+    return top_category, confidence, reason
+
+
+def build_email_name_lookup(masterlist):
+    lookup = {}
+    if "Company Email" not in masterlist.columns or "Emp Name" not in masterlist.columns:
+        return lookup
+
+    for _, row in masterlist.iterrows():
+        email = normalize_email(row.get("Company Email"))
+        name = cell_text(row.get("Emp Name"))
+        if email and name:
+            lookup[email] = name
+
+    return lookup
+
+
+def resolve_name(email_lookup, email, fallback=""):
+    normalized_email = normalize_email(email)
+    if normalized_email in email_lookup:
+        return email_lookup[normalized_email]
+    return cell_text(fallback) or cell_text(email)
+
+
+def transform_coaching_logs(source, masterlist):
+    if source.empty:
+        return pd.DataFrame(columns=COACHING_OUTPUT_COLUMNS)
+
+    if all(column in source.columns for column in COACHING_OUTPUT_COLUMNS):
+        return source[COACHING_OUTPUT_COLUMNS]
+
+    email_lookup = build_email_name_lookup(masterlist)
+    records = []
+
+    for _, row in source.iterrows():
+        coaching_id = cell_text(row.get("Task GID"))
+        if coaching_id in EXCLUDED_COACHING_GIDS:
+            continue
+
+        details = cell_text(row.get("Agreed Action Steps"))
+        category, confidence, reason = classify_coaching_details(details)
+
+        records.append({
+            "Coaching ID": coaching_id,
+            "Emp Name": resolve_name(
+                email_lookup,
+                row.get("Employee Email"),
+                row.get("Employee Name"),
+            ),
+            "Coached by": resolve_name(email_lookup, row.get("Supervisor Email")),
+            "Coaching Details": details,
+            "Remarks/Comment": cell_text(row.get("Improvement Timeline / Follow-Up Date")),
+            "Coaching Category": category,
+            "Confidence Level": confidence,
+            "Reason": reason,
+            "Coaching Date": cell_text(row.get("Coaching Date")),
+            "Coaching Status": cell_text(row.get("Status")),
+            "Created Date": cell_text(row.get("Created Date")),
+            "Created Time": cell_text(row.get("Created Time")),
+        })
+
+    return clean_columns(pd.DataFrame(records, columns=COACHING_OUTPUT_COLUMNS))
+
+
+def load_coaching_data(masterlist):
+    refresh_coaching_output()
+
+    source = read_coaching_workbook()
+    if source.empty:
+        source = pull_coaching_from_asana()
+
+    if source.empty:
+        existing = load_existing_records_from_html("coachingData")
+        if not existing.empty:
+            return transform_coaching_logs(existing, masterlist)
+
+    return transform_coaching_logs(source, masterlist)
 
 
 def main():
     masterlist = clean_columns(pd.read_csv(MASTERLIST_CSV))
     history = clean_columns(pd.read_csv(HISTORY_CSV))
     movement = clean_columns(pd.read_csv(MOVEMENT_CSV))
+    coaching = load_coaching_data(masterlist)
 
     refresh_time = datetime.now().strftime("%Y-%m-%d %I:%M %p")
 
@@ -330,6 +866,15 @@ def main():
         flex-wrap: wrap;
     }}
 
+    .table-meta {{
+        display: inline-flex;
+        align-items: center;
+        min-height: 32px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+    }}
+
     .table-action {{
         display: inline-flex;
         align-items: center;
@@ -374,6 +919,18 @@ def main():
     td {{
         padding: 7px 8px;
         border-bottom: 1px solid #E5E7EB;
+        vertical-align: top;
+    }}
+
+    .long-text {{
+        min-width: 280px;
+        max-width: 520px;
+        white-space: pre-wrap;
+        line-height: 1.35;
+    }}
+
+    .nowrap {{
+        white-space: nowrap;
     }}
 
     tr:nth-child(even) td {{
@@ -507,7 +1064,17 @@ def main():
 </div>
 
 <div class="tab-panel" id="coachingPanel" data-tab="coaching" role="tabpanel">
-    <div class="under-construction">Under Construction</div>
+<div class="grid">
+    <div class="chart-card full">
+        <div class="table-heading">
+            <h3>Coaching Logs</h3>
+            <div class="table-actions">
+                <span class="table-meta">{len(coaching):,} records loaded</span>
+            </div>
+        </div>
+        <div id="coachingTable"></div>
+    </div>
+</div>
 </div>
 
 <div class="tab-panel" id="qualityPanel" data-tab="quality" role="tabpanel">
@@ -522,6 +1089,7 @@ def main():
 const masterlist = {to_records(masterlist)};
 const historyData = {to_records(history)};
 const movementData = {to_records(movement)};
+const coachingData = {to_records(coaching)};
 
 const COLORS = ["#004C97", "#39B54A", "#002B5C", "#7AC943", "#00AEEF", "#94A3B8"];
 const MASTERLIST_COLUMNS = [
@@ -536,6 +1104,20 @@ const MASTERLIST_COLUMNS = [
     {{label: "Immediate Supervisor", field: "Immediate Supervisor"}},
     {{label: "Manager", field: "Manager"}},
     {{label: "Email", field: "Company Email"}},
+];
+const COACHING_COLUMNS = [
+    {{label: "Coaching ID", field: "Coaching ID", className: "nowrap"}},
+    {{label: "Emp Name", field: "Emp Name", className: "nowrap"}},
+    {{label: "Coached by", field: "Coached by", className: "nowrap"}},
+    {{label: "Coaching Details", field: "Coaching Details", className: "long-text"}},
+    {{label: "Remarks/Comment", field: "Remarks/Comment", className: "long-text"}},
+    {{label: "Coaching Category", field: "Coaching Category", className: "nowrap"}},
+    {{label: "Confidence Level", field: "Confidence Level", className: "nowrap"}},
+    {{label: "Reason", field: "Reason", className: "long-text"}},
+    {{label: "Coaching Date", field: "Coaching Date", className: "nowrap"}},
+    {{label: "Coaching Status", field: "Coaching Status", className: "nowrap"}},
+    {{label: "Created Date", field: "Created Date", className: "nowrap"}},
+    {{label: "Created Time", field: "Created Time", className: "nowrap"}},
 ];
 const TENURE_GROUPS = [
     {{name: "0-30 Days", maxDays: 30}},
@@ -711,7 +1293,8 @@ function renderDataTable(id, rows, columns) {{
         rows.forEach(r => {{
             html += "<tr>";
             columns.forEach(c => {{
-                html += `<td>${{escapeHtml(r[c.field])}}</td>`;
+                const className = c.className ? ` class="${{escapeHtml(c.className)}}"` : "";
+                html += `<td${{className}}>${{escapeHtml(r[c.field])}}</td>`;
             }});
             html += "</tr>";
         }});
@@ -857,6 +1440,10 @@ function masterlistTable(data) {{
     renderDataTable("masterlistTable", data, MASTERLIST_COLUMNS);
 }}
 
+function coachingTable() {{
+    renderDataTable("coachingTable", coachingData, COACHING_COLUMNS);
+}}
+
 function recentMovementsTable() {{
     const rows = filteredMovementData().slice(-10).reverse().map(r => ({{
         ...r,
@@ -941,6 +1528,7 @@ populateFilter("departmentFilter", "Department");
 populateFilter("accountFilter", "LOB / Account");
 populateFilter("managerFilter", "Manager");
 populateFilter("supervisorFilter", "Immediate Supervisor");
+coachingTable();
 render();
 </script>
 
