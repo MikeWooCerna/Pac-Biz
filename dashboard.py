@@ -9,6 +9,9 @@ MASTERLIST_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS82OdHh0VFVA9
 HISTORY_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS82OdHh0VFVA9K6P3b7Y8pjPmdeJSOQxj1KQ_4ts5HYL4YgUHwKjpFymrPCJdfMK0Rox6fnSTG3rKf/pub?gid=166777136&single=true&output=csv"
 MOVEMENT_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS82OdHh0VFVA9K6P3b7Y8pjPmdeJSOQxj1KQ_4ts5HYL4YgUHwKjpFymrPCJdfMK0Rox6fnSTG3rKf/pub?gid=693236738&single=true&output=csv"
 
+# Optional: paste the editable Google Sheets URL here when available.
+GOOGLE_SHEET_URL = ""
+
 OUTPUT_FILE = "masterlist_dashboard.html"
 LOGO_FILE = "pacbiz_logo.png"
 
@@ -46,7 +49,9 @@ def main():
         latest_snapshot = latest_date.strftime("%m/%d/%Y") if pd.notna(latest_date) else ""
 
     logo_uri = get_logo_data_uri()
-    masterlist_sheet_url = MASTERLIST_CSV.replace("/pub?", "/pubhtml?").replace("&output=csv", "")
+    masterlist_source_url = GOOGLE_SHEET_URL or MASTERLIST_CSV
+    masterlist_source_label = "Open Google Sheet" if GOOGLE_SHEET_URL else "Open Source CSV"
+    masterlist_excel_url = MASTERLIST_CSV.split("/pub?")[0] + "/pub?output=xlsx"
 
     html = f"""
 <!DOCTYPE html>
@@ -467,14 +472,16 @@ def main():
         <div class="chart-card"><div id="managerBar"></div></div>
         <div class="chart-card"><div id="supervisorBar"></div></div>
     </div>
-    <div class="chart-card"><div id="changeTypeDonut"></div></div>
+    <div class="chart-card"><div id="tenureSegmentation"></div></div>
+    <div class="chart-card"><div id="ageGroupBar"></div></div>
     <div class="chart-card"><div id="weeklyLine"></div></div>
     <div class="chart-card full">
         <div class="table-heading">
             <h3>Master List</h3>
             <div class="table-actions">
-                <a class="table-action" href="{masterlist_sheet_url}" target="_blank" rel="noopener">Open Google Sheet</a>
+                <a class="table-action" href="{masterlist_source_url}" target="_blank" rel="noopener">{masterlist_source_label}</a>
                 <a class="table-action secondary" href="{MASTERLIST_CSV}" target="_blank" rel="noopener">Download CSV</a>
+                <a class="table-action secondary" href="{masterlist_excel_url}" target="_blank" rel="noopener">Download Excel</a>
             </div>
         </div>
         <div id="masterlistTable"></div>
@@ -517,9 +524,95 @@ const MASTERLIST_COLUMNS = [
     {{label: "Manager", field: "Manager"}},
     {{label: "Email", field: "Company Email"}},
 ];
+const TENURE_GROUPS = [
+    {{name: "0-30 Days", maxDays: 30}},
+    {{name: "31-60 Days", maxDays: 60}},
+    {{name: "61-90 Days", maxDays: 90}},
+    {{name: "91-180 Days", maxDays: 180}},
+    {{name: "181-365 Days", maxDays: 365}},
+    {{name: "1-2 Years", maxDays: 730}},
+    {{name: "2-5 Years", maxDays: 1825}},
+    {{name: "5+ Years", maxDays: Infinity}},
+];
+const AGE_GROUPS = [
+    {{name: "Under 20", min: 0, max: 19}},
+    {{name: "20-24", min: 20, max: 24}},
+    {{name: "25-29", min: 25, max: 29}},
+    {{name: "30-34", min: 30, max: 34}},
+    {{name: "35-39", min: 35, max: 39}},
+    {{name: "40-49", min: 40, max: 49}},
+    {{name: "50+", min: 50, max: Infinity}},
+];
 
 function norm(v) {{
     return (v ?? "").toString().trim();
+}}
+
+function parseDateValue(v) {{
+    const raw = norm(v);
+    if (!raw) return null;
+
+    const monthMap = {{
+        jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
+        jul: 6, aug: 7, sep: 8, sept: 8, oct: 9, nov: 10, dec: 11
+    }};
+
+    const textDate = raw.match(/^(\\d{{1,2}})[-\\s]([A-Za-z]{{3,}})[-\\s](\\d{{2,4}})$/);
+    if (textDate) {{
+        let year = Number(textDate[3]);
+        if (year < 100) year += year < 50 ? 2000 : 1900;
+        const month = monthMap[textDate[2].toLowerCase()];
+        if (month !== undefined) return new Date(year, month, Number(textDate[1]));
+    }}
+
+    const slashDate = raw.match(/^(\\d{{1,2}})\\/(\\d{{1,2}})\\/(\\d{{2,4}})$/);
+    if (slashDate) {{
+        let year = Number(slashDate[3]);
+        if (year < 100) year += year < 50 ? 2000 : 1900;
+        return new Date(year, Number(slashDate[1]) - 1, Number(slashDate[2]));
+    }}
+
+    const parsed = new Date(raw);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+}}
+
+function wholeDayDiff(startDate, endDate) {{
+    const start = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+    const end = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+    return Math.floor((end - start) / 86400000);
+}}
+
+function tenureGroupName(hireDate, asOfDate) {{
+    if (!hireDate || !asOfDate) return "";
+    const days = wholeDayDiff(hireDate, asOfDate);
+    if (days < 0) return "";
+    return TENURE_GROUPS.find(group => days <= group.maxDays)?.name || "";
+}}
+
+function tenureCounts(data, asOfField = "") {{
+    const counts = Object.fromEntries(TENURE_GROUPS.map(group => [group.name, 0]));
+    data.forEach(r => {{
+        const hireDate = parseDateValue(r["Hire Date"]);
+        const asOfDate = asOfField ? parseDateValue(r[asOfField]) : new Date();
+        const groupName = tenureGroupName(hireDate, asOfDate);
+        if (groupName) counts[groupName] += 1;
+    }});
+    return TENURE_GROUPS.map(group => ({{name: group.name, count: counts[group.name]}}));
+}}
+
+function ageGroupName(age) {{
+    const n = Number(age);
+    if (!Number.isFinite(n) || n < 0) return "";
+    return AGE_GROUPS.find(group => n >= group.min && n <= group.max)?.name || "";
+}}
+
+function ageGroupCounts(data) {{
+    const counts = Object.fromEntries(AGE_GROUPS.map(group => [group.name, 0]));
+    data.forEach(r => {{
+        const groupName = ageGroupName(norm(r["Age"]).replace(/,/g, ""));
+        if (groupName) counts[groupName] += 1;
+    }});
+    return AGE_GROUPS.map(group => ({{name: group.name, count: counts[group.name]}}));
 }}
 
 function escapeHtml(v) {{
@@ -641,6 +734,29 @@ function bar(id, title, data, yTitle) {{
     }}, {{responsive: true}});
 }}
 
+function segmentBar(id, title, data, yTitle) {{
+    const rows = [...data].reverse();
+    Plotly.newPlot(id, [{{
+        x: rows.map(d => d.count),
+        y: rows.map(d => d.name),
+        type: "bar",
+        orientation: "h",
+        text: rows.map(d => d.count),
+        textposition: "auto",
+        marker: {{color: rows.map((_, i) => COLORS[i % COLORS.length])}},
+        hovertemplate: "%{{y}}<br>Headcount: %{{x}}<extra></extra>",
+    }}], {{
+        title: {{text: title, font: {{color: "#004C97", size: 15}}}},
+        height: 300,
+        margin: {{l: 120, r: 20, t: 45, b: 35}},
+        xaxis: {{title: "Headcount"}},
+        yaxis: {{title: yTitle}},
+        paper_bgcolor: "white",
+        plot_bgcolor: "white",
+        font: {{family: "Arial", size: 10}}
+    }}, {{responsive: true}});
+}}
+
 function weeklyChart() {{
     const grouped = {{}};
     historyData.forEach(r => {{
@@ -712,7 +828,8 @@ function render() {{
     bar("managerBar", "Headcount by Manager (Top 10)", countBy(data, "Manager"), "Manager");
     bar("supervisorBar", "Headcount by Supervisor (Top 10)", countBy(data, "Immediate Supervisor"), "Supervisor");
     donut("employeeGroupDonut", "Employee Group Distribution", countBy(data, "Employee Group"));
-    donut("changeTypeDonut", "Change Type Distribution", countBy(historyData, "Change Type"));
+    segmentBar("tenureSegmentation", "Tenure Segmentation", tenureCounts(data), "Tenure Group");
+    segmentBar("ageGroupBar", "Age Group", ageGroupCounts(data), "Age Group");
     weeklyChart();
     masterlistTable(data);
     recentMovementsTable();
