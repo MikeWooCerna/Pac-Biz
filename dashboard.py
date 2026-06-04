@@ -937,7 +937,7 @@ def main():
     .coaching-chart-row {{
         display: grid;
         grid-column: 1 / -1;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 12px;
     }}
 
@@ -1275,6 +1275,7 @@ def main():
 <div class="grid coaching-grid">
     <div class="coaching-chart-row">
         <div class="chart-card"><div id="coachingCategoryDonut"></div></div>
+        <div class="chart-card"><div id="coachingStatusDonut"></div></div>
         <div class="chart-card"><div id="coachingConfidenceGauge"></div></div>
     </div>
     <div class="chart-card coaching-summary-card">
@@ -1856,15 +1857,15 @@ function renderDataTable(id, rows, columns, sortState = null) {{
     document.getElementById(id).innerHTML = html;
 }}
 
-function donut(id, title, data, textInfo = "percent") {{
+function donut(id, title, data, textInfo = "percent", colors = COLORS) {{
     Plotly.newPlot(id, [{{
         labels: data.map(d => d.name),
         values: data.map(d => d.count),
         type: "pie",
         hole: 0.58,
-        marker: {{colors: COLORS}},
+        marker: {{colors}},
         textinfo: textInfo,
-        hovertemplate: "%{{label}}<br>Headcount: %{{value}}<br>Percentage: %{{percent}}<extra></extra>",
+        hovertemplate: "%{{label}}<br>Count: %{{value}}<br>Percentage: %{{percent}}<extra></extra>",
     }}], {{
         title: {{text: title, font: {{color: "#004C97", size: 15}}}},
         height: 280,
@@ -1990,6 +1991,27 @@ function weeklyChart() {{
 
 function coachingCategoryChart(data) {{
     donut("coachingCategoryDonut", "Coaching Category", countBy(data, "Coaching Category"));
+}}
+
+function coachingStatusChart(data) {{
+    const statusCounts = {{"Completed": 0, "Pending": 0}};
+    data.forEach(row => {{
+        if (isCompletedStatus(row["Coaching Status"])) {{
+            statusCounts.Completed += 1;
+        }} else if (isPendingStatus(row["Coaching Status"])) {{
+            statusCounts.Pending += 1;
+        }}
+    }});
+    donut(
+        "coachingStatusDonut",
+        "Coaching Status",
+        [
+            {{name: "Completed", count: statusCounts.Completed}},
+            {{name: "Pending", count: statusCounts.Pending}},
+        ],
+        "percent+label",
+        ["#39B54A", "#FFC000"]
+    );
 }}
 
 function gaugePoint(cx, cy, radius, angle) {{
@@ -2166,13 +2188,67 @@ function downloadCoachingExcel() {{
     }}
 }}
 
+async function copyCoachingExportToClipboard(exportText) {{
+    if (navigator.clipboard?.write && window.ClipboardItem) {{
+        try {{
+            const item = new ClipboardItem({{
+                "text/plain": new Blob([exportText], {{type: "text/plain"}}),
+                "text/html": new Blob([coachingExportHtmlTable()], {{type: "text/html"}}),
+            }});
+            await navigator.clipboard.write([item]);
+            return true;
+        }} catch (error) {{
+            // Fall through to plain-text copy methods.
+        }}
+    }}
+
+    if (navigator.clipboard?.writeText) {{
+        try {{
+            await navigator.clipboard.writeText(exportText);
+            return true;
+        }} catch (error) {{
+            // Fall through to the legacy selection copy method.
+        }}
+    }}
+
+    const textarea = document.createElement("textarea");
+    textarea.value = exportText;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.left = "-9999px";
+    textarea.style.top = "0";
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    let copied = false;
+    try {{
+        copied = document.execCommand("copy");
+    }} catch (error) {{
+        copied = false;
+    }}
+    textarea.remove();
+    return copied;
+}}
+
 async function openCoachingSheets() {{
     const button = document.getElementById("openCoachingSheets");
     const originalText = button?.textContent || "Copy to Sheets";
     const exportText = coachingExportText("\\t");
+    const rowCount = coachingExportRows().length;
 
-    try {{
-        await navigator.clipboard.writeText(exportText);
+    if (rowCount === 0) {{
+        if (button) {{
+            button.textContent = "No Rows to Copy";
+            setTimeout(() => {{
+                button.textContent = originalText;
+            }}, 2600);
+        }}
+        return;
+    }}
+
+    const copied = await copyCoachingExportToClipboard(exportText);
+
+    if (copied) {{
         window.open("https://sheets.new", "_blank", "noopener");
         if (button) {{
             button.textContent = "Copied - Paste in Sheets";
@@ -2180,18 +2256,22 @@ async function openCoachingSheets() {{
                 button.textContent = originalText;
             }}, 2600);
         }}
-    }} catch (error) {{
-        downloadBlob(
-            `coaching_logs_${{new Date().toISOString().slice(0, 10)}}.tsv`,
-            exportText,
-            "text/tab-separated-values;charset=utf-8"
-        );
-        if (button) {{
-            button.textContent = "Downloaded TSV";
-            setTimeout(() => {{
-                button.textContent = originalText;
-            }}, 2600);
-        }}
+        window.setTimeout(() => {{
+            alert("Coaching Logs copied. In the new Google Sheet, click cell A1 and press Ctrl+V.");
+        }}, 120);
+        return;
+    }}
+
+    downloadBlob(
+        `coaching_logs_${{new Date().toISOString().slice(0, 10)}}.tsv`,
+        exportText,
+        "text/tab-separated-values;charset=utf-8"
+    );
+    if (button) {{
+        button.textContent = "Downloaded TSV";
+        setTimeout(() => {{
+            button.textContent = originalText;
+        }}, 2600);
     }}
 }}
 
@@ -2210,6 +2290,7 @@ function renderCoaching() {{
     }}
 
     coachingCategoryChart(data);
+    coachingStatusChart(data);
     coachingConfidenceGauge(data);
     const summary = coachingSummaryPivot(data);
     const summaryMeta = document.getElementById("coachingSummaryMeta");
