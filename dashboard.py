@@ -709,7 +709,8 @@ def main():
         color: white;
     }}
 
-    .masterlist-controls.hidden {{
+    .masterlist-controls.hidden,
+    .coaching-controls.hidden {{
         display: none;
     }}
 
@@ -1151,6 +1152,38 @@ def main():
     <div class="card"><div class="label">Managers</div><div class="value" id="managers">0</div></div>
 </div>
 </div>
+
+<div class="coaching-controls hidden" id="coachingControls">
+<div class="coaching-filters">
+    <div class="filter-box">
+        <label>Emp Name</label>
+        <details class="multi-filter" id="coachingEmpFilter">
+            <summary id="coachingEmpFilterSummary">All</summary>
+            <div class="multi-options" id="coachingEmpOptions"></div>
+        </details>
+    </div>
+    <div class="filter-box">
+        <label>Coached by</label>
+        <details class="multi-filter" id="coachingLeaderFilter">
+            <summary id="coachingLeaderFilterSummary">All</summary>
+            <div class="multi-options" id="coachingLeaderOptions"></div>
+        </details>
+    </div>
+    <div class="filter-box">
+        <label>Month Yr</label>
+        <details class="multi-filter" id="coachingMonthFilter">
+            <summary id="coachingMonthFilterSummary">All</summary>
+            <div class="multi-options" id="coachingMonthOptions"></div>
+        </details>
+    </div>
+</div>
+
+<div class="cards coaching-cards">
+    <div class="card"><div class="label">Coaching Count</div><div class="value" id="coachingCount">0</div></div>
+    <div class="card completed-card"><div class="label">Completed</div><div class="value" id="coachingCompleted">0</div></div>
+    <div class="card pending-card"><div class="label">Pending</div><div class="value" id="coachingPending">0</div></div>
+</div>
+</div>
 </div>
 
 <div class="tab-panel active" id="masterlistPanel" data-tab="masterlist" role="tabpanel">
@@ -1190,36 +1223,6 @@ def main():
 </div>
 
 <div class="tab-panel" id="coachingPanel" data-tab="coaching" role="tabpanel">
-<div class="coaching-filters">
-    <div class="filter-box">
-        <label>Emp Name</label>
-        <details class="multi-filter" id="coachingEmpFilter">
-            <summary id="coachingEmpFilterSummary">All</summary>
-            <div class="multi-options" id="coachingEmpOptions"></div>
-        </details>
-    </div>
-    <div class="filter-box">
-        <label>Coached by</label>
-        <details class="multi-filter" id="coachingLeaderFilter">
-            <summary id="coachingLeaderFilterSummary">All</summary>
-            <div class="multi-options" id="coachingLeaderOptions"></div>
-        </details>
-    </div>
-    <div class="filter-box">
-        <label>Month Yr</label>
-        <details class="multi-filter" id="coachingMonthFilter">
-            <summary id="coachingMonthFilterSummary">All</summary>
-            <div class="multi-options" id="coachingMonthOptions"></div>
-        </details>
-    </div>
-</div>
-
-<div class="cards coaching-cards">
-    <div class="card"><div class="label">Coaching Count</div><div class="value" id="coachingCount">0</div></div>
-    <div class="card completed-card"><div class="label">Completed</div><div class="value" id="coachingCompleted">0</div></div>
-    <div class="card pending-card"><div class="label">Pending</div><div class="value" id="coachingPending">0</div></div>
-</div>
-
 <div class="grid coaching-grid">
     <div class="coaching-chart-row">
         <div class="chart-card"><div id="coachingCategoryDonut"></div></div>
@@ -1228,6 +1231,9 @@ def main():
     <div class="chart-card full">
         <div class="table-heading">
             <h3>Summary</h3>
+            <div class="table-actions">
+                <span class="table-meta" id="coachingSummaryMeta">0 completed coaching sessions</span>
+            </div>
         </div>
         <div id="coachingSummaryTable"></div>
         <div class="disclaimer">Coaching will be only be counted once status is <span class="completed-word">Completed</span></div>
@@ -1288,8 +1294,6 @@ const COACHING_COLUMNS = [
 ];
 const COACHING_SUMMARY_COLUMNS = [
     {{label: "Team Leader", field: "Team Leader", className: "nowrap"}},
-    {{label: "Week", field: "Week", className: "nowrap"}},
-    {{label: "Completed Coaching", field: "Completed Coaching", className: "nowrap"}},
 ];
 const TENURE_GROUPS = [
     {{name: "0-30 Days", maxDays: 30}},
@@ -1436,13 +1440,31 @@ function isPendingStatus(v) {{
 function weekRangeLabel(v) {{
     const parsed = parseDateValue(v);
     if (!parsed) return "";
-    const start = new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
-    const day = start.getDay();
-    const mondayOffset = day === 0 ? -6 : 1 - day;
-    start.setDate(start.getDate() + mondayOffset);
+    const start = weekStartDate(parsed);
     const end = new Date(start);
     end.setDate(start.getDate() + 6);
     return `${{formatShortDate(start)}} - ${{formatShortDate(end)}}`;
+}}
+
+function weekStartDate(date) {{
+    const start = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const day = start.getDay();
+    const mondayOffset = day === 0 ? -6 : 1 - day;
+    start.setDate(start.getDate() + mondayOffset);
+    return start;
+}}
+
+function weekStartKey(v) {{
+    const parsed = parseDateValue(v);
+    if (!parsed) return "";
+    const start = weekStartDate(parsed);
+    return `${{start.getFullYear()}}-${{String(start.getMonth() + 1).padStart(2, "0")}}-${{String(start.getDate()).padStart(2, "0")}}`;
+}}
+
+function weekStartLabel(key) {{
+    const parsed = parseDateValue(key);
+    if (!parsed) return key;
+    return parsed.toLocaleDateString("en-US");
 }}
 
 function formatShortDate(date) {{
@@ -1617,30 +1639,35 @@ function coachingConfidenceAverage(data) {{
     return Math.round(total / data.length);
 }}
 
-function coachingSummaryRows(data) {{
-    const grouped = {{}};
-    data.filter(r => isCompletedStatus(r["Coaching Status"])).forEach(r => {{
+function coachingSummaryPivot(data) {{
+    const completedRows = data.filter(r => isCompletedStatus(r["Coaching Status"]));
+    const weekKeys = [...new Set(completedRows.map(r => weekStartKey(r["Coaching Date"])).filter(Boolean))]
+        .sort();
+    const leaders = [...new Set(completedRows.map(r => norm(r["Coached by"]) || "Blank"))]
+        .sort((a, b) => a.localeCompare(b, undefined, {{sensitivity: "base"}}));
+    const counts = {{}};
+
+    completedRows.forEach(r => {{
         const leader = norm(r["Coached by"]) || "Blank";
-        const week = weekRangeLabel(r["Coaching Date"]) || "No Coaching Date";
+        const week = weekStartKey(r["Coaching Date"]);
+        if (!week) return;
         const key = `${{leader}}|${{week}}`;
-        if (!grouped[key]) {{
-            grouped[key] = {{
-                "Team Leader": leader,
-                "Week": week,
-                "Completed Coaching": 0,
-                "_sortDate": parseDateValue(r["Coaching Date"])?.getTime() || 0,
-            }};
-        }}
-        grouped[key]["Completed Coaching"] += 1;
+        counts[key] = (counts[key] || 0) + 1;
     }});
 
-    return Object.values(grouped)
-        .sort((a, b) => b._sortDate - a._sortDate || a["Team Leader"].localeCompare(b["Team Leader"]))
-        .map(r => ({{
-            "Team Leader": r["Team Leader"],
-            "Week": r["Week"],
-            "Completed Coaching": r["Completed Coaching"],
-        }}));
+    const columns = [
+        ...COACHING_SUMMARY_COLUMNS,
+        ...weekKeys.map(week => ({{label: weekStartLabel(week), field: week, className: "nowrap"}})),
+    ];
+    const rows = leaders.map(leader => {{
+        const row = {{"Team Leader": leader}};
+        weekKeys.forEach(week => {{
+            row[week] = counts[`${{leader}}|${{week}}`] || 0;
+        }});
+        return row;
+    }});
+
+    return {{columns, rows, completedCount: completedRows.length}};
 }}
 
 function setText(id, value) {{
@@ -1880,7 +1907,12 @@ function renderCoaching() {{
 
     coachingCategoryChart(data);
     coachingConfidenceGauge(data);
-    renderDataTable("coachingSummaryTable", coachingSummaryRows(data), COACHING_SUMMARY_COLUMNS);
+    const summary = coachingSummaryPivot(data);
+    const summaryMeta = document.getElementById("coachingSummaryMeta");
+    if (summaryMeta) {{
+        summaryMeta.textContent = `${{summary.completedCount.toLocaleString()}} completed coaching sessions`;
+    }}
+    renderDataTable("coachingSummaryTable", summary.rows, summary.columns);
     coachingTable(data);
 }}
 
@@ -1941,7 +1973,9 @@ function render() {{
 
 function switchTab(tabName) {{
     const masterlistControls = document.getElementById("masterlistControls");
+    const coachingControls = document.getElementById("coachingControls");
     const isMasterlist = tabName === "masterlist";
+    const isCoaching = tabName === "coaching";
 
     document.querySelectorAll(".tab-button").forEach(button => {{
         const active = button.dataset.tab === tabName;
@@ -1954,8 +1988,9 @@ function switchTab(tabName) {{
     }});
 
     masterlistControls.classList.toggle("hidden", !isMasterlist);
+    coachingControls.classList.toggle("hidden", !isCoaching);
 
-    if (isMasterlist || tabName === "coaching") {{
+    if (isMasterlist || isCoaching) {{
         setTimeout(() => window.dispatchEvent(new Event("resize")), 0);
     }}
 }}
