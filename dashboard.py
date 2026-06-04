@@ -598,6 +598,7 @@ def main():
 <title>Pac-Biz Dashboard</title>
 {"<link rel='icon' type='image/png' href='" + favicon_uri + "'>" if favicon_uri else ""}
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
 <style>
     :root {{
@@ -830,6 +831,15 @@ def main():
         background: #F1F5F9;
     }}
 
+    .multi-option.select-all {{
+        border-bottom: 1px solid #E5E7EB;
+        border-radius: 0;
+        color: var(--blue);
+        font-weight: 900;
+        margin-bottom: 4px;
+        padding-bottom: 8px;
+    }}
+
     .cards {{
         display: grid;
         grid-template-columns: repeat(8, 1fr);
@@ -931,6 +941,14 @@ def main():
         gap: 12px;
     }}
 
+    .coaching-summary-card {{
+        grid-column: 1;
+    }}
+
+    .empty-widget-space {{
+        min-height: 1px;
+    }}
+
     .chart-stack {{
         display: grid;
         gap: 12px;
@@ -983,7 +1001,9 @@ def main():
         color: white;
         font-size: 12px;
         font-weight: 800;
+        font-family: inherit;
         text-decoration: none;
+        cursor: pointer;
     }}
 
     .table-action.secondary {{
@@ -1052,6 +1072,35 @@ def main():
     .disclaimer .completed-word {{
         color: var(--green);
         font-weight: 800;
+    }}
+
+    .score-gauge {{
+        height: 280px;
+        display: grid;
+        align-items: center;
+        justify-items: center;
+        padding: 4px 0 0;
+    }}
+
+    .score-gauge svg {{
+        width: min(100%, 560px);
+        height: 260px;
+        overflow: visible;
+    }}
+
+    .gauge-label {{
+        font-family: Arial, sans-serif;
+        font-size: 15px;
+        font-weight: 900;
+        fill: #111827;
+        dominant-baseline: middle;
+        text-anchor: middle;
+    }}
+
+    .gauge-value {{
+        font-size: 28px;
+        font-weight: 900;
+        fill: var(--dark-blue);
     }}
 
     tr:nth-child(even) td {{
@@ -1228,7 +1277,7 @@ def main():
         <div class="chart-card"><div id="coachingCategoryDonut"></div></div>
         <div class="chart-card"><div id="coachingConfidenceGauge"></div></div>
     </div>
-    <div class="chart-card full">
+    <div class="chart-card coaching-summary-card">
         <div class="table-heading">
             <h3>Summary</h3>
             <div class="table-actions">
@@ -1238,10 +1287,13 @@ def main():
         <div id="coachingSummaryTable"></div>
         <div class="disclaimer">Coaching will be only be counted once status is <span class="completed-word">Completed</span></div>
     </div>
+    <div class="empty-widget-space"></div>
     <div class="chart-card full">
         <div class="table-heading">
             <h3>Coaching Logs</h3>
             <div class="table-actions">
+                <button class="table-action" type="button" id="downloadCoachingExcel">Download Excel</button>
+                <button class="table-action secondary" type="button" id="openCoachingSheets">Google Sheets</button>
                 <span class="table-meta" id="coachingLoadedMeta">{len(coaching):,} records loaded</span>
             </div>
         </div>
@@ -1284,7 +1336,7 @@ const COACHING_COLUMNS = [
     {{label: "Coached by", field: "Coached by", className: "nowrap", sortable: true}},
     {{label: "Coaching Details", field: "Coaching Details", className: "long-text"}},
     {{label: "Remarks/Comment", field: "Remarks/Comment", className: "long-text"}},
-    {{label: "Coaching Category", field: "Coaching Category", className: "nowrap"}},
+    {{label: "Coaching Category", field: "Coaching Category", className: "nowrap", sortable: true}},
     {{label: "Confidence Level", field: "Confidence Level", className: "nowrap"}},
     {{label: "Reason", field: "Reason", className: "long-text"}},
     {{label: "Coaching Date", field: "Coaching Date", className: "nowrap", sortable: true, sortType: "date"}},
@@ -1513,27 +1565,72 @@ function setMultiSummary(summaryId, selectedSet) {{
     }}
 }}
 
+function syncMultiFilterOptions(optionsId, selectedSet, allValues) {{
+    const box = document.getElementById(optionsId);
+    const selectAll = box?.querySelector("input[data-select-all='true']");
+    if (!selectAll) return;
+
+    if (selectedSet.size === allValues.length) {{
+        selectedSet.clear();
+    }}
+
+    const allSelected = selectedSet.size === 0;
+    selectAll.checked = allSelected;
+    selectAll.indeterminate = !allSelected && selectedSet.size < allValues.length;
+    box.querySelectorAll("input[type='checkbox']:not([data-select-all='true'])").forEach(checkbox => {{
+        checkbox.checked = allSelected || selectedSet.has(checkbox.value);
+    }});
+}}
+
 function populateMultiFilter(optionsId, summaryId, values, selectedSet) {{
     const box = document.getElementById(optionsId);
     if (!box) return;
     box.innerHTML = "";
+    const normalizedValues = values.map(item => ({{
+        value: typeof item === "string" ? item : item.value,
+        label: typeof item === "string" ? item : item.label,
+    }}));
+    const allValues = normalizedValues.map(item => item.value);
 
-    values.forEach(item => {{
-        const value = typeof item === "string" ? item : item.value;
-        const label = typeof item === "string" ? item : item.label;
+    const selectAllOption = document.createElement("label");
+    selectAllOption.className = "multi-option select-all";
+
+    const selectAllCheckbox = document.createElement("input");
+    selectAllCheckbox.type = "checkbox";
+    selectAllCheckbox.dataset.selectAll = "true";
+    selectAllCheckbox.addEventListener("change", () => {{
+        selectedSet.clear();
+        syncMultiFilterOptions(optionsId, selectedSet, allValues);
+        setMultiSummary(summaryId, selectedSet);
+        renderCoaching();
+    }});
+
+    const selectAllText = document.createElement("span");
+    selectAllText.textContent = "Select All";
+    selectAllOption.appendChild(selectAllCheckbox);
+    selectAllOption.appendChild(selectAllText);
+    box.appendChild(selectAllOption);
+
+    normalizedValues.forEach(item => {{
+        const value = item.value;
+        const label = item.label;
         const option = document.createElement("label");
         option.className = "multi-option";
 
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         checkbox.value = value;
-        checkbox.checked = selectedSet.has(value);
+        checkbox.checked = selectedSet.size === 0 || selectedSet.has(value);
         checkbox.addEventListener("change", () => {{
+            if (selectedSet.size === 0) {{
+                allValues.forEach(v => selectedSet.add(v));
+            }}
             if (checkbox.checked) {{
                 selectedSet.add(value);
             }} else {{
                 selectedSet.delete(value);
             }}
+            syncMultiFilterOptions(optionsId, selectedSet, allValues);
             setMultiSummary(summaryId, selectedSet);
             renderCoaching();
         }});
@@ -1546,6 +1643,7 @@ function populateMultiFilter(optionsId, summaryId, values, selectedSet) {{
         box.appendChild(option);
     }});
 
+    syncMultiFilterOptions(optionsId, selectedSet, allValues);
     setMultiSummary(summaryId, selectedSet);
 }}
 
@@ -1572,6 +1670,42 @@ function populateCoachingFilters() {{
         monthValues,
         COACHING_FILTERS.month
     );
+}}
+
+function closeMultiFilters(exceptFilter = null) {{
+    document.querySelectorAll(".multi-filter[open]").forEach(filter => {{
+        if (filter !== exceptFilter) {{
+            filter.removeAttribute("open");
+        }}
+    }});
+}}
+
+function initMultiFilterBehavior() {{
+    document.querySelectorAll(".multi-filter").forEach(filter => {{
+        filter.addEventListener("toggle", () => {{
+            if (filter.open) {{
+                closeMultiFilters(filter);
+            }}
+        }});
+    }});
+
+    document.querySelectorAll(".multi-options").forEach(options => {{
+        options.addEventListener("click", event => {{
+            event.stopPropagation();
+        }});
+    }});
+
+    document.addEventListener("click", event => {{
+        if (!event.target.closest(".multi-filter")) {{
+            closeMultiFilters();
+        }}
+    }});
+
+    document.addEventListener("keydown", event => {{
+        if (event.key === "Escape") {{
+            closeMultiFilters();
+        }}
+    }});
 }}
 
 function filteredMasterlist() {{
@@ -1838,37 +1972,78 @@ function coachingCategoryChart(data) {{
     donut("coachingCategoryDonut", "Coaching Category", countBy(data, "Coaching Category"));
 }}
 
+function gaugePoint(cx, cy, radius, angle) {{
+    const rad = angle * Math.PI / 180;
+    return {{
+        x: cx + radius * Math.cos(rad),
+        y: cy - radius * Math.sin(rad),
+    }};
+}}
+
+function gaugeSegmentPath(cx, cy, outerRadius, innerRadius, startAngle, endAngle) {{
+    const steps = 18;
+    const points = [];
+    for (let i = 0; i <= steps; i += 1) {{
+        const angle = startAngle + ((endAngle - startAngle) * i / steps);
+        points.push(gaugePoint(cx, cy, outerRadius, angle));
+    }}
+    for (let i = steps; i >= 0; i -= 1) {{
+        const angle = startAngle + ((endAngle - startAngle) * i / steps);
+        points.push(gaugePoint(cx, cy, innerRadius, angle));
+    }}
+    return `M ${{points.map(p => `${{p.x.toFixed(1)}} ${{p.y.toFixed(1)}}`).join(" L ")}} Z`;
+}}
+
+function gaugeNeedlePath(cx, cy, angle, length, baseWidth) {{
+    const tip = gaugePoint(cx, cy, length, angle);
+    const left = gaugePoint(cx, cy, baseWidth, angle - 90);
+    const right = gaugePoint(cx, cy, baseWidth, angle + 90);
+    return `M ${{tip.x.toFixed(1)}} ${{tip.y.toFixed(1)}} L ${{left.x.toFixed(1)}} ${{left.y.toFixed(1)}} L ${{right.x.toFixed(1)}} ${{right.y.toFixed(1)}} Z`;
+}}
+
+function confidenceBand(value) {{
+    if (value >= 80) return "EXCELLENT";
+    if (value >= 60) return "GOOD";
+    if (value >= 40) return "FAIR";
+    if (value >= 20) return "POOR";
+    return "VERY POOR";
+}}
+
 function coachingConfidenceGauge(data) {{
     const value = coachingConfidenceAverage(data);
-    Plotly.newPlot("coachingConfidenceGauge", [{{
-        type: "indicator",
-        mode: "gauge+number",
-        value,
-        number: {{suffix: "%", font: {{color: "#002B5C", size: 34}}}},
-        title: {{text: "AI Confidence Level Detection", font: {{color: "#004C97", size: 15}}}},
-        gauge: {{
-            axis: {{range: [0, 100], tickwidth: 1, tickcolor: "#64748B"}},
-            bar: {{color: "#004C97"}},
-            bgcolor: "white",
-            borderwidth: 1,
-            bordercolor: "#E5E7EB",
-            steps: [
-                {{range: [0, 45], color: "#FEE2E2"}},
-                {{range: [45, 75], color: "#FEF3C7"}},
-                {{range: [75, 100], color: "#DCFCE7"}},
-            ],
-            threshold: {{
-                line: {{color: "#39B54A", width: 4}},
-                thickness: 0.75,
-                value,
-            }},
-        }},
-    }}], {{
-        height: 280,
-        margin: {{l: 28, r: 28, t: 55, b: 20}},
-        paper_bgcolor: "white",
-        font: {{family: "Arial", size: 11}},
-    }}, {{responsive: true}});
+    const cx = 300;
+    const cy = 260;
+    const segments = [
+        {{label: "VERY POOR", start: 180, end: 144, color: "#F4511E"}},
+        {{label: "POOR", start: 144, end: 108, color: "#FDBA3B"}},
+        {{label: "FAIR", start: 108, end: 72, color: "#DDE817"}},
+        {{label: "GOOD", start: 72, end: 36, color: "#39B54A"}},
+        {{label: "EXCELLENT", start: 36, end: 0, color: "#007A3D"}},
+    ];
+    const needleAngle = 180 - Math.max(0, Math.min(value, 100)) * 1.8;
+    const segmentMarkup = segments.map(segment => {{
+        const labelAngle = (segment.start + segment.end) / 2;
+        const labelPoint = gaugePoint(cx, cy, 194, labelAngle);
+        return `
+            <path d="${{gaugeSegmentPath(cx, cy, 220, 178, segment.start, segment.end)}}" fill="#B8B8B8" stroke="white" stroke-width="1" />
+            <path d="${{gaugeSegmentPath(cx, cy, 178, 105, segment.start, segment.end)}}" fill="${{segment.color}}" stroke="white" stroke-width="1" />
+            <text class="gauge-label" x="${{labelPoint.x.toFixed(1)}}" y="${{labelPoint.y.toFixed(1)}}" transform="rotate(${{(90 - labelAngle).toFixed(1)}} ${{labelPoint.x.toFixed(1)}} ${{labelPoint.y.toFixed(1)}})">${{segment.label}}</text>
+        `;
+    }}).join("");
+
+    document.getElementById("coachingConfidenceGauge").innerHTML = `
+        <div class="score-gauge">
+            <svg viewBox="0 0 600 320" role="img" aria-label="AI Confidence Level Detection ${{value}} percent">
+                <text x="300" y="24" text-anchor="middle" style="font: 700 15px Arial; fill: #004C97;">AI Confidence Level Detection</text>
+                ${{segmentMarkup}}
+                <path d="${{gaugeNeedlePath(cx, cy, needleAngle, 150, 18)}}" fill="#050505" />
+                <circle cx="${{cx}}" cy="${{cy}}" r="32" fill="#050505" />
+                <circle cx="${{cx}}" cy="${{cy}}" r="18" fill="white" />
+                <circle cx="${{cx}}" cy="${{cy}}" r="6" fill="#050505" />
+                <text class="gauge-value" x="300" y="302" text-anchor="middle">${{value}}% - ${{confidenceBand(value)}}</text>
+            </svg>
+        </div>
+    `;
 }}
 
 function masterlistTable(data) {{
@@ -1889,6 +2064,108 @@ function coachingTable(data) {{
             renderCoaching();
         }});
     }});
+}}
+
+function coachingExportRows() {{
+    return sortedCoachingRows(filteredCoachingData()).map(row => {{
+        const out = {{}};
+        COACHING_COLUMNS.forEach(column => {{
+            out[column.label] = norm(row[column.field]);
+        }});
+        return out;
+    }});
+}}
+
+function coachingExportText(delimiter = "\\t") {{
+    const headers = COACHING_COLUMNS.map(column => column.label);
+    const rows = coachingExportRows();
+    const cleanCell = value => norm(value).replace(/[\\t\\r\\n]+/g, " ");
+    const formatCell = value => {{
+        const cleaned = cleanCell(value);
+        if (delimiter === "," && /[",]/.test(cleaned)) {{
+            return `"${{cleaned.replaceAll('"', '""')}}"`;
+        }}
+        return cleaned;
+    }};
+    return [
+        headers.join(delimiter),
+        ...rows.map(row => headers.map(header => formatCell(row[header])).join(delimiter)),
+    ].join("\\n");
+}}
+
+function downloadBlob(filename, content, type) {{
+    const blob = new Blob([content], {{type}});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+}}
+
+function coachingExportHtmlTable() {{
+    const headers = COACHING_COLUMNS.map(column => column.label);
+    const rows = coachingExportRows();
+    const headerHtml = headers.map(header => `<th>${{escapeHtml(header)}}</th>`).join("");
+    const rowHtml = rows.map(row => (
+        `<tr>${{headers.map(header => `<td>${{escapeHtml(row[header])}}</td>`).join("")}}</tr>`
+    )).join("");
+    return `
+        <html>
+        <head><meta charset="UTF-8"></head>
+        <body>
+            <table>
+                <thead><tr>${{headerHtml}}</tr></thead>
+                <tbody>${{rowHtml}}</tbody>
+            </table>
+        </body>
+        </html>
+    `;
+}}
+
+function downloadCoachingExcel() {{
+    const rows = coachingExportRows();
+    const dateTag = new Date().toISOString().slice(0, 10);
+
+    if (window.XLSX) {{
+        const worksheet = XLSX.utils.json_to_sheet(rows);
+        worksheet["!cols"] = COACHING_COLUMNS.map(column => ({{
+            wch: column.className === "long-text" ? 42 : Math.max(14, column.label.length + 2),
+        }}));
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Coaching Logs");
+        XLSX.writeFile(workbook, `coaching_logs_${{dateTag}}.xlsx`);
+    }} else {{
+        downloadBlob(
+            `coaching_logs_${{dateTag}}.xls`,
+            coachingExportHtmlTable(),
+            "application/vnd.ms-excel;charset=utf-8"
+        );
+    }}
+}}
+
+async function openCoachingSheets() {{
+    const button = document.getElementById("openCoachingSheets");
+    const originalText = button?.textContent || "Google Sheets";
+    window.open("https://sheets.new", "_blank", "noopener");
+
+    try {{
+        await navigator.clipboard.writeText(coachingExportText("\\t"));
+        if (button) {{
+            button.textContent = "Copied for Sheets";
+            setTimeout(() => {{
+                button.textContent = originalText;
+            }}, 1800);
+        }}
+    }} catch (error) {{
+        downloadBlob(
+            `coaching_logs_${{new Date().toISOString().slice(0, 10)}}.tsv`,
+            coachingExportText("\\t"),
+            "text/tab-separated-values;charset=utf-8"
+        );
+    }}
 }}
 
 function renderCoaching() {{
@@ -2004,6 +2281,9 @@ populateFilter("accountFilter", "LOB / Account");
 populateFilter("managerFilter", "Manager");
 populateFilter("supervisorFilter", "Immediate Supervisor");
 populateCoachingFilters();
+initMultiFilterBehavior();
+document.getElementById("downloadCoachingExcel")?.addEventListener("click", downloadCoachingExcel);
+document.getElementById("openCoachingSheets")?.addEventListener("click", openCoachingSheets);
 renderCoaching();
 render();
 </script>
