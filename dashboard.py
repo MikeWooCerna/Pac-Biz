@@ -9,11 +9,11 @@ MASTERLIST_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS82OdHh0VFVA9
 HISTORY_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS82OdHh0VFVA9K6P3b7Y8pjPmdeJSOQxj1KQ_4ts5HYL4YgUHwKjpFymrPCJdfMK0Rox6fnSTG3rKf/pub?gid=166777136&single=true&output=csv"
 MOVEMENT_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS82OdHh0VFVA9K6P3b7Y8pjPmdeJSOQxj1KQ_4ts5HYL4YgUHwKjpFymrPCJdfMK0Rox6fnSTG3rKf/pub?gid=693236738&single=true&output=csv"
 
-# Optional: paste the editable Google Sheets URL here when available.
-GOOGLE_SHEET_URL = ""
+GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/18hKmm2SmlWqB23osiV3JTF0aWn86vvZ-YJSC-Rr3JcY/edit#gid=0"
 
 OUTPUT_FILE = "masterlist_dashboard.html"
 LOGO_FILE = "pacbiz_logo.png"
+FAVICON_FILE = "pacbiz_favicon.png"
 
 PACBIZ_BLUE = "#004C97"
 PACBIZ_GREEN = "#39B54A"
@@ -24,11 +24,11 @@ def clean_columns(df):
     return df.fillna("")
 
 
-def get_logo_data_uri():
-    logo_path = Path(LOGO_FILE)
-    if not logo_path.exists():
+def get_image_data_uri(filename):
+    image_path = Path(filename)
+    if not image_path.exists():
         return ""
-    encoded = base64.b64encode(logo_path.read_bytes()).decode("utf-8")
+    encoded = base64.b64encode(image_path.read_bytes()).decode("utf-8")
     return f"data:image/png;base64,{encoded}"
 
 
@@ -48,7 +48,8 @@ def main():
         latest_date = pd.to_datetime(history["Date Generated"], errors="coerce").max()
         latest_snapshot = latest_date.strftime("%m/%d/%Y") if pd.notna(latest_date) else ""
 
-    logo_uri = get_logo_data_uri()
+    logo_uri = get_image_data_uri(LOGO_FILE)
+    favicon_uri = get_image_data_uri(FAVICON_FILE) or logo_uri
     masterlist_source_url = GOOGLE_SHEET_URL or MASTERLIST_CSV
     masterlist_source_label = "Open Google Sheet" if GOOGLE_SHEET_URL else "Open Source CSV"
     masterlist_excel_url = MASTERLIST_CSV.split("/pub?")[0] + "/pub?output=xlsx"
@@ -59,7 +60,7 @@ def main():
 <head>
 <meta charset="UTF-8">
 <title>Pac-Biz Dashboard</title>
-{"<link rel='icon' type='image/png' href='" + logo_uri + "'>" if logo_uri else ""}
+{"<link rel='icon' type='image/png' href='" + favicon_uri + "'>" if favicon_uri else ""}
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 
 <style>
@@ -290,7 +291,16 @@ def main():
     .donut-chart-row {{
         display: grid;
         grid-column: 1 / -1;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+    }}
+
+    .donut-chart-row .chart-card {{
+        min-height: 295px;
+    }}
+
+    .chart-stack {{
+        display: grid;
         gap: 12px;
     }}
 
@@ -466,9 +476,13 @@ def main():
         <div class="chart-card"><div id="deptDonut"></div></div>
         <div class="chart-card"><div id="activeDonut"></div></div>
         <div class="chart-card"><div id="employeeGroupDonut"></div></div>
+        <div class="chart-card"><div id="employmentClassDonut"></div></div>
     </div>
     <div class="bar-chart-row">
-        <div class="chart-card"><div id="accountBar"></div></div>
+        <div class="chart-stack">
+            <div class="chart-card"><div id="accountBar"></div></div>
+            <div class="chart-card"><div id="accountTenureStack"></div></div>
+        </div>
         <div class="chart-card"><div id="managerBar"></div></div>
         <div class="chart-card"><div id="supervisorBar"></div></div>
     </div>
@@ -480,7 +494,6 @@ def main():
             <h3>Master List</h3>
             <div class="table-actions">
                 <a class="table-action" href="{masterlist_source_url}" target="_blank" rel="noopener">{masterlist_source_label}</a>
-                <a class="table-action secondary" href="{MASTERLIST_CSV}" target="_blank" rel="noopener">Download CSV</a>
                 <a class="table-action secondary" href="{masterlist_excel_url}" target="_blank" rel="noopener">Download Excel</a>
             </div>
         </div>
@@ -600,6 +613,10 @@ function tenureCounts(data, asOfField = "") {{
     return TENURE_GROUPS.map(group => ({{name: group.name, count: counts[group.name]}}));
 }}
 
+function isInvalidDob(v) {{
+    return ["1/0/00", "01/00/00", "1/0/2000", "01/00/2000"].includes(norm(v));
+}}
+
 function ageGroupName(age) {{
     const n = Number(age);
     if (!Number.isFinite(n) || n < 0) return "";
@@ -609,10 +626,20 @@ function ageGroupName(age) {{
 function ageGroupCounts(data) {{
     const counts = Object.fromEntries(AGE_GROUPS.map(group => [group.name, 0]));
     data.forEach(r => {{
+        if (isInvalidDob(r["DOB"])) return;
         const groupName = ageGroupName(norm(r["Age"]).replace(/,/g, ""));
         if (groupName) counts[groupName] += 1;
     }});
     return AGE_GROUPS.map(group => ({{name: group.name, count: counts[group.name]}}));
+}}
+
+function formatDateOnly(v) {{
+    const raw = norm(v);
+    if (!raw) return "";
+    const firstPart = raw.split(" ")[0];
+    const parsed = parseDateValue(firstPart);
+    if (!parsed) return firstPart;
+    return parsed.toLocaleDateString("en-US");
 }}
 
 function escapeHtml(v) {{
@@ -705,8 +732,8 @@ function donut(id, title, data, textInfo = "percent") {{
         hovertemplate: "%{{label}}<br>Headcount: %{{value}}<br>Percentage: %{{percent}}<extra></extra>",
     }}], {{
         title: {{text: title, font: {{color: "#004C97", size: 15}}}},
-        height: 300,
-        margin: {{l: 20, r: 20, t: 45, b: 20}},
+        height: 280,
+        margin: {{l: 10, r: 10, t: 45, b: 10}},
         paper_bgcolor: "white",
         font: {{family: "Arial", size: 11}}
     }}, {{responsive: true}});
@@ -757,6 +784,46 @@ function segmentBar(id, title, data, yTitle) {{
     }}, {{responsive: true}});
 }}
 
+function accountTenureStack(data) {{
+    const accounts = countBy(data, "LOB / Account").slice(0, 10).map(d => d.name);
+    const rows = [...accounts].reverse();
+    const counts = {{}};
+
+    rows.forEach(account => {{
+        counts[account] = Object.fromEntries(TENURE_GROUPS.map(group => [group.name, 0]));
+    }});
+
+    data.forEach(r => {{
+        const account = norm(r["LOB / Account"]) || "Blank";
+        if (!counts[account]) return;
+        const groupName = tenureGroupName(parseDateValue(r["Hire Date"]), new Date());
+        if (groupName) counts[account][groupName] += 1;
+    }});
+
+    const traces = TENURE_GROUPS.map((group, i) => ({{
+        name: group.name,
+        x: rows.map(account => counts[account][group.name]),
+        y: rows,
+        type: "bar",
+        orientation: "h",
+        marker: {{color: COLORS[i % COLORS.length]}},
+        hovertemplate: "%{{y}}<br>" + group.name + ": %{{x}}<extra></extra>",
+    }}));
+
+    Plotly.newPlot("accountTenureStack", traces, {{
+        title: {{text: "Tenure by Account", font: {{color: "#004C97", size: 15}}}},
+        height: 340,
+        margin: {{l: 135, r: 20, t: 45, b: 35}},
+        barmode: "stack",
+        xaxis: {{title: "Headcount"}},
+        yaxis: {{title: "Account"}},
+        paper_bgcolor: "white",
+        plot_bgcolor: "white",
+        legend: {{orientation: "h", y: -0.25, font: {{size: 9}}}},
+        font: {{family: "Arial", size: 10}}
+    }}, {{responsive: true}});
+}}
+
 function weeklyChart() {{
     const grouped = {{}};
     historyData.forEach(r => {{
@@ -791,15 +858,23 @@ function masterlistTable(data) {{
 }}
 
 function recentMovementsTable() {{
-    const rows = filteredMovementData().slice(-10).reverse();
+    const rows = filteredMovementData().slice(-10).reverse().map(r => ({{
+        ...r,
+        "Date Initiated": formatDateOnly(r["Timestamp"]),
+        "Process Status": norm(r["Processed"]),
+        "Processed Date Only": formatDateOnly(r["Processed Date"]),
+    }}));
     renderDataTable("recentMovements", rows, [
-        {{label: "Effective Date", field: "Effective Date"}},
         {{label: "Employee Name", field: "Employee Name"}},
         {{label: "Movement Type", field: "Movement Type"}},
         {{label: "New Department", field: "New Department"}},
         {{label: "New Account", field: "New Account"}},
         {{label: "New Supervisor", field: "New Supervisor"}},
         {{label: "New Job Title", field: "New Job Title"}},
+        {{label: "Date Initiated", field: "Date Initiated"}},
+        {{label: "Effective Date", field: "Effective Date"}},
+        {{label: "Process Status", field: "Process Status"}},
+        {{label: "Processed Date", field: "Processed Date Only"}},
     ]);
 }}
 
@@ -828,6 +903,8 @@ function render() {{
     bar("managerBar", "Headcount by Manager (Top 10)", countBy(data, "Manager"), "Manager");
     bar("supervisorBar", "Headcount by Supervisor (Top 10)", countBy(data, "Immediate Supervisor"), "Supervisor");
     donut("employeeGroupDonut", "Employee Group Distribution", countBy(data, "Employee Group"));
+    donut("employmentClassDonut", "Employement Class", countBy(data, "Employement Class"));
+    accountTenureStack(data);
     segmentBar("tenureSegmentation", "Tenure Segmentation", tenureCounts(data), "Tenure Group");
     segmentBar("ageGroupBar", "Age Group", ageGroupCounts(data), "Age Group");
     weeklyChart();
