@@ -345,6 +345,7 @@ COACHING_CATEGORY_RULES = {
         ("tardy", 4, "tardiness"),
         ("tardiness", 4, "tardiness"),
         ("late", 2, "tardiness"),
+        ("on time", 4, "punctuality"),
         ("schedule change", 4, "schedule change"),
         ("schedule changes", 4, "schedule change"),
         ("schedule adherence", 4, "schedule adherence"),
