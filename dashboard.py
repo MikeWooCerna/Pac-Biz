@@ -2064,7 +2064,9 @@ function accountTenureStack(data) {{
         TENURE_GROUPS.reduce((sum, group) => sum + counts[account][group.name], 0)
     );
     const maxTotal = Math.max(...totals, 1);
-    const shouldShowSegmentLabel = (value, total) => value > 0 && value >= 2 && (value / Math.max(total, 1)) >= 0.08;
+    const minimumReadableSegment = Math.max(3, Math.ceil(maxTotal * 0.05));
+    const shouldShowSegmentLabel = (value, total) =>
+        value >= minimumReadableSegment && (value / Math.max(total, 1)) >= 0.16;
 
     const traces = TENURE_GROUPS.map((group, i) => ({{
         name: group.name,
@@ -2078,9 +2080,11 @@ function accountTenureStack(data) {{
         }}),
         textposition: "inside",
         texttemplate: "%{{text}}",
+        textangle: 0,
+        textfont: {{family: "Arial", size: 10}},
         insidetextanchor: "middle",
         constraintext: "inside",
-        cliponaxis: false,
+        cliponaxis: true,
         marker: {{color: COLORS[i % COLORS.length]}},
         hovertemplate: "%{{y}}<br>" + group.name + ": %{{x}}<extra></extra>",
     }}));
@@ -2109,6 +2113,7 @@ function accountTenureStack(data) {{
         plot_bgcolor: "white",
         legend: {{orientation: "h", y: -0.25, font: {{size: 9}}}},
         annotations: totalAnnotations,
+        uniformtext: {{mode: "hide", minsize: 9}},
         font: {{family: "Arial", size: 10}}
     }}, {{responsive: true}});
 }}
