@@ -2060,26 +2060,55 @@ function accountTenureStack(data) {{
         if (groupName) counts[account][groupName] += 1;
     }});
 
+    const totals = rows.map(account =>
+        TENURE_GROUPS.reduce((sum, group) => sum + counts[account][group.name], 0)
+    );
+    const maxTotal = Math.max(...totals, 1);
+    const shouldShowSegmentLabel = (value, total) => value > 0 && value >= 2 && (value / Math.max(total, 1)) >= 0.08;
+
     const traces = TENURE_GROUPS.map((group, i) => ({{
         name: group.name,
         x: rows.map(account => counts[account][group.name]),
         y: rows,
         type: "bar",
         orientation: "h",
+        text: rows.map((account, index) => {{
+            const value = counts[account][group.name];
+            return shouldShowSegmentLabel(value, totals[index]) ? value : "";
+        }}),
+        textposition: "inside",
+        texttemplate: "%{{text}}",
+        insidetextanchor: "middle",
+        constraintext: "inside",
+        cliponaxis: false,
         marker: {{color: COLORS[i % COLORS.length]}},
         hovertemplate: "%{{y}}<br>" + group.name + ": %{{x}}<extra></extra>",
+    }}));
+
+    const totalAnnotations = rows.map((account, index) => ({{
+        x: totals[index],
+        y: account,
+        text: `<b>${{totals[index]}}</b>`,
+        xref: "x",
+        yref: "y",
+        showarrow: false,
+        xanchor: "left",
+        yanchor: "middle",
+        xshift: 8,
+        font: {{family: "Arial", size: 11, color: "#002B5C"}},
     }}));
 
     Plotly.newPlot("accountTenureStack", traces, {{
         title: {{text: "Tenure by Account", font: {{color: "#004C97", size: 15}}}},
         height: 340,
-        margin: {{l: 135, r: 20, t: 45, b: 35}},
+        margin: {{l: 135, r: 58, t: 45, b: 35}},
         barmode: "stack",
-        xaxis: {{title: "Headcount"}},
+        xaxis: {{title: "Headcount", range: [0, Math.ceil(maxTotal * 1.12)]}},
         yaxis: {{title: "Account"}},
         paper_bgcolor: "white",
         plot_bgcolor: "white",
         legend: {{orientation: "h", y: -0.25, font: {{size: 9}}}},
+        annotations: totalAnnotations,
         font: {{family: "Arial", size: 10}}
     }}, {{responsive: true}});
 }}
