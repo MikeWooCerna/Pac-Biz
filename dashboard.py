@@ -1174,19 +1174,31 @@ def main():
 <div class="filters">
     <div class="filter-box">
         <label>Department</label>
-        <select id="departmentFilter"></select>
+        <details class="multi-filter" id="departmentFilter">
+            <summary id="departmentFilterSummary">All</summary>
+            <div class="multi-options" id="departmentOptions"></div>
+        </details>
     </div>
     <div class="filter-box">
         <label>LOB / Account</label>
-        <select id="accountFilter"></select>
+        <details class="multi-filter" id="accountFilter">
+            <summary id="accountFilterSummary">All</summary>
+            <div class="multi-options" id="accountOptions"></div>
+        </details>
     </div>
     <div class="filter-box">
         <label>Manager</label>
-        <select id="managerFilter"></select>
+        <details class="multi-filter" id="managerFilter">
+            <summary id="managerFilterSummary">All</summary>
+            <div class="multi-options" id="managerOptions"></div>
+        </details>
     </div>
     <div class="filter-box">
         <label>Supervisor</label>
-        <select id="supervisorFilter"></select>
+        <details class="multi-filter" id="supervisorFilter">
+            <summary id="supervisorFilterSummary">All</summary>
+            <div class="multi-options" id="supervisorOptions"></div>
+        </details>
     </div>
 </div>
 
@@ -1368,6 +1380,12 @@ const AGE_GROUPS = [
     {{name: "50+", min: 50, max: Infinity}},
 ];
 const MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const MASTERLIST_FILTERS = {{
+    department: new Set(),
+    account: new Set(),
+    manager: new Set(),
+    supervisor: new Set(),
+}};
 const COACHING_FILTERS = {{
     emp: new Set(),
     leader: new Set(),
@@ -1555,7 +1573,7 @@ function populateFilter(id, field) {{
 
 const NONE_SELECTED = "__NONE_SELECTED__";
 
-function setMultiSummary(summaryId, selectedSet) {{
+function setMultiSummary(summaryId, selectedSet, labelFormatter = value => value) {{
     const summary = document.getElementById(summaryId);
     if (!summary) return;
     if (selectedSet.has(NONE_SELECTED)) {{
@@ -1564,7 +1582,7 @@ function setMultiSummary(summaryId, selectedSet) {{
         summary.textContent = "All";
     }} else if (selectedSet.size === 1) {{
         const value = [...selectedSet][0];
-        summary.textContent = summaryId === "coachingMonthFilterSummary" ? coachingMonthLabelFromKey(value) : value;
+        summary.textContent = labelFormatter(value);
     }} else {{
         summary.textContent = `${{selectedSet.size}} selected`;
     }}
@@ -1588,7 +1606,7 @@ function syncMultiFilterOptions(optionsId, selectedSet, allValues) {{
     }});
 }}
 
-function populateMultiFilter(optionsId, summaryId, values, selectedSet) {{
+function populateMultiFilter(optionsId, summaryId, values, selectedSet, onChange, labelFormatter = value => value) {{
     const box = document.getElementById(optionsId);
     if (!box) return;
     box.innerHTML = "";
@@ -1610,8 +1628,8 @@ function populateMultiFilter(optionsId, summaryId, values, selectedSet) {{
             selectedSet.add(NONE_SELECTED);
         }}
         syncMultiFilterOptions(optionsId, selectedSet, allValues);
-        setMultiSummary(summaryId, selectedSet);
-        renderCoaching();
+        setMultiSummary(summaryId, selectedSet, labelFormatter);
+        onChange();
     }});
 
     const selectAllText = document.createElement("span");
@@ -1647,8 +1665,8 @@ function populateMultiFilter(optionsId, summaryId, values, selectedSet) {{
                 }}
             }}
             syncMultiFilterOptions(optionsId, selectedSet, allValues);
-            setMultiSummary(summaryId, selectedSet);
-            renderCoaching();
+            setMultiSummary(summaryId, selectedSet, labelFormatter);
+            onChange();
         }});
 
         const text = document.createElement("span");
@@ -1660,7 +1678,7 @@ function populateMultiFilter(optionsId, summaryId, values, selectedSet) {{
     }});
 
     syncMultiFilterOptions(optionsId, selectedSet, allValues);
-    setMultiSummary(summaryId, selectedSet);
+    setMultiSummary(summaryId, selectedSet, labelFormatter);
 }}
 
 function populateCoachingFilters() {{
@@ -1668,13 +1686,15 @@ function populateCoachingFilters() {{
         "coachingEmpOptions",
         "coachingEmpFilterSummary",
         uniqueValues(coachingData, "Emp Name"),
-        COACHING_FILTERS.emp
+        COACHING_FILTERS.emp,
+        renderCoaching
     );
     populateMultiFilter(
         "coachingLeaderOptions",
         "coachingLeaderFilterSummary",
         uniqueValues(coachingData, "Coached by"),
-        COACHING_FILTERS.leader
+        COACHING_FILTERS.leader,
+        renderCoaching
     );
 
     const monthValues = [...new Set(coachingData.map(r => coachingMonthKey(r["Coaching Date"])).filter(Boolean))]
@@ -1684,7 +1704,40 @@ function populateCoachingFilters() {{
         "coachingMonthOptions",
         "coachingMonthFilterSummary",
         monthValues,
-        COACHING_FILTERS.month
+        COACHING_FILTERS.month,
+        renderCoaching,
+        coachingMonthLabelFromKey
+    );
+}}
+
+function populateMasterlistFilters() {{
+    populateMultiFilter(
+        "departmentOptions",
+        "departmentFilterSummary",
+        uniqueValues(masterlist, "Department"),
+        MASTERLIST_FILTERS.department,
+        render
+    );
+    populateMultiFilter(
+        "accountOptions",
+        "accountFilterSummary",
+        uniqueValues(masterlist, "LOB / Account"),
+        MASTERLIST_FILTERS.account,
+        render
+    );
+    populateMultiFilter(
+        "managerOptions",
+        "managerFilterSummary",
+        uniqueValues(masterlist, "Manager"),
+        MASTERLIST_FILTERS.manager,
+        render
+    );
+    populateMultiFilter(
+        "supervisorOptions",
+        "supervisorFilterSummary",
+        uniqueValues(masterlist, "Immediate Supervisor"),
+        MASTERLIST_FILTERS.supervisor,
+        render
     );
 }}
 
@@ -1725,16 +1778,11 @@ function initMultiFilterBehavior() {{
 }}
 
 function filteredMasterlist() {{
-    const dept = document.getElementById("departmentFilter").value;
-    const acc = document.getElementById("accountFilter").value;
-    const mgr = document.getElementById("managerFilter").value;
-    const sup = document.getElementById("supervisorFilter").value;
-
     return masterlist.filter(r =>
-        (!dept || norm(r["Department"]) === dept) &&
-        (!acc || norm(r["LOB / Account"]) === acc) &&
-        (!mgr || norm(r["Manager"]) === mgr) &&
-        (!sup || norm(r["Immediate Supervisor"]) === sup)
+        filterMatches(MASTERLIST_FILTERS.department, norm(r["Department"])) &&
+        filterMatches(MASTERLIST_FILTERS.account, norm(r["LOB / Account"])) &&
+        filterMatches(MASTERLIST_FILTERS.manager, norm(r["Manager"])) &&
+        filterMatches(MASTERLIST_FILTERS.supervisor, norm(r["Immediate Supervisor"]))
     );
 }}
 
@@ -2384,10 +2432,7 @@ document.querySelectorAll(".tab-button").forEach(button => {{
     button.addEventListener("click", () => switchTab(button.dataset.tab));
 }});
 
-populateFilter("departmentFilter", "Department");
-populateFilter("accountFilter", "LOB / Account");
-populateFilter("managerFilter", "Manager");
-populateFilter("supervisorFilter", "Immediate Supervisor");
+populateMasterlistFilters();
 populateCoachingFilters();
 initMultiFilterBehavior();
 document.getElementById("downloadCoachingExcel")?.addEventListener("click", downloadCoachingExcel);
