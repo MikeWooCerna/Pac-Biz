@@ -1334,13 +1334,11 @@ def main():
         <div class="chart-card"><div id="employmentClassDonut"></div></div>
     </div>
     <div class="bar-chart-row">
-        <div class="chart-stack">
-            <div class="chart-card"><div id="accountBar"></div></div>
-            <div class="chart-card"><div id="accountTenureStack"></div></div>
-        </div>
+        <div class="chart-card"><div id="accountBar"></div></div>
         <div class="chart-card"><div id="managerBar"></div></div>
         <div class="chart-card"><div id="supervisorBar"></div></div>
     </div>
+    <div class="chart-card"><div id="accountTenureStack"></div></div>
     <div class="chart-card"><div id="tenureSegmentation"></div></div>
     <div class="chart-card"><div id="ageGroupBar"></div></div>
     <div class="chart-card"><div id="weeklyLine"></div></div>
