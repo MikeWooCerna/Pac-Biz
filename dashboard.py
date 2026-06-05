@@ -1407,17 +1407,17 @@ const coachingData = {to_records(coaching)};
 
 const COLORS = ["#004C97", "#39B54A", "#002B5C", "#7AC943", "#00AEEF", "#94A3B8"];
 const MASTERLIST_COLUMNS = [
-    {{label: "Employee ID", field: "ID No."}},
-    {{label: "Employee Name", field: "Emp Name"}},
-    {{label: "Hire Date", field: "Hire Date"}},
-    {{label: "Employement Class", field: "Employement Class"}},
-    {{label: "Job Title", field: "Job Title"}},
-    {{label: "Employee Group", field: "Employee Group"}},
-    {{label: "Department", field: "Department"}},
-    {{label: "LOB/Account", field: "LOB / Account"}},
-    {{label: "Immediate Supervisor", field: "Immediate Supervisor"}},
-    {{label: "Manager", field: "Manager"}},
-    {{label: "Email", field: "Company Email"}},
+    {{label: "Employee ID", field: "ID No.", sortable: true, sortType: "number"}},
+    {{label: "Employee Name", field: "Emp Name", sortable: true}},
+    {{label: "Hire Date", field: "Hire Date", sortable: true, sortType: "date"}},
+    {{label: "Employement Class", field: "Employement Class", sortable: true}},
+    {{label: "Job Title", field: "Job Title", sortable: true}},
+    {{label: "Employee Group", field: "Employee Group", sortable: true}},
+    {{label: "Department", field: "Department", sortable: true}},
+    {{label: "LOB/Account", field: "LOB / Account", sortable: true}},
+    {{label: "Immediate Supervisor", field: "Immediate Supervisor", sortable: true}},
+    {{label: "Manager", field: "Manager", sortable: true}},
+    {{label: "Email", field: "Company Email", sortable: true}},
 ];
 const COACHING_COLUMNS = [
     {{label: "Coaching ID", field: "Coaching ID", className: "nowrap"}},
@@ -1435,6 +1435,18 @@ const COACHING_COLUMNS = [
 ];
 const COACHING_SUMMARY_COLUMNS = [
     {{label: "Team Leader", field: "Team Leader", className: "nowrap"}},
+];
+const RECENT_MOVEMENT_COLUMNS = [
+    {{label: "Employee Name", field: "Employee Name", sortable: true}},
+    {{label: "Movement Type", field: "Movement Type", sortable: true}},
+    {{label: "New Department", field: "New Department", sortable: true}},
+    {{label: "New Account", field: "New Account", sortable: true}},
+    {{label: "New Supervisor", field: "New Supervisor", sortable: true}},
+    {{label: "New Job Title", field: "New Job Title", sortable: true}},
+    {{label: "Date Initiated", field: "Date Initiated", sortable: true, sortType: "date"}},
+    {{label: "Effective Date", field: "Effective Date", sortable: true, sortType: "date"}},
+    {{label: "Process Status", field: "Process Status", sortable: true}},
+    {{label: "Processed Date", field: "Processed Date Only", sortable: true, sortType: "date"}},
 ];
 const TENURE_GROUPS = [
     {{name: "0-30 Days", maxDays: 30}},
@@ -1466,6 +1478,14 @@ const COACHING_FILTERS = {{
     emp: new Set(),
     leader: new Set(),
     month: new Set(),
+}};
+const masterlistSortState = {{
+    field: "Emp Name",
+    direction: "asc",
+}};
+const movementSortState = {{
+    field: "Date Initiated",
+    direction: "desc",
 }};
 const coachingSortState = {{
     field: "Coaching Date",
@@ -1887,12 +1907,12 @@ function countBy(data, field) {{
     return Object.entries(out).map(([name, count]) => ({{name, count}})).sort((a,b) => b.count - a.count);
 }}
 
-function sortedCoachingRows(data) {{
-    const column = COACHING_COLUMNS.find(c => c.field === coachingSortState.field) || {{}};
-    const direction = coachingSortState.direction === "asc" ? 1 : -1;
+function sortedTableRows(data, columns, sortState) {{
+    const column = columns.find(c => c.field === sortState.field) || {{}};
+    const direction = sortState.direction === "asc" ? 1 : -1;
     return [...data].sort((a, b) => {{
-        let av = a[coachingSortState.field];
-        let bv = b[coachingSortState.field];
+        let av = a[sortState.field];
+        let bv = b[sortState.field];
 
         if (column.sortType === "date") {{
             av = parseDateValue(av)?.getTime() || 0;
@@ -1900,7 +1920,34 @@ function sortedCoachingRows(data) {{
             return (av - bv) * direction;
         }}
 
+        if (column.sortType === "number") {{
+            av = Number(norm(av).replace(/,/g, ""));
+            bv = Number(norm(bv).replace(/,/g, ""));
+            av = Number.isFinite(av) ? av : 0;
+            bv = Number.isFinite(bv) ? bv : 0;
+            return (av - bv) * direction;
+        }}
+
         return norm(av).localeCompare(norm(bv), undefined, {{sensitivity: "base"}}) * direction;
+    }});
+}}
+
+function updateSortState(sortState, columns, field) {{
+    const column = columns.find(c => c.field === field) || {{}};
+    if (sortState.field === field) {{
+        sortState.direction = sortState.direction === "asc" ? "desc" : "asc";
+    }} else {{
+        sortState.field = field;
+        sortState.direction = column.sortType === "date" || column.sortType === "number" ? "desc" : "asc";
+    }}
+}}
+
+function bindTableSorting(tableId, columns, sortState, renderFn) {{
+    document.querySelectorAll(`#${{tableId}} th.sortable`).forEach(th => {{
+        th.addEventListener("click", () => {{
+            updateSortState(sortState, columns, th.dataset.sortField);
+            renderFn();
+        }});
     }});
 }}
 
@@ -2247,27 +2294,17 @@ function coachingConfidenceGauge(data) {{
 }}
 
 function masterlistTable(data) {{
-    renderDataTable("masterlistTable", data, MASTERLIST_COLUMNS);
+    renderDataTable("masterlistTable", sortedTableRows(data, MASTERLIST_COLUMNS, masterlistSortState), MASTERLIST_COLUMNS, masterlistSortState);
+    bindTableSorting("masterlistTable", MASTERLIST_COLUMNS, masterlistSortState, render);
 }}
 
 function coachingTable(data) {{
-    renderDataTable("coachingTable", sortedCoachingRows(data), COACHING_COLUMNS, coachingSortState);
-    document.querySelectorAll("#coachingTable th.sortable").forEach(th => {{
-        th.addEventListener("click", () => {{
-            const field = th.dataset.sortField;
-            if (coachingSortState.field === field) {{
-                coachingSortState.direction = coachingSortState.direction === "asc" ? "desc" : "asc";
-            }} else {{
-                coachingSortState.field = field;
-                coachingSortState.direction = field.includes("Date") ? "desc" : "asc";
-            }}
-            renderCoaching();
-        }});
-    }});
+    renderDataTable("coachingTable", sortedTableRows(data, COACHING_COLUMNS, coachingSortState), COACHING_COLUMNS, coachingSortState);
+    bindTableSorting("coachingTable", COACHING_COLUMNS, coachingSortState, renderCoaching);
 }}
 
 function coachingExportRows() {{
-    return sortedCoachingRows(filteredCoachingData()).map(row => {{
+    return sortedTableRows(filteredCoachingData(), COACHING_COLUMNS, coachingSortState).map(row => {{
         const out = {{}};
         COACHING_COLUMNS.forEach(column => {{
             out[column.label] = norm(row[column.field]);
@@ -2466,18 +2503,8 @@ function recentMovementsTable() {{
         "Process Status": norm(r["Processed"]),
         "Processed Date Only": formatDateOnly(r["Processed Date"]),
     }}));
-    renderDataTable("recentMovements", rows, [
-        {{label: "Employee Name", field: "Employee Name"}},
-        {{label: "Movement Type", field: "Movement Type"}},
-        {{label: "New Department", field: "New Department"}},
-        {{label: "New Account", field: "New Account"}},
-        {{label: "New Supervisor", field: "New Supervisor"}},
-        {{label: "New Job Title", field: "New Job Title"}},
-        {{label: "Date Initiated", field: "Date Initiated"}},
-        {{label: "Effective Date", field: "Effective Date"}},
-        {{label: "Process Status", field: "Process Status"}},
-        {{label: "Processed Date", field: "Processed Date Only"}},
-    ]);
+    renderDataTable("recentMovements", sortedTableRows(rows, RECENT_MOVEMENT_COLUMNS, movementSortState), RECENT_MOVEMENT_COLUMNS, movementSortState);
+    bindTableSorting("recentMovements", RECENT_MOVEMENT_COLUMNS, movementSortState, recentMovementsTable);
 }}
 
 function render() {{
