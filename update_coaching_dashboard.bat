@@ -21,6 +21,10 @@ echo ========================================
 cd /d "%MASTERLIST_DIR%"
 if errorlevel 1 goto :fail
 
+echo Syncing latest dashboard repo changes...
+git pull --rebase --autostash
+if errorlevel 1 goto :fail
+
 py -3 dashboard.py
 if errorlevel 1 goto :fail
 
@@ -38,6 +42,9 @@ if not errorlevel 1 (
 )
 
 git commit -m "Update coaching dashboard"
+if errorlevel 1 goto :fail
+
+git pull --rebase --autostash
 if errorlevel 1 goto :fail
 
 git push
