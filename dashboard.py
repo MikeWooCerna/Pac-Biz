@@ -24,6 +24,7 @@ COACHING_DIR = Path(os.getenv("COACHING_DIR", r"C:\Users\Mike Woo Cerna\Document
 COACHING_SCRIPT = Path(os.getenv("COACHING_SCRIPT", str(COACHING_DIR / "asana_pull.py")))
 COACHING_CONFIG = Path(os.getenv("COACHING_CONFIG", str(COACHING_DIR / "config.json")))
 COACHING_OUTPUT_FILE = Path(os.getenv("COACHING_OUTPUT_FILE", str(COACHING_DIR / "Output" / "coaching_logs.xlsx")))
+COACHING_VALIDATION_ERRORS_FILE = COACHING_OUTPUT_FILE.parent / "coaching_validation_errors.csv"
 COACHING_TIMEZONE = ZoneInfo("Asia/Manila")
 COACHING_TIMEZONE_NAME = "Asia/Manila"
 EXCLUDED_COACHING_GIDS = {
@@ -527,6 +528,49 @@ def resolve_name(email_lookup, email, fallback=""):
     return cell_text(fallback) or cell_text(email)
 
 
+def coaching_email_error(label, email, email_lookup):
+    email_text = cell_text(email)
+    normalized_email = normalize_email(email)
+
+    if not normalized_email:
+        return f"{label} email missing"
+    if normalized_email not in email_lookup:
+        return f"{label} not found for email: {email_text}"
+    return ""
+
+
+def write_coaching_validation_errors(errors):
+    try:
+        if errors:
+            COACHING_VALIDATION_ERRORS_FILE.parent.mkdir(parents=True, exist_ok=True)
+            pd.DataFrame(errors).to_csv(COACHING_VALIDATION_ERRORS_FILE, index=False)
+        elif COACHING_VALIDATION_ERRORS_FILE.exists():
+            COACHING_VALIDATION_ERRORS_FILE.unlink()
+    except OSError as exc:
+        print(f"Unable to update Coaching validation error file: {exc}")
+
+
+def print_coaching_validation_alerts(errors):
+    if not errors:
+        print("Coaching email validation: No errors found.")
+        return
+
+    print("")
+    print("========================================")
+    print("COACHING EMAIL VALIDATION ALERTS")
+    print("========================================")
+    print(f"{len(errors)} task(s) excluded from the Coaching report until corrected.")
+    print("")
+    for item in errors:
+        print(f"Task GID: {item['Task GID']}")
+        print(f"Error: {item['Error']}")
+        print(f"Employee Email: {item['Employee Email'] or '(blank)'}")
+        print(f"Supervisor Email: {item['Supervisor Email'] or '(blank)'}")
+        print("")
+    print(f"Saved validation details: {COACHING_VALIDATION_ERRORS_FILE}")
+    print("========================================")
+
+
 def transform_coaching_logs(source, masterlist):
     if source.empty:
         return pd.DataFrame(columns=COACHING_OUTPUT_COLUMNS)
@@ -536,10 +580,31 @@ def transform_coaching_logs(source, masterlist):
 
     email_lookup = build_email_name_lookup(masterlist)
     records = []
+    validation_errors = []
 
     for _, row in source.iterrows():
         coaching_id = cell_text(row.get("Task GID"))
         if coaching_id in EXCLUDED_COACHING_GIDS:
+            continue
+
+        employee_email = row.get("Employee Email")
+        supervisor_email = row.get("Supervisor Email")
+        row_errors = [
+            error for error in [
+                coaching_email_error("Employee", employee_email, email_lookup),
+                coaching_email_error("Supervisor", supervisor_email, email_lookup),
+            ]
+            if error
+        ]
+
+        if row_errors:
+            validation_errors.append({
+                "Task GID": coaching_id or "(blank)",
+                "Error": "; ".join(row_errors),
+                "Employee Email": cell_text(employee_email),
+                "Supervisor Email": cell_text(supervisor_email),
+                "Task Name": cell_text(row.get("Task Name")),
+            })
             continue
 
         details = cell_text(row.get("Agreed Action Steps"))
@@ -549,10 +614,10 @@ def transform_coaching_logs(source, masterlist):
             "Coaching ID": coaching_id,
             "Emp Name": resolve_name(
                 email_lookup,
-                row.get("Employee Email"),
+                employee_email,
                 row.get("Employee Name"),
             ),
-            "Coached by": resolve_name(email_lookup, row.get("Supervisor Email")),
+            "Coached by": resolve_name(email_lookup, supervisor_email),
             "Coaching Details": details,
             "Remarks/Comment": cell_text(row.get("Improvement Timeline / Follow-Up Date")),
             "Coaching Category": category,
@@ -564,6 +629,8 @@ def transform_coaching_logs(source, masterlist):
             "Created Time": cell_text(row.get("Created Time")),
         })
 
+    write_coaching_validation_errors(validation_errors)
+    print_coaching_validation_alerts(validation_errors)
     return clean_columns(pd.DataFrame(records, columns=COACHING_OUTPUT_COLUMNS))
 
 
