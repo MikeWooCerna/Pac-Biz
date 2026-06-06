@@ -1408,6 +1408,79 @@ def main():
         grid-template-rows: auto 1fr;
     }}
 
+    #masterlistCard {{
+        display: flex;
+        flex-direction: column;
+    }}
+
+    #masterlistCard #masterlistTable {{
+        min-height: 0;
+    }}
+
+    .masterlist-focus-icon {{
+        position: relative;
+        display: inline-block;
+        width: 15px;
+        height: 15px;
+    }}
+
+    .masterlist-focus-icon::before,
+    .masterlist-focus-icon::after {{
+        content: "";
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        border-color: currentColor;
+        border-style: solid;
+    }}
+
+    .masterlist-focus-icon::before {{
+        top: 0;
+        right: 0;
+        border-width: 2px 2px 0 0;
+    }}
+
+    .masterlist-focus-icon::after {{
+        left: 0;
+        bottom: 0;
+        border-width: 0 0 2px 2px;
+    }}
+
+    .masterlist-focus-mode .masterlist-focus-icon::before {{
+        top: 2px;
+        right: 2px;
+        border-width: 0 0 2px 2px;
+    }}
+
+    .masterlist-focus-mode .masterlist-focus-icon::after {{
+        left: 2px;
+        bottom: 2px;
+        border-width: 2px 2px 0 0;
+    }}
+
+    body.masterlist-focus-mode #masterlistControls .cards {{
+        display: none;
+    }}
+
+    body.masterlist-focus-mode #masterlistPanel .grid > :not(#masterlistCard) {{
+        display: none;
+    }}
+
+    body.masterlist-focus-mode #masterlistCard {{
+        min-height: 0;
+        height: calc(100vh - 300px);
+    }}
+
+    body.masterlist-focus-mode #masterlistCard .table-scroll {{
+        max-height: none;
+        height: 100%;
+    }}
+
+    body.masterlist-focus-mode #masterlistTable {{
+        flex: 1 1 auto;
+        min-height: 0;
+    }}
+
     .nowrap {{
         white-space: nowrap;
     }}
@@ -1725,12 +1798,15 @@ def main():
     <div class="chart-card"><div id="tenureSegmentation"></div></div>
     <div class="chart-card"><div id="ageGroupBar"></div></div>
     <div class="chart-card"><div id="weeklyLine"></div></div>
-    <div class="chart-card full">
+    <div class="chart-card full" id="masterlistCard">
         <div class="table-heading">
             <h3>Master List</h3>
             <div class="table-actions">
                 <a class="table-action" href="{masterlist_source_url}" target="_blank" rel="noopener">{masterlist_source_label}</a>
                 <a class="table-action secondary" href="{masterlist_excel_url}" target="_blank" rel="noopener">Download Excel</a>
+                <button class="table-action icon-action" type="button" id="masterlistFocusToggle" aria-label="Expand Master List" title="Expand Master List">
+                    <span class="masterlist-focus-icon" aria-hidden="true"></span>
+                </button>
             </div>
         </div>
         <div id="masterlistTable"></div>
@@ -1806,7 +1882,6 @@ const COACHING_STATUS_COLORS = {{
 const MASTERLIST_COLUMNS = [
     {{label: "Employee ID", field: "ID No.", sortable: true, sortType: "number"}},
     {{label: "Employee Name", field: "Emp Name", sortable: true}},
-    {{label: "Employment Status", field: "Employment Status", sortable: true}},
     {{label: "Hire Date", field: "Hire Date", sortable: true, sortType: "date"}},
     {{label: "Employement Class", field: "Employement Class", sortable: true}},
     {{label: "Tenure", field: "Tenure", sortable: true, sortField: "__TenureDays", sortType: "number"}},
@@ -1816,6 +1891,7 @@ const MASTERLIST_COLUMNS = [
     {{label: "LOB/Account", field: "LOB / Account", sortable: true}},
     {{label: "Immediate Supervisor", field: "Immediate Supervisor", sortable: true}},
     {{label: "Manager", field: "Manager", sortable: true}},
+    {{label: "Employment Status", field: "Employment Status", sortable: true}},
     {{label: "Email", field: "Company Email", sortable: true}},
 ];
 const COACHING_COLUMNS = [
@@ -3056,6 +3132,20 @@ function reflowDashboard() {{
     }}
 }}
 
+function setMasterlistFocusMode(active) {{
+    document.body.classList.toggle("masterlist-focus-mode", active);
+    const button = document.getElementById("masterlistFocusToggle");
+    if (button) {{
+        button.setAttribute("aria-label", active ? "Collapse Master List" : "Expand Master List");
+        button.setAttribute("title", active ? "Collapse Master List" : "Expand Master List");
+    }}
+    setTimeout(reflowDashboard, 0);
+}}
+
+function toggleMasterlistFocusMode() {{
+    setMasterlistFocusMode(!document.body.classList.contains("masterlist-focus-mode"));
+}}
+
 function setLogsFocusMode(active) {{
     document.body.classList.toggle("logs-focus-mode", active);
     const button = document.getElementById("logsFocusToggle");
@@ -3126,6 +3216,9 @@ function switchTab(tabName) {{
     if (!isCoaching) {{
         setLogsFocusMode(false);
     }}
+    if (!isMasterlist) {{
+        setMasterlistFocusMode(false);
+    }}
 
     if (isMasterlist || isCoaching) {{
         setTimeout(reflowDashboard, 0);
@@ -3142,6 +3235,7 @@ initMultiFilterBehavior();
 document.getElementById("downloadCoachingExcel")?.addEventListener("click", downloadCoachingExcel);
 document.getElementById("openCoachingSheets")?.addEventListener("click", openCoachingSheets);
 document.getElementById("logsFocusToggle")?.addEventListener("click", toggleLogsFocusMode);
+document.getElementById("masterlistFocusToggle")?.addEventListener("click", toggleMasterlistFocusMode);
 renderCoaching();
 render();
 </script>
