@@ -1338,7 +1338,7 @@ def main():
     }}
 
     .score-gauge {{
-        height: 300px;
+        height: 320px;
         display: grid;
         align-items: center;
         justify-items: center;
@@ -1347,7 +1347,7 @@ def main():
 
     .score-gauge svg {{
         width: min(100%, 600px);
-        height: 300px;
+        height: 320px;
         overflow: visible;
     }}
 
@@ -1373,6 +1373,23 @@ def main():
         padding: 8px 10px 2px;
         font-size: 12px;
         color: var(--text);
+    }}
+
+    .coaching-donut-widget {{
+        display: flex;
+        flex-direction: column;
+        min-height: 410px;
+    }}
+
+    .coaching-donut-plot {{
+        flex: 0 0 280px;
+    }}
+
+    .chart-summary-rows {{
+        display: grid;
+        align-content: start;
+        gap: 6px;
+        min-height: 112px;
     }}
 
     .chart-summary-row {{
@@ -1407,6 +1424,7 @@ def main():
         border-top: 1px solid #E5E7EB;
         color: var(--muted);
         font-weight: 900;
+        min-height: 28px;
     }}
 
     tr:nth-child(even) td {{
@@ -1652,7 +1670,7 @@ const coachingData = {to_records(coaching)};
 
 const COLORS = ["#004C97", "#39B54A", "#002B5C", "#7AC943", "#00AEEF", "#94A3B8"];
 const COACHING_CATEGORY_COLORS = {{
-    "Attendance & Adherence": "#1E88E5",
+    "Attendance & Adherence": "#0057B8",
     "Process Compliance": "#43A047",
     "Policy Compliance": "#FB8C00",
     "Communication": "#8E24AA",
@@ -2338,13 +2356,13 @@ function chartSummaryMarkup(data, colors, totalLabel, totalSuffix = "") {{
             </div>
         `;
     }}).join("");
-    return `<div class="chart-summary">${{rows}}<div class="chart-summary-total">${{escapeHtml(totalLabel)}}: ${{total.toLocaleString()}}${{escapeHtml(totalSuffix)}}</div></div>`;
+    return `<div class="chart-summary"><div class="chart-summary-rows">${{rows}}</div><div class="chart-summary-total">${{escapeHtml(totalLabel)}}: ${{total.toLocaleString()}}${{escapeHtml(totalSuffix)}}</div></div>`;
 }}
 
 function renderDonutWithSummary(id, title, data, colors, totalLabel, textInfo = "none", totalSuffix = "") {{
     const container = document.getElementById(id);
     if (!container) return;
-    container.innerHTML = `<div id="${{id}}Plot"></div><div id="${{id}}Summary"></div>`;
+    container.innerHTML = `<div class="coaching-donut-widget"><div class="coaching-donut-plot" id="${{id}}Plot"></div><div id="${{id}}Summary"></div></div>`;
     donut(`${{id}}Plot`, title, data, textInfo, colors);
     document.getElementById(`${{id}}Summary`).innerHTML = chartSummaryMarkup(data, colors, totalLabel, totalSuffix);
 }}
@@ -2567,7 +2585,7 @@ function confidenceBand(value) {{
 function coachingConfidenceGauge(data) {{
     const value = coachingConfidenceAverage(data);
     const cx = 280;
-    const cy = 265;
+    const cy = 295;
     const segments = [
         {{label: "VERY POOR", start: 180, end: 144, color: "#F4511E"}},
         {{label: "POOR", start: 144, end: 108, color: "#FB8C00"}},
@@ -2579,7 +2597,7 @@ function coachingConfidenceGauge(data) {{
     const grayArc = gaugeSegmentPath(cx, cy, 193, 184, 180, 0);
     const segmentMarkup = segments.map(segment => {{
         const labelAngle = (segment.start + segment.end) / 2;
-        const labelPoint = gaugePoint(cx, cy, 212, labelAngle);
+        const labelPoint = gaugePoint(cx, cy, 222, labelAngle);
         return `
             <path d="${{gaugeSegmentPath(cx, cy, 180, 130, segment.start, segment.end)}}" fill="${{segment.color}}" stroke="white" stroke-width="2" />
             <text class="gauge-label" x="${{labelPoint.x.toFixed(1)}}" y="${{labelPoint.y.toFixed(1)}}">${{segment.label}}</text>
@@ -2588,7 +2606,7 @@ function coachingConfidenceGauge(data) {{
 
     document.getElementById("coachingConfidenceGauge").innerHTML = `
         <div class="score-gauge">
-            <svg viewBox="0 0 560 340" role="img" aria-label="AI Confidence Level Detection ${{value}} percent">
+            <svg viewBox="0 0 560 370" role="img" aria-label="AI Confidence Level Detection ${{value}} percent">
                 <text x="280" y="24" text-anchor="middle" style="font: 700 17px Arial; fill: #004C97;">AI Confidence Level Detection</text>
                 <path d="${{grayArc}}" fill="#ECEFF1" />
                 ${{segmentMarkup}}
@@ -2596,7 +2614,7 @@ function coachingConfidenceGauge(data) {{
                 <circle cx="${{cx}}" cy="${{cy}}" r="15" fill="#050505" />
                 <circle cx="${{cx}}" cy="${{cy}}" r="7" fill="white" />
                 <circle cx="${{cx}}" cy="${{cy}}" r="2.5" fill="#050505" />
-                <text class="gauge-value" x="280" y="322" text-anchor="middle">${{value}}% - ${{confidenceBand(value)}}</text>
+                <text class="gauge-value" x="280" y="355" text-anchor="middle">${{value}}% - ${{confidenceBand(value)}}</text>
             </svg>
         </div>
     `;
