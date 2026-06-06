@@ -1907,7 +1907,7 @@ const COACHING_COLUMNS = [
     {{label: "Coaching Date", field: "Coaching Date", className: "compact-col nowrap", sortable: true, sortType: "date"}},
     {{label: "Coaching Status", field: "Coaching Status", className: "status-col nowrap"}},
     {{label: "Created Date", field: "Created Date", className: "compact-col nowrap", sortable: true, sortType: "date"}},
-    {{label: "Created Time", field: "Created Time", className: "compact-col nowrap"}},
+    {{label: "Created Time", field: "Created Time", className: "compact-col nowrap", sortable: true}},
 ];
 const COACHING_SUMMARY_COLUMNS = [
     {{label: "Team Leader", field: "Team Leader", className: "nowrap"}},
