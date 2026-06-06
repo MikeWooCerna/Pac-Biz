@@ -2675,7 +2675,7 @@ function confidenceBand(value) {{
 function coachingConfidenceGauge(data) {{
     const value = coachingConfidenceAverage(data);
     const cx = 280;
-    const cy = 295;
+    const cy = 315;
     const segments = [
         {{label: "VERY POOR", start: 180, end: 144, color: "#F4511E"}},
         {{label: "POOR", start: 144, end: 108, color: "#FB8C00"}},
@@ -2696,7 +2696,7 @@ function coachingConfidenceGauge(data) {{
 
     document.getElementById("coachingConfidenceGauge").innerHTML = `
         <div class="score-gauge">
-            <svg viewBox="0 0 560 370" role="img" aria-label="AI Confidence Level Detection ${{value}} percent">
+            <svg viewBox="0 0 560 390" role="img" aria-label="AI Confidence Level Detection ${{value}} percent">
                 <text x="280" y="24" text-anchor="middle" style="font: 700 17px Arial; fill: #004C97;">AI Confidence Level Detection</text>
                 <path d="${{grayArc}}" fill="#ECEFF1" />
                 ${{segmentMarkup}}
@@ -2704,7 +2704,7 @@ function coachingConfidenceGauge(data) {{
                 <circle cx="${{cx}}" cy="${{cy}}" r="15" fill="#050505" />
                 <circle cx="${{cx}}" cy="${{cy}}" r="7" fill="white" />
                 <circle cx="${{cx}}" cy="${{cy}}" r="2.5" fill="#050505" />
-                <text class="gauge-value" x="280" y="355" text-anchor="middle">${{value}}% - ${{confidenceBand(value)}}</text>
+                <text class="gauge-value" x="280" y="375" text-anchor="middle">${{value}}% - ${{confidenceBand(value)}}</text>
             </svg>
         </div>
     `;
