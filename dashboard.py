@@ -315,18 +315,28 @@ COACHING_CATEGORY_RULES = {
     "Behavioral": [
         ("professionalism", 3, "professionalism"),
         ("accountability", 3, "accountability"),
+        ("personal responsibility", 3, "personal responsibility"),
         ("attitude", 3, "attitude"),
         ("engagement", 2, "engagement"),
         ("engaged", 2, "engagement"),
+        ("initiative", 3, "initiative"),
+        ("proactive", 2, "proactive behavior"),
+        ("coachability", 3, "coachability"),
+        ("applying feedback", 3, "applying feedback"),
+        ("apply the feedback", 3, "applying feedback"),
         ("responsiveness", 3, "responsiveness"),
         ("ownership", 3, "ownership"),
         ("workplace conduct", 3, "workplace conduct"),
         ("conduct", 2, "conduct"),
         ("attentive", 2, "attentiveness"),
+        ("attentiveness", 2, "attentiveness"),
     ],
     "Communication": [
         ("notify", 3, "failure to notify"),
         ("notification", 2, "notification"),
+        ("escalate", 3, "escalation"),
+        ("escalation", 3, "escalation"),
+        ("listening", 3, "listening skills"),
         ("communicate", 3, "communication"),
         ("communication", 3, "communication"),
         ("message", 2, "messaging"),
@@ -352,6 +362,12 @@ COACHING_CATEGORY_RULES = {
         ("schedule adherence", 4, "schedule adherence"),
         ("scheduled shift", 3, "shift compliance"),
         ("scheduled shifts", 3, "shift compliance"),
+        ("work-hour", 4, "work-hour adherence"),
+        ("work hour", 4, "work-hour adherence"),
+        ("time management", 4, "time management"),
+        ("availability", 4, "availability"),
+        ("reliability", 4, "reliability"),
+        ("reliable", 3, "reliability"),
         ("time adjustment", 4, "time adjustment"),
         ("time adjustments", 4, "time adjustment"),
         ("backup alarm", 4, "backup alarm"),
@@ -378,6 +394,11 @@ COACHING_CATEGORY_RULES = {
         ("account specific", 4, "account instruction"),
         ("account instruction", 4, "account instruction"),
         ("account requirements", 3, "account requirement"),
+        ("booking", 4, "booking procedure"),
+        ("verification", 4, "verification step"),
+        ("verify", 3, "verification step"),
+        ("required process", 4, "required process"),
+        ("operational process", 4, "operational process"),
         ("process", 2, "process"),
     ],
     "Performance & Quality": [
@@ -385,6 +406,9 @@ COACHING_CATEGORY_RULES = {
         ("quality", 3, "quality standard"),
         ("accuracy", 4, "accuracy"),
         ("productivity", 4, "productivity"),
+        ("efficiency", 4, "efficiency"),
+        ("error rate", 4, "error rate"),
+        ("output quality", 4, "output quality"),
         ("call handling", 4, "call handling"),
         ("call", 2, "call handling"),
         ("score", 2, "score"),
@@ -399,6 +423,9 @@ COACHING_CATEGORY_RULES = {
         ("knowledge", 2, "knowledge"),
         ("process understanding", 4, "process understanding"),
         ("understanding", 2, "understanding"),
+        ("skill development", 4, "skill development"),
+        ("deficiency", 3, "knowledge deficiency"),
+        ("deficiencies", 3, "knowledge deficiency"),
         ("training", 4, "training need"),
         ("skill gap", 4, "skill gap"),
         ("coaching for skill", 4, "skill gap"),
@@ -410,6 +437,7 @@ COACHING_CATEGORY_RULES = {
         ("policy", 3, "policy"),
         ("incident report", 4, "incident report"),
         ("hr", 3, "HR escalation"),
+        ("disciplinary", 4, "disciplinary concern"),
         ("non-compliance", 4, "non-compliance"),
         ("repeated non-compliance", 5, "repeated non-compliance"),
     ],
@@ -470,7 +498,7 @@ def indicator_matches(text, needle):
 def classify_coaching_details(action_steps):
     text = normalize_spaces(action_steps)
     if len(text) < 12:
-        return "Other / Review Required", "Low", "Text is too vague for reliable classification."
+        return "Other / Review Required", "Low", "Clear cues: insufficient information."
 
     lowered = text.lower()
     matches = []
@@ -486,7 +514,7 @@ def classify_coaching_details(action_steps):
             matches.append((category, score, labels))
 
     if not matches:
-        return "Other / Review Required", "Low", "No reliable category indicators found."
+        return "Other / Review Required", "Low", "Clear cues: no reliable match."
 
     matches.sort(key=lambda item: (-item[1], item[0]))
     top_category, top_score, top_labels = matches[0]
@@ -494,15 +522,17 @@ def classify_coaching_details(action_steps):
     second_score = matches[1][1] if len(matches) > 1 else 0
 
     if top_score <= 1:
-        return "Other / Review Required", "Low", "Only weak indicators found; review manually."
+        return "Other / Review Required", "Low", "Clear cues: weak indicators."
 
-    if (top_score >= 4 and top_score >= second_score + 2) or (top_score >= 3 and second_score == 0):
+    total_score = sum(item[1] for item in matches)
+    dominant_share = top_score / total_score if total_score else 0
+
+    if dominant_share >= 0.60 or (top_score >= 4 and top_score >= second_score + 2) or (top_score >= 3 and second_score == 0):
         confidence = "High"
         reason = f"Clear cues: {join_reason_labels(top_labels)}."
     else:
         confidence = "Medium"
-        overlap = f"; overlaps with {second_category}" if second_category else ""
-        reason = f"Primary cues: {join_reason_labels(top_labels)}{overlap}."
+        reason = f"Clear cues: {join_reason_labels(top_labels)}."
 
     return top_category, confidence, reason
 
@@ -1037,6 +1067,7 @@ def main():
         overflow: auto;
         border: 1px solid #E5E7EB;
         border-radius: 8px;
+        scrollbar-gutter: stable;
     }}
 
     .table-heading {{
@@ -1056,6 +1087,7 @@ def main():
         display: flex;
         gap: 8px;
         flex-wrap: wrap;
+        align-items: center;
     }}
 
     .table-meta {{
@@ -1090,6 +1122,56 @@ def main():
         color: var(--blue);
     }}
 
+    .table-action.icon-action {{
+        width: 32px;
+        min-width: 32px;
+        padding: 0;
+        background: white;
+        color: var(--blue);
+        border-color: var(--blue);
+    }}
+
+    .logs-focus-icon {{
+        position: relative;
+        display: inline-block;
+        width: 15px;
+        height: 15px;
+    }}
+
+    .logs-focus-icon::before,
+    .logs-focus-icon::after {{
+        content: "";
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        border-color: currentColor;
+        border-style: solid;
+    }}
+
+    .logs-focus-icon::before {{
+        top: 0;
+        right: 0;
+        border-width: 2px 2px 0 0;
+    }}
+
+    .logs-focus-icon::after {{
+        left: 0;
+        bottom: 0;
+        border-width: 0 0 2px 2px;
+    }}
+
+    .logs-focus-mode .logs-focus-icon::before {{
+        top: 2px;
+        right: 2px;
+        border-width: 0 0 2px 2px;
+    }}
+
+    .logs-focus-mode .logs-focus-icon::after {{
+        left: 2px;
+        bottom: 2px;
+        border-width: 2px 2px 0 0;
+    }}
+
     .full {{
         grid-column: 1 / -1;
     }}
@@ -1103,11 +1185,13 @@ def main():
     th {{
         background: var(--blue);
         color: white;
-        padding: 8px;
+        padding: 6px 8px;
         text-align: left;
         position: sticky;
         top: 0;
         z-index: 1;
+        vertical-align: middle;
+        line-height: 1.2;
     }}
 
     th.sortable {{
@@ -1116,10 +1200,27 @@ def main():
     }}
 
     .sort-indicator {{
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         min-width: 12px;
-        margin-left: 4px;
+        width: 12px;
+        margin-left: 5px;
         opacity: .9;
+        flex: 0 0 12px;
+        line-height: 1;
+    }}
+
+    .th-content {{
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        max-width: 100%;
+        white-space: normal;
+    }}
+
+    .th-label {{
+        min-width: 0;
     }}
 
     td {{
@@ -1133,6 +1234,90 @@ def main():
         max-width: 520px;
         white-space: pre-wrap;
         line-height: 1.35;
+    }}
+
+    #coachingTable table {{
+        table-layout: fixed;
+        min-width: 1680px;
+    }}
+
+    #coachingTable td {{
+        line-height: 1.35;
+    }}
+
+    #coachingTable .long-text {{
+        min-width: 0;
+        max-width: none;
+    }}
+
+    #coachingTable .coaching-detail-col {{
+        width: 300px;
+    }}
+
+    #coachingTable .remarks-col {{
+        width: 260px;
+    }}
+
+    #coachingTable .reason-col {{
+        width: 210px;
+    }}
+
+    #coachingTable .compact-col {{
+        width: 116px;
+        white-space: nowrap;
+    }}
+
+    #coachingTable .status-col {{
+        width: 142px;
+        white-space: nowrap;
+    }}
+
+    #coachingTable .name-col {{
+        width: 170px;
+        white-space: nowrap;
+    }}
+
+    #coachingTable .category-col {{
+        width: 170px;
+        white-space: nowrap;
+    }}
+
+    #coachingTable .id-col {{
+        width: 135px;
+        white-space: nowrap;
+    }}
+
+    #coachingLogsCard {{
+        display: flex;
+        flex-direction: column;
+    }}
+
+    #coachingLogsCard #coachingTable {{
+        min-height: 0;
+    }}
+
+    body.logs-focus-mode #summarySection,
+    body.logs-focus-mode #summarySpacer {{
+        display: none;
+    }}
+
+    body.logs-focus-mode #coachingLogsCard {{
+        min-height: 0;
+        height: calc(100vh - 330px);
+    }}
+
+    body.logs-focus-mode #coachingLogsCard .table-scroll {{
+        max-height: none;
+        height: 100%;
+    }}
+
+    body.logs-focus-mode #coachingTable {{
+        flex: 1 1 auto;
+        min-height: 0;
+    }}
+
+    body.logs-focus-mode #coachingPanel .coaching-grid {{
+        grid-template-rows: auto 1fr;
     }}
 
     .nowrap {{
@@ -1366,7 +1551,7 @@ def main():
         <div class="chart-card"><div id="coachingStatusDonut"></div></div>
         <div class="chart-card"><div id="coachingConfidenceGauge"></div></div>
     </div>
-    <div class="chart-card coaching-summary-card">
+    <div class="chart-card coaching-summary-card" id="summarySection">
         <div class="table-heading">
             <h3>Summary</h3>
             <div class="table-actions">
@@ -1376,13 +1561,16 @@ def main():
         <div id="coachingSummaryTable"></div>
         <div class="disclaimer">Coaching will be only be counted once status is <span class="completed-word">Completed</span></div>
     </div>
-    <div class="empty-widget-space"></div>
-    <div class="chart-card full">
+    <div class="empty-widget-space" id="summarySpacer"></div>
+    <div class="chart-card full" id="coachingLogsCard">
         <div class="table-heading">
             <h3>Coaching Logs</h3>
             <div class="table-actions">
                 <button class="table-action" type="button" id="downloadCoachingExcel">Download Excel</button>
                 <button class="table-action secondary" type="button" id="openCoachingSheets">Copy to Sheets</button>
+                <button class="table-action icon-action" type="button" id="logsFocusToggle" aria-label="Expand Coaching Logs" title="Expand Coaching Logs">
+                    <span class="logs-focus-icon" aria-hidden="true"></span>
+                </button>
                 <span class="table-meta" id="coachingLoadedMeta">{len(coaching):,} records loaded</span>
             </div>
         </div>
@@ -1420,18 +1608,18 @@ const MASTERLIST_COLUMNS = [
     {{label: "Email", field: "Company Email", sortable: true}},
 ];
 const COACHING_COLUMNS = [
-    {{label: "Coaching ID", field: "Coaching ID", className: "nowrap"}},
-    {{label: "Emp Name", field: "Emp Name", className: "nowrap", sortable: true}},
-    {{label: "Coached by", field: "Coached by", className: "nowrap", sortable: true}},
-    {{label: "Coaching Details", field: "Coaching Details", className: "long-text"}},
-    {{label: "Remarks/Comment", field: "Remarks/Comment", className: "long-text"}},
-    {{label: "Coaching Category", field: "Coaching Category", className: "nowrap", sortable: true}},
-    {{label: "Confidence Level", field: "Confidence Level", className: "nowrap"}},
-    {{label: "Reason", field: "Reason", className: "long-text"}},
-    {{label: "Coaching Date", field: "Coaching Date", className: "nowrap", sortable: true, sortType: "date"}},
-    {{label: "Coaching Status", field: "Coaching Status", className: "nowrap"}},
-    {{label: "Created Date", field: "Created Date", className: "nowrap", sortable: true, sortType: "date"}},
-    {{label: "Created Time", field: "Created Time", className: "nowrap"}},
+    {{label: "Coaching ID", field: "Coaching ID", className: "id-col nowrap"}},
+    {{label: "Emp Name", field: "Emp Name", className: "name-col nowrap", sortable: true}},
+    {{label: "Coached by", field: "Coached by", className: "name-col nowrap", sortable: true}},
+    {{label: "Coaching Details", field: "Coaching Details", className: "long-text coaching-detail-col"}},
+    {{label: "Remarks/Comment", field: "Remarks/Comment", className: "long-text remarks-col"}},
+    {{label: "Coaching Category", field: "Coaching Category", className: "category-col nowrap", sortable: true}},
+    {{label: "Confidence Level", field: "Confidence Level", className: "compact-col nowrap"}},
+    {{label: "Reason", field: "Reason", className: "long-text reason-col"}},
+    {{label: "Coaching Date", field: "Coaching Date", className: "compact-col nowrap", sortable: true, sortType: "date"}},
+    {{label: "Coaching Status", field: "Coaching Status", className: "status-col nowrap"}},
+    {{label: "Created Date", field: "Created Date", className: "compact-col nowrap", sortable: true, sortType: "date"}},
+    {{label: "Created Time", field: "Created Time", className: "compact-col nowrap"}},
 ];
 const COACHING_SUMMARY_COLUMNS = [
     {{label: "Team Leader", field: "Team Leader", className: "nowrap"}},
@@ -2003,11 +2191,14 @@ function setText(id, value) {{
 function renderDataTable(id, rows, columns, sortState = null) {{
     let html = "<div class='table-scroll'><table><thead><tr>";
     columns.forEach(c => {{
-        const sortableClass = c.sortable ? " class='sortable'" : "";
+        const thClasses = [];
+        if (c.sortable) thClasses.push("sortable");
+        if (c.className) thClasses.push(c.className);
+        const classAttr = thClasses.length ? ` class="${{escapeHtml(thClasses.join(" "))}}"` : "";
         const sortField = c.sortable ? ` data-sort-field="${{escapeHtml(c.field)}}"` : "";
         const active = sortState && sortState.field === c.field;
         const indicator = c.sortable ? `<span class="sort-indicator">${{active ? (sortState.direction === "asc" ? "^" : "v") : ""}}</span>` : "";
-        html += `<th${{sortableClass}}${{sortField}}>${{escapeHtml(c.label)}}${{indicator}}</th>`;
+        html += `<th${{classAttr}}${{sortField}}><span class="th-content"><span class="th-label">${{escapeHtml(c.label)}}</span>${{indicator}}</span></th>`;
     }});
     html += "</tr></thead><tbody>";
 
@@ -2369,7 +2560,7 @@ function downloadCoachingExcel() {{
     if (window.XLSX) {{
         const worksheet = XLSX.utils.json_to_sheet(rows);
         worksheet["!cols"] = COACHING_COLUMNS.map(column => ({{
-            wch: column.className === "long-text" ? 42 : Math.max(14, column.label.length + 2),
+            wch: (column.className || "").includes("long-text") ? 42 : Math.max(14, column.label.length + 2),
         }}));
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Coaching Logs");
@@ -2507,6 +2698,27 @@ function recentMovementsTable() {{
     bindTableSorting("recentMovements", RECENT_MOVEMENT_COLUMNS, movementSortState, recentMovementsTable);
 }}
 
+function reflowDashboard() {{
+    window.dispatchEvent(new Event("resize"));
+    if (window.Plotly) {{
+        document.querySelectorAll(".js-plotly-plot").forEach(plot => Plotly.Plots.resize(plot));
+    }}
+}}
+
+function setLogsFocusMode(active) {{
+    document.body.classList.toggle("logs-focus-mode", active);
+    const button = document.getElementById("logsFocusToggle");
+    if (button) {{
+        button.setAttribute("aria-label", active ? "Collapse Coaching Logs" : "Expand Coaching Logs");
+        button.setAttribute("title", active ? "Collapse Coaching Logs" : "Expand Coaching Logs");
+    }}
+    setTimeout(reflowDashboard, 0);
+}}
+
+function toggleLogsFocusMode() {{
+    setLogsFocusMode(!document.body.classList.contains("logs-focus-mode"));
+}}
+
 function render() {{
     const data = filteredMasterlist();
     const movements = filteredMovementData();
@@ -2560,8 +2772,12 @@ function switchTab(tabName) {{
     masterlistControls.classList.toggle("hidden", !isMasterlist);
     coachingControls.classList.toggle("hidden", !isCoaching);
 
+    if (!isCoaching) {{
+        setLogsFocusMode(false);
+    }}
+
     if (isMasterlist || isCoaching) {{
-        setTimeout(() => window.dispatchEvent(new Event("resize")), 0);
+        setTimeout(reflowDashboard, 0);
     }}
 }}
 
@@ -2574,6 +2790,7 @@ populateCoachingFilters();
 initMultiFilterBehavior();
 document.getElementById("downloadCoachingExcel")?.addEventListener("click", downloadCoachingExcel);
 document.getElementById("openCoachingSheets")?.addEventListener("click", openCoachingSheets);
+document.getElementById("logsFocusToggle")?.addEventListener("click", toggleLogsFocusMode);
 renderCoaching();
 render();
 </script>
