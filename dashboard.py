@@ -1216,7 +1216,7 @@ def main():
         align-items: center;
         gap: 4px;
         max-width: 100%;
-        white-space: normal;
+        white-space: nowrap;
     }}
 
     .th-label {{
@@ -1342,18 +1342,18 @@ def main():
         display: grid;
         align-items: center;
         justify-items: center;
-        padding: 4px 0 0;
+        padding: 0;
     }}
 
     .score-gauge svg {{
-        width: min(100%, 560px);
+        width: min(100%, 430px);
         height: 260px;
         overflow: visible;
     }}
 
     .gauge-label {{
         font-family: Arial, sans-serif;
-        font-size: 15px;
+        font-size: 11.5px;
         font-weight: 600;
         fill: #111827;
         dominant-baseline: middle;
@@ -1361,7 +1361,7 @@ def main():
     }}
 
     .gauge-value {{
-        font-size: 28px;
+        font-size: 20px;
         font-weight: 900;
         fill: var(--dark-blue);
     }}
@@ -1369,7 +1369,7 @@ def main():
     .chart-summary {{
         display: grid;
         gap: 6px;
-        margin: -6px 4px 4px;
+        margin: 0 4px 4px;
         padding: 8px 10px 2px;
         font-size: 12px;
         color: var(--text);
@@ -2313,6 +2313,9 @@ function donut(id, title, data, textInfo = "percent", colors = COLORS) {{
         hole: 0.58,
         marker: {{colors}},
         textinfo: textInfo,
+        textposition: "inside",
+        insidetextorientation: "horizontal",
+        textfont: {{color: "white", size: 12, family: "Arial", weight: 800}},
         hovertemplate: "%{{label}}<br>Count: %{{value}}<br>Percentage: %{{percent}}<extra></extra>",
     }}], {{
         title: {{text: title, font: {{color: "#004C97", size: 15}}}},
@@ -2497,7 +2500,7 @@ function weeklyChart() {{
 function coachingCategoryChart(data) {{
     const rows = countBy(data, "Coaching Category");
     const colors = rows.map((row, index) => COACHING_CATEGORY_COLORS[row.name] || COLORS[index % COLORS.length]);
-    renderDonutWithSummary("coachingCategoryDonut", "Coaching Category", rows, colors, "Total", "none", " Sessions");
+    renderDonutWithSummary("coachingCategoryDonut", "Coaching Category", rows, colors, "Total", "percent", " Sessions");
 }}
 
 function coachingStatusChart(data) {{
@@ -2518,7 +2521,9 @@ function coachingStatusChart(data) {{
         "Coaching Status",
         rows,
         rows.map(row => COACHING_STATUS_COLORS[row.name]),
-        "Total Coaching Sessions"
+        "Total",
+        "percent",
+        " Sessions"
     );
 }}
 
@@ -2561,36 +2566,37 @@ function confidenceBand(value) {{
 
 function coachingConfidenceGauge(data) {{
     const value = coachingConfidenceAverage(data);
-    const cx = 300;
-    const cy = 260;
+    const cx = 210;
+    const cy = 190;
     const segments = [
         {{label: "VERY POOR", start: 180, end: 144, color: "#F4511E"}},
-        {{label: "POOR", start: 144, end: 108, color: "#FDBA3B"}},
-        {{label: "FAIR", start: 108, end: 72, color: "#DDE817"}},
-        {{label: "GOOD", start: 72, end: 36, color: "#39B54A"}},
-        {{label: "EXCELLENT", start: 36, end: 0, color: "#007A3D"}},
+        {{label: "POOR", start: 144, end: 108, color: "#FB8C00"}},
+        {{label: "FAIR", start: 108, end: 72, color: "#DCE800"}},
+        {{label: "GOOD", start: 72, end: 36, color: "#35B84B"}},
+        {{label: "EXCELLENT", start: 36, end: 0, color: "#00843D"}},
     ];
     const needleAngle = 180 - Math.max(0, Math.min(value, 100)) * 1.8;
+    const grayArc = gaugeSegmentPath(cx, cy, 143, 134, 180, 0);
     const segmentMarkup = segments.map(segment => {{
         const labelAngle = (segment.start + segment.end) / 2;
-        const labelPoint = gaugePoint(cx, cy, 232, labelAngle);
+        const labelPoint = gaugePoint(cx, cy, 155, labelAngle);
         return `
-            <path d="${{gaugeSegmentPath(cx, cy, 220, 199, segment.start, segment.end)}}" fill="#ECEFF1" stroke="white" stroke-width="1" />
-            <path d="${{gaugeSegmentPath(cx, cy, 197, 112, segment.start, segment.end)}}" fill="${{segment.color}}" stroke="white" stroke-width="1" />
-            <text class="gauge-label" x="${{labelPoint.x.toFixed(1)}}" y="${{labelPoint.y.toFixed(1)}}" transform="rotate(${{(90 - labelAngle).toFixed(1)}} ${{labelPoint.x.toFixed(1)}} ${{labelPoint.y.toFixed(1)}})">${{segment.label}}</text>
+            <path d="${{gaugeSegmentPath(cx, cy, 139, 101, segment.start, segment.end)}}" fill="${{segment.color}}" stroke="white" stroke-width="1" />
+            <text class="gauge-label" x="${{labelPoint.x.toFixed(1)}}" y="${{labelPoint.y.toFixed(1)}}">${{segment.label}}</text>
         `;
     }}).join("");
 
     document.getElementById("coachingConfidenceGauge").innerHTML = `
         <div class="score-gauge">
-            <svg viewBox="0 0 600 320" role="img" aria-label="AI Confidence Level Detection ${{value}} percent">
-                <text x="300" y="24" text-anchor="middle" style="font: 700 15px Arial; fill: #004C97;">AI Confidence Level Detection</text>
+            <svg viewBox="0 0 420 260" role="img" aria-label="AI Confidence Level Detection ${{value}} percent">
+                <text x="210" y="20" text-anchor="middle" style="font: 700 15px Arial; fill: #004C97;">AI Confidence Level Detection</text>
+                <path d="${{grayArc}}" fill="#ECEFF1" />
                 ${{segmentMarkup}}
-                <path d="${{gaugeNeedlePath(cx, cy, needleAngle, 132, 9)}}" fill="#050505" />
-                <circle cx="${{cx}}" cy="${{cy}}" r="18" fill="#050505" />
-                <circle cx="${{cx}}" cy="${{cy}}" r="9" fill="white" />
-                <circle cx="${{cx}}" cy="${{cy}}" r="3" fill="#050505" />
-                <text class="gauge-value" x="300" y="302" text-anchor="middle">${{value}}% - ${{confidenceBand(value)}}</text>
+                <path d="${{gaugeNeedlePath(cx, cy, needleAngle, 108, 8)}}" fill="#050505" />
+                <circle cx="${{cx}}" cy="${{cy}}" r="14" fill="#050505" />
+                <circle cx="${{cx}}" cy="${{cy}}" r="7" fill="white" />
+                <circle cx="${{cx}}" cy="${{cy}}" r="2.5" fill="#050505" />
+                <text class="gauge-value" x="210" y="245" text-anchor="middle">${{value}}% - ${{confidenceBand(value)}}</text>
             </svg>
         </div>
     `;
