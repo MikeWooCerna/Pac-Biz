@@ -899,7 +899,7 @@ def main():
 
     .filters {{
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(7, minmax(0, 1fr));
         gap: 12px;
         padding: 12px 18px 8px;
         background: var(--bg);
@@ -1575,6 +1575,13 @@ def main():
 <div class="masterlist-controls" id="masterlistControls">
 <div class="filters">
     <div class="filter-box">
+        <label>Employee Name</label>
+        <details class="multi-filter" id="empNameFilter">
+            <summary id="empNameFilterSummary">All</summary>
+            <div class="multi-options" id="empNameOptions"></div>
+        </details>
+    </div>
+    <div class="filter-box">
         <label>Department</label>
         <details class="multi-filter" id="departmentFilter">
             <summary id="departmentFilterSummary">All</summary>
@@ -1589,6 +1596,13 @@ def main():
         </details>
     </div>
     <div class="filter-box">
+        <label>Supervisor</label>
+        <details class="multi-filter" id="supervisorFilter">
+            <summary id="supervisorFilterSummary">All</summary>
+            <div class="multi-options" id="supervisorOptions"></div>
+        </details>
+    </div>
+    <div class="filter-box">
         <label>Manager</label>
         <details class="multi-filter" id="managerFilter">
             <summary id="managerFilterSummary">All</summary>
@@ -1596,10 +1610,17 @@ def main():
         </details>
     </div>
     <div class="filter-box">
-        <label>Supervisor</label>
-        <details class="multi-filter" id="supervisorFilter">
-            <summary id="supervisorFilterSummary">All</summary>
-            <div class="multi-options" id="supervisorOptions"></div>
+        <label>Tenure</label>
+        <details class="multi-filter" id="tenureFilter">
+            <summary id="tenureFilterSummary">All</summary>
+            <div class="multi-options" id="tenureOptions"></div>
+        </details>
+    </div>
+    <div class="filter-box">
+        <label>Employee Group</label>
+        <details class="multi-filter" id="employeeGroupFilter">
+            <summary id="employeeGroupFilterSummary">All</summary>
+            <div class="multi-options" id="employeeGroupOptions"></div>
         </details>
     </div>
 </div>
@@ -1770,6 +1791,7 @@ const MASTERLIST_COLUMNS = [
     {{label: "Employee Name", field: "Emp Name", sortable: true}},
     {{label: "Hire Date", field: "Hire Date", sortable: true, sortType: "date"}},
     {{label: "Employement Class", field: "Employement Class", sortable: true}},
+    {{label: "Tenure", field: "Tenure", sortable: true, sortField: "__TenureDays", sortType: "number"}},
     {{label: "Job Title", field: "Job Title", sortable: true}},
     {{label: "Employee Group", field: "Employee Group", sortable: true}},
     {{label: "Department", field: "Department", sortable: true}},
@@ -1829,10 +1851,13 @@ const AGE_GROUPS = [
 ];
 const MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const MASTERLIST_FILTERS = {{
+    empName: new Set(),
     department: new Set(),
     account: new Set(),
-    manager: new Set(),
     supervisor: new Set(),
+    manager: new Set(),
+    tenure: new Set(),
+    employeeGroup: new Set(),
 }};
 const COACHING_FILTERS = {{
     emp: new Set(),
@@ -1898,6 +1923,20 @@ function tenureGroupName(hireDate, asOfDate) {{
     const days = wholeDayDiff(hireDate, asOfDate);
     if (days < 0) return "";
     return TENURE_GROUPS.find(group => days <= group.maxDays)?.name || "";
+}}
+
+function formatTenureDisplay(hireDate) {{
+    if (!hireDate) return "";
+    const now = new Date();
+    const days = wholeDayDiff(hireDate, now);
+    if (days < 0) return "";
+    if (days < 31) return `${{days}} Day${{days !== 1 ? "s" : ""}}`;
+    let years = now.getFullYear() - hireDate.getFullYear();
+    let months = now.getMonth() - hireDate.getMonth();
+    if (months < 0) {{ years--; months += 12; }}
+    if (years === 0) return `${{months}} Month${{months !== 1 ? "s" : ""}}`;
+    if (months === 0) return `${{years}} Year${{years !== 1 ? "s" : ""}}`;
+    return `${{years}} Year${{years !== 1 ? "s" : ""}}, ${{months}} Month${{months !== 1 ? "s" : ""}}`;
 }}
 
 function tenureCounts(data, asOfField = "") {{
@@ -2192,6 +2231,13 @@ function populateCoachingFilters() {{
 
 function populateMasterlistFilters() {{
     populateMultiFilter(
+        "empNameOptions",
+        "empNameFilterSummary",
+        uniqueValues(masterlist, "Emp Name"),
+        MASTERLIST_FILTERS.empName,
+        render
+    );
+    populateMultiFilter(
         "departmentOptions",
         "departmentFilterSummary",
         uniqueValues(masterlist, "Department"),
@@ -2206,6 +2252,13 @@ function populateMasterlistFilters() {{
         render
     );
     populateMultiFilter(
+        "supervisorOptions",
+        "supervisorFilterSummary",
+        uniqueValues(masterlist, "Immediate Supervisor"),
+        MASTERLIST_FILTERS.supervisor,
+        render
+    );
+    populateMultiFilter(
         "managerOptions",
         "managerFilterSummary",
         uniqueValues(masterlist, "Manager"),
@@ -2213,10 +2266,17 @@ function populateMasterlistFilters() {{
         render
     );
     populateMultiFilter(
-        "supervisorOptions",
-        "supervisorFilterSummary",
-        uniqueValues(masterlist, "Immediate Supervisor"),
-        MASTERLIST_FILTERS.supervisor,
+        "tenureOptions",
+        "tenureFilterSummary",
+        TENURE_GROUPS.map(g => ({{value: g.name, label: g.name}})),
+        MASTERLIST_FILTERS.tenure,
+        render
+    );
+    populateMultiFilter(
+        "employeeGroupOptions",
+        "employeeGroupFilterSummary",
+        uniqueValues(masterlist, "Employee Group"),
+        MASTERLIST_FILTERS.employeeGroup,
         render
     );
 }}
@@ -2258,12 +2318,17 @@ function initMultiFilterBehavior() {{
 }}
 
 function filteredMasterlist() {{
-    return masterlist.filter(r =>
-        filterMatches(MASTERLIST_FILTERS.department, norm(r["Department"])) &&
-        filterMatches(MASTERLIST_FILTERS.account, norm(r["LOB / Account"])) &&
-        filterMatches(MASTERLIST_FILTERS.manager, norm(r["Manager"])) &&
-        filterMatches(MASTERLIST_FILTERS.supervisor, norm(r["Immediate Supervisor"]))
-    );
+    return masterlist.filter(r => {{
+        const tenureGroup = tenureGroupName(parseDateValue(r["Hire Date"]), new Date());
+        return (
+            filterMatches(MASTERLIST_FILTERS.department, norm(r["Department"])) &&
+            filterMatches(MASTERLIST_FILTERS.account, norm(r["LOB / Account"])) &&
+            filterMatches(MASTERLIST_FILTERS.supervisor, norm(r["Immediate Supervisor"])) &&
+            filterMatches(MASTERLIST_FILTERS.manager, norm(r["Manager"])) &&
+            filterMatches(MASTERLIST_FILTERS.tenure, tenureGroup) &&
+            filterMatches(MASTERLIST_FILTERS.employeeGroup, norm(r["Employee Group"]))
+        );
+    }});
 }}
 
 function filteredCoachingData() {{
@@ -2402,8 +2467,8 @@ function renderDataTable(id, rows, columns, sortState = null) {{
         if (c.sortable) thClasses.push("sortable");
         if (c.className) thClasses.push(c.className);
         const classAttr = thClasses.length ? ` class="${{escapeHtml(thClasses.join(" "))}}"` : "";
-        const sortField = c.sortable ? ` data-sort-field="${{escapeHtml(c.field)}}"` : "";
-        const active = sortState && sortState.field === c.field;
+        const sortField = c.sortable ? ` data-sort-field="${{escapeHtml(c.sortField || c.field)}}"` : "";
+        const active = sortState && sortState.field === (c.sortField || c.field);
         const indicator = c.sortable ? `<span class="sort-indicator">${{active ? (sortState.direction === "asc" ? "^" : "v") : ""}}</span>` : "";
         html += `<th${{classAttr}}${{sortField}}><span class="th-content"><span class="th-label">${{escapeHtml(c.label)}}</span>${{indicator}}</span></th>`;
     }});
@@ -2727,7 +2792,16 @@ function coachingConfidenceGauge(data) {{
 }}
 
 function masterlistTable(data) {{
-    renderDataTable("masterlistTable", sortedTableRows(data, MASTERLIST_COLUMNS, masterlistSortState), MASTERLIST_COLUMNS, masterlistSortState);
+    const tableData = data
+        .filter(r => filterMatches(MASTERLIST_FILTERS.empName, norm(r["Emp Name"])))
+        .map(r => {{
+            const hireDate = parseDateValue(r["Hire Date"]);
+            return Object.assign({{}}, r, {{
+                Tenure: formatTenureDisplay(hireDate),
+                __TenureDays: hireDate ? wholeDayDiff(hireDate, new Date()) : -1,
+            }});
+        }});
+    renderDataTable("masterlistTable", sortedTableRows(tableData, MASTERLIST_COLUMNS, masterlistSortState), MASTERLIST_COLUMNS, masterlistSortState);
     bindTableSorting("masterlistTable", MASTERLIST_COLUMNS, masterlistSortState, render);
 }}
 
