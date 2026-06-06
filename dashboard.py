@@ -610,6 +610,20 @@ def parse_coaching_date_for_status(value):
     return pd.to_datetime(first_part, errors="coerce")
 
 
+def _parse_created_dt(date_val, time_val):
+    date_str = cell_text(date_val)
+    time_str = cell_text(time_val)
+    combined = f"{date_str} {time_str}".strip()
+    if not combined:
+        return pd.NaT
+    for fmt in ("%m/%d/%Y %I:%M %p", "%m/%d/%Y %H:%M", "%m/%d/%Y"):
+        try:
+            return pd.to_datetime(combined if "%I:%M %p" in fmt or "%H:%M" in fmt else date_str, format=fmt)
+        except (ValueError, Exception):
+            continue
+    return pd.to_datetime(date_str, errors="coerce")
+
+
 def assign_category_status(coaching):
     if coaching.empty:
         return coaching
@@ -628,8 +642,16 @@ def assign_category_status(coaching):
     work["_month"] = work["_date"].dt.to_period("M")
     work["_emp_key"] = work["Emp Name"].map(lambda value: cell_text(value).casefold())
     work["_category_key"] = work["Coaching Category"].map(lambda value: cell_text(value).casefold())
+
+    created_date = result["Created Date"] if "Created Date" in result.columns else pd.Series("", index=result.index)
+    created_time = result["Created Time"] if "Created Time" in result.columns else pd.Series("", index=result.index)
+    work["_created_dt"] = [_parse_created_dt(d, t) for d, t in zip(created_date, created_time)]
+
+    coaching_id = result["Coaching ID"] if "Coaching ID" in result.columns else pd.Series("", index=result.index)
+    work["_coaching_id_key"] = coaching_id.map(lambda v: cell_text(v).casefold())
+
     work = work.sort_values(
-        ["_emp_key", "_category_key", "_date", "_index"],
+        ["_emp_key", "_category_key", "_date", "_created_dt", "_coaching_id_key", "_index"],
         kind="mergesort",
         na_position="last",
     )
