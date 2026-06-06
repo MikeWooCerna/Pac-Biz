@@ -461,6 +461,7 @@ COACHING_OUTPUT_COLUMNS = [
     "Coaching Details",
     "Remarks/Comment",
     "Coaching Category",
+    "Category Status",
     "Confidence Level",
     "Reason",
     "Coaching Date",
@@ -601,12 +602,65 @@ def print_coaching_validation_alerts(errors):
     print("========================================")
 
 
+def parse_coaching_date_for_status(value):
+    text = cell_text(value)
+    if not text:
+        return pd.NaT
+    first_part = text.split(" ")[0]
+    return pd.to_datetime(first_part, errors="coerce")
+
+
+def assign_category_status(coaching):
+    if coaching.empty:
+        return coaching
+
+    result = coaching.copy()
+    if "Category Status" not in result.columns:
+        result["Category Status"] = ""
+
+    required = {"Emp Name", "Coaching Category", "Coaching Date"}
+    if not required.issubset(result.columns):
+        return result
+
+    work = result[["Emp Name", "Coaching Category", "Coaching Date"]].copy()
+    work["_date"] = work["Coaching Date"].apply(parse_coaching_date_for_status)
+    work["_index"] = work.index
+    work["_month"] = work["_date"].dt.to_period("M")
+    work["_emp_key"] = work["Emp Name"].map(lambda value: cell_text(value).casefold())
+    work["_category_key"] = work["Coaching Category"].map(lambda value: cell_text(value).casefold())
+    work = work.sort_values(
+        ["_emp_key", "_category_key", "_date", "_index"],
+        kind="mergesort",
+        na_position="last",
+    )
+
+    seen_any = set()
+    seen_month = set()
+    statuses = {}
+
+    for _, row in work.iterrows():
+        key = (row["_emp_key"], row["_category_key"])
+        month_key = (row["_emp_key"], row["_category_key"], str(row["_month"]) if pd.notna(row["_month"]) else "")
+
+        if key in seen_any:
+            statuses[row["_index"]] = "Recurring This Month" if month_key in seen_month else "Historical Repeat"
+        else:
+            statuses[row["_index"]] = "New"
+
+        seen_any.add(key)
+        if pd.notna(row["_month"]):
+            seen_month.add(month_key)
+
+    result["Category Status"] = result.index.map(lambda idx: statuses.get(idx, "New"))
+    return result
+
+
 def transform_coaching_logs(source, masterlist):
     if source.empty:
         return pd.DataFrame(columns=COACHING_OUTPUT_COLUMNS)
 
     if all(column in source.columns for column in COACHING_OUTPUT_COLUMNS):
-        return source[COACHING_OUTPUT_COLUMNS]
+        return assign_category_status(source)[COACHING_OUTPUT_COLUMNS]
 
     email_lookup = build_email_name_lookup(masterlist)
     records = []
@@ -651,6 +705,7 @@ def transform_coaching_logs(source, masterlist):
             "Coaching Details": details,
             "Remarks/Comment": cell_text(row.get("Improvement Timeline / Follow-Up Date")),
             "Coaching Category": category,
+            "Category Status": "",
             "Confidence Level": confidence,
             "Reason": reason,
             "Coaching Date": cell_text(row.get("Coaching Date")),
@@ -661,7 +716,7 @@ def transform_coaching_logs(source, masterlist):
 
     write_coaching_validation_errors(validation_errors)
     print_coaching_validation_alerts(validation_errors)
-    return clean_columns(pd.DataFrame(records, columns=COACHING_OUTPUT_COLUMNS))
+    return clean_columns(assign_category_status(pd.DataFrame(records, columns=COACHING_OUTPUT_COLUMNS)))
 
 
 def load_coaching_data(masterlist):
@@ -1282,6 +1337,29 @@ def main():
         white-space: nowrap;
     }}
 
+    #coachingTable .category-status-col {{
+        width: 170px;
+        white-space: nowrap;
+    }}
+
+    #coachingTable td.category-status-new {{
+        background: #DCFCE7;
+        color: #166534;
+        font-weight: 900;
+    }}
+
+    #coachingTable td.category-status-recurring {{
+        background: #FFEDD5;
+        color: #9A3412;
+        font-weight: 900;
+    }}
+
+    #coachingTable td.category-status-historical {{
+        background: #DBEAFE;
+        color: #1E3A8A;
+        font-weight: 900;
+    }}
+
     #coachingTable .id-col {{
         width: 135px;
         white-space: nowrap;
@@ -1700,6 +1778,7 @@ const COACHING_COLUMNS = [
     {{label: "Coaching Details", field: "Coaching Details", className: "long-text coaching-detail-col"}},
     {{label: "Remarks/Comment", field: "Remarks/Comment", className: "long-text remarks-col"}},
     {{label: "Coaching Category", field: "Coaching Category", className: "category-col nowrap", sortable: true}},
+    {{label: "Category Status", field: "Category Status", className: "category-status-col nowrap", sortable: true}},
     {{label: "Confidence Level", field: "Confidence Level", className: "compact-col nowrap"}},
     {{label: "Reason", field: "Reason", className: "long-text reason-col"}},
     {{label: "Coaching Date", field: "Coaching Date", className: "compact-col nowrap", sortable: true, sortType: "date"}},
@@ -2292,6 +2371,14 @@ function setText(id, value) {{
     document.getElementById(id).textContent = Number(value).toLocaleString();
 }}
 
+function categoryStatusClass(value) {{
+    const status = norm(value).toLowerCase();
+    if (status === "new") return "category-status-new";
+    if (status === "recurring this month") return "category-status-recurring";
+    if (status === "historical repeat") return "category-status-historical";
+    return "";
+}}
+
 function renderDataTable(id, rows, columns, sortState = null) {{
     let html = "<div class='table-scroll'><table><thead><tr>";
     columns.forEach(c => {{
@@ -2312,7 +2399,10 @@ function renderDataTable(id, rows, columns, sortState = null) {{
         rows.forEach(r => {{
             html += "<tr>";
             columns.forEach(c => {{
-                const className = c.className ? ` class="${{escapeHtml(c.className)}}"` : "";
+                const classes = [];
+                if (c.className) classes.push(c.className);
+                if (c.field === "Category Status") classes.push(categoryStatusClass(r[c.field]));
+                const className = classes.filter(Boolean).length ? ` class="${{escapeHtml(classes.filter(Boolean).join(" "))}}"` : "";
                 html += `<td${{className}}>${{escapeHtml(r[c.field])}}</td>`;
             }});
             html += "</tr>";
