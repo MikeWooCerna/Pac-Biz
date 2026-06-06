@@ -1338,7 +1338,7 @@ def main():
     }}
 
     .score-gauge {{
-        height: 280px;
+        height: 300px;
         display: grid;
         align-items: center;
         justify-items: center;
@@ -1346,8 +1346,8 @@ def main():
     }}
 
     .score-gauge svg {{
-        width: min(100%, 430px);
-        height: 260px;
+        width: min(100%, 600px);
+        height: 300px;
         overflow: visible;
     }}
 
@@ -1361,7 +1361,7 @@ def main():
     }}
 
     .gauge-value {{
-        font-size: 20px;
+        font-size: 24px;
         font-weight: 900;
         fill: var(--dark-blue);
     }}
@@ -2566,8 +2566,8 @@ function confidenceBand(value) {{
 
 function coachingConfidenceGauge(data) {{
     const value = coachingConfidenceAverage(data);
-    const cx = 210;
-    const cy = 190;
+    const cx = 280;
+    const cy = 265;
     const segments = [
         {{label: "VERY POOR", start: 180, end: 144, color: "#F4511E"}},
         {{label: "POOR", start: 144, end: 108, color: "#FB8C00"}},
@@ -2576,27 +2576,27 @@ function coachingConfidenceGauge(data) {{
         {{label: "EXCELLENT", start: 36, end: 0, color: "#00843D"}},
     ];
     const needleAngle = 180 - Math.max(0, Math.min(value, 100)) * 1.8;
-    const grayArc = gaugeSegmentPath(cx, cy, 143, 134, 180, 0);
+    const grayArc = gaugeSegmentPath(cx, cy, 193, 184, 180, 0);
     const segmentMarkup = segments.map(segment => {{
         const labelAngle = (segment.start + segment.end) / 2;
-        const labelPoint = gaugePoint(cx, cy, 155, labelAngle);
+        const labelPoint = gaugePoint(cx, cy, 212, labelAngle);
         return `
-            <path d="${{gaugeSegmentPath(cx, cy, 139, 101, segment.start, segment.end)}}" fill="${{segment.color}}" stroke="white" stroke-width="1" />
+            <path d="${{gaugeSegmentPath(cx, cy, 180, 130, segment.start, segment.end)}}" fill="${{segment.color}}" stroke="white" stroke-width="2" />
             <text class="gauge-label" x="${{labelPoint.x.toFixed(1)}}" y="${{labelPoint.y.toFixed(1)}}">${{segment.label}}</text>
         `;
     }}).join("");
 
     document.getElementById("coachingConfidenceGauge").innerHTML = `
         <div class="score-gauge">
-            <svg viewBox="0 0 420 260" role="img" aria-label="AI Confidence Level Detection ${{value}} percent">
-                <text x="210" y="20" text-anchor="middle" style="font: 700 15px Arial; fill: #004C97;">AI Confidence Level Detection</text>
+            <svg viewBox="0 0 560 340" role="img" aria-label="AI Confidence Level Detection ${{value}} percent">
+                <text x="280" y="24" text-anchor="middle" style="font: 700 17px Arial; fill: #004C97;">AI Confidence Level Detection</text>
                 <path d="${{grayArc}}" fill="#ECEFF1" />
                 ${{segmentMarkup}}
-                <path d="${{gaugeNeedlePath(cx, cy, needleAngle, 108, 8)}}" fill="#050505" />
-                <circle cx="${{cx}}" cy="${{cy}}" r="14" fill="#050505" />
+                <path d="${{gaugeNeedlePath(cx, cy, needleAngle, 152, 10)}}" fill="#050505" />
+                <circle cx="${{cx}}" cy="${{cy}}" r="15" fill="#050505" />
                 <circle cx="${{cx}}" cy="${{cy}}" r="7" fill="white" />
                 <circle cx="${{cx}}" cy="${{cy}}" r="2.5" fill="#050505" />
-                <text class="gauge-value" x="210" y="245" text-anchor="middle">${{value}}% - ${{confidenceBand(value)}}</text>
+                <text class="gauge-value" x="280" y="322" text-anchor="middle">${{value}}% - ${{confidenceBand(value)}}</text>
             </svg>
         </div>
     `;
