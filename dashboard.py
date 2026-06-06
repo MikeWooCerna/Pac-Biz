@@ -877,7 +877,7 @@ def main():
 
     .coaching-filters {{
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(5, minmax(0, 1fr));
         gap: 12px;
         padding: 14px 18px 8px;
     }}
@@ -1354,7 +1354,7 @@ def main():
     .gauge-label {{
         font-family: Arial, sans-serif;
         font-size: 15px;
-        font-weight: 900;
+        font-weight: 600;
         fill: #111827;
         dominant-baseline: middle;
         text-anchor: middle;
@@ -1364,6 +1364,49 @@ def main():
         font-size: 28px;
         font-weight: 900;
         fill: var(--dark-blue);
+    }}
+
+    .chart-summary {{
+        display: grid;
+        gap: 6px;
+        margin: -6px 4px 4px;
+        padding: 8px 10px 2px;
+        font-size: 12px;
+        color: var(--text);
+    }}
+
+    .chart-summary-row {{
+        display: grid;
+        grid-template-columns: 12px minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 8px;
+    }}
+
+    .chart-summary-swatch {{
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+    }}
+
+    .chart-summary-name {{
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-weight: 700;
+    }}
+
+    .chart-summary-value {{
+        color: var(--dark-blue);
+        font-weight: 900;
+        white-space: nowrap;
+    }}
+
+    .chart-summary-total {{
+        margin-top: 2px;
+        padding-top: 6px;
+        border-top: 1px solid #E5E7EB;
+        color: var(--muted);
+        font-weight: 900;
     }}
 
     tr:nth-child(even) td {{
@@ -1487,6 +1530,20 @@ def main():
         </details>
     </div>
     <div class="filter-box">
+        <label>Coaching Category</label>
+        <details class="multi-filter" id="coachingCategoryFilter">
+            <summary id="coachingCategoryFilterSummary">All</summary>
+            <div class="multi-options" id="coachingCategoryOptions"></div>
+        </details>
+    </div>
+    <div class="filter-box">
+        <label>Coaching Status</label>
+        <details class="multi-filter" id="coachingStatusFilter">
+            <summary id="coachingStatusFilterSummary">All</summary>
+            <div class="multi-options" id="coachingStatusOptions"></div>
+        </details>
+    </div>
+    <div class="filter-box">
         <label>Coached by</label>
         <details class="multi-filter" id="coachingLeaderFilter">
             <summary id="coachingLeaderFilterSummary">All</summary>
@@ -1594,6 +1651,17 @@ const movementData = {to_records(movement)};
 const coachingData = {to_records(coaching)};
 
 const COLORS = ["#004C97", "#39B54A", "#002B5C", "#7AC943", "#00AEEF", "#94A3B8"];
+const COACHING_CATEGORY_COLORS = {{
+    "Attendance & Adherence": "#1E88E5",
+    "Process Compliance": "#43A047",
+    "Policy Compliance": "#FB8C00",
+    "Communication": "#8E24AA",
+    "Behavioral": "#E53935",
+}};
+const COACHING_STATUS_COLORS = {{
+    "Pending": "#FB8C00",
+    "Completed": "#43A047",
+}};
 const MASTERLIST_COLUMNS = [
     {{label: "Employee ID", field: "ID No.", sortable: true, sortType: "number"}},
     {{label: "Employee Name", field: "Emp Name", sortable: true}},
@@ -1664,6 +1732,8 @@ const MASTERLIST_FILTERS = {{
 }};
 const COACHING_FILTERS = {{
     emp: new Set(),
+    category: new Set(),
+    status: new Set(),
     leader: new Set(),
     month: new Set(),
 }};
@@ -1974,6 +2044,20 @@ function populateCoachingFilters() {{
         renderCoaching
     );
     populateMultiFilter(
+        "coachingCategoryOptions",
+        "coachingCategoryFilterSummary",
+        uniqueValues(coachingData, "Coaching Category"),
+        COACHING_FILTERS.category,
+        renderCoaching
+    );
+    populateMultiFilter(
+        "coachingStatusOptions",
+        "coachingStatusFilterSummary",
+        uniqueValues(coachingData, "Coaching Status"),
+        COACHING_FILTERS.status,
+        renderCoaching
+    );
+    populateMultiFilter(
         "coachingLeaderOptions",
         "coachingLeaderFilterSummary",
         uniqueValues(coachingData, "Coached by"),
@@ -2075,6 +2159,8 @@ function filteredCoachingData() {{
         const monthKey = coachingMonthKey(r["Coaching Date"]);
         return (
             filterMatches(COACHING_FILTERS.emp, norm(r["Emp Name"])) &&
+            filterMatches(COACHING_FILTERS.category, norm(r["Coaching Category"])) &&
+            filterMatches(COACHING_FILTERS.status, norm(r["Coaching Status"])) &&
             filterMatches(COACHING_FILTERS.leader, norm(r["Coached by"])) &&
             filterMatches(COACHING_FILTERS.month, monthKey)
         );
@@ -2237,6 +2323,29 @@ function donut(id, title, data, textInfo = "percent", colors = COLORS) {{
     }}, {{responsive: true}});
 }}
 
+function chartSummaryMarkup(data, colors, totalLabel, totalSuffix = "") {{
+    const total = data.reduce((sum, item) => sum + Number(item.count || 0), 0);
+    const rows = data.map((item, index) => {{
+        const pct = total ? Math.round((Number(item.count || 0) / total) * 100) : 0;
+        return `
+            <div class="chart-summary-row">
+                <span class="chart-summary-swatch" style="background:${{escapeHtml(colors[index] || COLORS[index % COLORS.length])}}"></span>
+                <span class="chart-summary-name">${{escapeHtml(item.name)}}</span>
+                <span class="chart-summary-value">${{Number(item.count || 0).toLocaleString()}} (${{pct}}%)</span>
+            </div>
+        `;
+    }}).join("");
+    return `<div class="chart-summary">${{rows}}<div class="chart-summary-total">${{escapeHtml(totalLabel)}}: ${{total.toLocaleString()}}${{escapeHtml(totalSuffix)}}</div></div>`;
+}}
+
+function renderDonutWithSummary(id, title, data, colors, totalLabel, textInfo = "none", totalSuffix = "") {{
+    const container = document.getElementById(id);
+    if (!container) return;
+    container.innerHTML = `<div id="${{id}}Plot"></div><div id="${{id}}Summary"></div>`;
+    donut(`${{id}}Plot`, title, data, textInfo, colors);
+    document.getElementById(`${{id}}Summary`).innerHTML = chartSummaryMarkup(data, colors, totalLabel, totalSuffix);
+}}
+
 function bar(id, title, data, yTitle) {{
     const top = data.slice(0, 10).reverse();
     Plotly.newPlot(id, [{{
@@ -2386,7 +2495,9 @@ function weeklyChart() {{
 }}
 
 function coachingCategoryChart(data) {{
-    donut("coachingCategoryDonut", "Coaching Category", countBy(data, "Coaching Category"));
+    const rows = countBy(data, "Coaching Category");
+    const colors = rows.map((row, index) => COACHING_CATEGORY_COLORS[row.name] || COLORS[index % COLORS.length]);
+    renderDonutWithSummary("coachingCategoryDonut", "Coaching Category", rows, colors, "Total", "none", " Sessions");
 }}
 
 function coachingStatusChart(data) {{
@@ -2398,15 +2509,16 @@ function coachingStatusChart(data) {{
             statusCounts.Pending += 1;
         }}
     }});
-    donut(
+    const rows = [
+        {{name: "Pending", count: statusCounts.Pending}},
+        {{name: "Completed", count: statusCounts.Completed}},
+    ];
+    renderDonutWithSummary(
         "coachingStatusDonut",
         "Coaching Status",
-        [
-            {{name: "Completed", count: statusCounts.Completed}},
-            {{name: "Pending", count: statusCounts.Pending}},
-        ],
-        "percent+label",
-        ["#39B54A", "#FFC000"]
+        rows,
+        rows.map(row => COACHING_STATUS_COLORS[row.name]),
+        "Total Coaching Sessions"
     );
 }}
 
@@ -2461,10 +2573,10 @@ function coachingConfidenceGauge(data) {{
     const needleAngle = 180 - Math.max(0, Math.min(value, 100)) * 1.8;
     const segmentMarkup = segments.map(segment => {{
         const labelAngle = (segment.start + segment.end) / 2;
-        const labelPoint = gaugePoint(cx, cy, 194, labelAngle);
+        const labelPoint = gaugePoint(cx, cy, 232, labelAngle);
         return `
-            <path d="${{gaugeSegmentPath(cx, cy, 220, 178, segment.start, segment.end)}}" fill="#B8B8B8" stroke="white" stroke-width="1" />
-            <path d="${{gaugeSegmentPath(cx, cy, 178, 105, segment.start, segment.end)}}" fill="${{segment.color}}" stroke="white" stroke-width="1" />
+            <path d="${{gaugeSegmentPath(cx, cy, 220, 199, segment.start, segment.end)}}" fill="#ECEFF1" stroke="white" stroke-width="1" />
+            <path d="${{gaugeSegmentPath(cx, cy, 197, 112, segment.start, segment.end)}}" fill="${{segment.color}}" stroke="white" stroke-width="1" />
             <text class="gauge-label" x="${{labelPoint.x.toFixed(1)}}" y="${{labelPoint.y.toFixed(1)}}" transform="rotate(${{(90 - labelAngle).toFixed(1)}} ${{labelPoint.x.toFixed(1)}} ${{labelPoint.y.toFixed(1)}})">${{segment.label}}</text>
         `;
     }}).join("");
@@ -2474,10 +2586,10 @@ function coachingConfidenceGauge(data) {{
             <svg viewBox="0 0 600 320" role="img" aria-label="AI Confidence Level Detection ${{value}} percent">
                 <text x="300" y="24" text-anchor="middle" style="font: 700 15px Arial; fill: #004C97;">AI Confidence Level Detection</text>
                 ${{segmentMarkup}}
-                <path d="${{gaugeNeedlePath(cx, cy, needleAngle, 122, 10)}}" fill="#050505" />
-                <circle cx="${{cx}}" cy="${{cy}}" r="22" fill="#050505" />
-                <circle cx="${{cx}}" cy="${{cy}}" r="12" fill="white" />
-                <circle cx="${{cx}}" cy="${{cy}}" r="4" fill="#050505" />
+                <path d="${{gaugeNeedlePath(cx, cy, needleAngle, 132, 9)}}" fill="#050505" />
+                <circle cx="${{cx}}" cy="${{cy}}" r="18" fill="#050505" />
+                <circle cx="${{cx}}" cy="${{cy}}" r="9" fill="white" />
+                <circle cx="${{cx}}" cy="${{cy}}" r="3" fill="#050505" />
                 <text class="gauge-value" x="300" y="302" text-anchor="middle">${{value}}% - ${{confidenceBand(value)}}</text>
             </svg>
         </div>
