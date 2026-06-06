@@ -2446,7 +2446,7 @@ function chartSummaryMarkup(data, colors, totalLabel, totalSuffix = "") {{
             </div>
         `;
     }}).join("");
-    return `<div class="chart-summary"><div class="chart-summary-rows">${{rows}}</div><div class="chart-summary-total">${{escapeHtml(totalLabel)}}: ${{total.toLocaleString()}}${{escapeHtml(totalSuffix)}}</div></div>`;
+    return `<div class="chart-summary"><div class="chart-summary-rows">${{rows}}</div><div class="chart-summary-total">${{escapeHtml(totalLabel)}}: ${{total.toLocaleString()}} ${{escapeHtml(totalSuffix)}}</div></div>`;
 }}
 
 function renderDonutWithSummary(id, title, data, colors, totalLabel, textInfo = "none", totalSuffix = "") {{
