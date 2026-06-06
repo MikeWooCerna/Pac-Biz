@@ -899,7 +899,7 @@ def main():
 
     .filters {{
         display: grid;
-        grid-template-columns: repeat(7, minmax(0, 1fr));
+        grid-template-columns: repeat(8, minmax(0, 1fr));
         gap: 12px;
         padding: 12px 18px 8px;
         background: var(--bg);
@@ -1360,6 +1360,16 @@ def main():
         font-weight: 900;
     }}
 
+    #masterlistTable td.emp-status-active {{
+        color: var(--green);
+        font-weight: 700;
+    }}
+
+    #masterlistTable td.emp-status-inactive {{
+        color: #E53935;
+        font-weight: 700;
+    }}
+
     #coachingTable .id-col {{
         width: 135px;
         white-space: nowrap;
@@ -1623,6 +1633,13 @@ def main():
             <div class="multi-options" id="employeeGroupOptions"></div>
         </details>
     </div>
+    <div class="filter-box">
+        <label>Employment Status</label>
+        <details class="multi-filter" id="employmentStatusFilter">
+            <summary id="employmentStatusFilterSummary">All</summary>
+            <div class="multi-options" id="employmentStatusOptions"></div>
+        </details>
+    </div>
 </div>
 
 <div class="cards">
@@ -1789,6 +1806,7 @@ const COACHING_STATUS_COLORS = {{
 const MASTERLIST_COLUMNS = [
     {{label: "Employee ID", field: "ID No.", sortable: true, sortType: "number"}},
     {{label: "Employee Name", field: "Emp Name", sortable: true}},
+    {{label: "Employment Status", field: "Employment Status", sortable: true}},
     {{label: "Hire Date", field: "Hire Date", sortable: true, sortType: "date"}},
     {{label: "Employement Class", field: "Employement Class", sortable: true}},
     {{label: "Tenure", field: "Tenure", sortable: true, sortField: "__TenureDays", sortType: "number"}},
@@ -1858,6 +1876,7 @@ const MASTERLIST_FILTERS = {{
     manager: new Set(),
     tenure: new Set(),
     employeeGroup: new Set(),
+    employmentStatus: new Set(),
 }};
 const COACHING_FILTERS = {{
     emp: new Set(),
@@ -2279,6 +2298,13 @@ function populateMasterlistFilters() {{
         MASTERLIST_FILTERS.employeeGroup,
         render
     );
+    populateMultiFilter(
+        "employmentStatusOptions",
+        "employmentStatusFilterSummary",
+        ["Active", "Inactive"].map(v => ({{value: v, label: v}})),
+        MASTERLIST_FILTERS.employmentStatus,
+        render
+    );
 }}
 
 function closeMultiFilters(exceptFilter = null) {{
@@ -2326,7 +2352,8 @@ function filteredMasterlist() {{
             filterMatches(MASTERLIST_FILTERS.supervisor, norm(r["Immediate Supervisor"])) &&
             filterMatches(MASTERLIST_FILTERS.manager, norm(r["Manager"])) &&
             filterMatches(MASTERLIST_FILTERS.tenure, tenureGroup) &&
-            filterMatches(MASTERLIST_FILTERS.employeeGroup, norm(r["Employee Group"]))
+            filterMatches(MASTERLIST_FILTERS.employeeGroup, norm(r["Employee Group"])) &&
+            filterMatches(MASTERLIST_FILTERS.employmentStatus, norm(r["Employment Status"]))
         );
     }});
 }}
@@ -2452,6 +2479,13 @@ function setText(id, value) {{
     document.getElementById(id).textContent = Number(value).toLocaleString();
 }}
 
+function employmentStatusClass(value) {{
+    const v = norm(value).toUpperCase();
+    if (v === "ACTIVE") return "emp-status-active";
+    if (v === "INACTIVE") return "emp-status-inactive";
+    return "";
+}}
+
 function categoryStatusClass(value) {{
     const status = norm(value).toLowerCase();
     if (status === "new") return "category-status-new";
@@ -2483,6 +2517,7 @@ function renderDataTable(id, rows, columns, sortState = null) {{
                 const classes = [];
                 if (c.className) classes.push(c.className);
                 if (c.field === "Category Status") classes.push(categoryStatusClass(r[c.field]));
+                if (c.field === "Employment Status") classes.push(employmentStatusClass(r[c.field]));
                 const className = classes.filter(Boolean).length ? ` class="${{escapeHtml(classes.filter(Boolean).join(" "))}}"` : "";
                 html += `<td${{className}}>${{escapeHtml(r[c.field])}}</td>`;
             }});
