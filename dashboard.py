@@ -2801,11 +2801,15 @@ function weeklyChart() {{
     const grouped = {{}};
     historyData.forEach(r => {{
         const week = norm(r["Week"]);
-        if (week) grouped[week] = (grouped[week] || 0) + 1;
+        const empId = norm(r["ID No."]);
+        if (week && empId) {{
+            if (!grouped[week]) grouped[week] = new Set();
+            grouped[week].add(empId);
+        }}
     }});
 
     const rows = Object.entries(grouped)
-        .map(([week, count]) => ({{week, count}}))
+        .map(([week, empSet]) => ({{week, count: empSet.size}}))
         .sort((a,b) => new Date(a.week) - new Date(b.week));
 
     Plotly.newPlot("weeklyLine", [{{
@@ -2814,12 +2818,13 @@ function weeklyChart() {{
         type: "bar",
         text: rows.map(r => r.count),
         textposition: "auto",
+        hovertemplate: "Week: %{{x}}<br>Headcount: %{{y}}<extra></extra>",
         marker: {{color: "#39B54A"}}
     }}], {{
-        title: {{text: "Weekly History Records", font: {{color: "#004C97", size: 15}}}},
+        title: {{text: "Weekly Headcount", font: {{color: "#004C97", size: 15}}}},
         height: 300,
         margin: {{l: 45, r: 20, t: 45, b: 35}},
-        yaxis: {{title: "Records"}},
+        yaxis: {{title: "Headcount"}},
         paper_bgcolor: "white",
         plot_bgcolor: "white",
         font: {{family: "Arial", size: 10}}
