@@ -2798,35 +2798,78 @@ function accountTenureStack(data) {{
 }}
 
 function weeklyChart() {{
-    const grouped = {{}};
+    const seen = new Set();
+    const deduped = [];
     historyData.forEach(r => {{
         const week = norm(r["Week"]);
         const empId = norm(r["ID No."]);
-        if (week && empId) {{
-            if (!grouped[week]) grouped[week] = new Set();
-            grouped[week].add(empId);
+        if (week && empId && !seen.has(`${{week}}|${{empId}}`)) {{
+            seen.add(`${{week}}|${{empId}}`);
+            deduped.push(r);
         }}
     }});
 
-    const rows = Object.entries(grouped)
-        .map(([week, empSet]) => ({{week, count: empSet.size}}))
-        .sort((a,b) => new Date(a.week) - new Date(b.week));
+    const weeks = [...new Set(deduped.map(r => norm(r["Week"])))].filter(Boolean)
+        .sort((a, b) => new Date(a) - new Date(b));
 
-    Plotly.newPlot("weeklyLine", [{{
-        x: rows.map(r => r.week),
-        y: rows.map(r => r.count),
-        type: "bar",
-        text: rows.map(r => r.count),
-        textposition: "auto",
-        hovertemplate: "Week: %{{x}}<br>Headcount: %{{y}}<extra></extra>",
-        marker: {{color: "#39B54A"}}
-    }}], {{
+    const allClasses = [...new Set(deduped.map(r => norm(r["Employement Class"]) || "Other"))].filter(Boolean).sort();
+
+    const countMap = {{}};
+    deduped.forEach(r => {{
+        const week = norm(r["Week"]);
+        const cls = norm(r["Employement Class"]) || "Other";
+        const key = `${{week}}|${{cls}}`;
+        countMap[key] = (countMap[key] || 0) + 1;
+    }});
+
+    const totals = {{}};
+    weeks.forEach(week => {{
+        totals[week] = allClasses.reduce((sum, cls) => sum + (countMap[`${{week}}|${{cls}}`] || 0), 0);
+    }});
+    const maxTotal = Math.max(...Object.values(totals), 1);
+
+    const traces = allClasses.map((cls, i) => {{
+        const yValues = weeks.map(week => countMap[`${{week}}|${{cls}}`] || 0);
+        return {{
+            name: cls,
+            x: weeks,
+            y: yValues,
+            type: "bar",
+            text: yValues.map(v => v > 0 ? v : ""),
+            textposition: "inside",
+            insidetextanchor: "middle",
+            textfont: {{family: "Arial", size: 10, color: "white"}},
+            constraintext: "inside",
+            hovertemplate: `${{cls}}<br>Week: %{{x}}<br>Headcount: %{{y}}<extra></extra>`,
+            marker: {{color: COLORS[i % COLORS.length]}},
+        }};
+    }});
+
+    const annotations = weeks.map(week => ({{
+        x: week,
+        y: totals[week],
+        text: `<b>${{totals[week]}}</b>`,
+        xref: "x",
+        yref: "y",
+        showarrow: false,
+        yanchor: "bottom",
+        xanchor: "center",
+        yshift: 5,
+        font: {{family: "Arial", size: 13, color: "#002B5C"}},
+    }}));
+
+    Plotly.newPlot("weeklyLine", traces, {{
         title: {{text: "Weekly Headcount", font: {{color: "#004C97", size: 15}}}},
-        height: 300,
+        height: 320,
         margin: {{l: 45, r: 20, t: 45, b: 35}},
-        yaxis: {{title: "Headcount"}},
+        barmode: "stack",
+        xaxis: {{title: "Week"}},
+        yaxis: {{title: "Headcount", range: [0, Math.ceil(maxTotal * 1.15)]}},
         paper_bgcolor: "white",
         plot_bgcolor: "white",
+        legend: {{orientation: "h", y: -0.25, font: {{size: 9}}}},
+        annotations: annotations,
+        uniformtext: {{mode: "hide", minsize: 8}},
         font: {{family: "Arial", size: 10}}
     }}, {{responsive: true}});
 }}
