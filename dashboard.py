@@ -2797,7 +2797,7 @@ function masterlistTable(data) {{
         .map(r => {{
             const hireDate = parseDateValue(r["Hire Date"]);
             return Object.assign({{}}, r, {{
-                Tenure: formatTenureDisplay(hireDate),
+                Tenure: tenureGroupName(hireDate, new Date()),
                 __TenureDays: hireDate ? wholeDayDiff(hireDate, new Date()) : -1,
             }});
         }});
