@@ -932,7 +932,7 @@ def main():
 
     .coaching-filters {{
         display: grid;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
+        grid-template-columns: repeat(6, minmax(0, 1fr));
         gap: 12px;
         padding: 14px 18px 8px;
     }}
@@ -1626,10 +1626,10 @@ def main():
         </details>
     </div>
     <div class="filter-box">
-        <label>Coaching Category</label>
-        <details class="multi-filter" id="coachingCategoryFilter">
-            <summary id="coachingCategoryFilterSummary">All</summary>
-            <div class="multi-options" id="coachingCategoryOptions"></div>
+        <label>Coached by</label>
+        <details class="multi-filter" id="coachingLeaderFilter">
+            <summary id="coachingLeaderFilterSummary">All</summary>
+            <div class="multi-options" id="coachingLeaderOptions"></div>
         </details>
     </div>
     <div class="filter-box">
@@ -1640,10 +1640,17 @@ def main():
         </details>
     </div>
     <div class="filter-box">
-        <label>Coached by</label>
-        <details class="multi-filter" id="coachingLeaderFilter">
-            <summary id="coachingLeaderFilterSummary">All</summary>
-            <div class="multi-options" id="coachingLeaderOptions"></div>
+        <label>Coaching Category</label>
+        <details class="multi-filter" id="coachingCategoryFilter">
+            <summary id="coachingCategoryFilterSummary">All</summary>
+            <div class="multi-options" id="coachingCategoryOptions"></div>
+        </details>
+    </div>
+    <div class="filter-box">
+        <label>Category Status</label>
+        <details class="multi-filter" id="coachingCategoryStatusFilter">
+            <summary id="coachingCategoryStatusFilterSummary">All</summary>
+            <div class="multi-options" id="coachingCategoryStatusOptions"></div>
         </details>
     </div>
     <div class="filter-box">
@@ -1829,9 +1836,10 @@ const MASTERLIST_FILTERS = {{
 }};
 const COACHING_FILTERS = {{
     emp: new Set(),
-    category: new Set(),
-    status: new Set(),
     leader: new Set(),
+    status: new Set(),
+    category: new Set(),
+    categoryStatus: new Set(),
     month: new Set(),
 }};
 const masterlistSortState = {{
@@ -2141,10 +2149,10 @@ function populateCoachingFilters() {{
         renderCoaching
     );
     populateMultiFilter(
-        "coachingCategoryOptions",
-        "coachingCategoryFilterSummary",
-        uniqueValues(coachingData, "Coaching Category"),
-        COACHING_FILTERS.category,
+        "coachingLeaderOptions",
+        "coachingLeaderFilterSummary",
+        uniqueValues(coachingData, "Coached by"),
+        COACHING_FILTERS.leader,
         renderCoaching
     );
     populateMultiFilter(
@@ -2155,10 +2163,17 @@ function populateCoachingFilters() {{
         renderCoaching
     );
     populateMultiFilter(
-        "coachingLeaderOptions",
-        "coachingLeaderFilterSummary",
-        uniqueValues(coachingData, "Coached by"),
-        COACHING_FILTERS.leader,
+        "coachingCategoryOptions",
+        "coachingCategoryFilterSummary",
+        uniqueValues(coachingData, "Coaching Category"),
+        COACHING_FILTERS.category,
+        renderCoaching
+    );
+    populateMultiFilter(
+        "coachingCategoryStatusOptions",
+        "coachingCategoryStatusFilterSummary",
+        ["New", "Recurring This Month", "Historical Repeat"].map(v => ({{value: v, label: v}})),
+        COACHING_FILTERS.categoryStatus,
         renderCoaching
     );
 
@@ -2256,9 +2271,10 @@ function filteredCoachingData() {{
         const monthKey = coachingMonthKey(r["Coaching Date"]);
         return (
             filterMatches(COACHING_FILTERS.emp, norm(r["Emp Name"])) &&
-            filterMatches(COACHING_FILTERS.category, norm(r["Coaching Category"])) &&
-            filterMatches(COACHING_FILTERS.status, norm(r["Coaching Status"])) &&
             filterMatches(COACHING_FILTERS.leader, norm(r["Coached by"])) &&
+            filterMatches(COACHING_FILTERS.status, norm(r["Coaching Status"])) &&
+            filterMatches(COACHING_FILTERS.category, norm(r["Coaching Category"])) &&
+            filterMatches(COACHING_FILTERS.categoryStatus, norm(r["Category Status"])) &&
             filterMatches(COACHING_FILTERS.month, monthKey)
         );
     }});
