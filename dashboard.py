@@ -2435,17 +2435,24 @@ function filteredMasterlist() {{
 }}
 
 function filteredCoachingData() {{
-    return coachingData.filter(r => {{
+    const baseFiltered = coachingData.filter(r => {{
         const monthKey = coachingMonthKey(r["Coaching Date"]);
         return (
             filterMatches(COACHING_FILTERS.emp, norm(r["Emp Name"])) &&
             filterMatches(COACHING_FILTERS.leader, norm(r["Coached by"])) &&
             filterMatches(COACHING_FILTERS.status, norm(r["Coaching Status"])) &&
             filterMatches(COACHING_FILTERS.category, norm(r["Coaching Category"])) &&
-            filterMatches(COACHING_FILTERS.categoryStatus, norm(r["Category Status"])) &&
             filterMatches(COACHING_FILTERS.month, monthKey)
         );
     }});
+    if (COACHING_FILTERS.categoryStatus.has(NONE_SELECTED)) return [];
+    if (COACHING_FILTERS.categoryStatus.size === 0) return baseFiltered;
+    const matchingEmps = new Set(
+        baseFiltered
+            .filter(r => filterMatches(COACHING_FILTERS.categoryStatus, norm(r["Category Status"])))
+            .map(r => norm(r["Emp Name"]))
+    );
+    return baseFiltered.filter(r => matchingEmps.has(norm(r["Emp Name"])));
 }}
 
 function filterMatches(selectedSet, value) {{
