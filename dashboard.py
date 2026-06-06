@@ -2812,8 +2812,6 @@ function weeklyChart() {{
     const weeks = [...new Set(deduped.map(r => norm(r["Week"])))].filter(Boolean)
         .sort((a, b) => new Date(a) - new Date(b));
 
-    const allClasses = [...new Set(deduped.map(r => norm(r["Employement Class"]) || "Other"))].filter(Boolean).sort();
-
     const countMap = {{}};
     deduped.forEach(r => {{
         const week = norm(r["Week"]);
@@ -2821,6 +2819,14 @@ function weeklyChart() {{
         const key = `${{week}}|${{cls}}`;
         countMap[key] = (countMap[key] || 0) + 1;
     }});
+
+    // Sort classes by total headcount descending: largest at bottom (first trace), smallest at top (last trace)
+    const classTotals = {{}};
+    deduped.forEach(r => {{
+        const cls = norm(r["Employement Class"]) || "Other";
+        classTotals[cls] = (classTotals[cls] || 0) + 1;
+    }});
+    const allClasses = Object.keys(classTotals).sort((a, b) => classTotals[b] - classTotals[a]);
 
     const totals = {{}};
     weeks.forEach(week => {{
