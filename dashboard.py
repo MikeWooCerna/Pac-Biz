@@ -2780,6 +2780,7 @@ function scrollableBar(id, title, data, yTitle) {{
     const reversed = [...data].reverse();
     const rowH = 28, topM = 40, botM = 5;
     const chartH = Math.max(100, reversed.length * rowH + topM + botM);
+    const pw = Math.max(200, container.clientWidth - 24);
     container.innerHTML = `<div class="chart-scroll-container"><div class="chart-scroll-title">${{escapeHtml(title)}}</div><div class="chart-scroll-area"><div id="${{id}}Plot"></div></div></div>`;
     Plotly.newPlot(`${{id}}Plot`, [{{
         x: reversed.map(d => d.count),
@@ -2788,13 +2789,13 @@ function scrollableBar(id, title, data, yTitle) {{
         text: reversed.map(d => d.count), textposition: "auto",
         marker: {{color: "#004C97"}}
     }}], {{
-        height: chartH,
+        height: chartH, width: pw,
         margin: {{l: 135, r: 20, t: topM, b: botM}},
         xaxis: {{title: "Headcount", side: "top"}},
         yaxis: {{title: yTitle}},
         paper_bgcolor: "white", plot_bgcolor: "white",
         font: {{family: "Arial", size: 10}}
-    }}, {{responsive: true}});
+    }}, {{responsive: false}});
 }}
 
 function segmentBar(id, title, data, yTitle) {{
@@ -2881,12 +2882,13 @@ function accountTenureStack(data) {{
     const atsContainer = document.getElementById("accountTenureStack");
     const rowH = 28, topM = 10, botM = 45;
     const chartH = Math.max(100, rows.length * rowH + topM + botM);
+    const pw = Math.max(200, atsContainer.clientWidth - 24);
     const legendHtml = TENURE_GROUPS.map((g, i) =>
         `<span class="scroll-legend-item"><span class="scroll-legend-swatch" style="background:${{COLORS[i % COLORS.length]}}"></span>${{escapeHtml(g.name)}}</span>`
     ).join("");
     atsContainer.innerHTML = `<div class="chart-scroll-container"><div class="chart-scroll-title">Tenure by Account</div><div class="chart-scroll-area"><div id="accountTenureStackPlot"></div></div><div class="chart-scroll-footer">${{legendHtml}}</div></div>`;
     Plotly.newPlot("accountTenureStackPlot", traces, {{
-        height: chartH,
+        height: chartH, width: pw,
         margin: {{l: 135, r: 58, t: topM, b: botM}},
         barmode: "stack",
         showlegend: false,
@@ -2897,7 +2899,7 @@ function accountTenureStack(data) {{
         annotations: totalAnnotations,
         uniformtext: {{mode: "hide", minsize: 9}},
         font: {{family: "Arial", size: 10}}
-    }}, {{responsive: true}});
+    }}, {{responsive: false}});
 }}
 
 function weeklyChart() {{
