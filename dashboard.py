@@ -1136,7 +1136,6 @@ def main():
         padding: 8px 0 4px;
     }}
     .chart-scroll-area {{
-        height: 362px;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: thin;
@@ -1152,6 +1151,31 @@ def main():
     .chart-scroll-area::-webkit-scrollbar-thumb {{
         background: #004C97;
         border-radius: 3px;
+    }}
+    .chart-scroll-footer {{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 4px 10px;
+        padding: 6px 4px 4px;
+        border-top: 1px solid #f0f0f0;
+        flex-shrink: 0;
+    }}
+    .scroll-legend-item {{
+        display: inline-flex;
+        align-items: center;
+        font-size: 10px;
+        color: #444;
+        white-space: nowrap;
+        font-family: Arial, sans-serif;
+    }}
+    .scroll-legend-swatch {{
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        margin-right: 4px;
+        flex-shrink: 0;
     }}
 
     .coaching-chart-row {{
@@ -2747,10 +2771,10 @@ function scrollableBar(id, title, data, yTitle) {{
     const container = document.getElementById(id);
     if (!container) return;
     const reversed = [...data].reverse();
-    const rowH = 28, topM = 8, botM = 45;
+    const rowH = 28, topM = 40, botM = 5;
     const chartH = Math.max(100, reversed.length * rowH + topM + botM);
     const pw = Math.max(200, container.clientWidth - 24);
-    container.innerHTML = `<div class="chart-scroll-container"><div class="chart-scroll-title">${{escapeHtml(title)}}</div><div class="chart-scroll-area"><div id="${{id}}Plot"></div></div></div>`;
+    container.innerHTML = `<div class="chart-scroll-container"><div class="chart-scroll-title">${{escapeHtml(title)}}</div><div class="chart-scroll-area" style="height:362px"><div id="${{id}}Plot"></div></div></div>`;
     Plotly.newPlot(`${{id}}Plot`, [{{
         x: reversed.map(d => d.count),
         y: reversed.map(d => d.name),
@@ -2760,7 +2784,7 @@ function scrollableBar(id, title, data, yTitle) {{
     }}], {{
         height: chartH, width: pw,
         margin: {{l: 135, r: 20, t: topM, b: botM}},
-        xaxis: {{title: "Headcount"}},
+        xaxis: {{title: "Headcount", side: "top"}},
         yaxis: {{title: yTitle}},
         paper_bgcolor: "white", plot_bgcolor: "white",
         font: {{family: "Arial", size: 10}}
@@ -2849,19 +2873,22 @@ function accountTenureStack(data) {{
     }}));
 
     const atsContainer = document.getElementById("accountTenureStack");
-    const rowH = 28, topM = 50, botM = 45;
+    const rowH = 28, topM = 10, botM = 45;
     const chartH = Math.max(100, rows.length * rowH + topM + botM);
     const pw = Math.max(200, atsContainer.clientWidth - 24);
-    atsContainer.innerHTML = `<div class="chart-scroll-container"><div class="chart-scroll-title">Tenure by Account</div><div class="chart-scroll-area"><div id="accountTenureStackPlot"></div></div></div>`;
+    const legendHtml = TENURE_GROUPS.map((g, i) =>
+        `<span class="scroll-legend-item"><span class="scroll-legend-swatch" style="background:${{COLORS[i % COLORS.length]}}"></span>${{escapeHtml(g.name)}}</span>`
+    ).join("");
+    atsContainer.innerHTML = `<div class="chart-scroll-container"><div class="chart-scroll-title">Tenure by Account</div><div class="chart-scroll-area" style="height:314px"><div id="accountTenureStackPlot"></div></div><div class="chart-scroll-footer">${{legendHtml}}</div></div>`;
     Plotly.newPlot("accountTenureStackPlot", traces, {{
         height: chartH, width: pw,
         margin: {{l: 135, r: 58, t: topM, b: botM}},
         barmode: "stack",
+        showlegend: false,
         xaxis: {{title: "Headcount", range: [0, Math.ceil(maxTotal * 1.12)]}},
         yaxis: {{title: "Account"}},
         paper_bgcolor: "white",
         plot_bgcolor: "white",
-        legend: {{orientation: "h", y: 1.12, x: 0.5, xanchor: "center", font: {{size: 9}}}},
         annotations: totalAnnotations,
         uniformtext: {{mode: "hide", minsize: 9}},
         font: {{family: "Arial", size: 10}}
