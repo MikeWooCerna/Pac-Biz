@@ -2977,14 +2977,14 @@ function weeklyChart() {{
 
     Plotly.newPlot("weeklyLine", traces, {{
         title: {{text: "Weekly Headcount", font: {{color: "#004C97", size: 15}}}},
-        height: 320,
-        margin: {{l: 45, r: 20, t: 45, b: 35}},
+        height: 360,
+        margin: {{l: 45, r: 20, t: 45, b: 75}},
         barmode: "stack",
         xaxis: {{title: "Week"}},
         yaxis: {{title: "Headcount", range: [0, Math.ceil(maxTotal * 1.15)]}},
         paper_bgcolor: "white",
         plot_bgcolor: "white",
-        legend: {{orientation: "h", y: -0.25, font: {{size: 9}}}},
+        legend: {{orientation: "h", y: -0.28, x: 0.5, xanchor: "center", font: {{size: 9}}}},
         annotations: annotations,
         uniformtext: {{mode: "hide", minsize: 8}},
         font: {{family: "Arial", size: 10}}
