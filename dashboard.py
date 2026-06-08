@@ -2975,16 +2975,28 @@ function weeklyChart() {{
         font: {{family: "Arial", size: 13, color: "#002B5C"}},
     }}));
 
-    Plotly.newPlot("weeklyLine", traces, {{
+    const legendHtml = allClasses.map((cls, i) =>
+        `<span style="display:inline-flex;align-items:center;font-size:10px;color:#444;font-family:Arial;white-space:nowrap;margin:0 4px;">` +
+        `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${{COLORS[i % COLORS.length]}};margin-right:4px;"></span>` +
+        `${{escapeHtml(cls)}}</span>`
+    ).join("");
+    const wContainer = document.getElementById("weeklyLine");
+    if (!wContainer) return;
+    wContainer.innerHTML =
+        `<div id="weeklyLinePlot"></div>` +
+        `<div style="text-align:center;font-size:11px;color:#555;font-family:Arial;margin:4px 0 2px;">Week</div>` +
+        `<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:4px 10px;padding:4px 0 2px;">${{legendHtml}}</div>`;
+
+    Plotly.newPlot("weeklyLinePlot", traces, {{
         title: {{text: "Weekly Headcount", font: {{color: "#004C97", size: 15}}}},
-        height: 360,
-        margin: {{l: 45, r: 20, t: 45, b: 100}},
+        height: 310,
+        margin: {{l: 45, r: 20, t: 45, b: 30}},
         barmode: "stack",
-        xaxis: {{title: "Week"}},
+        xaxis: {{title: ""}},
         yaxis: {{title: "Headcount", range: [0, Math.ceil(maxTotal * 1.15)]}},
         paper_bgcolor: "white",
         plot_bgcolor: "white",
-        legend: {{orientation: "h", y: -0.38, x: 0.5, xanchor: "center", font: {{size: 9}}}},
+        showlegend: false,
         annotations: annotations,
         uniformtext: {{mode: "hide", minsize: 8}},
         font: {{family: "Arial", size: 10}}
