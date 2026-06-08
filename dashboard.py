@@ -1119,6 +1119,43 @@ def main():
         min-height: 295px;
     }}
 
+    .chart-card-scrollable {{
+        height: 420px;
+        min-height: 0;
+        overflow: hidden;
+    }}
+    .chart-scroll-container {{
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }}
+    .chart-scroll-title {{
+        color: #004C97;
+        font-size: 15px;
+        font-weight: bold;
+        text-align: center;
+        padding: 8px 0 4px;
+        flex-shrink: 0;
+    }}
+    .chart-scroll-area {{
+        overflow-y: auto;
+        overflow-x: hidden;
+        flex: 1;
+        scrollbar-width: thin;
+        scrollbar-color: #004C97 #f0f0f0;
+    }}
+    .chart-scroll-area::-webkit-scrollbar {{
+        width: 6px;
+    }}
+    .chart-scroll-area::-webkit-scrollbar-track {{
+        background: #f0f0f0;
+        border-radius: 3px;
+    }}
+    .chart-scroll-area::-webkit-scrollbar-thumb {{
+        background: #004C97;
+        border-radius: 3px;
+    }}
+
     .coaching-chart-row {{
         display: grid;
         grid-column: 1 / -1;
@@ -1813,11 +1850,11 @@ def main():
         <div class="chart-card"><div id="employmentClassDonut"></div></div>
     </div>
     <div class="bar-chart-row">
-        <div class="chart-card"><div id="accountBar"></div></div>
+        <div class="chart-card chart-card-scrollable"><div id="accountBar"></div></div>
         <div class="chart-card"><div id="managerBar"></div></div>
         <div class="chart-card"><div id="supervisorBar"></div></div>
     </div>
-    <div class="chart-card"><div id="accountTenureStack"></div></div>
+    <div class="chart-card chart-card-scrollable"><div id="accountTenureStack"></div></div>
     <div class="chart-card"><div id="tenureSegmentation"></div></div>
     <div class="chart-card"><div id="ageGroupBar"></div></div>
     <div class="chart-card"><div id="weeklyLine"></div></div>
@@ -2708,6 +2745,30 @@ function bar(id, title, data, yTitle, maxItems = 10) {{
     }}, {{responsive: true}});
 }}
 
+function scrollableBar(id, title, data, yTitle) {{
+    const container = document.getElementById(id);
+    if (!container) return;
+    const reversed = [...data].reverse();
+    const rowH = 28, topM = 8, botM = 45;
+    const chartH = Math.max(100, reversed.length * rowH + topM + botM);
+    const pw = Math.max(200, container.clientWidth - 24);
+    container.innerHTML = `<div class="chart-scroll-container"><div class="chart-scroll-title">${{escapeHtml(title)}}</div><div class="chart-scroll-area"><div id="${{id}}Plot"></div></div></div>`;
+    Plotly.newPlot(`${{id}}Plot`, [{{
+        x: reversed.map(d => d.count),
+        y: reversed.map(d => d.name),
+        type: "bar", orientation: "h",
+        text: reversed.map(d => d.count), textposition: "auto",
+        marker: {{color: "#004C97"}}
+    }}], {{
+        height: chartH, width: pw,
+        margin: {{l: 135, r: 20, t: topM, b: botM}},
+        xaxis: {{title: "Headcount"}},
+        yaxis: {{title: yTitle}},
+        paper_bgcolor: "white", plot_bgcolor: "white",
+        font: {{family: "Arial", size: 10}}
+    }}, {{responsive: false}});
+}}
+
 function segmentBar(id, title, data, yTitle) {{
     const rows = [...data].reverse();
     Plotly.newPlot(id, [{{
@@ -2789,21 +2850,24 @@ function accountTenureStack(data) {{
         font: {{family: "Arial", size: 11, color: "#002B5C"}},
     }}));
 
-    const stackHeight = Math.max(340, rows.length * 30 + 100);
-    Plotly.newPlot("accountTenureStack", traces, {{
-        title: {{text: "Tenure by Account", font: {{color: "#004C97", size: 15}}}},
-        height: stackHeight,
-        margin: {{l: 135, r: 58, t: 45, b: 35}},
+    const atsContainer = document.getElementById("accountTenureStack");
+    const rowH = 28, topM = 50, botM = 45;
+    const chartH = Math.max(100, rows.length * rowH + topM + botM);
+    const pw = Math.max(200, atsContainer.clientWidth - 24);
+    atsContainer.innerHTML = `<div class="chart-scroll-container"><div class="chart-scroll-title">Tenure by Account</div><div class="chart-scroll-area"><div id="accountTenureStackPlot"></div></div></div>`;
+    Plotly.newPlot("accountTenureStackPlot", traces, {{
+        height: chartH, width: pw,
+        margin: {{l: 135, r: 58, t: topM, b: botM}},
         barmode: "stack",
         xaxis: {{title: "Headcount", range: [0, Math.ceil(maxTotal * 1.12)]}},
         yaxis: {{title: "Account"}},
         paper_bgcolor: "white",
         plot_bgcolor: "white",
-        legend: {{orientation: "h", y: -0.25, font: {{size: 9}}}},
+        legend: {{orientation: "h", y: 1.12, x: 0.5, xanchor: "center", font: {{size: 9}}}},
         annotations: totalAnnotations,
         uniformtext: {{mode: "hide", minsize: 9}},
         font: {{family: "Arial", size: 10}}
-    }}, {{responsive: true}});
+    }}, {{responsive: false}});
 }}
 
 function weeklyChart() {{
@@ -3271,7 +3335,7 @@ function render() {{
 
     donut("deptDonut", "Headcount by Department", countBy(data, "Department"), "value");
     const approvedAccountData = countBy(data, "LOB / Account").filter(d => APPROVED_ACCOUNTS.has(d.name.toLowerCase()));
-    bar("accountBar", "Headcount by Account", approvedAccountData, "Account", null);
+    scrollableBar("accountBar", "Headcount by Account", approvedAccountData, "Account");
     donut("activeDonut", "Active vs Inactive", [
         {{name: "Active", count: active}},
         {{name: "Inactive", count: inactive}}
