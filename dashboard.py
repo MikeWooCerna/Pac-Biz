@@ -1123,10 +1123,14 @@ def main():
         height: 420px;
         min-height: 0;
         overflow: hidden;
+        display: flex;
+        flex-direction: column;
     }}
     .chart-scroll-container {{
         display: flex;
         flex-direction: column;
+        height: 100%;
+        min-height: 0;
     }}
     .chart-scroll-title {{
         color: #004C97;
@@ -1134,10 +1138,13 @@ def main():
         font-weight: bold;
         text-align: center;
         padding: 8px 0 4px;
+        flex-shrink: 0;
     }}
     .chart-scroll-area {{
         overflow-y: auto;
         overflow-x: hidden;
+        flex: 1 1 0;
+        min-height: 0;
         scrollbar-width: thin;
         scrollbar-color: #004C97 #f0f0f0;
     }}
@@ -2774,7 +2781,7 @@ function scrollableBar(id, title, data, yTitle) {{
     const rowH = 28, topM = 40, botM = 5;
     const chartH = Math.max(100, reversed.length * rowH + topM + botM);
     const pw = Math.max(200, container.clientWidth - 24);
-    container.innerHTML = `<div class="chart-scroll-container"><div class="chart-scroll-title">${{escapeHtml(title)}}</div><div class="chart-scroll-area" style="height:362px"><div id="${{id}}Plot"></div></div></div>`;
+    container.innerHTML = `<div class="chart-scroll-container"><div class="chart-scroll-title">${{escapeHtml(title)}}</div><div class="chart-scroll-area"><div id="${{id}}Plot"></div></div></div>`;
     Plotly.newPlot(`${{id}}Plot`, [{{
         x: reversed.map(d => d.count),
         y: reversed.map(d => d.name),
@@ -2879,7 +2886,7 @@ function accountTenureStack(data) {{
     const legendHtml = TENURE_GROUPS.map((g, i) =>
         `<span class="scroll-legend-item"><span class="scroll-legend-swatch" style="background:${{COLORS[i % COLORS.length]}}"></span>${{escapeHtml(g.name)}}</span>`
     ).join("");
-    atsContainer.innerHTML = `<div class="chart-scroll-container"><div class="chart-scroll-title">Tenure by Account</div><div class="chart-scroll-area" style="height:314px"><div id="accountTenureStackPlot"></div></div><div class="chart-scroll-footer">${{legendHtml}}</div></div>`;
+    atsContainer.innerHTML = `<div class="chart-scroll-container"><div class="chart-scroll-title">Tenure by Account</div><div class="chart-scroll-area"><div id="accountTenureStackPlot"></div></div><div class="chart-scroll-footer">${{legendHtml}}</div></div>`;
     Plotly.newPlot("accountTenureStackPlot", traces, {{
         height: chartH, width: pw,
         margin: {{l: 135, r: 58, t: topM, b: botM}},
