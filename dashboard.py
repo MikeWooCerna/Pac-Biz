@@ -2685,8 +2685,9 @@ function renderDonutWithSummary(id, title, data, colors, totalLabel, textInfo = 
     document.getElementById(`${{id}}Summary`).innerHTML = chartSummaryMarkup(data, colors, totalLabel, totalSuffix);
 }}
 
-function bar(id, title, data, yTitle) {{
-    const top = data.slice(0, 10).reverse();
+function bar(id, title, data, yTitle, maxItems = 10) {{
+    const top = (maxItems === null ? data : data.slice(0, maxItems)).reverse();
+    const chartHeight = Math.max(300, top.length * 30 + 80);
     Plotly.newPlot(id, [{{
         x: top.map(d => d.count),
         y: top.map(d => d.name),
@@ -2697,7 +2698,7 @@ function bar(id, title, data, yTitle) {{
         marker: {{color: "#004C97"}}
     }}], {{
         title: {{text: title, font: {{color: "#004C97", size: 15}}}},
-        height: 300,
+        height: chartHeight,
         margin: {{l: 135, r: 20, t: 45, b: 35}},
         xaxis: {{title: "Headcount"}},
         yaxis: {{title: yTitle}},
@@ -2731,7 +2732,7 @@ function segmentBar(id, title, data, yTitle) {{
 }}
 
 function accountTenureStack(data) {{
-    const accounts = countBy(data, "LOB / Account").slice(0, 10).map(d => d.name);
+    const accounts = countBy(data, "LOB / Account").filter(d => APPROVED_ACCOUNTS.has(d.name.toLowerCase())).map(d => d.name);
     const rows = [...accounts].reverse();
     const counts = {{}};
 
@@ -2788,9 +2789,10 @@ function accountTenureStack(data) {{
         font: {{family: "Arial", size: 11, color: "#002B5C"}},
     }}));
 
+    const stackHeight = Math.max(340, rows.length * 30 + 100);
     Plotly.newPlot("accountTenureStack", traces, {{
         title: {{text: "Tenure by Account", font: {{color: "#004C97", size: 15}}}},
-        height: 340,
+        height: stackHeight,
         margin: {{l: 135, r: 58, t: 45, b: 35}},
         barmode: "stack",
         xaxis: {{title: "Headcount", range: [0, Math.ceil(maxTotal * 1.12)]}},
@@ -3268,7 +3270,8 @@ function render() {{
     setText("managers", uniqueValues(data, "Manager").length);
 
     donut("deptDonut", "Headcount by Department", countBy(data, "Department"), "value");
-    bar("accountBar", "Headcount by Account (Top 10)", countBy(data, "LOB / Account"), "Account");
+    const approvedAccountData = countBy(data, "LOB / Account").filter(d => APPROVED_ACCOUNTS.has(d.name.toLowerCase()));
+    bar("accountBar", "Headcount by Account", approvedAccountData, "Account", null);
     donut("activeDonut", "Active vs Inactive", [
         {{name: "Active", count: active}},
         {{name: "Inactive", count: inactive}}
