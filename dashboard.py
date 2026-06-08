@@ -1126,6 +1126,10 @@ def main():
         display: flex;
         flex-direction: column;
     }}
+    .chart-card-scrollable > div {{
+        flex: 1 1 0;
+        min-height: 0;
+    }}
     .chart-scroll-container {{
         display: flex;
         flex-direction: column;
