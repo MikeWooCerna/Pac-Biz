@@ -2782,10 +2782,11 @@ function scrollableBar(id, title, data, yTitle) {{
     const container = document.getElementById(id);
     if (!container) return;
     const reversed = [...data].reverse();
-    const rowH = 28, topM = 40, botM = 5;
+    const rowH = 28, topM = 10, botM = 5;
     const chartH = Math.max(100, reversed.length * rowH + topM + botM);
     const pw = Math.max(200, container.clientWidth - 24);
-    container.innerHTML = `<div class="chart-scroll-container"><div class="chart-scroll-title">${{escapeHtml(title)}}</div><div class="chart-scroll-area"><div id="${{id}}Plot"></div></div></div>`;
+    const footerHtml = `<span class="scroll-legend-item"><span class="scroll-legend-swatch" style="background:#004C97"></span>Headcount</span>`;
+    container.innerHTML = `<div class="chart-scroll-container"><div class="chart-scroll-title">${{escapeHtml(title)}}</div><div class="chart-scroll-area"><div id="${{id}}Plot"></div></div><div class="chart-scroll-footer">${{footerHtml}}</div></div>`;
     Plotly.newPlot(`${{id}}Plot`, [{{
         x: reversed.map(d => d.count),
         y: reversed.map(d => d.name),
