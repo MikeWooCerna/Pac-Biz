@@ -1744,7 +1744,8 @@ def main():
     <div class="card"><div class="label">Movements</div><div class="value" id="movements">0</div></div>
     <div class="card"><div class="label">History Records</div><div class="value" id="historyRecords">0</div></div>
     <div class="card"><div class="label">Departments</div><div class="value" id="departments">0</div></div>
-    <div class="card"><div class="label">Account</div><div class="value" id="accounts">0</div></div>
+    <div class="card"><div class="label">Sub Departments</div><div class="value" id="accounts">0</div></div>
+    <div class="card"><div class="label">Accounts</div><div class="value" id="approvedAccounts">0</div></div>
     <div class="card"><div class="label">Managers</div><div class="value" id="managers">0</div></div>
 </div>
 </div>
@@ -1976,6 +1977,12 @@ const MASTERLIST_FILTERS = {{
     employeeGroup: new Set(),
     employmentStatus: new Set(),
 }};
+const APPROVED_ACCOUNTS = new Set([
+    "Alpha Tax", "Associate", "Blueline", "Brite Lift", "Buffalo", "C&H",
+    "Circle Taxi", "Data Carz", "DMG", "Hamilton", "Kaizen", "Kelowna",
+    "Keys Please", "M7 Ride", "Mediroute", "Monsoon", "Ollies", "Parentis Health",
+    "R4H", "Reno Nevada", "Skyline", "Trans IOWA", "Victoria YC", "VIP", "VRN", "YCDC",
+].map(v => v.toLowerCase()));
 const COACHING_FILTERS = {{
     emp: new Set(),
     leader: new Set(),
@@ -3257,6 +3264,7 @@ function render() {{
     setText("historyRecords", historyData.length);
     setText("departments", uniqueValues(data, "Department").length);
     setText("accounts", uniqueValues(data, "LOB / Account").length);
+    setText("approvedAccounts", new Set(data.map(r => norm(r["LOB / Account"])).filter(v => v && APPROVED_ACCOUNTS.has(v.toLowerCase()))).size);
     setText("managers", uniqueValues(data, "Manager").length);
 
     donut("deptDonut", "Headcount by Department", countBy(data, "Department"), "value");
