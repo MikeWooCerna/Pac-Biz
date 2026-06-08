@@ -2984,8 +2984,8 @@ function weeklyChart() {{
     if (!wContainer) return;
     wContainer.innerHTML =
         `<div id="weeklyLinePlot"></div>` +
-        `<div style="text-align:center;font-size:11px;color:#555;font-family:Arial;margin:4px 0 2px;">Week</div>` +
-        `<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:4px 10px;padding:4px 0 2px;">${{legendHtml}}</div>`;
+        `<div style="text-align:center;font-size:11px;color:#555;font-family:Arial;margin:24px 0 0;">Week</div>` +
+        `<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:4px 10px;padding:24px 4px 24px;">${{legendHtml}}</div>`;
 
     Plotly.newPlot("weeklyLinePlot", traces, {{
         title: {{text: "Weekly Headcount", font: {{color: "#004C97", size: 15}}}},
