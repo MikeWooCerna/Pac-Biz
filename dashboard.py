@@ -1027,8 +1027,8 @@ def main():
 
     .cards {{
         display: grid;
-        grid-template-columns: repeat(8, 1fr);
-        gap: 10px;
+        grid-template-columns: repeat(9, minmax(0, 1fr));
+        gap: 8px;
         padding: 8px 18px 14px;
         background: var(--bg);
     }}
@@ -1742,11 +1742,11 @@ def main():
     <div class="card"><div class="label">Active</div><div class="value" id="active">0</div></div>
     <div class="card"><div class="label">Inactive</div><div class="value" id="inactive">0</div></div>
     <div class="card"><div class="label">Movements</div><div class="value" id="movements">0</div></div>
-    <div class="card"><div class="label">History Records</div><div class="value" id="historyRecords">0</div></div>
     <div class="card"><div class="label">Departments</div><div class="value" id="departments">0</div></div>
     <div class="card"><div class="label">Sub Departments</div><div class="value" id="accounts">0</div></div>
     <div class="card"><div class="label">Accounts</div><div class="value" id="approvedAccounts">0</div></div>
     <div class="card"><div class="label">Managers</div><div class="value" id="managers">0</div></div>
+    <div class="card"><div class="label">History Records</div><div class="value" id="historyRecords">0</div></div>
 </div>
 </div>
 
