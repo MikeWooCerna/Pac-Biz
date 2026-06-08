@@ -1141,10 +1141,10 @@ def main():
         flex-shrink: 0;
     }}
     .chart-scroll-area {{
-        overflow-y: auto;
-        overflow-x: hidden;
         flex: 1 1 0;
         min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
         scrollbar-width: thin;
         scrollbar-color: #004C97 #f0f0f0;
     }}
