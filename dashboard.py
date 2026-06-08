@@ -2782,10 +2782,10 @@ function scrollableBar(id, title, data, yTitle) {{
     const container = document.getElementById(id);
     if (!container) return;
     const reversed = [...data].reverse();
-    const rowH = 28, topM = 10, botM = 5;
+    const rowH = 28, topM = 10, botM = 25;
     const chartH = Math.max(100, reversed.length * rowH + topM + botM);
     const pw = Math.max(200, container.clientWidth - 24);
-    const footerHtml = `<span class="scroll-legend-item"><span class="scroll-legend-swatch" style="background:#004C97"></span>Headcount</span>`;
+    const footerHtml = `<div style="width:100%;text-align:center;font-size:10px;color:#555;font-family:Arial;padding-bottom:2px;">Headcount</div>`;
     container.innerHTML = `<div class="chart-scroll-container"><div class="chart-scroll-title">${{escapeHtml(title)}}</div><div class="chart-scroll-area"><div id="${{id}}Plot"></div></div><div class="chart-scroll-footer">${{footerHtml}}</div></div>`;
     Plotly.newPlot(`${{id}}Plot`, [{{
         x: reversed.map(d => d.count),
@@ -2796,7 +2796,7 @@ function scrollableBar(id, title, data, yTitle) {{
     }}], {{
         height: chartH, width: pw,
         margin: {{l: 135, r: 20, t: topM, b: botM}},
-        xaxis: {{side: "top"}},
+        xaxis: {{side: "bottom"}},
         yaxis: {{title: yTitle}},
         paper_bgcolor: "white", plot_bgcolor: "white",
         font: {{family: "Arial", size: 10}}
