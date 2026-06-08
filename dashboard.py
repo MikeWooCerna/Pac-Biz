@@ -2796,7 +2796,7 @@ function scrollableBar(id, title, data, yTitle) {{
     }}], {{
         height: chartH, width: pw,
         margin: {{l: 135, r: 20, t: topM, b: botM}},
-        xaxis: {{title: "Headcount", side: "top"}},
+        xaxis: {{side: "top"}},
         yaxis: {{title: yTitle}},
         paper_bgcolor: "white", plot_bgcolor: "white",
         font: {{family: "Arial", size: 10}}
@@ -2816,7 +2816,7 @@ function segmentBar(id, title, data, yTitle) {{
         hovertemplate: "%{{y}}<br>Headcount: %{{x}}<extra></extra>",
     }}], {{
         title: {{text: title, font: {{color: "#004C97", size: 15}}}},
-        height: 300,
+        height: 390,
         margin: {{l: 120, r: 20, t: 45, b: 35}},
         xaxis: {{title: "Headcount"}},
         yaxis: {{title: yTitle}},
@@ -2885,19 +2885,20 @@ function accountTenureStack(data) {{
     }}));
 
     const atsContainer = document.getElementById("accountTenureStack");
-    const rowH = 28, topM = 10, botM = 45;
+    const rowH = 28, topM = 10, botM = 25;
     const chartH = Math.max(100, rows.length * rowH + topM + botM);
     const pw = Math.max(200, atsContainer.clientWidth - 24);
-    const legendHtml = TENURE_GROUPS.map((g, i) =>
-        `<span class="scroll-legend-item"><span class="scroll-legend-swatch" style="background:${{COLORS[i % COLORS.length]}}"></span>${{escapeHtml(g.name)}}</span>`
-    ).join("");
+    const legendHtml = `<div style="width:100%;text-align:center;font-size:10px;color:#555;font-family:Arial;padding-bottom:2px;">Headcount</div>` +
+        TENURE_GROUPS.map((g, i) =>
+            `<span class="scroll-legend-item"><span class="scroll-legend-swatch" style="background:${{COLORS[i % COLORS.length]}}"></span>${{escapeHtml(g.name)}}</span>`
+        ).join("");
     atsContainer.innerHTML = `<div class="chart-scroll-container"><div class="chart-scroll-title">Tenure by Account</div><div class="chart-scroll-area"><div id="accountTenureStackPlot"></div></div><div class="chart-scroll-footer">${{legendHtml}}</div></div>`;
     Plotly.newPlot("accountTenureStackPlot", traces, {{
         height: chartH, width: pw,
         margin: {{l: 135, r: 58, t: topM, b: botM}},
         barmode: "stack",
         showlegend: false,
-        xaxis: {{title: "Headcount", range: [0, Math.ceil(maxTotal * 1.12)]}},
+        xaxis: {{range: [0, Math.ceil(maxTotal * 1.12)]}},
         yaxis: {{title: "Account"}},
         paper_bgcolor: "white",
         plot_bgcolor: "white",
