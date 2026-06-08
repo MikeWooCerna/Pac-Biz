@@ -1127,7 +1127,6 @@ def main():
     .chart-scroll-container {{
         display: flex;
         flex-direction: column;
-        height: 100%;
     }}
     .chart-scroll-title {{
         color: #004C97;
@@ -1135,12 +1134,11 @@ def main():
         font-weight: bold;
         text-align: center;
         padding: 8px 0 4px;
-        flex-shrink: 0;
     }}
     .chart-scroll-area {{
+        height: 362px;
         overflow-y: auto;
         overflow-x: hidden;
-        flex: 1;
         scrollbar-width: thin;
         scrollbar-color: #004C97 #f0f0f0;
     }}
