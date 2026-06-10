@@ -3970,6 +3970,7 @@ function qaAvg(arr) {{
     return arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0;
 }}
 function qaFmtDate(d) {{
+    if (!d) return '';
     return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }}
 function qaFmtDisplay(d) {{
@@ -3987,11 +3988,13 @@ function qaYN(v) {{
 // ─── Date Range Picker ────────────────────────────────────────────────────────
 function qaUpdateDRPLabel() {{
     const el = document.getElementById('qa-drp-label');
-    if (el) el.textContent = qaFmtDisplay(qaDrpStart)+' – '+qaFmtDisplay(qaDrpEnd);
+    if (el) el.textContent = qaDrpEnd
+        ? qaFmtDisplay(qaDrpStart)+' – '+qaFmtDisplay(qaDrpEnd)
+        : qaFmtDisplay(qaDrpStart)+' – …';
     const si = document.getElementById('qa-inp-start');
     const ei = document.getElementById('qa-inp-end');
     if (si) si.value = qaFmtDate(qaDrpStart);
-    if (ei) ei.value = qaFmtDate(qaDrpEnd);
+    if (ei) ei.value = qaDrpEnd ? qaFmtDate(qaDrpEnd) : '';
 }}
 
 function qaToggleDRP(e) {{
@@ -4001,18 +4004,21 @@ function qaToggleDRP(e) {{
 }}
 
 function qaOpenDatePicker() {{
-    qaDrpOpen = true; qaDrpPhase = 0;
+    qaDrpOpen = true; qaDrpPhase = 0; qaDrpHoverDate = null;
     qaCalLeftYear  = qaDrpStart.getFullYear();
     qaCalLeftMonth = qaDrpStart.getMonth();
     const panel = document.getElementById('qa-drp-panel');
     if (panel) panel.classList.add('open');
     qaRenderCals();
+    qaUpdateDRPLabel();
 }}
 
 function qaCloseDatePicker() {{
     qaDrpOpen = false; qaDrpPhase = 0; qaDrpHoverDate = null;
     const panel = document.getElementById('qa-drp-panel');
     if (panel) panel.classList.remove('open');
+    const trig = document.getElementById('qa-drp-trigger');
+    if (trig) trig.classList.remove('picking');
 }}
 
 function qaNavCal(side, dir) {{
@@ -4071,34 +4077,45 @@ function qaRenderOneCal(containerId, year, month, side) {{
 
 function qaHoverDay(btn, dStr) {{
     void btn;
-    if (qaDrpPhase!==1) return;
+    if (!qaDrpOpen || qaDrpPhase!==1) {{ qaDrpHoverDate=null; return; }}
     qaDrpHoverDate=dStr;
     const startStr=qaFmtDate(qaDrpStart);
     document.querySelectorAll('.qa-cal-d:not(.other-month)').forEach(b=>{{
         const d=b.dataset.date; if(!d) return;
         b.classList.remove('sel-preview','in-range','sel-start','sel-end');
-        if (d===startStr) b.classList.add('sel-start');
-        if (d===dStr) b.classList.add('sel-preview');
-        const lo=startStr<=dStr?startStr:dStr, hi=startStr<=dStr?dStr:startStr;
-        if (d>lo&&d<hi) b.classList.add('in-range');
+        if (d===startStr) {{ b.classList.add('sel-start'); return; }}
+        if (!qaDrpHoverDate) return;
+        if (dStr>startStr) {{
+            if (d>startStr && d<dStr) b.classList.add('in-range');
+            if (d===dStr) b.classList.add('sel-end','sel-preview');
+        }} else {{
+            if (d<startStr && d>dStr) b.classList.add('in-range');
+            if (d===dStr) b.classList.add('sel-end','sel-preview');
+        }}
     }});
 }}
 
 function qaPickDay(dStr) {{
+    const d=new Date(dStr+'T00:00:00'), trig=document.getElementById('qa-drp-trigger');
     if (qaDrpPhase===0) {{
-        qaDrpStart=new Date(dStr+'T00:00:00');
-        qaDrpEnd=new Date(dStr+'T00:00:00');
-        qaDrpPhase=1; qaDrpHoverDate=null;
+        qaDrpStart=d; qaDrpEnd=null; qaDrpHoverDate=null; qaDrpPhase=1;
+        if (trig) trig.classList.add('picking');
+        const lbl=document.getElementById('qa-drp-label');
+        if (lbl) lbl.textContent='Pick end date…';
+        const si=document.getElementById('qa-inp-start'), ei=document.getElementById('qa-inp-end');
+        if (si) si.value=dStr;
+        if (ei) ei.value='';
         qaRenderCals();
     }} else {{
-        const picked=new Date(dStr+'T00:00:00');
-        if (picked<qaDrpStart) {{ qaDrpEnd=qaDrpStart; qaDrpStart=picked; }}
-        else qaDrpEnd=picked;
-        qaDrpPhase=0;
+        if (d<qaDrpStart) {{ qaDrpEnd=qaDrpStart; qaDrpStart=d; }}
+        else qaDrpEnd=d;
+        qaDrpOpen=false; qaDrpPhase=0; qaDrpHoverDate=null;
+        if (trig) trig.classList.remove('picking');
+        qaUpdateDRPLabel();
         qaRenderCals();
-        const si=document.getElementById('qa-inp-start'), ei=document.getElementById('qa-inp-end');
-        if (si) si.value=qaFmtDate(qaDrpStart);
-        if (ei) ei.value=qaFmtDate(qaDrpEnd);
+        const panel=document.getElementById('qa-drp-panel');
+        if (panel) panel.classList.remove('open');
+        qaApplyFilters();
     }}
 }}
 
@@ -4468,8 +4485,10 @@ function initQualityCharts() {{
     }}
 
     document.addEventListener('click',function(e){{
+        if (!qaDrpOpen) return;
+        if (qaDrpPhase===1) return;
         const wrap=document.getElementById('qa-drp-wrap');
-        if(wrap&&!wrap.contains(e.target)) qaCloseDatePicker();
+        if (wrap&&!wrap.contains(e.target)) qaCloseDatePicker();
     }});
 
     const sentinel=document.getElementById('qa-kpi-sentinel');
