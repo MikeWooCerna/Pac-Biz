@@ -2314,7 +2314,7 @@ def main():
 <div class="qa-live-banner">
   <div class="qa-lb-left">
     <span class="qa-lb-dot"></span>
-    Live data &nbsp;&middot;&nbsp; M7 Ride-hailing support &nbsp;&middot;&nbsp; Source: Google Forms QA scorecard &nbsp;&middot;&nbsp; <span id="qa-banner-count">29</span> evaluations
+    Live data &nbsp;&middot;&nbsp; M7 Ride Quality Evaluations &nbsp;&middot;&nbsp; <span id="qa-banner-count">29</span> evaluations
   </div>
   <div style="font-size:10px;color:#16A34A">Pass threshold: 90% &nbsp;&middot;&nbsp; 22-criteria scorecard &nbsp;&middot;&nbsp; Supervisors: Charito Caitor / Almyr Beltran</div>
 </div>
@@ -3910,9 +3910,10 @@ let qaChartsInitialized = false;
 let qaTrendChart = null;
 let qaDonutChart = null;
 
-// Date range picker state
-let qaDrpStart    = new Date('2026-05-08T00:00:00');
-let qaDrpEnd      = new Date('2026-06-08T00:00:00');
+// Date range picker state — default: first of current month → today
+const _qaToday = new Date(); _qaToday.setHours(0,0,0,0);
+let qaDrpStart = new Date(_qaToday.getFullYear(), _qaToday.getMonth(), 1);
+let qaDrpEnd   = new Date(_qaToday);
 let qaDrpPhase    = 0;
 let qaDrpOpen     = false;
 let qaDrpHoverDate = null;
@@ -4127,8 +4128,9 @@ function qaApplyDRP() {{
 }}
 
 function qaResetDRP() {{
-    qaDrpStart=new Date('2026-05-08T00:00:00');
-    qaDrpEnd=new Date('2026-06-08T00:00:00');
+    const _t=new Date(); _t.setHours(0,0,0,0);
+    qaDrpStart=new Date(_t.getFullYear(),_t.getMonth(),1);
+    qaDrpEnd=new Date(_t);
     qaDrpPhase=0; qaUpdateDRPLabel(); qaCloseDatePicker(); qaApplyFilters();
 }}
 
