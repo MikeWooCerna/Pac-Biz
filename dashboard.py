@@ -4070,7 +4070,8 @@ function qaCloseDatePicker() {{
     if (trig) trig.classList.remove('picking');
 }}
 
-function qaNavCal(side, dir) {{
+function qaNavCal(side, dir, e) {{
+    if (e) {{ e.stopPropagation(); e.preventDefault(); }}
     void side;
     qaCalLeftMonth += dir;
     if (qaCalLeftMonth > 11) {{ qaCalLeftMonth=0; qaCalLeftYear++; }}
@@ -4097,9 +4098,9 @@ function qaRenderOneCal(containerId, year, month, side) {{
     const endStr    = qaFmtDate(qaDrpEnd);
 
     let html = `<div class="qa-cal-header">
-        <button class="qa-cal-nav" onclick="qaNavCal('${{side}}',-1)">&#8249;</button>
+        <button class="qa-cal-nav" type="button" onclick="qaNavCal('${{side}}',-1,event)">&#8249;</button>
         <span class="qa-cal-title">${{QA_MONTHS[month]}} ${{year}}</span>
-        <button class="qa-cal-nav" onclick="qaNavCal('${{side}}',1)">&#8250;</button>
+        <button class="qa-cal-nav" type="button" onclick="qaNavCal('${{side}}',1,event)">&#8250;</button>
     </div><div class="qa-cal-grid">
         <div class="qa-cal-dh">Mo</div><div class="qa-cal-dh">Tu</div><div class="qa-cal-dh">We</div>
         <div class="qa-cal-dh">Th</div><div class="qa-cal-dh">Fr</div><div class="qa-cal-dh">Sa</div>
@@ -4537,6 +4538,7 @@ function initQualityCharts() {{
     document.addEventListener('click',function(e){{
         if (!qaDrpOpen) return;
         if (qaDrpPhase===1) return;
+        if (!e.target.isConnected) return; // detached node (nav btn rebuilt DOM mid-click)
         const wrap=document.getElementById('qa-drp-wrap');
         if (wrap&&!wrap.contains(e.target)) qaCloseDatePicker();
     }});
