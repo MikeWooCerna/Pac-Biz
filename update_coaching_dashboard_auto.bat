@@ -64,11 +64,9 @@ if errorlevel 1 goto :fail
 :done
 echo.
 echo Done. GitHub Pages may take about 1 minute to update.
-pause
 exit /b 0
 
 :fail
 echo.
 echo Update failed. Check the message above.
-pause
 exit /b 1
