@@ -24,6 +24,46 @@ COACHING_DIR = Path(os.getenv("COACHING_DIR", r"C:\Users\Mike Woo Cerna\Document
 COACHING_SCRIPT = Path(os.getenv("COACHING_SCRIPT", str(COACHING_DIR / "asana_pull.py")))
 COACHING_CONFIG = Path(os.getenv("COACHING_CONFIG", str(COACHING_DIR / "config.json")))
 COACHING_OUTPUT_FILE = Path(os.getenv("COACHING_OUTPUT_FILE", str(COACHING_DIR / "Output" / "coaching_logs.xlsx")))
+
+M7_DIR = Path(os.getenv("M7_DIR", r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\M7"))
+M7_SCRIPT = M7_DIR / "m7_pull.py"
+M7_OUTPUT_FILE = M7_DIR / "M7_RAW.xlsx"
+
+M7_COLUMN_MAP = {
+    "Timestamp":                                              "ts",
+    "Call Date:":                                            "date",
+    "Agent's Name:":                                         "agent",
+    "Score":                                                 "score",
+    "Evaluation Type:":                                      "type",
+    "QA Coach:":                                             "coach",
+    "Supervisor:":                                           "supervisor",
+    "Conducted Thorough Investigation:":                     "invest",
+    "Feedback Summary:":                                     "feedback",
+    "Opening Spiel (Inbound Calls) - 1pt":                   "os_in",
+    "Opening Spiel (Outbound Calls) - 1pt":                  "os_out",
+    "Closing Spiel - 1pt":                                   "closing",
+    "Appropriate Response - 2pts":                           "approp",
+    "No Response - 2pts":                                    "no_resp",
+    "Fillers / Slang Words - 2pts":                          "fillers",
+    "Acknowledgement / Ownsership - 1pt":                    "ack",
+    "Proper Handling of Pauses or Hold Requests - 2pts":     "hold",
+    "Acknowledges and Thank the Customer for Waiting - 1pt": "ack_hold",
+    "Response Efficiency - 2pts":                            "resp_eff",
+    "Empathy / Sympathy - 3pts":                             "empathy",
+    "Adjust to Customer's Level - 3pts":                     "adjust",
+    "Mute Button Usage - 1pt":                               "mute",
+    "Active Listening - 5pts":                               "active",
+    "Answered Customer's Questions - 4pts":                  "answered",
+    "Probing Questions - 4pts":                              "probing",
+    "Customer Verification - 10pts":                         "verif",
+    "Clarification When Information is Missed - 4pts":       "clarif",
+    "Lost Item SOP - 6pts":                                  "lost_sop",
+    "Rudeness - 20pts":                                      "rude",
+    "Transaction Completion - 20pts":                        "trans",
+    "Speech Clarify - 5pts":                                 "speech",
+    "QA_ID":                                                 "qa_id",
+    "EMPLOYEE_ID":                                           "emp_id",
+}
 COACHING_VALIDATION_ERRORS_FILE = COACHING_OUTPUT_FILE.parent / "coaching_validation_errors.csv"
 COACHING_TIMEZONE = ZoneInfo("Asia/Manila")
 COACHING_TIMEZONE_NAME = "Asia/Manila"
@@ -283,6 +323,113 @@ def read_coaching_workbook():
     except Exception as exc:
         print(f"Skipping Coaching workbook load: {exc}")
         return pd.DataFrame()
+
+
+def refresh_m7_output():
+    if not M7_SCRIPT.exists():
+        return False
+    try:
+        result = subprocess.run(
+            [sys.executable, str(M7_SCRIPT)],
+            cwd=str(M7_DIR),
+            capture_output=True,
+            text=True,
+            timeout=120,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        print(f"Skipping M7 pull: {exc}")
+        return False
+    if result.returncode != 0:
+        msg = result.stderr.strip() or result.stdout.strip() or "No details."
+        print(f"Skipping M7 pull: {msg}")
+        return False
+    if result.stdout.strip():
+        print(result.stdout.strip())
+    return True
+
+
+def read_m7_workbook():
+    if not M7_OUTPUT_FILE.exists():
+        return pd.DataFrame()
+    try:
+        return clean_columns(pd.read_excel(M7_OUTPUT_FILE))
+    except Exception as exc:
+        print(f"Skipping M7 workbook load: {exc}")
+        return pd.DataFrame()
+
+
+def transform_m7_data(source):
+    df = source.rename(columns={k: v for k, v in M7_COLUMN_MAP.items() if k in source.columns})
+
+    def fmt_ts(v):
+        try:
+            dt = pd.to_datetime(str(v), errors="coerce")
+            if pd.notna(dt):
+                return dt.strftime("%Y-%m-%d %H:%M")
+        except Exception:
+            pass
+        s = str(v).strip()
+        return "" if s.lower() in ("nan", "na", "") else s
+
+    def fmt_date(v):
+        try:
+            dt = pd.to_datetime(str(v), errors="coerce")
+            if pd.notna(dt):
+                return dt.strftime("%Y-%m-%d")
+        except Exception:
+            pass
+        s = str(v).strip()
+        return "" if s.lower() in ("nan", "na", "") else s
+
+    def clean_val(v):
+        if v is None:
+            return ""
+        try:
+            if pd.isna(v):
+                return ""
+        except (TypeError, ValueError):
+            pass
+        s = str(v).strip()
+        return "" if s.lower() in ("nan", "na") else s
+
+    if "ts" in df.columns:
+        df["ts"] = df["ts"].apply(fmt_ts)
+    if "date" in df.columns:
+        df["date"] = df["date"].apply(fmt_date)
+    if "score" in df.columns:
+        df["score"] = pd.to_numeric(df["score"], errors="coerce").fillna(0).astype(int)
+    if "feedback" in df.columns:
+        df["feedback"] = df["feedback"].apply(clean_val)
+
+    if "emp_id" in df.columns and "ts" in df.columns:
+        df["eval_key"] = (
+            df["emp_id"].astype(str)
+            + "_"
+            + df["ts"].str.replace(r"[-: ]", "", regex=True)
+        )
+
+    keep = [
+        "qa_id", "eval_key", "emp_id", "ts", "date", "agent", "score", "type",
+        "coach", "supervisor", "invest", "feedback",
+        "os_in", "os_out", "closing", "approp", "no_resp", "fillers",
+        "ack", "hold", "ack_hold", "resp_eff", "empathy", "adjust",
+        "mute", "active", "answered", "probing", "verif", "clarif",
+        "lost_sop", "rude", "trans", "speech",
+    ]
+    return df[[c for c in keep if c in df.columns]]
+
+
+def load_m7_data():
+    refresh_m7_output()
+    source = read_m7_workbook()
+    if source.empty:
+        return pd.DataFrame(columns=["qa_id", "eval_key", "emp_id", "ts", "date",
+                                     "agent", "score", "type", "coach", "supervisor",
+                                     "invest", "feedback"])
+    result = transform_m7_data(source)
+    print(f"M7 QA rows: {len(result)}")
+    return result
 
 
 def load_existing_records_from_html(variable_name):
@@ -761,6 +908,7 @@ def main():
     history = clean_columns(pd.read_csv(HISTORY_CSV))
     movement = clean_columns(pd.read_csv(MOVEMENT_CSV))
     coaching = load_coaching_data(masterlist)
+    m7 = load_m7_data()
 
     refresh_time = datetime.now().strftime("%Y-%m-%d %I:%M %p")
 
@@ -784,6 +932,7 @@ def main():
 {"<link rel='icon' type='image/png' href='" + favicon_uri + "'>" if favicon_uri else ""}
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 
 <style>
     :root {{
@@ -1724,6 +1873,113 @@ def main():
             flex-direction: column;
         }}
     }}
+
+    /* ── Quality tab ── */
+    #qualityPanel {{ background: #F1F5F9; padding: 0; }}
+    #qualityPanel .qa-filter-bar {{
+        background: #fff; border-bottom: 2px solid #E2E8F0;
+        padding: 10px 20px; display: flex; align-items: flex-end;
+        gap: 10px; flex-wrap: wrap;
+    }}
+    #qualityPanel .qa-fg {{ display: flex; flex-direction: column; gap: 3px; }}
+    #qualityPanel .qa-fg label {{ font-size: 10px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: .06em; }}
+    #qualityPanel .qa-pg {{ display: flex; border: 1px solid #CBD5E1; border-radius: 7px; overflow: hidden; height: 34px; }}
+    #qualityPanel .qa-pb {{ padding: 0 14px; font-size: 12px; background: #fff; color: #64748B; border: none; cursor: pointer; font-weight: 500; border-right: 1px solid #CBD5E1; }}
+    #qualityPanel .qa-pb:last-child {{ border-right: none; }}
+    #qualityPanel .qa-pb.active {{ background: #0D3B6E; color: #fff; font-weight: 600; }}
+    #qualityPanel .qa-fsel {{ height: 34px; padding: 0 28px 0 10px; font-size: 12px; border: 1px solid #CBD5E1; border-radius: 7px; background: #fff; color: #374151; cursor: pointer; font-weight: 500; min-width: 150px; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; }}
+    #qualityPanel .qa-fsel.hl {{ border-color: #0D3B6E; background-color: #EFF6FF; color: #0D3B6E; font-weight: 700; }}
+    #qualityPanel .qa-fdiv {{ width: 1px; height: 34px; background: #E2E8F0; align-self: flex-end; }}
+    #qualityPanel .qa-btn-apply {{ height: 34px; padding: 0 18px; font-size: 12px; border: none; border-radius: 7px; background: #0D3B6E; color: #fff; cursor: pointer; font-weight: 700; align-self: flex-end; }}
+    #qualityPanel .qa-btn-clear {{ height: 34px; padding: 0 14px; font-size: 12px; border: 1px solid #E85D3F; border-radius: 7px; background: #fff; color: #E85D3F; cursor: pointer; font-weight: 600; align-self: flex-end; }}
+    #qualityPanel .qa-live-banner {{ background: #F0FDF4; border-bottom: 2px solid #BBF7D0; padding: 7px 20px; display: flex; align-items: center; justify-content: space-between; }}
+    #qualityPanel .qa-lb-left {{ display: flex; align-items: center; gap: 8px; font-size: 11px; color: #15803D; font-weight: 600; }}
+    #qualityPanel .qa-lb-dot {{ width: 8px; height: 8px; border-radius: 50%; background: #0F9B58; animation: qaPulse 2s infinite; }}
+    @keyframes qaPulse {{ 0%,100%{{opacity:1}}50%{{opacity:.4}} }}
+    #qualityPanel .qa-lb-right {{ font-size: 10px; color: #16A34A; }}
+    #qualityPanel .qa-page {{ padding: 14px 20px; display: flex; flex-direction: column; gap: 14px; }}
+    #qualityPanel .qa-section-head {{ display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }}
+    #qualityPanel .qa-sh-title {{ font-size: 15px; font-weight: 700; color: #0D3B6E; }}
+    #qualityPanel .qa-sh-sub {{ font-size: 11px; color: #94A3B8; margin-top: 2px; }}
+    #qualityPanel .qa-badges {{ display: flex; gap: 7px; flex-wrap: wrap; }}
+    #qualityPanel .qa-badge {{ padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; border: 1px solid; }}
+    #qualityPanel .qa-b-blue {{ background: #EFF6FF; color: #1D4ED8; border-color: #BFDBFE; }}
+    #qualityPanel .qa-b-green {{ background: #F0FDF4; color: #15803D; border-color: #BBF7D0; }}
+    #qualityPanel .qa-b-teal {{ background: #F0FDFA; color: #0F766E; border-color: #99F6E4; }}
+    #qualityPanel .qa-b-amber {{ background: #FFFBEB; color: #B45309; border-color: #FDE68A; }}
+    #qualityPanel .qa-kpi-row {{ display: grid; grid-template-columns: repeat(6,1fr); gap: 10px; }}
+    #qualityPanel .qa-kpi {{ background: #fff; border-radius: 10px; padding: 14px 16px; border: 1px solid #E2E8F0; position: relative; overflow: hidden; }}
+    #qualityPanel .qa-kpi::before {{ content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 10px 10px 0 0; }}
+    #qualityPanel .qa-knavy::before {{ background: #0D3B6E; }} #qualityPanel .qa-kgreen::before {{ background: #0F9B58; }}
+    #qualityPanel .qa-kteal::before {{ background: #0891B2; }} #qualityPanel .qa-kpurple::before {{ background: #7C3AED; }}
+    #qualityPanel .qa-kamber::before {{ background: #F59E0B; }} #qualityPanel .qa-kcoral::before {{ background: #E85D3F; }}
+    #qualityPanel .qa-kpi-icon {{ width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }}
+    #qualityPanel .qa-kpi-icon svg {{ width: 15px; height: 15px; }}
+    #qualityPanel .qa-knavy .qa-kpi-icon {{ background: #EFF6FF; }} #qualityPanel .qa-kgreen .qa-kpi-icon {{ background: #F0FDF4; }}
+    #qualityPanel .qa-kteal .qa-kpi-icon {{ background: #F0FDFA; }} #qualityPanel .qa-kpurple .qa-kpi-icon {{ background: #F5F3FF; }}
+    #qualityPanel .qa-kamber .qa-kpi-icon {{ background: #FFFBEB; }} #qualityPanel .qa-kcoral .qa-kpi-icon {{ background: #FEF2F2; }}
+    #qualityPanel .qa-kpi-lbl {{ font-size: 10px; color: #64748B; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }}
+    #qualityPanel .qa-kpi-val {{ font-size: 22px; font-weight: 800; color: #1E293B; line-height: 1; margin-bottom: 4px; }}
+    #qualityPanel .qa-kpi-d {{ font-size: 10px; font-weight: 600; }}
+    #qualityPanel .qa-du {{ color: #0F9B58; }} #qualityPanel .qa-dd {{ color: #E85D3F; }} #qualityPanel .qa-dn {{ color: #64748B; }}
+    #qualityPanel .qa-sum-strip {{ display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }}
+    #qualityPanel .qa-sum-card {{ background: #fff; border-radius: 10px; border: 1px solid #E2E8F0; padding: 14px; }}
+    #qualityPanel .qa-sum-lbl {{ font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #94A3B8; margin-bottom: 6px; }}
+    #qualityPanel .qa-sum-val {{ font-size: 20px; font-weight: 800; line-height: 1; }}
+    #qualityPanel .qa-sum-sub {{ font-size: 11px; color: #64748B; margin-top: 3px; }}
+    #qualityPanel .qa-sum-score {{ font-size: 12px; font-weight: 700; margin-top: 3px; }}
+    #qualityPanel .qa-g3 {{ display: grid; grid-template-columns: 1.6fr 1fr 1fr; gap: 12px; }}
+    #qualityPanel .qa-g2 {{ display: grid; grid-template-columns: 1.3fr 1fr; gap: 12px; }}
+    #qualityPanel .qa-card {{ background: #fff; border-radius: 10px; border: 1px solid #E2E8F0; overflow: hidden; }}
+    #qualityPanel .qa-ch {{ padding: 11px 16px; border-bottom: 1px solid #F1F5F9; display: flex; align-items: center; justify-content: space-between; gap: 8px; }}
+    #qualityPanel .qa-ct {{ font-size: 12px; font-weight: 700; color: #1E293B; display: flex; align-items: center; gap: 6px; }}
+    #qualityPanel .qa-ct svg {{ width: 13px; height: 13px; color: #94A3B8; }}
+    #qualityPanel .qa-cs {{ font-size: 10px; color: #94A3B8; margin-top: 1px; }}
+    #qualityPanel .qa-cbody {{ padding: 12px 16px; }}
+    #qualityPanel .qa-cb {{ font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 600; white-space: nowrap; }}
+    #qualityPanel .qa-cbg {{ background: #F0FDF4; color: #15803D; }} #qualityPanel .qa-cbb {{ background: #EFF6FF; color: #1D4ED8; }}
+    #qualityPanel .qa-cba {{ background: #FFFBEB; color: #B45309; }} #qualityPanel .qa-cbr {{ background: #FEF2F2; color: #DC2626; }}
+    #qualityPanel .qa-cr-row {{ display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }}
+    #qualityPanel .qa-cr-row:last-child {{ margin-bottom: 0; }}
+    #qualityPanel .qa-cr-lbl {{ font-size: 11px; color: #374151; font-weight: 500; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }}
+    #qualityPanel .qa-cr-elig {{ font-size: 9px; color: #CBD5E1; min-width: 24px; text-align: center; flex-shrink: 0; }}
+    #qualityPanel .qa-cr-bg {{ width: 80px; height: 6px; background: #F1F5F9; border-radius: 3px; overflow: hidden; flex-shrink: 0; }}
+    #qualityPanel .qa-cr-fill {{ height: 100%; border-radius: 3px; }}
+    #qualityPanel .qa-cr-val {{ font-size: 11px; font-weight: 700; min-width: 38px; text-align: right; flex-shrink: 0; }}
+    #qualityPanel .qa-lbt {{ width: 100%; border-collapse: collapse; font-size: 11px; }}
+    #qualityPanel .qa-lbt th {{ padding: 6px 8px; text-align: left; font-size: 9px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid #F1F5F9; white-space: nowrap; }}
+    #qualityPanel .qa-lbt td {{ padding: 7px 8px; border-bottom: 1px solid #F8FAFC; vertical-align: middle; }}
+    #qualityPanel .qa-lbt tr:last-child td {{ border-bottom: none; }}
+    #qualityPanel .qa-lbt tr:hover td {{ background: #F8FAFC; }}
+    #qualityPanel .qa-rk {{ font-size: 11px; font-weight: 800; color: #94A3B8; width: 18px; text-align: center; }}
+    #qualityPanel .qa-rk.gold {{ color: #F59E0B; }} #qualityPanel .qa-rk.silver {{ color: #94A3B8; }} #qualityPanel .qa-rk.bronze {{ color: #B45309; }}
+    #qualityPanel .qa-chip {{ display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 700; }}
+    #qualityPanel .qa-cg {{ background: #F0FDF4; color: #15803D; }} #qualityPanel .qa-cam {{ background: #FFFBEB; color: #B45309; }} #qualityPanel .qa-crr {{ background: #FEF2F2; color: #DC2626; }}
+    #qualityPanel .qa-cch-row {{ display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }}
+    #qualityPanel .qa-cch-row:last-child {{ margin-bottom: 0; }}
+    #qualityPanel .qa-cch-lbl {{ font-size: 11px; font-weight: 500; color: #374151; width: 158px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
+    #qualityPanel .qa-cch-bg {{ flex: 1; height: 7px; background: #F1F5F9; border-radius: 4px; overflow: hidden; }}
+    #qualityPanel .qa-cch-fill {{ height: 100%; border-radius: 4px; }}
+    #qualityPanel .qa-cch-ct {{ font-size: 11px; font-weight: 700; min-width: 40px; text-align: right; }}
+    #qualityPanel .qa-dtbl {{ width: 100%; border-collapse: collapse; font-size: 11px; }}
+    #qualityPanel .qa-dtbl th {{ padding: 7px 10px; text-align: left; font-size: 9px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid #E2E8F0; background: #F8FAFC; white-space: nowrap; position: sticky; top: 0; z-index: 1; }}
+    #qualityPanel .qa-dtbl td {{ padding: 6px 10px; border-bottom: 1px solid #F8FAFC; vertical-align: top; }}
+    #qualityPanel .qa-dtbl tr:hover td {{ background: #F8FAFC; }}
+    #qualityPanel .qa-dtbl tr:last-child td {{ border-bottom: none; }}
+    #qualityPanel .qa-tbl-scroll {{ overflow-x: auto; max-height: 420px; overflow-y: auto; }}
+    #qualityPanel .qa-etype {{ font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; }}
+    #qualityPanel .qa-et-w {{ background: #EFF6FF; color: #1D4ED8; }} #qualityPanel .qa-et-d {{ background: #F0FDF4; color: #15803D; }}
+    #qualityPanel .qa-av {{ width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; flex-shrink: 0; vertical-align: middle; margin-right: 4px; }}
+    #qualityPanel .qa-yn-y {{ color: #0F9B58; font-weight: 700; font-size: 11px; }}
+    #qualityPanel .qa-yn-n {{ color: #E85D3F; font-weight: 700; font-size: 11px; }}
+    #qualityPanel .qa-yn-na {{ color: #CBD5E1; font-size: 10px; }}
+    #qualityPanel .qa-fb-cell {{ font-size: 10px; color: #64748B; line-height: 1.4; max-width: 260px; white-space: normal; }}
+    @media (max-width: 768px) {{
+        #qualityPanel .qa-kpi-row {{ grid-template-columns: repeat(3,1fr); }}
+        #qualityPanel .qa-sum-strip {{ grid-template-columns: repeat(2,1fr); }}
+        #qualityPanel .qa-g3 {{ grid-template-columns: 1fr; }}
+        #qualityPanel .qa-g2 {{ grid-template-columns: 1fr; }}
+    }}
 </style>
 </head>
 
@@ -1947,7 +2203,169 @@ def main():
 </div>
 
 <div class="tab-panel" id="qualityPanel" data-tab="quality" role="tabpanel">
-    <div class="under-construction">Under Construction</div>
+
+<div class="qa-filter-bar">
+  <div class="qa-fg">
+    <label>Time view</label>
+    <div class="qa-pg">
+      <button class="qa-pb" onclick="qaSetPeriod(this)">Daily</button>
+      <button class="qa-pb active" onclick="qaSetPeriod(this)">Weekly</button>
+      <button class="qa-pb" onclick="qaSetPeriod(this)">Monthly</button>
+    </div>
+  </div>
+  <div class="qa-fdiv"></div>
+  <div class="qa-fg">
+    <label>Account &#9733;</label>
+    <select class="qa-fsel hl"><option>M7 — Ride-hailing support</option></select>
+  </div>
+  <div class="qa-fg">
+    <label>QA Coach</label>
+    <select class="qa-fsel" id="qa-sel-coach" onchange="qaApplyFilters()">
+      <option value="">All QA Coaches</option>
+    </select>
+  </div>
+  <div class="qa-fg">
+    <label>Agent</label>
+    <select class="qa-fsel" id="qa-sel-agent" onchange="qaApplyFilters()">
+      <option value="">All Agents</option>
+    </select>
+  </div>
+  <div class="qa-fg">
+    <label>Eval type</label>
+    <select class="qa-fsel" id="qa-sel-type" onchange="qaApplyFilters()">
+      <option value="">All types</option>
+      <option value="Weekly">Weekly</option>
+      <option value="Daily">Daily</option>
+    </select>
+  </div>
+  <div class="qa-fdiv"></div>
+  <button class="qa-btn-apply" onclick="qaApplyFilters()">Apply</button>
+  <button class="qa-btn-clear" onclick="qaClearFilters()">&times; Clear</button>
+</div>
+
+<div class="qa-live-banner">
+  <div class="qa-lb-left">
+    <span class="qa-lb-dot"></span>
+    <span id="qa-banner-text">M7 Ride-hailing support &nbsp;&middot;&nbsp; Source: Google Sheets QA scorecard</span>
+  </div>
+  <div class="qa-lb-right">Pass threshold: 90% &nbsp;&middot;&nbsp; 22-criteria scorecard</div>
+</div>
+
+<div class="qa-page">
+  <div class="qa-section-head">
+    <div>
+      <div class="qa-sh-title" id="qa-view-title">M7 — Quality Assurance · Weekly view</div>
+      <div class="qa-sh-sub" id="qa-view-sub">Loading…</div>
+    </div>
+    <div class="qa-badges">
+      <div class="qa-badge qa-b-blue">M7 Account</div>
+      <div class="qa-badge qa-b-green" id="qa-badge-agents">— Agents</div>
+      <div class="qa-badge qa-b-teal" id="qa-badge-evals">— Evaluations</div>
+      <div class="qa-badge qa-b-amber">Pass threshold: 90%</div>
+    </div>
+  </div>
+
+  <div class="qa-kpi-row">
+    <div class="qa-kpi qa-knavy"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg></div><div class="qa-kpi-lbl">Avg QA Score</div><div class="qa-kpi-val" id="qa-kpi-avg">—</div><div class="qa-kpi-d qa-dn" id="qa-kpi-avg-sub">—</div></div>
+    <div class="qa-kpi qa-kgreen"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><div class="qa-kpi-lbl">Pass Rate</div><div class="qa-kpi-val" id="qa-kpi-pass">—</div><div class="qa-kpi-d qa-du" id="qa-kpi-pass-sub">—</div></div>
+    <div class="qa-kpi qa-kteal"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#0F766E" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></div><div class="qa-kpi-lbl">Total Evaluations</div><div class="qa-kpi-val" id="qa-kpi-evals">—</div><div class="qa-kpi-d qa-dn" id="qa-kpi-evals-sub">—</div></div>
+    <div class="qa-kpi qa-kpurple"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#6D28D9" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg></div><div class="qa-kpi-lbl">Total Agents</div><div class="qa-kpi-val" id="qa-kpi-agents">—</div><div class="qa-kpi-d qa-dn">Evaluated this period</div></div>
+    <div class="qa-kpi qa-kamber"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg></div><div class="qa-kpi-lbl">Lowest Score</div><div class="qa-kpi-val" id="qa-kpi-low">—</div><div class="qa-kpi-d qa-dd" id="qa-kpi-low-sub">—</div></div>
+    <div class="qa-kpi qa-kcoral"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="qa-kpi-lbl">Below 90%</div><div class="qa-kpi-val" id="qa-kpi-below">—</div><div class="qa-kpi-d qa-dd" id="qa-kpi-below-sub">—</div></div>
+  </div>
+
+  <div class="qa-sum-strip">
+    <div class="qa-sum-card" style="border-top:3px solid #0F9B58"><div class="qa-sum-lbl">Avg QA score</div><div class="qa-sum-val" id="qa-sum-avg" style="color:#0F9B58">—</div><div class="qa-sum-sub">All evaluations</div><div class="qa-sum-score" id="qa-sum-avg-score" style="color:#0F9B58">—</div></div>
+    <div class="qa-sum-card" style="border-top:3px solid #0891B2"><div class="qa-sum-lbl">Pass rate</div><div class="qa-sum-val" id="qa-sum-pass" style="color:#0891B2">—</div><div class="qa-sum-sub" id="qa-sum-pass-sub">—</div><div class="qa-sum-score" id="qa-sum-pass-score" style="color:#0F9B58">—</div></div>
+    <div class="qa-sum-card" style="border-top:3px solid #0D3B6E"><div class="qa-sum-lbl">Top performer</div><div class="qa-sum-val" id="qa-sum-top" style="color:#0D3B6E;font-size:15px">—</div><div class="qa-sum-sub" id="qa-sum-top-sub">—</div><div class="qa-sum-score" id="qa-sum-top-score" style="color:#0F9B58">—</div></div>
+    <div class="qa-sum-card" style="border-top:3px solid #F59E0B"><div class="qa-sum-lbl">Needs attention</div><div class="qa-sum-val" id="qa-sum-attn" style="color:#0D3B6E;font-size:15px">—</div><div class="qa-sum-sub" id="qa-sum-attn-sub">—</div><div class="qa-sum-score" style="color:#E85D3F">Coaching recommended</div></div>
+  </div>
+
+  <div class="qa-g3">
+    <div class="qa-card">
+      <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>QA Score Trend</div><div class="qa-cs" id="qa-trend-sub">Weekly avg · Target: 90%</div></div><span class="qa-cb qa-cbg" id="qa-trend-badge">—</span></div>
+      <div class="qa-cbody" style="padding:10px 14px"><div style="position:relative;height:160px"><canvas id="qaTrendChart"></canvas></div></div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>Criteria pass rates</div><div class="qa-cs" id="qa-crit-sub">All 22 criteria · sorted by pass rate</div></div><span class="qa-cb qa-cba">M7 specific</span></div>
+      <div style="padding:0 14px">
+        <div style="max-height:220px;overflow-y:auto;padding:10px 0;border-bottom:1px solid #E2E8F0" id="qa-criteria-bars"></div>
+        <div style="padding:6px 0 8px;font-size:10px;color:#CBD5E1">&#9679; Scroll to see all criteria</div>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-ch"><div><div class="qa-ct">Score distribution</div><div class="qa-cs" id="qa-donut-sub">All evaluations</div></div></div>
+      <div class="qa-cbody" style="padding:10px 14px">
+        <div style="position:relative;height:130px"><canvas id="qaDonutChart"></canvas></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:8px" id="qa-donut-legend"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qa-g2">
+    <div class="qa-card">
+      <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>Agent leaderboard</div><div class="qa-cs">Ranked by avg score</div></div><span class="qa-cb qa-cbb" id="qa-lb-badge">—</span></div>
+      <div class="qa-cbody" style="padding:0 16px 8px">
+        <table class="qa-lbt"><thead><tr><th>#</th><th>Agent</th><th>Evals</th><th>Avg</th><th>Min</th><th>Max</th><th>Pass</th></tr></thead><tbody id="qa-leaderboard"></tbody></table>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg>Coaching opportunities</div><div class="qa-cs">Criteria below 95% pass rate</div></div><span class="qa-cb qa-cbr" id="qa-coaching-count">—</span></div>
+      <div class="qa-cbody" style="padding:10px 16px">
+        <div id="qa-coaching-bars"></div>
+        <div style="height:1px;background:#F1F5F9;margin:12px 0"></div>
+        <div style="font-size:10px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.04em;margin-bottom:7px">QA coach breakdown</div>
+        <div style="display:flex;gap:8px" id="qa-coach-breakdown"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qa-card">
+    <div class="qa-ch">
+      <div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>All evaluations — detail table</div><div class="qa-cs">All rows · all criteria columns</div></div>
+      <span class="qa-cb qa-cbb" id="qa-tbl-count">— records</span>
+    </div>
+    <div class="qa-tbl-scroll">
+      <table class="qa-dtbl">
+        <thead><tr>
+          <th style="min-width:120px">Timestamp</th>
+          <th style="min-width:155px">Agent</th>
+          <th style="min-width:55px">Score</th>
+          <th style="min-width:65px">Type</th>
+          <th style="min-width:75px">Call date</th>
+          <th style="min-width:110px">QA Coach</th>
+          <th style="min-width:100px">Supervisor</th>
+          <th style="min-width:75px">Opening In</th>
+          <th style="min-width:75px">Opening Out</th>
+          <th style="min-width:70px">Closing</th>
+          <th style="min-width:75px">Approp. Resp</th>
+          <th style="min-width:70px">No Resp</th>
+          <th style="min-width:65px">Fillers</th>
+          <th style="min-width:75px">Acknowledge</th>
+          <th style="min-width:70px">Hold Proc.</th>
+          <th style="min-width:75px">Ack. Hold</th>
+          <th style="min-width:75px">Resp. Eff.</th>
+          <th style="min-width:65px">Empathy</th>
+          <th style="min-width:65px">Adjust</th>
+          <th style="min-width:60px">Mute</th>
+          <th style="min-width:70px">Active List.</th>
+          <th style="min-width:70px">Answered Q</th>
+          <th style="min-width:65px">Probing Q</th>
+          <th style="min-width:70px">Cust. Verif.</th>
+          <th style="min-width:65px">Clarif.</th>
+          <th style="min-width:65px">Lost SOP</th>
+          <th style="min-width:65px">Rudeness</th>
+          <th style="min-width:75px">Transaction</th>
+          <th style="min-width:65px">Speech</th>
+          <th style="min-width:70px">Investigation</th>
+          <th style="min-width:220px">Feedback Summary</th>
+        </tr></thead>
+        <tbody id="qa-detail-table"></tbody>
+      </table>
+    </div>
+    <div style="padding:6px 16px;font-size:10px;color:#94A3B8;border-top:1px solid #F1F5F9" id="qa-tbl-footer">—</div>
+  </div>
+</div>
 </div>
 
 <div class="footer">
@@ -1959,6 +2377,7 @@ const masterlist = {to_records(masterlist)};
 const historyData = {to_records(history)};
 const movementData = {to_records(movement)};
 const coachingData = {to_records(coaching)};
+const qaRawData = {to_records(m7)};
 
 const COLORS = ["#004C97", "#39B54A", "#002B5C", "#7AC943", "#00AEEF", "#94A3B8"];
 const COACHING_CATEGORY_COLORS = {{
@@ -3402,6 +3821,440 @@ function render() {{
     recentMovementsTable();
 }}
 
+// ─── QA QUALITY TAB ──────────────────────────────────────────────────────────
+let qaFiltered = [...qaRawData];
+let qaPeriod = "Weekly";
+let qaChartsInitialized = false;
+let qaTrendChart = null;
+let qaDonutChart = null;
+
+const QA_CRITERIA = [
+    {{key:"os_in",   label:"Opening Spiel (Inbound)",   max:1}},
+    {{key:"os_out",  label:"Opening Spiel (Outbound)",  max:1}},
+    {{key:"closing", label:"Closing Spiel",             max:1}},
+    {{key:"approp",  label:"Appropriate Response",      max:2}},
+    {{key:"no_resp", label:"No Response",               max:2}},
+    {{key:"fillers", label:"Fillers / Slang Words",     max:2}},
+    {{key:"ack",     label:"Acknowledgement/Ownership", max:1}},
+    {{key:"hold",    label:"Hold Requests",             max:2}},
+    {{key:"ack_hold",label:"Ack. for Waiting",          max:1}},
+    {{key:"resp_eff",label:"Response Efficiency",       max:2}},
+    {{key:"empathy", label:"Empathy / Sympathy",        max:3}},
+    {{key:"adjust",  label:"Adjust to Customer Level",  max:3}},
+    {{key:"mute",    label:"Mute Button Usage",         max:1}},
+    {{key:"active",  label:"Active Listening",          max:5}},
+    {{key:"answered",label:"Answered Questions",        max:4}},
+    {{key:"probing", label:"Probing Questions",         max:4}},
+    {{key:"verif",   label:"Customer Verification",     max:10}},
+    {{key:"clarif",  label:"Clarification",             max:4}},
+    {{key:"lost_sop",label:"Lost Item SOP",             max:6}},
+    {{key:"rude",    label:"Rudeness",                  max:20}},
+    {{key:"trans",   label:"Transaction Completion",    max:20}},
+    {{key:"speech",  label:"Speech Clarity",            max:5}},
+];
+
+function qaEscapeHtml(s) {{
+    return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}}
+
+function qaPeriodKey(row) {{
+    const d = row.date || row.ts || "";
+    if (!d) return "Unknown";
+    if (qaPeriod === "Daily")   return d.substring(0, 10);
+    if (qaPeriod === "Monthly") return d.substring(0, 7);
+    const dt = new Date(d.substring(0, 10));
+    if (isNaN(dt)) return "Unknown";
+    const dayOfWeek = dt.getDay() || 7;
+    dt.setDate(dt.getDate() + 4 - dayOfWeek);
+    const yearStart = new Date(dt.getFullYear(), 0, 1);
+    const week = Math.ceil(((dt - yearStart) / 86400000 + 1) / 7);
+    return `${{dt.getFullYear()}}-W${{String(week).padStart(2,"0")}}`;
+}}
+
+function qaPopulateSelects() {{
+    const coaches = [...new Set(qaRawData.map(r => r.coach).filter(Boolean))].sort();
+    const agents  = [...new Set(qaRawData.map(r => r.agent).filter(Boolean))].sort();
+    const cSel = document.getElementById("qa-sel-coach");
+    const aSel = document.getElementById("qa-sel-agent");
+    if (cSel) {{
+        const cur = cSel.value;
+        cSel.innerHTML = `<option value="">All QA Coaches</option>` + coaches.map(c=>`<option value="${{qaEscapeHtml(c)}}">${{qaEscapeHtml(c)}}</option>`).join("");
+        cSel.value = cur;
+    }}
+    if (aSel) {{
+        const cur = aSel.value;
+        aSel.innerHTML = `<option value="">All Agents</option>` + agents.map(a=>`<option value="${{qaEscapeHtml(a)}}">${{qaEscapeHtml(a)}}</option>`).join("");
+        aSel.value = cur;
+    }}
+}}
+
+function qaApplyFilters() {{
+    const coach = (document.getElementById("qa-sel-coach")?.value || "").trim();
+    const agent = (document.getElementById("qa-sel-agent")?.value || "").trim();
+    const type  = (document.getElementById("qa-sel-type")?.value  || "").trim();
+    qaFiltered = qaRawData.filter(r =>
+        (!coach || r.coach === coach) &&
+        (!agent || r.agent === agent) &&
+        (!type  || r.type  === type)
+    );
+    qaRender();
+}}
+
+function qaClearFilters() {{
+    ["qa-sel-coach","qa-sel-agent","qa-sel-type"].forEach(id => {{
+        const el = document.getElementById(id);
+        if (el) el.value = "";
+    }});
+    qaFiltered = [...qaRawData];
+    qaRender();
+}}
+
+function qaSetPeriod(btn) {{
+    document.querySelectorAll(".qa-pb").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    qaPeriod = btn.textContent.trim();
+    qaRender();
+}}
+
+function qaAvg(arr) {{
+    return arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0;
+}}
+
+function qaUpdateKPIs() {{
+    const scores = qaFiltered.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
+    const n = qaFiltered.length;
+    const agents = new Set(qaFiltered.map(r=>r.agent).filter(Boolean));
+    const avg = scores.length ? qaAvg(scores) : 0;
+    const passCount  = scores.filter(s=>s>=90).length;
+    const passRate   = scores.length ? passCount/scores.length*100 : 0;
+    const low        = scores.length ? Math.min(...scores) : 0;
+    const belowCount = scores.filter(s=>s<90).length;
+
+    const set = (id,v) => {{ const el=document.getElementById(id); if(el) el.textContent=v; }};
+    set("qa-kpi-avg",       avg   ? avg.toFixed(1)+"%" : "—");
+    set("qa-kpi-avg-sub",   `${{n}} evaluation${{n===1?"":"s"}}`);
+    set("qa-kpi-pass",      scores.length ? passRate.toFixed(1)+"%" : "—");
+    set("qa-kpi-pass-sub",  `${{passCount}} of ${{scores.length}} passed`);
+    set("qa-kpi-evals",     n);
+    set("qa-kpi-evals-sub", `${{agents.size}} agent${{agents.size===1?"":"s"}}`);
+    set("qa-kpi-agents",    agents.size);
+    set("qa-kpi-low",       low   ? low.toFixed(1)+"%" : "—");
+    set("qa-kpi-low-sub",   scores.length ? "Lowest score" : "");
+    set("qa-kpi-below",     belowCount);
+    set("qa-kpi-below-sub", `of ${{scores.length}} evals`);
+    set("qa-badge-agents",  agents.size+" Agents");
+    set("qa-badge-evals",   n+" Evaluations");
+
+    const byAgent = {{}};
+    qaFiltered.forEach(r=>{{
+        if (!r.agent) return;
+        if (!byAgent[r.agent]) byAgent[r.agent] = {{scores:[]}};
+        const s=Number(r.score);
+        if (!isNaN(s)&&s>0) byAgent[r.agent].scores.push(s);
+    }});
+    const agentArr = Object.entries(byAgent).map(([name,d])=>{{
+        const a = d.scores.length ? qaAvg(d.scores) : 0;
+        return {{name, avg:a, n:d.scores.length}};
+    }}).filter(a=>a.n>0).sort((a,b)=>b.avg-a.avg);
+
+    set("qa-sum-avg",        avg  ? avg.toFixed(1)+"%" : "—");
+    set("qa-sum-avg-score",  avg>=90 ? "✓ Above 90% threshold" : "⚠ Below target");
+    set("qa-sum-pass",       scores.length ? passRate.toFixed(1)+"%" : "—");
+    set("qa-sum-pass-sub",   `${{passCount}} of ${{n}} evaluations`);
+    set("qa-sum-pass-score", passRate>=90 ? "✓ Healthy" : passRate>=80 ? "⚠ Watch" : "✗ Needs work");
+    set("qa-sum-top",        agentArr[0]?.name || "—");
+    set("qa-sum-top-sub",    agentArr[0] ? `Avg ${{agentArr[0].avg.toFixed(1)}}% · ${{agentArr[0].n}} eval${{agentArr[0].n===1?"":"s"}}` : "");
+    set("qa-sum-top-score",  agentArr[0] ? agentArr[0].avg.toFixed(1)+"%" : "—");
+    set("qa-sum-attn",       agentArr[agentArr.length-1]?.name || "—");
+    set("qa-sum-attn-sub",   agentArr.length ? `Avg ${{agentArr[agentArr.length-1].avg.toFixed(1)}}% · ${{agentArr[agentArr.length-1].n}} eval${{agentArr[agentArr.length-1].n===1?"":"s"}}` : "");
+    set("qa-view-sub",       `${{n}} evaluation${{n===1?"":"s"}} · ${{agents.size}} agent${{agents.size===1?"":"s"}} · avg ${{avg?avg.toFixed(1)+"%":"—"}}`);
+    set("qa-view-title",     `M7 — Quality Assurance · ${{qaPeriod}} view`);
+}}
+
+function qaUpdateTrendChart() {{
+    if (!qaTrendChart) return;
+    const periodMap = {{}};
+    qaFiltered.forEach(r=>{{
+        const k = qaPeriodKey(r);
+        const s = Number(r.score);
+        if (!isNaN(s)&&s>0) {{
+            if (!periodMap[k]) periodMap[k]=[];
+            periodMap[k].push(s);
+        }}
+    }});
+    const labels = Object.keys(periodMap).sort();
+    const avgs   = labels.map(k=>parseFloat(qaAvg(periodMap[k]).toFixed(1)));
+    qaTrendChart.data.labels            = labels;
+    qaTrendChart.data.datasets[0].data  = avgs;
+    qaTrendChart.update();
+    const trend = avgs.length>=2 ? avgs[avgs.length-1]-avgs[avgs.length-2] : 0;
+    const badge = document.getElementById("qa-trend-badge");
+    if (badge) {{
+        badge.textContent = trend>=0 ? `▲ ${{Math.abs(trend).toFixed(1)}}%` : `▼ ${{Math.abs(trend).toFixed(1)}}%`;
+        badge.className   = "qa-cb " + (trend>=0 ? "qa-cbg" : "qa-cbr");
+    }}
+    const sub = document.getElementById("qa-trend-sub");
+    if (sub) sub.textContent = `${{qaPeriod}} avg · Target: 90%`;
+}}
+
+function qaUpdateDonutChart() {{
+    if (!qaDonutChart) return;
+    const scores = qaFiltered.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
+    const buckets = [
+        scores.filter(s=>s>=90).length,
+        scores.filter(s=>s>=80&&s<90).length,
+        scores.filter(s=>s>=70&&s<80).length,
+        scores.filter(s=>s<70).length,
+    ];
+    qaDonutChart.data.datasets[0].data = buckets;
+    qaDonutChart.update();
+    qaRenderDonutLegend(buckets, scores.length);
+    const sub = document.getElementById("qa-donut-sub");
+    if (sub) sub.textContent = `${{scores.length}} evaluation${{scores.length===1?"":"s"}}`;
+}}
+
+function qaRenderDonutLegend(buckets, total) {{
+    const el = document.getElementById("qa-donut-legend");
+    if (!el) return;
+    const labels = ["≥ 90% Pass","80–89%","70–79%","< 70%"];
+    const colors = ["#0F9B58","#F59E0B","#F97316","#EF4444"];
+    el.innerHTML = labels.map((lbl,i)=>{{
+        const pct = total ? (buckets[i]/total*100).toFixed(1)+"%" : "0%";
+        return `<div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#475569">
+            <span style="width:8px;height:8px;border-radius:50%;background:${{colors[i]}};flex-shrink:0"></span>
+            <span>${{lbl}}</span><span style="margin-left:auto;font-weight:700;color:${{colors[i]}}">${{pct}}</span>
+        </div>`;
+    }}).join("");
+}}
+
+function qaRenderCriteria() {{
+    const el = document.getElementById("qa-criteria-bars");
+    if (!el) return;
+    if (!qaFiltered.length) {{ el.innerHTML="<div style='padding:12px;color:#94A3B8;font-size:12px'>No data</div>"; return; }}
+    const stats = QA_CRITERIA.map(c=>{{
+        const vals   = qaFiltered.map(r=>Number(r[c.key])).filter(v=>!isNaN(v));
+        const passed = vals.filter(v=>v>=c.max).length;
+        const rate   = vals.length ? passed/vals.length*100 : null;
+        return {{...c, rate, n:vals.length}};
+    }}).filter(c=>c.rate!==null).sort((a,b)=>a.rate-b.rate);
+    el.innerHTML = stats.map(c=>{{
+        const color = c.rate>=95 ? "#0F9B58" : c.rate>=80 ? "#F59E0B" : "#EF4444";
+        return `<div style="margin-bottom:7px">
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:#475569;margin-bottom:2px">
+                <span>${{qaEscapeHtml(c.label)}}</span>
+                <span style="font-weight:700;color:${{color}}">${{c.rate.toFixed(0)}}%</span>
+            </div>
+            <div style="height:5px;background:#F1F5F9;border-radius:3px;overflow:hidden">
+                <div style="height:100%;width:${{c.rate.toFixed(1)}}%;background:${{color}};border-radius:3px;transition:width .4s"></div>
+            </div>
+        </div>`;
+    }}).join("");
+    const sub = document.getElementById("qa-crit-sub");
+    if (sub) sub.textContent = `${{stats.length}} criteria · sorted by pass rate`;
+}}
+
+function qaRenderCoaching() {{
+    const barsEl = document.getElementById("qa-coaching-bars");
+    const bdEl   = document.getElementById("qa-coach-breakdown");
+    const cntEl  = document.getElementById("qa-coaching-count");
+    if (!barsEl) return;
+    const weak = QA_CRITERIA.map(c=>{{
+        const vals   = qaFiltered.map(r=>Number(r[c.key])).filter(v=>!isNaN(v));
+        const passed = vals.filter(v=>v>=c.max).length;
+        const rate   = vals.length ? passed/vals.length*100 : null;
+        return {{...c, rate}};
+    }}).filter(c=>c.rate!==null&&c.rate<95).sort((a,b)=>a.rate-b.rate);
+    if (cntEl) cntEl.textContent = weak.length ? weak.length+" criteria" : "All clear";
+    barsEl.innerHTML = weak.length ? weak.map(c=>{{
+        const color = c.rate>=80 ? "#F59E0B" : "#EF4444";
+        return `<div style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:#1E293B;margin-bottom:3px">
+                <span>${{qaEscapeHtml(c.label)}}</span>
+                <span style="font-weight:700;color:${{color}}">${{c.rate.toFixed(0)}}%</span>
+            </div>
+            <div style="height:6px;background:#F1F5F9;border-radius:3px;overflow:hidden">
+                <div style="height:100%;width:${{c.rate.toFixed(1)}}%;background:${{color}};border-radius:3px"></div>
+            </div>
+        </div>`;
+    }}).join("") : `<div style="text-align:center;padding:16px;color:#0F9B58;font-size:12px">✓ All criteria above 95% — great job!</div>`;
+    if (bdEl) {{
+        const byCoach = {{}};
+        qaFiltered.forEach(r=>{{
+            if (!r.coach) return;
+            if (!byCoach[r.coach]) byCoach[r.coach] = {{n:0,pass:0}};
+            byCoach[r.coach].n++;
+            if (Number(r.score)>=90) byCoach[r.coach].pass++;
+        }});
+        bdEl.innerHTML = Object.entries(byCoach).sort((a,b)=>b[1].n-a[1].n).map(([name,d])=>{{
+            const pct = d.n ? d.pass/d.n*100 : 0;
+            const color = pct>=90 ? "#0F9B58" : pct>=80 ? "#F59E0B" : "#EF4444";
+            return `<div style="flex:1;background:#F8FAFC;border-radius:8px;padding:8px;text-align:center">
+                <div style="font-size:10px;color:#64748B;margin-bottom:2px">${{qaEscapeHtml(name)}}</div>
+                <div style="font-size:16px;font-weight:800;color:${{color}}">${{pct.toFixed(0)}}%</div>
+                <div style="font-size:9px;color:#94A3B8">${{d.n}} eval${{d.n===1?"":"s"}}</div>
+            </div>`;
+        }}).join("") || `<div style="color:#94A3B8;font-size:11px">No data</div>`;
+    }}
+}}
+
+function qaRenderLeaderboard() {{
+    const el    = document.getElementById("qa-leaderboard");
+    const badge = document.getElementById("qa-lb-badge");
+    if (!el) return;
+    const byAgent = {{}};
+    qaFiltered.forEach(r=>{{
+        if (!r.agent) return;
+        const s = Number(r.score);
+        if (isNaN(s)||s<=0) return;
+        if (!byAgent[r.agent]) byAgent[r.agent] = {{scores:[]}};
+        byAgent[r.agent].scores.push(s);
+    }});
+    const agents = Object.entries(byAgent).map(([name,d])=>{{
+        const avg  = qaAvg(d.scores);
+        const pass = d.scores.filter(s=>s>=90).length;
+        return {{name, avg, min:Math.min(...d.scores), max:Math.max(...d.scores),
+                 pass, passRate:d.scores.length?pass/d.scores.length*100:0, n:d.scores.length}};
+    }}).sort((a,b)=>b.avg-a.avg);
+    if (badge) badge.textContent = agents.length+" agents";
+    el.innerHTML = agents.map((a,i)=>{{
+        const medal = i===0?"🥇":i===1?"🥈":i===2?"🥉":"";
+        const sc    = a.avg>=90 ? "#0F9B58" : a.avg>=80 ? "#F59E0B" : "#EF4444";
+        return `<tr>
+            <td>${{medal||i+1}}</td>
+            <td style="font-weight:600">${{qaEscapeHtml(a.name)}}</td>
+            <td>${{a.n}}</td>
+            <td style="font-weight:800;color:${{sc}}">${{a.avg.toFixed(1)}}%</td>
+            <td>${{a.min.toFixed(1)}}%</td>
+            <td>${{a.max.toFixed(1)}}%</td>
+            <td style="color:${{a.passRate>=90?"#0F9B58":"#EF4444"}}">${{a.passRate.toFixed(0)}}%</td>
+        </tr>`;
+    }}).join("") || `<tr><td colspan="7" style="text-align:center;color:#94A3B8;padding:16px">No data</td></tr>`;
+}}
+
+function qaRenderTable() {{
+    const el    = document.getElementById("qa-detail-table");
+    const count = document.getElementById("qa-tbl-count");
+    const foot  = document.getElementById("qa-tbl-footer");
+    if (!el) return;
+    const rows = qaFiltered.slice().sort((a,b)=>(b.ts||"").localeCompare(a.ts||""));
+    if (count) count.textContent = rows.length+" records";
+    if (foot)  foot.textContent  = `Showing ${{rows.length}} of ${{qaRawData.length}} evaluations`;
+    const critKeys = ["os_in","os_out","closing","approp","no_resp","fillers","ack","hold","ack_hold",
+                      "resp_eff","empathy","adjust","mute","active","answered","probing","verif",
+                      "clarif","lost_sop","rude","trans","speech","invest"];
+    el.innerHTML = rows.map(r=>{{
+        const score = Number(r.score);
+        const sc    = !isNaN(score)&&score>0 ? score : null;
+        const cls   = sc===null ? "" : sc>=90 ? "qa-pass" : sc>=80 ? "qa-warn" : "qa-fail";
+        const disp  = sc===null ? "—" : sc.toFixed(1)+"%";
+        const critCells = critKeys.map(k=>{{
+            const v   = r[k];
+            const num = Number(v);
+            const mx  = (QA_CRITERIA.find(c=>c.key===k)||{{}}).max;
+            const ok  = mx!=null ? (!isNaN(num)&&num>=mx) : null;
+            const dispV = (v===null||v===undefined||v===""||String(v).toLowerCase()==="nan") ? "—" : String(v);
+            const style = ok===true ? "color:#0F9B58;font-weight:600" : ok===false ? "color:#EF4444" : "color:#94A3B8";
+            return `<td style="text-align:center;${{style}}">${{qaEscapeHtml(dispV)}}</td>`;
+        }});
+        return `<tr>
+            <td>${{qaEscapeHtml(r.ts||"—")}}</td>
+            <td style="font-weight:600">${{qaEscapeHtml(r.agent||"—")}}</td>
+            <td class="${{cls}}" style="font-weight:700;text-align:center">${{disp}}</td>
+            <td>${{qaEscapeHtml(r.type||"—")}}</td>
+            <td>${{qaEscapeHtml(r.date||"—")}}</td>
+            <td>${{qaEscapeHtml(r.coach||"—")}}</td>
+            <td>${{qaEscapeHtml(r.supervisor||"—")}}</td>
+            ${{critCells.join("")}}
+            <td style="max-width:220px;white-space:normal;font-size:10px;color:#475569">${{qaEscapeHtml(r.feedback||"—")}}</td>
+        </tr>`;
+    }}).join("") || `<tr><td colspan="31" style="text-align:center;color:#94A3B8;padding:20px">No data</td></tr>`;
+}}
+
+function qaRender() {{
+    qaUpdateKPIs();
+    qaRenderCriteria();
+    qaRenderCoaching();
+    qaRenderLeaderboard();
+    qaRenderTable();
+    qaUpdateTrendChart();
+    qaUpdateDonutChart();
+}}
+
+function initQualityCharts() {{
+    if (qaChartsInitialized) return;
+    qaChartsInitialized = true;
+
+    const trendCtx = document.getElementById("qaTrendChart");
+    if (trendCtx) {{
+        qaTrendChart = new Chart(trendCtx, {{
+            type: "line",
+            data: {{
+                labels: [],
+                datasets: [{{
+                    label: "Avg QA Score",
+                    data: [],
+                    borderColor: "#004C97",
+                    backgroundColor: "rgba(0,76,151,0.1)",
+                    tension: 0.3,
+                    fill: true,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                }}]
+            }},
+            options: {{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {{
+                    legend: {{display: false}},
+                    tooltip: {{callbacks: {{label: ctx => ctx.parsed.y.toFixed(1)+"%"}}}}
+                }},
+                scales: {{
+                    y: {{
+                        min: 70, max: 100,
+                        ticks: {{callback: v => v+"%", font:{{size:9}}}},
+                        grid:  {{color:"#F1F5F9"}},
+                    }},
+                    x: {{
+                        ticks: {{font:{{size:9}}, maxRotation:45}},
+                        grid:  {{display:false}},
+                    }}
+                }}
+            }}
+        }});
+    }}
+
+    const donutCtx = document.getElementById("qaDonutChart");
+    if (donutCtx) {{
+        qaDonutChart = new Chart(donutCtx, {{
+            type: "doughnut",
+            data: {{
+                labels: ["≥ 90% Pass","80–89%","70–79%","< 70%"],
+                datasets: [{{
+                    data: [0,0,0,0],
+                    backgroundColor: ["#0F9B58","#F59E0B","#F97316","#EF4444"],
+                    borderWidth: 2,
+                    borderColor: "#fff",
+                    hoverBorderColor: "#fff",
+                }}]
+            }},
+            options: {{
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: "60%",
+                plugins: {{
+                    legend: {{display: false}},
+                    tooltip: {{callbacks: {{label: ctx => `${{ctx.label}}: ${{ctx.parsed}}`}}}}
+                }}
+            }}
+        }});
+    }}
+
+    qaPopulateSelects();
+    qaRender();
+}}
+
+// ─── END QA QUALITY TAB ───────────────────────────────────────────────────────
+
 function switchTab(tabName) {{
     const masterlistControls = document.getElementById("masterlistControls");
     const coachingControls = document.getElementById("coachingControls");
@@ -3430,6 +4283,10 @@ function switchTab(tabName) {{
 
     if (isMasterlist || isCoaching) {{
         setTimeout(reflowDashboard, 0);
+    }}
+
+    if (tabName === "quality") {{
+        setTimeout(initQualityCharts, 0);
     }}
 }}
 
