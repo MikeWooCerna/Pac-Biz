@@ -2020,6 +2020,15 @@ def main():
     #qualityPanel .qa-dtbl td {{ padding:6px 10px;border-bottom:1px solid #F8FAFC;vertical-align:top }}
     #qualityPanel .qa-dtbl tr:hover td {{ background:#F8FAFC }}
     #qualityPanel .qa-dtbl tr:last-child td {{ border-bottom:none }}
+    /* Sticky first 5 columns */
+    #qualityPanel .qa-dtbl th:nth-child(1),#qualityPanel .qa-dtbl td:nth-child(1){{position:sticky;left:0}}
+    #qualityPanel .qa-dtbl th:nth-child(2),#qualityPanel .qa-dtbl td:nth-child(2){{position:sticky;left:130px}}
+    #qualityPanel .qa-dtbl th:nth-child(3),#qualityPanel .qa-dtbl td:nth-child(3){{position:sticky;left:285px}}
+    #qualityPanel .qa-dtbl th:nth-child(4),#qualityPanel .qa-dtbl td:nth-child(4){{position:sticky;left:395px}}
+    #qualityPanel .qa-dtbl th:nth-child(5),#qualityPanel .qa-dtbl td:nth-child(5){{position:sticky;left:505px;box-shadow:2px 0 4px rgba(0,0,0,.06)}}
+    #qualityPanel .qa-dtbl thead th:nth-child(-n+5){{z-index:3;background:#F8FAFC}}
+    #qualityPanel .qa-dtbl tbody td:nth-child(-n+5){{background:#fff}}
+    #qualityPanel .qa-dtbl tr:hover td:nth-child(-n+5){{background:#F8FAFC}}
     #qualityPanel .qa-av {{ width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;vertical-align:middle;margin-right:4px }}
     #qualityPanel .qa-yn-y {{ color:#0F9B58;font-weight:700;font-size:11px }}
     #qualityPanel .qa-yn-n {{ color:#E85D3F;font-weight:700;font-size:11px }}
@@ -2408,7 +2417,7 @@ def main():
 
   <div class="qa-card">
     <div class="qa-ch">
-      <div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>All evaluations &mdash; detail table</div><div class="qa-cs">All 24 columns from M7.xlsx &middot; sorted by timestamp</div></div>
+      <div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>All evaluations &mdash; detail table</div></div>
       <span class="qa-cb qa-cbb" id="qa-tbl-count">&mdash;</span>
     </div>
     <div class="qa-tbl-scroll">
