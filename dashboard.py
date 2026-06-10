@@ -5,7 +5,7 @@ import re
 import subprocess
 import sys
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 import pandas as pd
@@ -409,9 +409,23 @@ def transform_m7_data(source):
             + df["ts"].str.replace(r"[-: ]", "", regex=True)
         )
 
+    def get_week_start(ts_val):
+        try:
+            s = str(ts_val).split()[0]
+            dt = pd.to_datetime(s, errors="coerce")
+            if pd.isna(dt):
+                return ""
+            monday = dt - timedelta(days=dt.weekday())
+            return monday.strftime("%Y-%m-%d")
+        except Exception:
+            return ""
+
+    if "ts" in df.columns:
+        df["week_start"] = df["ts"].apply(get_week_start)
+
     keep = [
-        "qa_id", "eval_key", "emp_id", "ts", "date", "agent", "score", "type",
-        "coach", "supervisor", "invest", "feedback",
+        "qa_id", "eval_key", "emp_id", "ts", "week_start", "date",
+        "agent", "score", "type", "coach", "supervisor", "invest", "feedback",
         "os_in", "os_out", "closing", "approp", "no_resp", "fillers",
         "ack", "hold", "ack_hold", "resp_eff", "empathy", "adjust",
         "mute", "active", "answered", "probing", "verif", "clarif",
@@ -1875,110 +1889,147 @@ def main():
     }}
 
     /* ── Quality tab ── */
-    #qualityPanel {{ background: #F1F5F9; padding: 0; }}
-    #qualityPanel .qa-filter-bar {{
-        background: #fff; border-bottom: 2px solid #E2E8F0;
-        padding: 10px 20px; display: flex; align-items: flex-end;
-        gap: 10px; flex-wrap: wrap;
-    }}
-    #qualityPanel .qa-fg {{ display: flex; flex-direction: column; gap: 3px; }}
-    #qualityPanel .qa-fg label {{ font-size: 10px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: .06em; }}
-    #qualityPanel .qa-pg {{ display: flex; border: 1px solid #CBD5E1; border-radius: 7px; overflow: hidden; height: 34px; }}
-    #qualityPanel .qa-pb {{ padding: 0 14px; font-size: 12px; background: #fff; color: #64748B; border: none; cursor: pointer; font-weight: 500; border-right: 1px solid #CBD5E1; }}
-    #qualityPanel .qa-pb:last-child {{ border-right: none; }}
-    #qualityPanel .qa-pb.active {{ background: #0D3B6E; color: #fff; font-weight: 600; }}
-    #qualityPanel .qa-fsel {{ height: 34px; padding: 0 28px 0 10px; font-size: 12px; border: 1px solid #CBD5E1; border-radius: 7px; background: #fff; color: #374151; cursor: pointer; font-weight: 500; min-width: 150px; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; }}
-    #qualityPanel .qa-fsel.hl {{ border-color: #0D3B6E; background-color: #EFF6FF; color: #0D3B6E; font-weight: 700; }}
-    #qualityPanel .qa-fdiv {{ width: 1px; height: 34px; background: #E2E8F0; align-self: flex-end; }}
-    #qualityPanel .qa-btn-apply {{ height: 34px; padding: 0 18px; font-size: 12px; border: none; border-radius: 7px; background: #0D3B6E; color: #fff; cursor: pointer; font-weight: 700; align-self: flex-end; }}
-    #qualityPanel .qa-btn-clear {{ height: 34px; padding: 0 14px; font-size: 12px; border: 1px solid #E85D3F; border-radius: 7px; background: #fff; color: #E85D3F; cursor: pointer; font-weight: 600; align-self: flex-end; }}
-    #qualityPanel .qa-live-banner {{ background: #F0FDF4; border-bottom: 2px solid #BBF7D0; padding: 7px 20px; display: flex; align-items: center; justify-content: space-between; }}
-    #qualityPanel .qa-lb-left {{ display: flex; align-items: center; gap: 8px; font-size: 11px; color: #15803D; font-weight: 600; }}
-    #qualityPanel .qa-lb-dot {{ width: 8px; height: 8px; border-radius: 50%; background: #0F9B58; animation: qaPulse 2s infinite; }}
+    #qualityPanel {{ background:#F1F5F9;padding:0 }}
+    #qualityPanel .qa-filter-bar {{ background:#fff;border-bottom:1px solid #E2E8F0;padding:8px 20px;display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap }}
+    #qualityPanel .qa-fg {{ display:flex;flex-direction:column;gap:3px }}
+    #qualityPanel .qa-fg label {{ font-size:10px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.06em }}
+    #qualityPanel .qa-fsel {{ height:34px;padding:0 28px 0 10px;font-size:12px;border:1px solid #CBD5E1;border-radius:7px;background:#fff;color:#374151;cursor:pointer;font-weight:500;min-width:150px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center }}
+    #qualityPanel .qa-fsel.hl {{ border-color:#0D3B6E;background-color:#EFF6FF;color:#0D3B6E;font-weight:700 }}
+    #qualityPanel .qa-fdiv {{ width:1px;height:34px;background:#E2E8F0;align-self:flex-end }}
+    #qualityPanel .qa-btn-clear {{ height:34px;padding:0 16px;font-size:12px;border:1px solid #E85D3F;border-radius:7px;background:#fff;color:#E85D3F;cursor:pointer;font-weight:600;align-self:flex-end }}
+    /* Date range picker */
+    #qualityPanel .qa-date-range-wrap {{ position:relative }}
+    #qualityPanel .qa-date-range-btn {{ height:34px;padding:0 12px;font-size:12px;border:1px solid #CBD5E1;border-radius:7px;background:#fff;color:#374151;cursor:pointer;font-weight:500;display:flex;align-items:center;gap:7px;white-space:nowrap;min-width:210px }}
+    #qualityPanel .qa-date-range-btn.picking {{ border-color:#0D3B6E;border-style:dashed;background:#F8FBFF }}
+    #qualityPanel .qa-date-range-btn svg {{ width:13px;height:13px;color:#94A3B8;flex-shrink:0 }}
+    #qualityPanel .qa-date-range-btn:hover {{ border-color:#0D3B6E }}
+    #qualityPanel .qa-drp {{ position:absolute;top:calc(100% + 5px);left:0;background:#fff;border:1px solid #E2E8F0;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.12);z-index:999;display:none;padding:16px }}
+    #qualityPanel .qa-drp.open {{ display:flex;flex-direction:column;gap:12px }}
+    #qualityPanel .qa-drp-cals {{ display:flex;gap:20px }}
+    #qualityPanel .qa-cal {{ width:210px }}
+    #qualityPanel .qa-cal-header {{ display:flex;align-items:center;justify-content:space-between;margin-bottom:10px }}
+    #qualityPanel .qa-cal-nav {{ background:none;border:none;cursor:pointer;color:#64748B;font-size:16px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:4px }}
+    #qualityPanel .qa-cal-nav:hover {{ background:#F1F5F9 }}
+    #qualityPanel .qa-cal-title {{ font-size:12px;font-weight:700;color:#1E293B }}
+    #qualityPanel .qa-cal-grid {{ display:grid;grid-template-columns:repeat(7,1fr);gap:2px }}
+    #qualityPanel .qa-cal-dh {{ font-size:9px;font-weight:700;color:#94A3B8;text-align:center;padding:3px 0;text-transform:uppercase }}
+    #qualityPanel .qa-cal-d {{ width:100%;aspect-ratio:1;border:none;background:none;cursor:pointer;border-radius:6px;font-size:11px;color:#374151;display:flex;align-items:center;justify-content:center }}
+    #qualityPanel .qa-cal-d:hover:not(:disabled) {{ background:#F1F5F9 }}
+    #qualityPanel .qa-cal-d.today {{ border:1.5px solid #0891B2;color:#0891B2;font-weight:700 }}
+    #qualityPanel .qa-cal-d.sel-start, #qualityPanel .qa-cal-d.sel-end {{ background:#0D3B6E!important;color:#fff!important;font-weight:700;border-radius:6px }}
+    #qualityPanel .qa-cal-d.sel-preview {{ background:#1E5FA8!important;color:#fff!important;border-radius:6px;opacity:.85 }}
+    #qualityPanel .qa-cal-d.in-range {{ background:#EFF6FF;border-radius:0;color:#1D4ED8 }}
+    #qualityPanel .qa-cal-d:disabled {{ color:#CBD5E1;cursor:default }}
+    #qualityPanel .qa-cal-d.other-month {{ color:#CBD5E1 }}
+    #qualityPanel .qa-drp-footer {{ display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid #F1F5F9;padding-top:10px }}
+    #qualityPanel .qa-drp-inputs {{ display:flex;align-items:center;gap:8px }}
+    #qualityPanel .qa-drp-input {{ height:30px;padding:0 8px;font-size:11px;border:1px solid #E2E8F0;border-radius:6px;color:#374151;width:100px;text-align:center }}
+    #qualityPanel .qa-drp-dash {{ font-size:11px;color:#94A3B8 }}
+    #qualityPanel .qa-drp-btns {{ display:flex;gap:6px }}
+    #qualityPanel .qa-drp-apply {{ height:30px;padding:0 14px;font-size:11px;border:none;border-radius:6px;background:#0D3B6E;color:#fff;cursor:pointer;font-weight:700 }}
+    #qualityPanel .qa-drp-reset {{ height:30px;padding:0 12px;font-size:11px;border:1px solid #E2E8F0;border-radius:6px;background:#fff;color:#64748B;cursor:pointer;font-weight:600 }}
+    /* KPI strip */
+    #qualityPanel .qa-kpi-strip {{ background:#0D3B6E;padding:0 20px;height:0;overflow:hidden;display:flex;align-items:center;transition:height .2s ease }}
+    #qualityPanel .qa-kpi-strip.visible {{ height:32px }}
+    #qualityPanel .qa-kpi-strip-items {{ display:flex;align-items:center;gap:20px;font-size:11px;white-space:nowrap }}
+    #qualityPanel .qa-kpi-strip-item {{ display:flex;align-items:center;gap:5px }}
+    #qualityPanel .qa-kpi-strip-label {{ font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.5) }}
+    #qualityPanel .qa-kpi-strip-val {{ font-size:12px;font-weight:800;color:#fff }}
+    #qualityPanel .qa-kpi-strip-sep {{ width:1px;height:14px;background:rgba(255,255,255,.15) }}
+    /* Live banner */
+    #qualityPanel .qa-live-banner {{ background:#F0FDF4;border-bottom:1px solid #BBF7D0;padding:5px 20px;display:flex;align-items:center;justify-content:space-between }}
+    #qualityPanel .qa-lb-left {{ display:flex;align-items:center;gap:8px;font-size:11px;color:#15803D;font-weight:600 }}
+    #qualityPanel .qa-lb-dot {{ width:7px;height:7px;border-radius:50%;background:#0F9B58;animation:qaPulse 2s infinite }}
     @keyframes qaPulse {{ 0%,100%{{opacity:1}}50%{{opacity:.4}} }}
-    #qualityPanel .qa-lb-right {{ font-size: 10px; color: #16A34A; }}
-    #qualityPanel .qa-page {{ padding: 14px 20px; display: flex; flex-direction: column; gap: 14px; }}
-    #qualityPanel .qa-section-head {{ display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }}
-    #qualityPanel .qa-sh-title {{ font-size: 15px; font-weight: 700; color: #0D3B6E; }}
-    #qualityPanel .qa-sh-sub {{ font-size: 11px; color: #94A3B8; margin-top: 2px; }}
-    #qualityPanel .qa-badges {{ display: flex; gap: 7px; flex-wrap: wrap; }}
-    #qualityPanel .qa-badge {{ padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; border: 1px solid; }}
-    #qualityPanel .qa-b-blue {{ background: #EFF6FF; color: #1D4ED8; border-color: #BFDBFE; }}
-    #qualityPanel .qa-b-green {{ background: #F0FDF4; color: #15803D; border-color: #BBF7D0; }}
-    #qualityPanel .qa-b-teal {{ background: #F0FDFA; color: #0F766E; border-color: #99F6E4; }}
-    #qualityPanel .qa-b-amber {{ background: #FFFBEB; color: #B45309; border-color: #FDE68A; }}
-    #qualityPanel .qa-kpi-row {{ display: grid; grid-template-columns: repeat(6,1fr); gap: 10px; }}
-    #qualityPanel .qa-kpi {{ background: #fff; border-radius: 10px; padding: 14px 16px; border: 1px solid #E2E8F0; position: relative; overflow: hidden; }}
-    #qualityPanel .qa-kpi::before {{ content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 10px 10px 0 0; }}
-    #qualityPanel .qa-knavy::before {{ background: #0D3B6E; }} #qualityPanel .qa-kgreen::before {{ background: #0F9B58; }}
-    #qualityPanel .qa-kteal::before {{ background: #0891B2; }} #qualityPanel .qa-kpurple::before {{ background: #7C3AED; }}
-    #qualityPanel .qa-kamber::before {{ background: #F59E0B; }} #qualityPanel .qa-kcoral::before {{ background: #E85D3F; }}
-    #qualityPanel .qa-kpi-icon {{ width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }}
-    #qualityPanel .qa-kpi-icon svg {{ width: 15px; height: 15px; }}
-    #qualityPanel .qa-knavy .qa-kpi-icon {{ background: #EFF6FF; }} #qualityPanel .qa-kgreen .qa-kpi-icon {{ background: #F0FDF4; }}
-    #qualityPanel .qa-kteal .qa-kpi-icon {{ background: #F0FDFA; }} #qualityPanel .qa-kpurple .qa-kpi-icon {{ background: #F5F3FF; }}
-    #qualityPanel .qa-kamber .qa-kpi-icon {{ background: #FFFBEB; }} #qualityPanel .qa-kcoral .qa-kpi-icon {{ background: #FEF2F2; }}
-    #qualityPanel .qa-kpi-lbl {{ font-size: 10px; color: #64748B; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }}
-    #qualityPanel .qa-kpi-val {{ font-size: 22px; font-weight: 800; color: #1E293B; line-height: 1; margin-bottom: 4px; }}
-    #qualityPanel .qa-kpi-d {{ font-size: 10px; font-weight: 600; }}
-    #qualityPanel .qa-du {{ color: #0F9B58; }} #qualityPanel .qa-dd {{ color: #E85D3F; }} #qualityPanel .qa-dn {{ color: #64748B; }}
-    #qualityPanel .qa-sum-strip {{ display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }}
-    #qualityPanel .qa-sum-card {{ background: #fff; border-radius: 10px; border: 1px solid #E2E8F0; padding: 14px; }}
-    #qualityPanel .qa-sum-lbl {{ font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #94A3B8; margin-bottom: 6px; }}
-    #qualityPanel .qa-sum-val {{ font-size: 20px; font-weight: 800; line-height: 1; }}
-    #qualityPanel .qa-sum-sub {{ font-size: 11px; color: #64748B; margin-top: 3px; }}
-    #qualityPanel .qa-sum-score {{ font-size: 12px; font-weight: 700; margin-top: 3px; }}
-    #qualityPanel .qa-g3 {{ display: grid; grid-template-columns: 1.6fr 1fr 1fr; gap: 12px; }}
-    #qualityPanel .qa-g2 {{ display: grid; grid-template-columns: 1.3fr 1fr; gap: 12px; }}
-    #qualityPanel .qa-card {{ background: #fff; border-radius: 10px; border: 1px solid #E2E8F0; overflow: hidden; }}
-    #qualityPanel .qa-ch {{ padding: 11px 16px; border-bottom: 1px solid #F1F5F9; display: flex; align-items: center; justify-content: space-between; gap: 8px; }}
-    #qualityPanel .qa-ct {{ font-size: 12px; font-weight: 700; color: #1E293B; display: flex; align-items: center; gap: 6px; }}
-    #qualityPanel .qa-ct svg {{ width: 13px; height: 13px; color: #94A3B8; }}
-    #qualityPanel .qa-cs {{ font-size: 10px; color: #94A3B8; margin-top: 1px; }}
-    #qualityPanel .qa-cbody {{ padding: 12px 16px; }}
-    #qualityPanel .qa-cb {{ font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 600; white-space: nowrap; }}
-    #qualityPanel .qa-cbg {{ background: #F0FDF4; color: #15803D; }} #qualityPanel .qa-cbb {{ background: #EFF6FF; color: #1D4ED8; }}
-    #qualityPanel .qa-cba {{ background: #FFFBEB; color: #B45309; }} #qualityPanel .qa-cbr {{ background: #FEF2F2; color: #DC2626; }}
-    #qualityPanel .qa-cr-row {{ display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }}
-    #qualityPanel .qa-cr-row:last-child {{ margin-bottom: 0; }}
-    #qualityPanel .qa-cr-lbl {{ font-size: 11px; color: #374151; font-weight: 500; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }}
-    #qualityPanel .qa-cr-elig {{ font-size: 9px; color: #CBD5E1; min-width: 24px; text-align: center; flex-shrink: 0; }}
-    #qualityPanel .qa-cr-bg {{ width: 80px; height: 6px; background: #F1F5F9; border-radius: 3px; overflow: hidden; flex-shrink: 0; }}
-    #qualityPanel .qa-cr-fill {{ height: 100%; border-radius: 3px; }}
-    #qualityPanel .qa-cr-val {{ font-size: 11px; font-weight: 700; min-width: 38px; text-align: right; flex-shrink: 0; }}
-    #qualityPanel .qa-lbt {{ width: 100%; border-collapse: collapse; font-size: 11px; }}
-    #qualityPanel .qa-lbt th {{ padding: 6px 8px; text-align: left; font-size: 9px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid #F1F5F9; white-space: nowrap; }}
-    #qualityPanel .qa-lbt td {{ padding: 7px 8px; border-bottom: 1px solid #F8FAFC; vertical-align: middle; }}
-    #qualityPanel .qa-lbt tr:last-child td {{ border-bottom: none; }}
-    #qualityPanel .qa-lbt tr:hover td {{ background: #F8FAFC; }}
-    #qualityPanel .qa-rk {{ font-size: 11px; font-weight: 800; color: #94A3B8; width: 18px; text-align: center; }}
-    #qualityPanel .qa-rk.gold {{ color: #F59E0B; }} #qualityPanel .qa-rk.silver {{ color: #94A3B8; }} #qualityPanel .qa-rk.bronze {{ color: #B45309; }}
-    #qualityPanel .qa-chip {{ display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: 700; }}
-    #qualityPanel .qa-cg {{ background: #F0FDF4; color: #15803D; }} #qualityPanel .qa-cam {{ background: #FFFBEB; color: #B45309; }} #qualityPanel .qa-crr {{ background: #FEF2F2; color: #DC2626; }}
-    #qualityPanel .qa-cch-row {{ display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }}
-    #qualityPanel .qa-cch-row:last-child {{ margin-bottom: 0; }}
-    #qualityPanel .qa-cch-lbl {{ font-size: 11px; font-weight: 500; color: #374151; width: 158px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
-    #qualityPanel .qa-cch-bg {{ flex: 1; height: 7px; background: #F1F5F9; border-radius: 4px; overflow: hidden; }}
-    #qualityPanel .qa-cch-fill {{ height: 100%; border-radius: 4px; }}
-    #qualityPanel .qa-cch-ct {{ font-size: 11px; font-weight: 700; min-width: 40px; text-align: right; }}
-    #qualityPanel .qa-dtbl {{ width: 100%; border-collapse: collapse; font-size: 11px; }}
-    #qualityPanel .qa-dtbl th {{ padding: 7px 10px; text-align: left; font-size: 9px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid #E2E8F0; background: #F8FAFC; white-space: nowrap; position: sticky; top: 0; z-index: 1; }}
-    #qualityPanel .qa-dtbl td {{ padding: 6px 10px; border-bottom: 1px solid #F8FAFC; vertical-align: top; }}
-    #qualityPanel .qa-dtbl tr:hover td {{ background: #F8FAFC; }}
-    #qualityPanel .qa-dtbl tr:last-child td {{ border-bottom: none; }}
-    #qualityPanel .qa-tbl-scroll {{ overflow-x: auto; max-height: 420px; overflow-y: auto; }}
-    #qualityPanel .qa-etype {{ font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; }}
-    #qualityPanel .qa-et-w {{ background: #EFF6FF; color: #1D4ED8; }} #qualityPanel .qa-et-d {{ background: #F0FDF4; color: #15803D; }}
-    #qualityPanel .qa-av {{ width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; flex-shrink: 0; vertical-align: middle; margin-right: 4px; }}
-    #qualityPanel .qa-yn-y {{ color: #0F9B58; font-weight: 700; font-size: 11px; }}
-    #qualityPanel .qa-yn-n {{ color: #E85D3F; font-weight: 700; font-size: 11px; }}
-    #qualityPanel .qa-yn-na {{ color: #CBD5E1; font-size: 10px; }}
-    #qualityPanel .qa-fb-cell {{ font-size: 10px; color: #64748B; line-height: 1.4; max-width: 260px; white-space: normal; }}
-    @media (max-width: 768px) {{
-        #qualityPanel .qa-kpi-row {{ grid-template-columns: repeat(3,1fr); }}
-        #qualityPanel .qa-sum-strip {{ grid-template-columns: repeat(2,1fr); }}
-        #qualityPanel .qa-g3 {{ grid-template-columns: 1fr; }}
-        #qualityPanel .qa-g2 {{ grid-template-columns: 1fr; }}
+    /* Page */
+    #qualityPanel .qa-page {{ padding:12px 20px;display:flex;flex-direction:column;gap:12px }}
+    #qualityPanel .qa-section-head {{ display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px }}
+    #qualityPanel .qa-sh-title {{ font-size:15px;font-weight:700;color:#0D3B6E }}
+    #qualityPanel .qa-sh-sub {{ font-size:11px;color:#94A3B8;margin-top:2px }}
+    #qualityPanel .qa-badges {{ display:flex;gap:7px;flex-wrap:wrap }}
+    #qualityPanel .qa-badge {{ padding:3px 9px;border-radius:20px;font-size:10px;font-weight:600;border:1px solid }}
+    #qualityPanel .qa-b-blue {{ background:#EFF6FF;color:#1D4ED8;border-color:#BFDBFE }}
+    #qualityPanel .qa-b-green {{ background:#F0FDF4;color:#15803D;border-color:#BBF7D0 }}
+    #qualityPanel .qa-b-teal {{ background:#F0FDFA;color:#0F766E;border-color:#99F6E4 }}
+    #qualityPanel .qa-b-amber {{ background:#FFFBEB;color:#B45309;border-color:#FDE68A }}
+    /* KPI cards */
+    #qualityPanel .qa-kpi-row {{ display:grid;grid-template-columns:repeat(6,1fr);gap:8px }}
+    #qualityPanel .qa-kpi {{ background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #E2E8F0;position:relative;overflow:hidden }}
+    #qualityPanel .qa-kpi::before {{ content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:8px 8px 0 0 }}
+    #qualityPanel .qa-knavy::before {{ background:#0D3B6E }} #qualityPanel .qa-kgreen::before {{ background:#0F9B58 }}
+    #qualityPanel .qa-kteal::before {{ background:#0891B2 }} #qualityPanel .qa-kpurple::before {{ background:#7C3AED }}
+    #qualityPanel .qa-kamber::before {{ background:#F59E0B }} #qualityPanel .qa-kcoral::before {{ background:#E85D3F }}
+    #qualityPanel .qa-kpi-icon {{ width:22px;height:22px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;margin-right:6px;vertical-align:middle;flex-shrink:0 }}
+    #qualityPanel .qa-kpi-icon svg {{ width:11px;height:11px }}
+    #qualityPanel .qa-knavy .qa-kpi-icon {{ background:#EFF6FF }} #qualityPanel .qa-kgreen .qa-kpi-icon {{ background:#F0FDF4 }}
+    #qualityPanel .qa-kteal .qa-kpi-icon {{ background:#F0FDFA }} #qualityPanel .qa-kpurple .qa-kpi-icon {{ background:#F5F3FF }}
+    #qualityPanel .qa-kamber .qa-kpi-icon {{ background:#FFFBEB }} #qualityPanel .qa-kcoral .qa-kpi-icon {{ background:#FEF2F2 }}
+    #qualityPanel .qa-kpi-head {{ display:flex;align-items:center;margin-bottom:5px }}
+    #qualityPanel .qa-kpi-lbl {{ font-size:9px;color:#64748B;font-weight:700;text-transform:uppercase;letter-spacing:.06em }}
+    #qualityPanel .qa-kpi-val {{ font-size:20px;font-weight:800;color:#1E293B;line-height:1;margin-bottom:3px }}
+    #qualityPanel .qa-kpi-d {{ font-size:10px;font-weight:600 }}
+    #qualityPanel .qa-du {{ color:#0F9B58 }} #qualityPanel .qa-dd {{ color:#E85D3F }} #qualityPanel .qa-dn {{ color:#64748B }}
+    /* Summary strip */
+    #qualityPanel .qa-sum-strip {{ display:grid;grid-template-columns:repeat(4,1fr);gap:8px }}
+    #qualityPanel .qa-sum-card {{ background:#fff;border-radius:8px;border:1px solid #E2E8F0;padding:11px 14px }}
+    #qualityPanel .qa-sum-lbl {{ font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#94A3B8;margin-bottom:5px }}
+    #qualityPanel .qa-sum-val {{ font-size:18px;font-weight:800;line-height:1 }}
+    #qualityPanel .qa-sum-sub {{ font-size:10px;color:#64748B;margin-top:3px }}
+    #qualityPanel .qa-sum-score {{ font-size:11px;font-weight:700;margin-top:3px }}
+    /* Grids & cards */
+    #qualityPanel .qa-g3 {{ display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:12px }}
+    #qualityPanel .qa-g2 {{ display:grid;grid-template-columns:1.3fr 1fr;gap:12px }}
+    #qualityPanel .qa-card {{ background:#fff;border-radius:10px;border:1px solid #E2E8F0;overflow:hidden }}
+    #qualityPanel .qa-ch {{ padding:11px 16px;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;justify-content:space-between;gap:8px }}
+    #qualityPanel .qa-ct {{ font-size:12px;font-weight:700;color:#1E293B;display:flex;align-items:center;gap:6px }}
+    #qualityPanel .qa-ct svg {{ width:13px;height:13px;color:#94A3B8 }}
+    #qualityPanel .qa-cs {{ font-size:10px;color:#94A3B8;margin-top:1px }}
+    #qualityPanel .qa-cbody {{ padding:12px 16px }}
+    #qualityPanel .qa-cb {{ font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;white-space:nowrap }}
+    #qualityPanel .qa-cbg {{ background:#F0FDF4;color:#15803D }} #qualityPanel .qa-cbb {{ background:#EFF6FF;color:#1D4ED8 }}
+    #qualityPanel .qa-cba {{ background:#FFFBEB;color:#B45309 }} #qualityPanel .qa-cbr {{ background:#FEF2F2;color:#DC2626 }}
+    /* Criteria bars */
+    #qualityPanel .qa-cr-row {{ display:flex;align-items:center;gap:8px;margin-bottom:7px }}
+    #qualityPanel .qa-cr-row:last-child {{ margin-bottom:0 }}
+    #qualityPanel .qa-cr-lbl {{ font-size:11px;color:#374151;font-weight:500;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0 }}
+    #qualityPanel .qa-cr-elig {{ font-size:9px;color:#CBD5E1;min-width:24px;text-align:center;flex-shrink:0 }}
+    #qualityPanel .qa-cr-bg {{ width:80px;height:6px;background:#F1F5F9;border-radius:3px;overflow:hidden;flex-shrink:0 }}
+    #qualityPanel .qa-cr-fill {{ height:100%;border-radius:3px }}
+    #qualityPanel .qa-cr-val {{ font-size:11px;font-weight:700;min-width:38px;text-align:right;flex-shrink:0 }}
+    /* Leaderboard */
+    #qualityPanel .qa-lbt {{ width:100%;border-collapse:collapse;font-size:11px }}
+    #qualityPanel .qa-lbt th {{ padding:6px 8px;text-align:left;font-size:9px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #F1F5F9;white-space:nowrap }}
+    #qualityPanel .qa-lbt td {{ padding:7px 8px;border-bottom:1px solid #F8FAFC;vertical-align:middle }}
+    #qualityPanel .qa-lbt tr:last-child td {{ border-bottom:none }}
+    #qualityPanel .qa-lbt tr:hover td {{ background:#F8FAFC }}
+    #qualityPanel .qa-rk {{ font-size:11px;font-weight:800;color:#94A3B8;width:18px;text-align:center }}
+    #qualityPanel .qa-rk.gold {{ color:#F59E0B }} #qualityPanel .qa-rk.silver {{ color:#94A3B8 }} #qualityPanel .qa-rk.bronze {{ color:#B45309 }}
+    #qualityPanel .qa-chip {{ display:inline-block;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:700 }}
+    #qualityPanel .qa-cg {{ background:#F0FDF4;color:#15803D }} #qualityPanel .qa-cam {{ background:#FFFBEB;color:#B45309 }} #qualityPanel .qa-crr {{ background:#FEF2F2;color:#DC2626 }}
+    /* Coaching bars */
+    #qualityPanel .qa-cch-row {{ display:flex;align-items:center;gap:8px;margin-bottom:8px }}
+    #qualityPanel .qa-cch-row:last-child {{ margin-bottom:0 }}
+    #qualityPanel .qa-cch-lbl {{ font-size:11px;font-weight:500;color:#374151;width:158px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis }}
+    #qualityPanel .qa-cch-bg {{ flex:1;height:7px;background:#F1F5F9;border-radius:4px;overflow:hidden }}
+    #qualityPanel .qa-cch-fill {{ height:100%;border-radius:4px }}
+    #qualityPanel .qa-cch-ct {{ font-size:11px;font-weight:700;min-width:60px;text-align:right }}
+    /* Detail table */
+    #qualityPanel .qa-tbl-scroll {{ overflow-x:auto;max-height:420px;overflow-y:auto }}
+    #qualityPanel .qa-dtbl {{ width:100%;border-collapse:collapse;font-size:11px }}
+    #qualityPanel .qa-dtbl th {{ padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #E2E8F0;background:#F8FAFC;white-space:nowrap;position:sticky;top:0;z-index:1 }}
+    #qualityPanel .qa-dtbl td {{ padding:6px 10px;border-bottom:1px solid #F8FAFC;vertical-align:top }}
+    #qualityPanel .qa-dtbl tr:hover td {{ background:#F8FAFC }}
+    #qualityPanel .qa-dtbl tr:last-child td {{ border-bottom:none }}
+    #qualityPanel .qa-av {{ width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;vertical-align:middle;margin-right:4px }}
+    #qualityPanel .qa-yn-y {{ color:#0F9B58;font-weight:700;font-size:11px }}
+    #qualityPanel .qa-yn-n {{ color:#E85D3F;font-weight:700;font-size:11px }}
+    #qualityPanel .qa-yn-na {{ color:#CBD5E1;font-size:10px }}
+    #qualityPanel .qa-fb-cell {{ font-size:10px;color:#64748B;line-height:1.4;max-width:260px;white-space:normal }}
+    @media (max-width:768px) {{
+        #qualityPanel .qa-kpi-row {{ grid-template-columns:repeat(3,1fr) }}
+        #qualityPanel .qa-sum-strip {{ grid-template-columns:repeat(2,1fr) }}
+        #qualityPanel .qa-g3 {{ grid-template-columns:1fr }}
+        #qualityPanel .qa-g2 {{ grid-template-columns:1fr }}
     }}
 </style>
 </head>
@@ -2204,19 +2255,38 @@ def main():
 
 <div class="tab-panel" id="qualityPanel" data-tab="quality" role="tabpanel">
 
+<!-- Filter bar -->
 <div class="qa-filter-bar">
   <div class="qa-fg">
-    <label>Time view</label>
-    <div class="qa-pg">
-      <button class="qa-pb" onclick="qaSetPeriod(this)">Daily</button>
-      <button class="qa-pb active" onclick="qaSetPeriod(this)">Weekly</button>
-      <button class="qa-pb" onclick="qaSetPeriod(this)">Monthly</button>
+    <label>Date range</label>
+    <div class="qa-date-range-wrap" id="qa-drp-wrap">
+      <button class="qa-date-range-btn" id="qa-drp-trigger" onclick="qaToggleDRP(event)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span id="qa-drp-label">May 8 &ndash; Jun 8, 2026</span>
+      </button>
+      <div class="qa-drp" id="qa-drp-panel">
+        <div class="qa-drp-cals">
+          <div class="qa-cal" id="qa-cal-left"></div>
+          <div class="qa-cal" id="qa-cal-right"></div>
+        </div>
+        <div class="qa-drp-footer">
+          <div class="qa-drp-inputs">
+            <input class="qa-drp-input" id="qa-inp-start" type="text" placeholder="Start date" readonly>
+            <span class="qa-drp-dash">&ndash;</span>
+            <input class="qa-drp-input" id="qa-inp-end" type="text" placeholder="End date" readonly>
+          </div>
+          <div class="qa-drp-btns">
+            <button class="qa-drp-reset" onclick="qaResetDRP()">Reset</button>
+            <button class="qa-drp-apply" onclick="qaApplyDRP()">Apply</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <div class="qa-fdiv"></div>
   <div class="qa-fg">
     <label>Account &#9733;</label>
-    <select class="qa-fsel hl"><option>M7 — Ride-hailing support</option></select>
+    <select class="qa-fsel hl"><option>M7 &ndash; Ride-hailing support</option></select>
   </div>
   <div class="qa-fg">
     <label>QA Coach</label>
@@ -2231,72 +2301,88 @@ def main():
     </select>
   </div>
   <div class="qa-fg">
-    <label>Eval type</label>
-    <select class="qa-fsel" id="qa-sel-type" onchange="qaApplyFilters()">
-      <option value="">All types</option>
-      <option value="Weekly">Weekly</option>
-      <option value="Daily">Daily</option>
+    <label>Immediate Head</label>
+    <select class="qa-fsel" id="qa-sel-head" onchange="qaApplyFilters()">
+      <option value="">All Heads</option>
     </select>
   </div>
   <div class="qa-fdiv"></div>
-  <button class="qa-btn-apply" onclick="qaApplyFilters()">Apply</button>
   <button class="qa-btn-clear" onclick="qaClearFilters()">&times; Clear</button>
 </div>
 
+<!-- Live banner -->
 <div class="qa-live-banner">
   <div class="qa-lb-left">
     <span class="qa-lb-dot"></span>
-    <span id="qa-banner-text">M7 Ride-hailing support &nbsp;&middot;&nbsp; Source: Google Sheets QA scorecard</span>
+    Live data &nbsp;&middot;&nbsp; M7 Ride-hailing support &nbsp;&middot;&nbsp; Source: Google Forms QA scorecard &nbsp;&middot;&nbsp; <span id="qa-banner-count">29</span> evaluations
   </div>
-  <div class="qa-lb-right">Pass threshold: 90% &nbsp;&middot;&nbsp; 22-criteria scorecard</div>
+  <div style="font-size:10px;color:#16A34A">Pass threshold: 90% &nbsp;&middot;&nbsp; 22-criteria scorecard &nbsp;&middot;&nbsp; Supervisors: Charito Caitor / Almyr Beltran</div>
+</div>
+
+<!-- Compact KPI strip (appears on scroll) -->
+<div class="qa-kpi-strip" id="qa-kpi-strip">
+  <div class="qa-kpi-strip-items">
+    <div class="qa-kpi-strip-item"><span class="qa-kpi-strip-label">Avg score</span><span class="qa-kpi-strip-val" id="qa-strip-avg">&mdash;</span></div>
+    <div class="qa-kpi-strip-sep"></div>
+    <div class="qa-kpi-strip-item"><span class="qa-kpi-strip-label">Pass rate</span><span class="qa-kpi-strip-val" id="qa-strip-pass">&mdash;</span></div>
+    <div class="qa-kpi-strip-sep"></div>
+    <div class="qa-kpi-strip-item"><span class="qa-kpi-strip-label">Evals</span><span class="qa-kpi-strip-val" id="qa-strip-evals">&mdash;</span></div>
+    <div class="qa-kpi-strip-sep"></div>
+    <div class="qa-kpi-strip-item"><span class="qa-kpi-strip-label">Agents</span><span class="qa-kpi-strip-val" id="qa-strip-agents">&mdash;</span></div>
+    <div class="qa-kpi-strip-sep"></div>
+    <div class="qa-kpi-strip-item"><span class="qa-kpi-strip-label">Below 90%</span><span class="qa-kpi-strip-val" id="qa-strip-below" style="color:#FCA5A5">&mdash;</span></div>
+    <div class="qa-kpi-strip-sep"></div>
+    <div class="qa-kpi-strip-item"><span class="qa-kpi-strip-label">Lowest</span><span class="qa-kpi-strip-val" id="qa-strip-low" style="color:#FCD34D">&mdash;</span></div>
+  </div>
 </div>
 
 <div class="qa-page">
   <div class="qa-section-head">
     <div>
-      <div class="qa-sh-title" id="qa-view-title">M7 — Quality Assurance · Weekly view</div>
-      <div class="qa-sh-sub" id="qa-view-sub">Loading…</div>
+      <div class="qa-sh-title">M7 &ndash; Quality Assurance</div>
+      <div class="qa-sh-sub" id="qa-view-sub">May 8 &ndash; Jun 8, 2026 &middot; All 6 agents &middot; 29 evaluations</div>
     </div>
     <div class="qa-badges">
       <div class="qa-badge qa-b-blue">M7 Account</div>
-      <div class="qa-badge qa-b-green" id="qa-badge-agents">— Agents</div>
-      <div class="qa-badge qa-b-teal" id="qa-badge-evals">— Evaluations</div>
+      <div class="qa-badge qa-b-green" id="qa-badge-agents">6 Agents</div>
+      <div class="qa-badge qa-b-teal" id="qa-badge-evals">29 Evaluations</div>
       <div class="qa-badge qa-b-amber">Pass threshold: 90%</div>
     </div>
   </div>
 
+  <div id="qa-kpi-sentinel"></div>
   <div class="qa-kpi-row">
-    <div class="qa-kpi qa-knavy"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg></div><div class="qa-kpi-lbl">Avg QA Score</div><div class="qa-kpi-val" id="qa-kpi-avg">—</div><div class="qa-kpi-d qa-dn" id="qa-kpi-avg-sub">—</div></div>
-    <div class="qa-kpi qa-kgreen"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><div class="qa-kpi-lbl">Pass Rate</div><div class="qa-kpi-val" id="qa-kpi-pass">—</div><div class="qa-kpi-d qa-du" id="qa-kpi-pass-sub">—</div></div>
-    <div class="qa-kpi qa-kteal"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#0F766E" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></div><div class="qa-kpi-lbl">Total Evaluations</div><div class="qa-kpi-val" id="qa-kpi-evals">—</div><div class="qa-kpi-d qa-dn" id="qa-kpi-evals-sub">—</div></div>
-    <div class="qa-kpi qa-kpurple"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#6D28D9" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg></div><div class="qa-kpi-lbl">Total Agents</div><div class="qa-kpi-val" id="qa-kpi-agents">—</div><div class="qa-kpi-d qa-dn">Evaluated this period</div></div>
-    <div class="qa-kpi qa-kamber"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg></div><div class="qa-kpi-lbl">Lowest Score</div><div class="qa-kpi-val" id="qa-kpi-low">—</div><div class="qa-kpi-d qa-dd" id="qa-kpi-low-sub">—</div></div>
-    <div class="qa-kpi qa-kcoral"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="qa-kpi-lbl">Below 90%</div><div class="qa-kpi-val" id="qa-kpi-below">—</div><div class="qa-kpi-d qa-dd" id="qa-kpi-below-sub">—</div></div>
+    <div class="qa-kpi qa-knavy"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg></div><div class="qa-kpi-lbl">Avg QA Score</div></div><div class="qa-kpi-val" id="qa-kpi-avg">&mdash;</div><div class="qa-kpi-d qa-dn" id="qa-kpi-avg-sub">&mdash;</div></div>
+    <div class="qa-kpi qa-kgreen"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><div class="qa-kpi-lbl">Pass Rate</div></div><div class="qa-kpi-val" id="qa-kpi-pass">&mdash;</div><div class="qa-kpi-d qa-du" id="qa-kpi-pass-sub">&mdash;</div></div>
+    <div class="qa-kpi qa-kteal"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#0F766E" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></div><div class="qa-kpi-lbl">Total Evaluations</div></div><div class="qa-kpi-val" id="qa-kpi-evals">&mdash;</div><div class="qa-kpi-d qa-dn" id="qa-kpi-evals-sub">&mdash;</div></div>
+    <div class="qa-kpi qa-kpurple"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#6D28D9" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg></div><div class="qa-kpi-lbl">Total Agents</div></div><div class="qa-kpi-val" id="qa-kpi-agents">&mdash;</div><div class="qa-kpi-d qa-dn">Evaluated this period</div></div>
+    <div class="qa-kpi qa-kamber"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg></div><div class="qa-kpi-lbl">Lowest Score</div></div><div class="qa-kpi-val" id="qa-kpi-low">&mdash;</div><div class="qa-kpi-d qa-dd" id="qa-kpi-low-sub">&mdash;</div></div>
+    <div class="qa-kpi qa-kcoral"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="qa-kpi-lbl">Below 90%</div></div><div class="qa-kpi-val" id="qa-kpi-below">&mdash;</div><div class="qa-kpi-d qa-dd" id="qa-kpi-below-sub">&mdash;</div></div>
   </div>
 
   <div class="qa-sum-strip">
-    <div class="qa-sum-card" style="border-top:3px solid #0F9B58"><div class="qa-sum-lbl">Avg QA score</div><div class="qa-sum-val" id="qa-sum-avg" style="color:#0F9B58">—</div><div class="qa-sum-sub">All evaluations</div><div class="qa-sum-score" id="qa-sum-avg-score" style="color:#0F9B58">—</div></div>
-    <div class="qa-sum-card" style="border-top:3px solid #0891B2"><div class="qa-sum-lbl">Pass rate</div><div class="qa-sum-val" id="qa-sum-pass" style="color:#0891B2">—</div><div class="qa-sum-sub" id="qa-sum-pass-sub">—</div><div class="qa-sum-score" id="qa-sum-pass-score" style="color:#0F9B58">—</div></div>
-    <div class="qa-sum-card" style="border-top:3px solid #0D3B6E"><div class="qa-sum-lbl">Top performer</div><div class="qa-sum-val" id="qa-sum-top" style="color:#0D3B6E;font-size:15px">—</div><div class="qa-sum-sub" id="qa-sum-top-sub">—</div><div class="qa-sum-score" id="qa-sum-top-score" style="color:#0F9B58">—</div></div>
-    <div class="qa-sum-card" style="border-top:3px solid #F59E0B"><div class="qa-sum-lbl">Needs attention</div><div class="qa-sum-val" id="qa-sum-attn" style="color:#0D3B6E;font-size:15px">—</div><div class="qa-sum-sub" id="qa-sum-attn-sub">—</div><div class="qa-sum-score" style="color:#E85D3F">Coaching recommended</div></div>
+    <div class="qa-sum-card" style="border-top:3px solid #0F9B58"><div class="qa-sum-lbl">Avg QA score</div><div class="qa-sum-val" id="qa-sum-avg" style="color:#0F9B58">&mdash;</div><div class="qa-sum-sub">All evaluations in range</div><div class="qa-sum-score" id="qa-sum-avg-note" style="color:#0F9B58">&mdash;</div></div>
+    <div class="qa-sum-card" style="border-top:3px solid #0891B2"><div class="qa-sum-lbl">Pass rate</div><div class="qa-sum-val" id="qa-sum-pass" style="color:#0891B2">&mdash;</div><div class="qa-sum-sub" id="qa-sum-pass-sub">&mdash;</div><div class="qa-sum-score" style="color:#0F9B58">Pass threshold: 90%</div></div>
+    <div class="qa-sum-card" style="border-top:3px solid #0D3B6E"><div class="qa-sum-lbl">Top performer</div><div class="qa-sum-val" id="qa-sum-top" style="color:#0D3B6E;font-size:15px">&mdash;</div><div class="qa-sum-sub" id="qa-sum-top-sub">&mdash;</div><div class="qa-sum-score" id="qa-sum-top-pass" style="color:#0F9B58">&mdash;</div></div>
+    <div class="qa-sum-card" style="border-top:3px solid #F59E0B"><div class="qa-sum-lbl">Needs attention</div><div class="qa-sum-val" id="qa-sum-attn" style="color:#0D3B6E;font-size:15px">&mdash;</div><div class="qa-sum-sub" id="qa-sum-attn-sub">&mdash;</div><div class="qa-sum-score" style="color:#E85D3F">Coaching recommended</div></div>
   </div>
 
   <div class="qa-g3">
     <div class="qa-card">
-      <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>QA Score Trend</div><div class="qa-cs" id="qa-trend-sub">Weekly avg · Target: 90%</div></div><span class="qa-cb qa-cbg" id="qa-trend-badge">—</span></div>
+      <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>QA Score Trend</div><div class="qa-cs" id="qa-trend-sub">Weekly avg (Mon&ndash;Sun) &middot; Target: 90%</div></div><span class="qa-cb qa-cbg" id="qa-trend-badge">&mdash;</span></div>
       <div class="qa-cbody" style="padding:10px 14px"><div style="position:relative;height:160px"><canvas id="qaTrendChart"></canvas></div></div>
     </div>
     <div class="qa-card">
-      <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>Criteria pass rates</div><div class="qa-cs" id="qa-crit-sub">All 22 criteria · sorted by pass rate</div></div><span class="qa-cb qa-cba">M7 specific</span></div>
+      <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>Criteria pass rates</div><div class="qa-cs" id="qa-crit-sub">All 22 criteria &middot; sorted by pass rate</div></div><span class="qa-cb qa-cba">M7 specific</span></div>
       <div style="padding:0 14px">
         <div style="max-height:220px;overflow-y:auto;padding:10px 0;border-bottom:1px solid #E2E8F0" id="qa-criteria-bars"></div>
-        <div style="padding:6px 0 8px;font-size:10px;color:#CBD5E1">&#9679; Scroll to see all criteria</div>
+        <div style="padding:6px 0 8px;font-size:10px;color:#CBD5E1">&#9679; Scroll to see all 22 criteria</div>
       </div>
     </div>
     <div class="qa-card">
       <div class="qa-ch"><div><div class="qa-ct">Score distribution</div><div class="qa-cs" id="qa-donut-sub">All evaluations</div></div></div>
       <div class="qa-cbody" style="padding:10px 14px">
-        <div style="position:relative;height:130px"><canvas id="qaDonutChart"></canvas></div>
+        <div style="position:relative;height:160px"><canvas id="qaDonutChart"></canvas></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:8px" id="qa-donut-legend"></div>
       </div>
     </div>
@@ -2304,13 +2390,13 @@ def main():
 
   <div class="qa-g2">
     <div class="qa-card">
-      <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>Agent leaderboard</div><div class="qa-cs">Ranked by avg score</div></div><span class="qa-cb qa-cbb" id="qa-lb-badge">—</span></div>
+      <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>Agent leaderboard</div><div class="qa-cs">Ranked by avg score</div></div><span class="qa-cb qa-cbb" id="qa-lb-badge">&mdash;</span></div>
       <div class="qa-cbody" style="padding:0 16px 8px">
         <table class="qa-lbt"><thead><tr><th>#</th><th>Agent</th><th>Evals</th><th>Avg</th><th>Min</th><th>Max</th><th>Pass</th></tr></thead><tbody id="qa-leaderboard"></tbody></table>
       </div>
     </div>
     <div class="qa-card">
-      <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg>Coaching opportunities</div><div class="qa-cs">Criteria below 95% pass rate</div></div><span class="qa-cb qa-cbr" id="qa-coaching-count">—</span></div>
+      <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg>Coaching opportunities</div><div class="qa-cs">Criteria below 95% pass rate</div></div><span class="qa-cb qa-cbr" id="qa-coaching-count">&mdash;</span></div>
       <div class="qa-cbody" style="padding:10px 16px">
         <div id="qa-coaching-bars"></div>
         <div style="height:1px;background:#F1F5F9;margin:12px 0"></div>
@@ -2322,32 +2408,30 @@ def main():
 
   <div class="qa-card">
     <div class="qa-ch">
-      <div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>All evaluations — detail table</div><div class="qa-cs">All rows · all criteria columns</div></div>
-      <span class="qa-cb qa-cbb" id="qa-tbl-count">— records</span>
+      <div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>All evaluations &mdash; detail table</div><div class="qa-cs">All 24 columns from M7.xlsx &middot; sorted by timestamp</div></div>
+      <span class="qa-cb qa-cbb" id="qa-tbl-count">&mdash;</span>
     </div>
     <div class="qa-tbl-scroll">
       <table class="qa-dtbl">
         <thead><tr>
-          <th style="min-width:120px">Timestamp</th>
-          <th style="min-width:155px">Agent</th>
-          <th style="min-width:55px">Score</th>
-          <th style="min-width:65px">Type</th>
-          <th style="min-width:75px">Call date</th>
+          <th style="min-width:130px">Evaluation Date</th>
+          <th style="min-width:155px">Emp Name</th>
+          <th style="min-width:110px">Immediate Head</th>
           <th style="min-width:110px">QA Coach</th>
-          <th style="min-width:100px">Supervisor</th>
+          <th style="min-width:55px">Score</th>
           <th style="min-width:75px">Opening In</th>
           <th style="min-width:75px">Opening Out</th>
-          <th style="min-width:70px">Closing</th>
+          <th style="min-width:65px">Closing</th>
           <th style="min-width:75px">Approp. Resp</th>
-          <th style="min-width:70px">No Resp</th>
-          <th style="min-width:65px">Fillers</th>
-          <th style="min-width:75px">Acknowledge</th>
+          <th style="min-width:65px">No Resp</th>
+          <th style="min-width:60px">Fillers</th>
+          <th style="min-width:80px">Acknowledge</th>
           <th style="min-width:70px">Hold Proc.</th>
-          <th style="min-width:75px">Ack. Hold</th>
-          <th style="min-width:75px">Resp. Eff.</th>
-          <th style="min-width:65px">Empathy</th>
-          <th style="min-width:65px">Adjust</th>
-          <th style="min-width:60px">Mute</th>
+          <th style="min-width:70px">Ack. Hold</th>
+          <th style="min-width:70px">Resp. Eff.</th>
+          <th style="min-width:60px">Empathy</th>
+          <th style="min-width:60px">Adjust</th>
+          <th style="min-width:55px">Mute</th>
           <th style="min-width:70px">Active List.</th>
           <th style="min-width:70px">Answered Q</th>
           <th style="min-width:65px">Probing Q</th>
@@ -2357,13 +2441,13 @@ def main():
           <th style="min-width:65px">Rudeness</th>
           <th style="min-width:75px">Transaction</th>
           <th style="min-width:65px">Speech</th>
-          <th style="min-width:70px">Investigation</th>
-          <th style="min-width:220px">Feedback Summary</th>
+          <th style="min-width:75px">Investigation</th>
+          <th style="min-width:240px">Feedback Summary</th>
         </tr></thead>
         <tbody id="qa-detail-table"></tbody>
       </table>
     </div>
-    <div style="padding:6px 16px;font-size:10px;color:#94A3B8;border-top:1px solid #F1F5F9" id="qa-tbl-footer">—</div>
+    <div style="padding:6px 16px;font-size:10px;color:#94A3B8;border-top:1px solid #F1F5F9" id="qa-tbl-footer">&mdash;</div>
   </div>
 </div>
 </div>
@@ -3822,435 +3906,584 @@ function render() {{
 }}
 
 // ─── QA QUALITY TAB ──────────────────────────────────────────────────────────
-let qaFiltered = [...qaRawData];
-let qaPeriod = "Weekly";
 let qaChartsInitialized = false;
 let qaTrendChart = null;
 let qaDonutChart = null;
 
-const QA_CRITERIA = [
-    {{key:"os_in",   label:"Opening Spiel (Inbound)",   max:1}},
-    {{key:"os_out",  label:"Opening Spiel (Outbound)",  max:1}},
-    {{key:"closing", label:"Closing Spiel",             max:1}},
-    {{key:"approp",  label:"Appropriate Response",      max:2}},
-    {{key:"no_resp", label:"No Response",               max:2}},
-    {{key:"fillers", label:"Fillers / Slang Words",     max:2}},
-    {{key:"ack",     label:"Acknowledgement/Ownership", max:1}},
-    {{key:"hold",    label:"Hold Requests",             max:2}},
-    {{key:"ack_hold",label:"Ack. for Waiting",          max:1}},
-    {{key:"resp_eff",label:"Response Efficiency",       max:2}},
-    {{key:"empathy", label:"Empathy / Sympathy",        max:3}},
-    {{key:"adjust",  label:"Adjust to Customer Level",  max:3}},
-    {{key:"mute",    label:"Mute Button Usage",         max:1}},
-    {{key:"active",  label:"Active Listening",          max:5}},
-    {{key:"answered",label:"Answered Questions",        max:4}},
-    {{key:"probing", label:"Probing Questions",         max:4}},
-    {{key:"verif",   label:"Customer Verification",     max:10}},
-    {{key:"clarif",  label:"Clarification",             max:4}},
-    {{key:"lost_sop",label:"Lost Item SOP",             max:6}},
-    {{key:"rude",    label:"Rudeness",                  max:20}},
-    {{key:"trans",   label:"Transaction Completion",    max:20}},
-    {{key:"speech",  label:"Speech Clarity",            max:5}},
+// Date range picker state
+let qaDrpStart    = new Date('2026-05-08T00:00:00');
+let qaDrpEnd      = new Date('2026-06-08T00:00:00');
+let qaDrpPhase    = 0;
+let qaDrpOpen     = false;
+let qaDrpHoverDate = null;
+let qaCalLeftYear  = 2026;
+let qaCalLeftMonth = 4;
+
+const QA_CRIT_META = [
+    {{key:"os_in",   name:"Opening Spiel (Inbound)",     pts:"1pt",   inverse:false}},
+    {{key:"os_out",  name:"Opening Spiel (Outbound)",    pts:"1pt",   inverse:false}},
+    {{key:"closing", name:"Closing Spiel",               pts:"1pt",   inverse:false}},
+    {{key:"approp",  name:"Appropriate Response",        pts:"2pts",  inverse:false}},
+    {{key:"no_resp", name:"No Response",                 pts:"2pts",  inverse:false}},
+    {{key:"fillers", name:"Fillers / Slang Words",       pts:"2pts",  inverse:false}},
+    {{key:"ack",     name:"Acknowledgement / Ownership", pts:"1pt",   inverse:false}},
+    {{key:"hold",    name:"Hold Requests",               pts:"2pts",  inverse:false}},
+    {{key:"ack_hold",name:"Ack. for Waiting",            pts:"1pt",   inverse:false}},
+    {{key:"resp_eff",name:"Response Efficiency",         pts:"2pts",  inverse:false}},
+    {{key:"empathy", name:"Empathy / Sympathy",          pts:"3pts",  inverse:false}},
+    {{key:"adjust",  name:"Adjust to Customer Level",    pts:"3pts",  inverse:false}},
+    {{key:"mute",    name:"Mute Button Usage",           pts:"1pt",   inverse:false}},
+    {{key:"active",  name:"Active Listening",            pts:"5pts",  inverse:false}},
+    {{key:"answered",name:"Answered Questions",          pts:"4pts",  inverse:false}},
+    {{key:"probing", name:"Probing Questions",           pts:"4pts",  inverse:false}},
+    {{key:"verif",   name:"Customer Verification",       pts:"10pts", inverse:false}},
+    {{key:"clarif",  name:"Clarification",               pts:"4pts",  inverse:false}},
+    {{key:"lost_sop",name:"Lost Item SOP",               pts:"6pts",  inverse:false}},
+    {{key:"rude",    name:"Rudeness",                    pts:"20pts", inverse:true}},
+    {{key:"trans",   name:"Transaction Completion",      pts:"20pts", inverse:false}},
+    {{key:"speech",  name:"Speech Clarity",              pts:"5pts",  inverse:false}},
 ];
+
+const QA_AV = {{
+    "Kenneth Vailoces":   {{bg:"#EFF6FF",tc:"#1D4ED8",ini:"KV"}},
+    "Ruben John Cardama": {{bg:"#FAECE7",tc:"#712B13",ini:"RC"}},
+    "Alvin Lauga":        {{bg:"#F0FDF4",tc:"#166534",ini:"AL"}},
+    "Raf Faustino":       {{bg:"#FFF7ED",tc:"#9A3412",ini:"RF"}},
+    "Sheryl Lastimosa":   {{bg:"#FDF4FF",tc:"#86198F",ini:"SL"}},
+    "Jherard Daclan":     {{bg:"#F0F9FF",tc:"#075985",ini:"JD"}},
+}};
+
+const QA_BANDS = [
+    {{label:"100%",     min:100, max:100, color:"#0F9B58"}},
+    {{label:"95–99%",  min:95,  max:99,  color:"#0891B2"}},
+    {{label:"90–94%",  min:90,  max:94,  color:"#F59E0B"}},
+    {{label:"Below 90%",min:0,   max:89,  color:"#E85D3F"}},
+];
+
+const QA_MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const QA_MONTHS_S = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 function qaEscapeHtml(s) {{
     return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }}
-
-function qaPeriodKey(row) {{
-    const d = row.date || row.ts || "";
-    if (!d) return "Unknown";
-    if (qaPeriod === "Daily")   return d.substring(0, 10);
-    if (qaPeriod === "Monthly") return d.substring(0, 7);
-    const dt = new Date(d.substring(0, 10));
-    if (isNaN(dt)) return "Unknown";
-    const dayOfWeek = dt.getDay() || 7;
-    dt.setDate(dt.getDate() + 4 - dayOfWeek);
-    const yearStart = new Date(dt.getFullYear(), 0, 1);
-    const week = Math.ceil(((dt - yearStart) / 86400000 + 1) / 7);
-    return `${{dt.getFullYear()}}-W${{String(week).padStart(2,"0")}}`;
-}}
-
-function qaPopulateSelects() {{
-    const coaches = [...new Set(qaRawData.map(r => r.coach).filter(Boolean))].sort();
-    const agents  = [...new Set(qaRawData.map(r => r.agent).filter(Boolean))].sort();
-    const cSel = document.getElementById("qa-sel-coach");
-    const aSel = document.getElementById("qa-sel-agent");
-    if (cSel) {{
-        const cur = cSel.value;
-        cSel.innerHTML = `<option value="">All QA Coaches</option>` + coaches.map(c=>`<option value="${{qaEscapeHtml(c)}}">${{qaEscapeHtml(c)}}</option>`).join("");
-        cSel.value = cur;
-    }}
-    if (aSel) {{
-        const cur = aSel.value;
-        aSel.innerHTML = `<option value="">All Agents</option>` + agents.map(a=>`<option value="${{qaEscapeHtml(a)}}">${{qaEscapeHtml(a)}}</option>`).join("");
-        aSel.value = cur;
-    }}
-}}
-
-function qaApplyFilters() {{
-    const coach = (document.getElementById("qa-sel-coach")?.value || "").trim();
-    const agent = (document.getElementById("qa-sel-agent")?.value || "").trim();
-    const type  = (document.getElementById("qa-sel-type")?.value  || "").trim();
-    qaFiltered = qaRawData.filter(r =>
-        (!coach || r.coach === coach) &&
-        (!agent || r.agent === agent) &&
-        (!type  || r.type  === type)
-    );
-    qaRender();
-}}
-
-function qaClearFilters() {{
-    ["qa-sel-coach","qa-sel-agent","qa-sel-type"].forEach(id => {{
-        const el = document.getElementById(id);
-        if (el) el.value = "";
-    }});
-    qaFiltered = [...qaRawData];
-    qaRender();
-}}
-
-function qaSetPeriod(btn) {{
-    document.querySelectorAll(".qa-pb").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    qaPeriod = btn.textContent.trim();
-    qaRender();
-}}
-
 function qaAvg(arr) {{
     return arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0;
 }}
-
-function qaUpdateKPIs() {{
-    const scores = qaFiltered.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
-    const n = qaFiltered.length;
-    const agents = new Set(qaFiltered.map(r=>r.agent).filter(Boolean));
-    const avg = scores.length ? qaAvg(scores) : 0;
-    const passCount  = scores.filter(s=>s>=90).length;
-    const passRate   = scores.length ? passCount/scores.length*100 : 0;
-    const low        = scores.length ? Math.min(...scores) : 0;
-    const belowCount = scores.filter(s=>s<90).length;
-
-    const set = (id,v) => {{ const el=document.getElementById(id); if(el) el.textContent=v; }};
-    set("qa-kpi-avg",       avg   ? avg.toFixed(1)+"%" : "—");
-    set("qa-kpi-avg-sub",   `${{n}} evaluation${{n===1?"":"s"}}`);
-    set("qa-kpi-pass",      scores.length ? passRate.toFixed(1)+"%" : "—");
-    set("qa-kpi-pass-sub",  `${{passCount}} of ${{scores.length}} passed`);
-    set("qa-kpi-evals",     n);
-    set("qa-kpi-evals-sub", `${{agents.size}} agent${{agents.size===1?"":"s"}}`);
-    set("qa-kpi-agents",    agents.size);
-    set("qa-kpi-low",       low   ? low.toFixed(1)+"%" : "—");
-    set("qa-kpi-low-sub",   scores.length ? "Lowest score" : "");
-    set("qa-kpi-below",     belowCount);
-    set("qa-kpi-below-sub", `of ${{scores.length}} evals`);
-    set("qa-badge-agents",  agents.size+" Agents");
-    set("qa-badge-evals",   n+" Evaluations");
-
-    const byAgent = {{}};
-    qaFiltered.forEach(r=>{{
-        if (!r.agent) return;
-        if (!byAgent[r.agent]) byAgent[r.agent] = {{scores:[]}};
-        const s=Number(r.score);
-        if (!isNaN(s)&&s>0) byAgent[r.agent].scores.push(s);
-    }});
-    const agentArr = Object.entries(byAgent).map(([name,d])=>{{
-        const a = d.scores.length ? qaAvg(d.scores) : 0;
-        return {{name, avg:a, n:d.scores.length}};
-    }}).filter(a=>a.n>0).sort((a,b)=>b.avg-a.avg);
-
-    set("qa-sum-avg",        avg  ? avg.toFixed(1)+"%" : "—");
-    set("qa-sum-avg-score",  avg>=90 ? "✓ Above 90% threshold" : "⚠ Below target");
-    set("qa-sum-pass",       scores.length ? passRate.toFixed(1)+"%" : "—");
-    set("qa-sum-pass-sub",   `${{passCount}} of ${{n}} evaluations`);
-    set("qa-sum-pass-score", passRate>=90 ? "✓ Healthy" : passRate>=80 ? "⚠ Watch" : "✗ Needs work");
-    set("qa-sum-top",        agentArr[0]?.name || "—");
-    set("qa-sum-top-sub",    agentArr[0] ? `Avg ${{agentArr[0].avg.toFixed(1)}}% · ${{agentArr[0].n}} eval${{agentArr[0].n===1?"":"s"}}` : "");
-    set("qa-sum-top-score",  agentArr[0] ? agentArr[0].avg.toFixed(1)+"%" : "—");
-    set("qa-sum-attn",       agentArr[agentArr.length-1]?.name || "—");
-    set("qa-sum-attn-sub",   agentArr.length ? `Avg ${{agentArr[agentArr.length-1].avg.toFixed(1)}}% · ${{agentArr[agentArr.length-1].n}} eval${{agentArr[agentArr.length-1].n===1?"":"s"}}` : "");
-    set("qa-view-sub",       `${{n}} evaluation${{n===1?"":"s"}} · ${{agents.size}} agent${{agents.size===1?"":"s"}} · avg ${{avg?avg.toFixed(1)+"%":"—"}}`);
-    set("qa-view-title",     `M7 — Quality Assurance · ${{qaPeriod}} view`);
+function qaFmtDate(d) {{
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}}
+function qaFmtDisplay(d) {{
+    return QA_MONTHS_S[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
+}}
+function qaChipCls(s) {{
+    return s>=95?'qa-cg':s>=90?'qa-cam':'qa-crr';
+}}
+function qaYN(v) {{
+    if (v==='Yes') return '<span style="color:#0F9B58;font-weight:600">✓</span>';
+    if (v==='No')  return '<span style="color:#E85D3F;font-weight:600">✗</span>';
+    return '<span style="color:#94A3B8">&mdash;</span>';
 }}
 
-function qaUpdateTrendChart() {{
-    if (!qaTrendChart) return;
-    const periodMap = {{}};
-    qaFiltered.forEach(r=>{{
-        const k = qaPeriodKey(r);
-        const s = Number(r.score);
-        if (!isNaN(s)&&s>0) {{
-            if (!periodMap[k]) periodMap[k]=[];
-            periodMap[k].push(s);
-        }}
-    }});
-    const labels = Object.keys(periodMap).sort();
-    const avgs   = labels.map(k=>parseFloat(qaAvg(periodMap[k]).toFixed(1)));
-    qaTrendChart.data.labels            = labels;
-    qaTrendChart.data.datasets[0].data  = avgs;
-    qaTrendChart.update();
-    const trend = avgs.length>=2 ? avgs[avgs.length-1]-avgs[avgs.length-2] : 0;
-    const badge = document.getElementById("qa-trend-badge");
-    if (badge) {{
-        badge.textContent = trend>=0 ? `▲ ${{Math.abs(trend).toFixed(1)}}%` : `▼ ${{Math.abs(trend).toFixed(1)}}%`;
-        badge.className   = "qa-cb " + (trend>=0 ? "qa-cbg" : "qa-cbr");
+// ─── Date Range Picker ────────────────────────────────────────────────────────
+function qaUpdateDRPLabel() {{
+    const el = document.getElementById('qa-drp-label');
+    if (el) el.textContent = qaFmtDisplay(qaDrpStart)+' – '+qaFmtDisplay(qaDrpEnd);
+    const si = document.getElementById('qa-inp-start');
+    const ei = document.getElementById('qa-inp-end');
+    if (si) si.value = qaFmtDate(qaDrpStart);
+    if (ei) ei.value = qaFmtDate(qaDrpEnd);
+}}
+
+function qaToggleDRP(e) {{
+    e && e.stopPropagation();
+    if (qaDrpOpen) {{ qaCloseDatePicker(); return; }}
+    qaOpenDatePicker();
+}}
+
+function qaOpenDatePicker() {{
+    qaDrpOpen = true; qaDrpPhase = 0;
+    qaCalLeftYear  = qaDrpStart.getFullYear();
+    qaCalLeftMonth = qaDrpStart.getMonth();
+    const panel = document.getElementById('qa-drp-panel');
+    if (panel) panel.classList.add('open');
+    qaRenderCals();
+}}
+
+function qaCloseDatePicker() {{
+    qaDrpOpen = false; qaDrpPhase = 0; qaDrpHoverDate = null;
+    const panel = document.getElementById('qa-drp-panel');
+    if (panel) panel.classList.remove('open');
+}}
+
+function qaNavCal(side, dir) {{
+    void side;
+    qaCalLeftMonth += dir;
+    if (qaCalLeftMonth > 11) {{ qaCalLeftMonth=0; qaCalLeftYear++; }}
+    if (qaCalLeftMonth < 0)  {{ qaCalLeftMonth=11; qaCalLeftYear--; }}
+    qaRenderCals();
+}}
+
+function qaRenderCals() {{
+    let rYear=qaCalLeftYear, rMonth=qaCalLeftMonth+1;
+    if (rMonth>11) {{ rMonth=0; rYear++; }}
+    qaRenderOneCal('qa-cal-left',  qaCalLeftYear, qaCalLeftMonth, 'left');
+    qaRenderOneCal('qa-cal-right', rYear, rMonth, 'right');
+}}
+
+function qaRenderOneCal(containerId, year, month, side) {{
+    const wrap = document.getElementById(containerId);
+    if (!wrap) return;
+    const first     = new Date(year, month, 1);
+    const startDow  = (first.getDay()+6)%7;
+    const daysInMon = new Date(year, month+1, 0).getDate();
+    const prevDays  = new Date(year, month, 0).getDate();
+    const today     = new Date(); today.setHours(0,0,0,0);
+    const startStr  = qaFmtDate(qaDrpStart);
+    const endStr    = qaFmtDate(qaDrpEnd);
+
+    let html = `<div class="qa-cal-header">
+        <button class="qa-cal-nav" onclick="qaNavCal('${{side}}',-1)">&#8249;</button>
+        <span class="qa-cal-title">${{QA_MONTHS[month]}} ${{year}}</span>
+        <button class="qa-cal-nav" onclick="qaNavCal('${{side}}',1)">&#8250;</button>
+    </div><div class="qa-cal-grid">
+        <div class="qa-cal-dh">Mo</div><div class="qa-cal-dh">Tu</div><div class="qa-cal-dh">We</div>
+        <div class="qa-cal-dh">Th</div><div class="qa-cal-dh">Fr</div><div class="qa-cal-dh">Sa</div>
+        <div class="qa-cal-dh">Su</div>`;
+
+    for (let i=0;i<startDow;i++) {{
+        html+=`<button class="qa-cal-d other-month" disabled>${{prevDays-startDow+1+i}}</button>`;
     }}
-    const sub = document.getElementById("qa-trend-sub");
-    if (sub) sub.textContent = `${{qaPeriod}} avg · Target: 90%`;
+    for (let d=1;d<=daysInMon;d++) {{
+        const dt   = new Date(year,month,d);
+        const dStr = qaFmtDate(dt);
+        const tCls = dt.getTime()===today.getTime()?' today':'';
+        let sCls='';
+        if (dStr===startStr) sCls=' sel-start';
+        else if (dStr===endStr) sCls=' sel-end';
+        else if (dStr>startStr&&dStr<endStr) sCls=' in-range';
+        html+=`<button class="qa-cal-d${{tCls}}${{sCls}}" data-date="${{dStr}}" onmouseenter="qaHoverDay(this,'${{dStr}}')" onclick="qaPickDay('${{dStr}}')">${{d}}</button>`;
+    }}
+    const total=startDow+daysInMon, rem=total%7===0?0:7-total%7;
+    for (let i=1;i<=rem;i++) html+=`<button class="qa-cal-d other-month" disabled>${{i}}</button>`;
+    html+='</div>';
+    wrap.innerHTML=html;
 }}
 
-function qaUpdateDonutChart() {{
-    if (!qaDonutChart) return;
-    const scores = qaFiltered.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
-    const buckets = [
-        scores.filter(s=>s>=90).length,
-        scores.filter(s=>s>=80&&s<90).length,
-        scores.filter(s=>s>=70&&s<80).length,
-        scores.filter(s=>s<70).length,
-    ];
-    qaDonutChart.data.datasets[0].data = buckets;
-    qaDonutChart.update();
-    qaRenderDonutLegend(buckets, scores.length);
-    const sub = document.getElementById("qa-donut-sub");
-    if (sub) sub.textContent = `${{scores.length}} evaluation${{scores.length===1?"":"s"}}`;
+function qaHoverDay(btn, dStr) {{
+    void btn;
+    if (qaDrpPhase!==1) return;
+    qaDrpHoverDate=dStr;
+    const startStr=qaFmtDate(qaDrpStart);
+    document.querySelectorAll('.qa-cal-d:not(.other-month)').forEach(b=>{{
+        const d=b.dataset.date; if(!d) return;
+        b.classList.remove('sel-preview','in-range','sel-start','sel-end');
+        if (d===startStr) b.classList.add('sel-start');
+        if (d===dStr) b.classList.add('sel-preview');
+        const lo=startStr<=dStr?startStr:dStr, hi=startStr<=dStr?dStr:startStr;
+        if (d>lo&&d<hi) b.classList.add('in-range');
+    }});
 }}
 
-function qaRenderDonutLegend(buckets, total) {{
-    const el = document.getElementById("qa-donut-legend");
-    if (!el) return;
-    const labels = ["≥ 90% Pass","80–89%","70–79%","< 70%"];
-    const colors = ["#0F9B58","#F59E0B","#F97316","#EF4444"];
-    el.innerHTML = labels.map((lbl,i)=>{{
-        const pct = total ? (buckets[i]/total*100).toFixed(1)+"%" : "0%";
-        return `<div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#475569">
-            <span style="width:8px;height:8px;border-radius:50%;background:${{colors[i]}};flex-shrink:0"></span>
-            <span>${{lbl}}</span><span style="margin-left:auto;font-weight:700;color:${{colors[i]}}">${{pct}}</span>
-        </div>`;
-    }}).join("");
+function qaPickDay(dStr) {{
+    if (qaDrpPhase===0) {{
+        qaDrpStart=new Date(dStr+'T00:00:00');
+        qaDrpEnd=new Date(dStr+'T00:00:00');
+        qaDrpPhase=1; qaDrpHoverDate=null;
+        qaRenderCals();
+    }} else {{
+        const picked=new Date(dStr+'T00:00:00');
+        if (picked<qaDrpStart) {{ qaDrpEnd=qaDrpStart; qaDrpStart=picked; }}
+        else qaDrpEnd=picked;
+        qaDrpPhase=0;
+        qaRenderCals();
+        const si=document.getElementById('qa-inp-start'), ei=document.getElementById('qa-inp-end');
+        if (si) si.value=qaFmtDate(qaDrpStart);
+        if (ei) ei.value=qaFmtDate(qaDrpEnd);
+    }}
 }}
 
-function qaRenderCriteria() {{
-    const el = document.getElementById("qa-criteria-bars");
-    if (!el) return;
-    if (!qaFiltered.length) {{ el.innerHTML="<div style='padding:12px;color:#94A3B8;font-size:12px'>No data</div>"; return; }}
-    const stats = QA_CRITERIA.map(c=>{{
-        const vals   = qaFiltered.map(r=>Number(r[c.key])).filter(v=>!isNaN(v));
-        const passed = vals.filter(v=>v>=c.max).length;
-        const rate   = vals.length ? passed/vals.length*100 : null;
-        return {{...c, rate, n:vals.length}};
-    }}).filter(c=>c.rate!==null).sort((a,b)=>a.rate-b.rate);
-    el.innerHTML = stats.map(c=>{{
-        const color = c.rate>=95 ? "#0F9B58" : c.rate>=80 ? "#F59E0B" : "#EF4444";
+function qaApplyDRP() {{
+    const si=document.getElementById('qa-inp-start'), ei=document.getElementById('qa-inp-end');
+    if (si&&si.value) {{ const d=new Date(si.value+'T00:00:00'); if(!isNaN(d)) qaDrpStart=d; }}
+    if (ei&&ei.value) {{ const d=new Date(ei.value+'T00:00:00'); if(!isNaN(d)) qaDrpEnd=d; }}
+    qaUpdateDRPLabel(); qaCloseDatePicker(); qaApplyFilters();
+}}
+
+function qaResetDRP() {{
+    qaDrpStart=new Date('2026-05-08T00:00:00');
+    qaDrpEnd=new Date('2026-06-08T00:00:00');
+    qaDrpPhase=0; qaUpdateDRPLabel(); qaCloseDatePicker(); qaApplyFilters();
+}}
+
+// ─── Data / Render ────────────────────────────────────────────────────────────
+function qaComputeCriteria(data) {{
+    return QA_CRIT_META.map(c=>{{
+        const rows=data.map(r=>r[c.key]);
+        const allNA=rows.every(v=>!v||v==='Not Applicable');
+        if (allNA&&c.key==='lost_sop') return {{...c,yes:0,no:0,elig:0,pct:null,na:true}};
+        const yes = c.inverse ? rows.filter(v=>v==='No').length  : rows.filter(v=>v==='Yes').length;
+        const no  = c.inverse ? rows.filter(v=>v==='Yes').length : rows.filter(v=>v==='No').length;
+        const elig=yes+no;
+        return {{...c,yes,no,elig,pct:elig>0?Math.round(yes/elig*100):null,na:false}};
+    }});
+}}
+
+function qaBuildTrend(data) {{
+    const weeks={{}};
+    data.forEach(r=>{{
+        const k=r.week_start; if(!k) return;
+        if(!weeks[k]) weeks[k]={{scores:[]}};
+        const s=Number(r.score);
+        if(!isNaN(s)&&s>0) weeks[k].scores.push(s);
+    }});
+    return Object.keys(weeks).sort().map(k=>{{
+        const d=new Date(k+'T00:00:00');
+        const lbl=QA_MONTHS[d.getMonth()]+' '+String(d.getDate()).padStart(2,'0')+', '+d.getFullYear();
+        return {{week:lbl,avg:parseFloat(qaAvg(weeks[k].scores).toFixed(1)),n:weeks[k].scores.length}};
+    }});
+}}
+
+function qaPopulateSelects() {{
+    [['qa-sel-coach','All QA Coaches',qaRawData.map(r=>r.coach)],
+     ['qa-sel-agent','All Agents',    qaRawData.map(r=>r.agent)],
+     ['qa-sel-head', 'All Immediate Heads', qaRawData.map(r=>r.supervisor)]].forEach(([id,dflt,vals])=>{{
+        const el=document.getElementById(id); if(!el) return;
+        const cur=el.value;
+        const arr=[...new Set(vals.filter(Boolean))].sort();
+        el.innerHTML=`<option value="">${{dflt}}</option>`+arr.map(v=>`<option value="${{qaEscapeHtml(v)}}">${{qaEscapeHtml(v)}}</option>`).join('');
+        el.value=cur;
+    }});
+}}
+
+function qaUpdateKPIs(data) {{
+    const scores=data.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
+    const n=data.length;
+    const agents=new Set(data.map(r=>r.agent).filter(Boolean));
+    const avg=scores.length?qaAvg(scores):null;
+    const passCount=scores.filter(s=>s>=90).length;
+    const passRate=scores.length?passCount/scores.length*100:null;
+    const belowCount=scores.filter(s=>s<90).length;
+    const lowCount=scores.filter(s=>s>=90&&s<95).length;
+    const set=(id,v)=>{{ const el=document.getElementById(id); if(el) el.textContent=v; }};
+    set('qa-kpi-avg',    avg?avg.toFixed(1)+'%':'—');
+    set('qa-kpi-pass',   passRate!==null?passRate.toFixed(1)+'%':'—');
+    set('qa-kpi-evals',  n);
+    set('qa-kpi-agents', agents.size);
+    set('qa-kpi-low',    lowCount);
+    set('qa-kpi-below',  belowCount);
+    set('qa-strip-avg',    avg?avg.toFixed(1)+'%':'—');
+    set('qa-strip-pass',   passRate!==null?passRate.toFixed(1)+'%':'—');
+    set('qa-strip-evals',  n);
+    set('qa-strip-agents', agents.size);
+    set('qa-strip-low',    lowCount);
+    set('qa-strip-below',  belowCount);
+    const byAgent={{}};
+    data.forEach(r=>{{
+        if(!r.agent) return;
+        const s=Number(r.score);
+        if(!isNaN(s)&&s>0){{ if(!byAgent[r.agent]) byAgent[r.agent]={{scores:[]}}; byAgent[r.agent].scores.push(s); }}
+    }});
+    const agentArr=Object.entries(byAgent).map(([name,d])=>{{const a=qaAvg(d.scores);return {{name,avg:a,n:d.scores.length}};}}
+    ).filter(a=>a.n>0).sort((a,b)=>b.avg-a.avg);
+    set('qa-sum-avg',      avg?avg.toFixed(1)+'%':'—');
+    set('qa-sum-avg-note', avg!==null?(avg>=90?'✓ Above 90% threshold':'⚠ Below target'):'—');
+    set('qa-sum-pass',     passRate!==null?passRate.toFixed(1)+'%':'—');
+    set('qa-sum-pass-sub', passCount+' of '+n+' evaluations');
+    set('qa-sum-top',      agentArr[0]?.name||'—');
+    set('qa-sum-top-sub',  agentArr[0]?'Avg '+agentArr[0].avg.toFixed(1)+'% · '+agentArr[0].n+' eval'+(agentArr[0].n===1?'':'s'):'');
+    set('qa-sum-top-pass', agentArr[0]?agentArr[0].avg.toFixed(1)+'%':'—');
+    const critStats=qaComputeCriteria(data).filter(c=>c.pct!==null).sort((a,b)=>a.pct-b.pct);
+    const worst=critStats[0];
+    set('qa-sum-attn',     worst?worst.name:'—');
+    set('qa-sum-attn-sub', worst?worst.pct+'% pass rate':'');
+}}
+
+function qaUpdateTrend(data) {{
+    if (!qaTrendChart) return;
+    const trend=qaBuildTrend(data);
+    const labels=trend.map(t=>t.week), avgs=trend.map(t=>t.avg), target=labels.map(()=>90);
+    qaTrendChart.data.labels=labels;
+    qaTrendChart.data.datasets[0].data=avgs;
+    qaTrendChart.data.datasets[1].data=target;
+    qaTrendChart.update();
+    const last2=avgs.slice(-2), tv=last2.length===2?last2[1]-last2[0]:0;
+    const badge=document.getElementById('qa-trend-badge');
+    if (badge){{
+        badge.textContent=avgs.length?(tv>=0?'▲ '+Math.abs(tv).toFixed(1)+'%':'▼ '+Math.abs(tv).toFixed(1)+'%'):'—';
+        badge.className='qa-cb '+(tv>=0?'qa-cbg':'qa-cbr');
+    }}
+}}
+
+function qaRenderCriteria(data) {{
+    const el=document.getElementById('qa-criteria-bars'); if(!el) return;
+    if (!data.length){{el.innerHTML="<div style='padding:12px;color:#94A3B8;font-size:12px'>No data</div>";return;}}
+    const stats=qaComputeCriteria(data).filter(c=>c.pct!==null||c.na).sort((a,b)=>{{
+        if(a.na&&!b.na) return 1; if(!a.na&&b.na) return -1; return (a.pct||0)-(b.pct||0);
+    }});
+    el.innerHTML=stats.map(c=>{{
+        if (c.na) return `<div style="margin-bottom:7px"><div style="display:flex;justify-content:space-between;font-size:10px;color:#475569;margin-bottom:2px"><span>${{qaEscapeHtml(c.name)}}</span><span style="color:#94A3B8">N/A</span></div><div style="height:5px;background:#F1F5F9;border-radius:3px"></div></div>`;
+        const color=c.pct>=95?'#0F9B58':c.pct>=90?'#F59E0B':'#E85D3F';
         return `<div style="margin-bottom:7px">
             <div style="display:flex;justify-content:space-between;font-size:10px;color:#475569;margin-bottom:2px">
-                <span>${{qaEscapeHtml(c.label)}}</span>
-                <span style="font-weight:700;color:${{color}}">${{c.rate.toFixed(0)}}%</span>
+                <span>${{qaEscapeHtml(c.name)}}</span><span style="font-weight:700;color:${{color}}">${{c.pct}}%</span>
             </div>
             <div style="height:5px;background:#F1F5F9;border-radius:3px;overflow:hidden">
-                <div style="height:100%;width:${{c.rate.toFixed(1)}}%;background:${{color}};border-radius:3px;transition:width .4s"></div>
+                <div style="height:100%;width:${{c.pct}}%;background:${{color}};border-radius:3px;transition:width .4s"></div>
             </div>
         </div>`;
-    }}).join("");
-    const sub = document.getElementById("qa-crit-sub");
-    if (sub) sub.textContent = `${{stats.length}} criteria · sorted by pass rate`;
+    }}).join('');
+    const sub=document.getElementById('qa-crit-sub');
+    if(sub) sub.textContent=stats.length+' criteria · sorted by pass rate';
 }}
 
-function qaRenderCoaching() {{
-    const barsEl = document.getElementById("qa-coaching-bars");
-    const bdEl   = document.getElementById("qa-coach-breakdown");
-    const cntEl  = document.getElementById("qa-coaching-count");
-    if (!barsEl) return;
-    const weak = QA_CRITERIA.map(c=>{{
-        const vals   = qaFiltered.map(r=>Number(r[c.key])).filter(v=>!isNaN(v));
-        const passed = vals.filter(v=>v>=c.max).length;
-        const rate   = vals.length ? passed/vals.length*100 : null;
-        return {{...c, rate}};
-    }}).filter(c=>c.rate!==null&&c.rate<95).sort((a,b)=>a.rate-b.rate);
-    if (cntEl) cntEl.textContent = weak.length ? weak.length+" criteria" : "All clear";
-    barsEl.innerHTML = weak.length ? weak.map(c=>{{
-        const color = c.rate>=80 ? "#F59E0B" : "#EF4444";
+function qaRenderCoaching(data) {{
+    const barsEl=document.getElementById('qa-coaching-bars');
+    const bdEl=document.getElementById('qa-coach-breakdown');
+    const cntEl=document.getElementById('qa-coaching-count');
+    if(!barsEl) return;
+    const stats=qaComputeCriteria(data).filter(c=>c.pct!==null&&c.pct<95).sort((a,b)=>a.pct-b.pct);
+    if(cntEl) cntEl.textContent=stats.length?stats.length+' criteria':'All clear';
+    barsEl.innerHTML=stats.length?stats.map(c=>{{
+        const color=c.pct>=90?'#F59E0B':'#E85D3F';
         return `<div style="margin-bottom:8px">
             <div style="display:flex;justify-content:space-between;font-size:11px;color:#1E293B;margin-bottom:3px">
-                <span>${{qaEscapeHtml(c.label)}}</span>
-                <span style="font-weight:700;color:${{color}}">${{c.rate.toFixed(0)}}%</span>
+                <span>${{qaEscapeHtml(c.name)}}</span><span style="font-weight:700;color:${{color}}">${{c.pct}}%</span>
             </div>
             <div style="height:6px;background:#F1F5F9;border-radius:3px;overflow:hidden">
-                <div style="height:100%;width:${{c.rate.toFixed(1)}}%;background:${{color}};border-radius:3px"></div>
+                <div style="height:100%;width:${{c.pct}}%;background:${{color}};border-radius:3px"></div>
             </div>
         </div>`;
-    }}).join("") : `<div style="text-align:center;padding:16px;color:#0F9B58;font-size:12px">✓ All criteria above 95% — great job!</div>`;
-    if (bdEl) {{
-        const byCoach = {{}};
-        qaFiltered.forEach(r=>{{
-            if (!r.coach) return;
-            if (!byCoach[r.coach]) byCoach[r.coach] = {{n:0,pass:0}};
-            byCoach[r.coach].n++;
-            if (Number(r.score)>=90) byCoach[r.coach].pass++;
-        }});
-        bdEl.innerHTML = Object.entries(byCoach).sort((a,b)=>b[1].n-a[1].n).map(([name,d])=>{{
-            const pct = d.n ? d.pass/d.n*100 : 0;
-            const color = pct>=90 ? "#0F9B58" : pct>=80 ? "#F59E0B" : "#EF4444";
-            return `<div style="flex:1;background:#F8FAFC;border-radius:8px;padding:8px;text-align:center">
+    }}).join(''):`<div style="text-align:center;padding:16px;color:#0F9B58;font-size:12px">✓ All criteria above 95% — great job!</div>`;
+    if(bdEl){{
+        const byCoach={{}};
+        data.forEach(r=>{{if(!r.coach) return; if(!byCoach[r.coach]) byCoach[r.coach]={{n:0}}; byCoach[r.coach].n++;}});
+        bdEl.innerHTML=Object.entries(byCoach).sort((a,b)=>b[1].n-a[1].n).map(([name,d])=>
+            `<div style="flex:1;background:#F8FAFC;border-radius:8px;padding:8px;text-align:center">
                 <div style="font-size:10px;color:#64748B;margin-bottom:2px">${{qaEscapeHtml(name)}}</div>
-                <div style="font-size:16px;font-weight:800;color:${{color}}">${{pct.toFixed(0)}}%</div>
-                <div style="font-size:9px;color:#94A3B8">${{d.n}} eval${{d.n===1?"":"s"}}</div>
-            </div>`;
-        }}).join("") || `<div style="color:#94A3B8;font-size:11px">No data</div>`;
+                <div style="font-size:16px;font-weight:800;color:#0D3B6E">${{d.n}}</div>
+                <div style="font-size:9px;color:#94A3B8">${{d.n}} eval${{d.n===1?'':'s'}}</div>
+            </div>`
+        ).join('')||`<div style="color:#94A3B8;font-size:11px">No data</div>`;
     }}
 }}
 
-function qaRenderLeaderboard() {{
-    const el    = document.getElementById("qa-leaderboard");
-    const badge = document.getElementById("qa-lb-badge");
-    if (!el) return;
-    const byAgent = {{}};
-    qaFiltered.forEach(r=>{{
-        if (!r.agent) return;
-        const s = Number(r.score);
-        if (isNaN(s)||s<=0) return;
-        if (!byAgent[r.agent]) byAgent[r.agent] = {{scores:[]}};
+function qaRenderLeaderboard(data) {{
+    const el=document.getElementById('qa-leaderboard');
+    const badge=document.getElementById('qa-lb-badge');
+    if(!el) return;
+    const byAgent={{}};
+    data.forEach(r=>{{
+        if(!r.agent) return;
+        const s=Number(r.score); if(isNaN(s)||s<=0) return;
+        if(!byAgent[r.agent]) byAgent[r.agent]={{scores:[]}};
         byAgent[r.agent].scores.push(s);
     }});
-    const agents = Object.entries(byAgent).map(([name,d])=>{{
-        const avg  = qaAvg(d.scores);
-        const pass = d.scores.filter(s=>s>=90).length;
-        return {{name, avg, min:Math.min(...d.scores), max:Math.max(...d.scores),
-                 pass, passRate:d.scores.length?pass/d.scores.length*100:0, n:d.scores.length}};
+    const agents=Object.entries(byAgent).map(([name,d])=>{{
+        const avg=qaAvg(d.scores), pass=d.scores.filter(s=>s>=90).length;
+        const words=name.split(' ').slice(0,2).join(' ');
+        const av=QA_AV[name]||{{bg:'#F1F5F9',tc:'#475569',ini:name.split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase()}};
+        return {{name,words,av,avg,min:Math.min(...d.scores),max:Math.max(...d.scores),pass,passRate:d.scores.length?pass/d.scores.length*100:0,n:d.scores.length}};
     }}).sort((a,b)=>b.avg-a.avg);
-    if (badge) badge.textContent = agents.length+" agents";
-    el.innerHTML = agents.map((a,i)=>{{
-        const medal = i===0?"🥇":i===1?"🥈":i===2?"🥉":"";
-        const sc    = a.avg>=90 ? "#0F9B58" : a.avg>=80 ? "#F59E0B" : "#EF4444";
+    if(badge) badge.textContent=agents.length+' agents';
+    el.innerHTML=agents.map((a,i)=>{{
+        const chipCls=qaChipCls(a.avg);
         return `<tr>
-            <td>${{medal||i+1}}</td>
-            <td style="font-weight:600">${{qaEscapeHtml(a.name)}}</td>
-            <td>${{a.n}}</td>
-            <td style="font-weight:800;color:${{sc}}">${{a.avg.toFixed(1)}}%</td>
-            <td>${{a.min.toFixed(1)}}%</td>
-            <td>${{a.max.toFixed(1)}}%</td>
-            <td style="color:${{a.passRate>=90?"#0F9B58":"#EF4444"}}">${{a.passRate.toFixed(0)}}%</td>
+            <td style="font-size:11px;color:#94A3B8">${{i+1}}</td>
+            <td><div style="display:flex;align-items:center;gap:6px">
+                <span style="width:24px;height:24px;border-radius:50%;background:${{a.av.bg}};color:${{a.av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{a.av.ini}}</span>
+                <span style="font-weight:600;font-size:11px">${{qaEscapeHtml(a.words)}}</span>
+            </div></td>
+            <td style="text-align:center">${{a.n}}</td>
+            <td><span class="qa-chip ${{chipCls}}">${{a.avg.toFixed(1)}}%</span></td>
+            <td style="text-align:center;font-size:11px">${{a.min.toFixed(1)}}%</td>
+            <td style="text-align:center;font-size:11px">${{a.max.toFixed(1)}}%</td>
+            <td style="text-align:center;color:${{a.passRate>=90?'#0F9B58':'#E85D3F'}};font-size:11px">${{a.passRate.toFixed(0)}}%</td>
         </tr>`;
-    }}).join("") || `<tr><td colspan="7" style="text-align:center;color:#94A3B8;padding:16px">No data</td></tr>`;
+    }}).join('')||`<tr><td colspan="7" style="text-align:center;color:#94A3B8;padding:16px">No data</td></tr>`;
 }}
 
-function qaRenderTable() {{
-    const el    = document.getElementById("qa-detail-table");
-    const count = document.getElementById("qa-tbl-count");
-    const foot  = document.getElementById("qa-tbl-footer");
-    if (!el) return;
-    const rows = qaFiltered.slice().sort((a,b)=>(b.ts||"").localeCompare(a.ts||""));
-    if (count) count.textContent = rows.length+" records";
-    if (foot)  foot.textContent  = `Showing ${{rows.length}} of ${{qaRawData.length}} evaluations`;
-    const critKeys = ["os_in","os_out","closing","approp","no_resp","fillers","ack","hold","ack_hold",
-                      "resp_eff","empathy","adjust","mute","active","answered","probing","verif",
-                      "clarif","lost_sop","rude","trans","speech","invest"];
-    el.innerHTML = rows.map(r=>{{
-        const score = Number(r.score);
-        const sc    = !isNaN(score)&&score>0 ? score : null;
-        const cls   = sc===null ? "" : sc>=90 ? "qa-pass" : sc>=80 ? "qa-warn" : "qa-fail";
-        const disp  = sc===null ? "—" : sc.toFixed(1)+"%";
-        const critCells = critKeys.map(k=>{{
-            const v   = r[k];
-            const num = Number(v);
-            const mx  = (QA_CRITERIA.find(c=>c.key===k)||{{}}).max;
-            const ok  = mx!=null ? (!isNaN(num)&&num>=mx) : null;
-            const dispV = (v===null||v===undefined||v===""||String(v).toLowerCase()==="nan") ? "—" : String(v);
-            const style = ok===true ? "color:#0F9B58;font-weight:600" : ok===false ? "color:#EF4444" : "color:#94A3B8";
-            return `<td style="text-align:center;${{style}}">${{qaEscapeHtml(dispV)}}</td>`;
+function qaRenderTable(data) {{
+    const el=document.getElementById('qa-detail-table');
+    const count=document.getElementById('qa-tbl-count');
+    const foot=document.getElementById('qa-tbl-footer');
+    if(!el) return;
+    const rows=data.slice().sort((a,b)=>(b.ts||'').localeCompare(a.ts||''));
+    if(count) count.textContent=rows.length+' records';
+    if(foot)  foot.textContent='Showing '+rows.length+' of '+qaRawData.length+' evaluations';
+    const critKeys=['os_in','os_out','closing','approp','no_resp','fillers','ack','hold','ack_hold',
+                    'resp_eff','empathy','adjust','mute','active','answered','probing','verif',
+                    'clarif','lost_sop','rude','trans','speech'];
+    el.innerHTML=rows.map(r=>{{
+        const score=Number(r.score), sc=!isNaN(score)&&score>0?score:null;
+        const chipCls=sc!==null?qaChipCls(sc):'', disp=sc!==null?sc.toFixed(1)+'%':'—';
+        const av=QA_AV[r.agent]||{{bg:'#F1F5F9',tc:'#475569',ini:(r.agent||'?').split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase()}};
+        const critCells=critKeys.map(k=>{{
+            const v=r[k];
+            if (k==='rude') {{
+                if (v==='No')  return '<td style="text-align:center"><span style="color:#0F9B58;font-weight:600">✓</span></td>';
+                if (v==='Yes') return '<td style="text-align:center"><span style="color:#E85D3F;font-weight:600">✗</span></td>';
+                return '<td style="text-align:center"><span style="color:#94A3B8">&mdash;</span></td>';
+            }}
+            if (k==='lost_sop'&&(!v||v==='Not Applicable')) return '<td style="text-align:center;color:#94A3B8">N/A</td>';
+            return `<td style="text-align:center">${{qaYN(v)}}</td>`;
         }});
         return `<tr>
-            <td>${{qaEscapeHtml(r.ts||"—")}}</td>
-            <td style="font-weight:600">${{qaEscapeHtml(r.agent||"—")}}</td>
-            <td class="${{cls}}" style="font-weight:700;text-align:center">${{disp}}</td>
-            <td>${{qaEscapeHtml(r.type||"—")}}</td>
-            <td>${{qaEscapeHtml(r.date||"—")}}</td>
-            <td>${{qaEscapeHtml(r.coach||"—")}}</td>
-            <td>${{qaEscapeHtml(r.supervisor||"—")}}</td>
-            ${{critCells.join("")}}
-            <td style="max-width:220px;white-space:normal;font-size:10px;color:#475569">${{qaEscapeHtml(r.feedback||"—")}}</td>
+            <td style="white-space:nowrap;font-size:11px">${{qaEscapeHtml((r.ts||'—').slice(0,10))}}</td>
+            <td><div style="display:flex;align-items:center;gap:5px">
+                <span style="width:22px;height:22px;border-radius:50%;background:${{av.bg}};color:${{av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{av.ini}}</span>
+                <span style="font-weight:600;font-size:11px">${{qaEscapeHtml(r.agent||'—')}}</span>
+            </div></td>
+            <td style="font-size:11px">${{qaEscapeHtml(r.supervisor||'—')}}</td>
+            <td style="font-size:11px">${{qaEscapeHtml(r.coach||'—')}}</td>
+            <td><span class="qa-chip ${{chipCls}}">${{disp}}</span></td>
+            ${{critCells.join('')}}
+            <td style="font-size:10px;color:#475569;white-space:nowrap">${{qaEscapeHtml(r.invest||'—')}}</td>
+            <td style="max-width:240px;white-space:normal;font-size:10px;color:#475569">${{qaEscapeHtml(r.feedback||'—')}}</td>
         </tr>`;
-    }}).join("") || `<tr><td colspan="31" style="text-align:center;color:#94A3B8;padding:20px">No data</td></tr>`;
+    }}).join('')||`<tr><td colspan="29" style="text-align:center;color:#94A3B8;padding:20px">No data</td></tr>`;
 }}
 
-function qaRender() {{
-    qaUpdateKPIs();
-    qaRenderCriteria();
-    qaRenderCoaching();
-    qaRenderLeaderboard();
-    qaRenderTable();
-    qaUpdateTrendChart();
-    qaUpdateDonutChart();
+function qaApplyFilters() {{
+    const coach=(document.getElementById('qa-sel-coach')?.value||'').trim();
+    const agent=(document.getElementById('qa-sel-agent')?.value||'').trim();
+    const head=(document.getElementById('qa-sel-head')?.value||'').trim();
+    const startStr=qaFmtDate(qaDrpStart), endStr=qaFmtDate(qaDrpEnd);
+    const filtered=qaRawData.filter(r=>{{
+        const rDate=(r.ts||'').slice(0,10);
+        return rDate>=startStr&&rDate<=endStr&&
+            (!coach||r.coach===coach)&&
+            (!agent||r.agent===agent)&&
+            (!head||r.supervisor===head);
+    }});
+    qaUpdateKPIs(filtered);
+    qaUpdateTrend(filtered);
+    qaRenderCriteria(filtered);
+    qaRenderCoaching(filtered);
+    qaRenderLeaderboard(filtered);
+    qaRenderTable(filtered);
+    const sub=document.getElementById('qa-donut-sub');
+    if(sub) sub.textContent=filtered.length+' evaluation'+(filtered.length===1?'':'s');
+    if (qaDonutChart){{
+        const scores=filtered.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
+        const buckets=QA_BANDS.map(b=>scores.filter(s=>s>=b.min&&s<=b.max).length);
+        qaDonutChart.data.datasets[0].data=buckets;
+        qaDonutChart.update();
+        const legEl=document.getElementById('qa-donut-legend');
+        if(legEl){{
+            const total=scores.length;
+            legEl.innerHTML=QA_BANDS.map((b,i)=>{{
+                const pct=total?(buckets[i]/total*100).toFixed(1)+'%':'0%';
+                return `<div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#475569">
+                    <span style="width:8px;height:8px;border-radius:50%;background:${{b.color}};flex-shrink:0"></span>
+                    <span>${{b.label}}</span><span style="margin-left:auto;font-weight:700;color:${{b.color}}">${{pct}}</span>
+                </div>`;
+            }}).join('');
+        }}
+    }}
+}}
+
+function qaClearFilters() {{
+    ['qa-sel-coach','qa-sel-agent','qa-sel-head'].forEach(id=>{{
+        const el=document.getElementById(id); if(el) el.value='';
+    }});
+    qaResetDRP();
 }}
 
 function initQualityCharts() {{
     if (qaChartsInitialized) return;
-    qaChartsInitialized = true;
+    qaChartsInitialized=true;
 
-    const trendCtx = document.getElementById("qaTrendChart");
-    if (trendCtx) {{
-        qaTrendChart = new Chart(trendCtx, {{
-            type: "line",
-            data: {{
-                labels: [],
-                datasets: [{{
-                    label: "Avg QA Score",
-                    data: [],
-                    borderColor: "#004C97",
-                    backgroundColor: "rgba(0,76,151,0.1)",
-                    tension: 0.3,
-                    fill: true,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                }}]
-            }},
-            options: {{
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {{
-                    legend: {{display: false}},
-                    tooltip: {{callbacks: {{label: ctx => ctx.parsed.y.toFixed(1)+"%"}}}}
+    const trendLabelPlugin={{
+        id:'trendLabels',
+        afterDatasetsDraw(chart){{
+            const ds=chart.data.datasets[0], meta=chart.getDatasetMeta(0), ctx2=chart.ctx;
+            ctx2.save(); ctx2.font='700 9px sans-serif'; ctx2.fillStyle='#0D3B6E'; ctx2.textAlign='center';
+            meta.data.forEach((pt,i)=>{{ const v=ds.data[i]; if(v!=null) ctx2.fillText(v.toFixed(1)+'%',pt.x,pt.y-8); }});
+            ctx2.restore();
+        }}
+    }};
+
+    const donutLabelPlugin={{
+        id:'donutLabels',
+        afterDatasetsDraw(chart){{
+            const ds=chart.data.datasets[0], meta=chart.getDatasetMeta(0), ctx2=chart.ctx;
+            const total=ds.data.reduce((a,b)=>a+(b||0),0);
+            ctx2.save(); ctx2.font='700 9px sans-serif'; ctx2.textAlign='center';
+            meta.data.forEach((arc,i)=>{{
+                const v=ds.data[i]; if(!v) return;
+                const angle=(arc.startAngle+arc.endAngle)/2, r=(arc.outerRadius+arc.innerRadius)/2;
+                const x=arc.x+Math.cos(angle)*r, y=arc.y+Math.sin(angle)*r;
+                ctx2.fillStyle='#fff';
+                const pct=total?Math.round(v/total*100):0;
+                if(pct>=5) ctx2.fillText(pct+'%',x,y+3);
+            }});
+            ctx2.restore();
+        }}
+    }};
+
+    const trendCtx=document.getElementById('qaTrendChart');
+    if(trendCtx){{
+        qaTrendChart=new Chart(trendCtx,{{
+            type:'line',
+            plugins:[trendLabelPlugin],
+            data:{{labels:[],datasets:[
+                {{label:'Avg QA Score',data:[],borderColor:'#0D3B6E',backgroundColor:'rgba(13,59,110,0.08)',
+                  tension:0.3,fill:true,pointRadius:4,pointHoverRadius:6,pointBackgroundColor:'#0D3B6E'}},
+                {{label:'Target (90%)',data:[],borderColor:'#E85D3F',borderDash:[5,4],borderWidth:1.5,
+                  pointRadius:0,fill:false}}
+            ]}},
+            options:{{
+                responsive:true,maintainAspectRatio:false,
+                layout:{{padding:{{top:24,bottom:0}}}},
+                plugins:{{
+                    legend:{{display:true,position:'bottom',labels:{{font:{{size:10}},boxWidth:12}}}},
+                    tooltip:{{callbacks:{{label:ctx=>ctx.parsed.y.toFixed(1)+'%'}}}}
                 }},
-                scales: {{
-                    y: {{
-                        min: 70, max: 100,
-                        ticks: {{callback: v => v+"%", font:{{size:9}}}},
-                        grid:  {{color:"#F1F5F9"}},
-                    }},
-                    x: {{
-                        ticks: {{font:{{size:9}}, maxRotation:45}},
-                        grid:  {{display:false}},
-                    }}
+                scales:{{
+                    y:{{min:80,max:100,ticks:{{callback:v=>v+'%',font:{{size:9}}}},grid:{{color:'#F1F5F9'}}}},
+                    x:{{ticks:{{font:{{size:9}},maxRotation:30}},grid:{{display:false}}}}
                 }}
             }}
         }});
     }}
 
-    const donutCtx = document.getElementById("qaDonutChart");
-    if (donutCtx) {{
-        qaDonutChart = new Chart(donutCtx, {{
-            type: "doughnut",
-            data: {{
-                labels: ["≥ 90% Pass","80–89%","70–79%","< 70%"],
-                datasets: [{{
-                    data: [0,0,0,0],
-                    backgroundColor: ["#0F9B58","#F59E0B","#F97316","#EF4444"],
-                    borderWidth: 2,
-                    borderColor: "#fff",
-                    hoverBorderColor: "#fff",
-                }}]
+    const donutCtx=document.getElementById('qaDonutChart');
+    if(donutCtx){{
+        qaDonutChart=new Chart(donutCtx,{{
+            type:'doughnut',
+            plugins:[donutLabelPlugin],
+            data:{{
+                labels:QA_BANDS.map(b=>b.label),
+                datasets:[{{data:[0,0,0,0],backgroundColor:QA_BANDS.map(b=>b.color),borderWidth:2,borderColor:'#fff'}}]
             }},
-            options: {{
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: "60%",
-                plugins: {{
-                    legend: {{display: false}},
-                    tooltip: {{callbacks: {{label: ctx => `${{ctx.label}}: ${{ctx.parsed}}`}}}}
+            options:{{
+                responsive:true,maintainAspectRatio:false,cutout:'50%',
+                layout:{{padding:8}},
+                plugins:{{
+                    legend:{{display:false}},
+                    tooltip:{{callbacks:{{label:ctx=>`${{ctx.label}}: ${{ctx.parsed}}`}}}}
                 }}
             }}
         }});
+    }}
+
+    document.addEventListener('click',function(e){{
+        const wrap=document.getElementById('qa-drp-wrap');
+        if(wrap&&!wrap.contains(e.target)) qaCloseDatePicker();
+    }});
+
+    const sentinel=document.getElementById('qa-kpi-sentinel');
+    if(sentinel){{
+        const strip=document.getElementById('qa-kpi-strip');
+        const obs=new IntersectionObserver(entries=>{{
+            entries.forEach(en=>{{ if(strip) strip.classList.toggle('visible',!en.isIntersecting); }});
+        }},{{threshold:0}});
+        obs.observe(sentinel);
     }}
 
     qaPopulateSelects();
-    qaRender();
+    qaUpdateDRPLabel();
+    qaApplyFilters();
 }}
 
 // ─── END QA QUALITY TAB ───────────────────────────────────────────────────────
