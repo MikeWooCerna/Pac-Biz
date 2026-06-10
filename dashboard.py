@@ -1736,6 +1736,35 @@ def main():
         min-height: 0;
     }}
 
+    /* Quality detail table focus mode */
+    .qa-focus-icon {{
+        position: relative;
+        display: inline-block;
+        width: 15px;
+        height: 15px;
+    }}
+    .qa-focus-icon::before,
+    .qa-focus-icon::after {{
+        content: "";
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        border-color: currentColor;
+        border-style: solid;
+    }}
+    .qa-focus-icon::before {{ top: 0; right: 0; border-width: 2px 2px 0 0; }}
+    .qa-focus-icon::after  {{ left: 0; bottom: 0; border-width: 0 0 2px 2px; }}
+    .qa-focus-mode .qa-focus-icon::before {{ top: 2px; right: 2px; border-width: 0 0 2px 2px; }}
+    .qa-focus-mode .qa-focus-icon::after  {{ left: 2px; bottom: 2px; border-width: 2px 2px 0 0; }}
+    body.qa-focus-mode #qualityPanel .qa-live-banner,
+    body.qa-focus-mode #qualityPanel .qa-kpi-strip,
+    body.qa-focus-mode #qualityPanel .qa-kpi-row,
+    body.qa-focus-mode #qualityPanel .qa-sum-strip,
+    body.qa-focus-mode #qualityPanel .qa-g3,
+    body.qa-focus-mode #qualityPanel .qa-g2 {{ display: none; }}
+    body.qa-focus-mode #qa-detail-card {{ min-height: 0; height: calc(100vh - 190px); }}
+    body.qa-focus-mode #qa-detail-card .qa-tbl-scroll {{ max-height: none; height: calc(100% - 56px); }}
+
     .nowrap {{
         white-space: nowrap;
     }}
@@ -2415,10 +2444,19 @@ def main():
     </div>
   </div>
 
-  <div class="qa-card">
+  <div class="qa-card" id="qa-detail-card">
     <div class="qa-ch">
       <div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>All evaluations &mdash; detail table</div></div>
-      <span class="qa-cb qa-cbb" id="qa-tbl-count">&mdash;</span>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="qa-cb qa-cbb" id="qa-tbl-count">&mdash;</span>
+        <button onclick="downloadQAExcel()" title="Download Excel" style="font-size:11px;padding:3px 10px;border:1px solid #CBD5E1;border-radius:5px;background:#fff;color:#475569;cursor:pointer;display:flex;align-items:center;gap:4px;white-space:nowrap">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Excel
+        </button>
+        <button id="qa-detail-focus-toggle" onclick="toggleQAFocusMode()" title="Expand table" aria-label="Expand table" style="width:28px;height:28px;border:1px solid #CBD5E1;border-radius:5px;background:#fff;color:#475569;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <span class="qa-focus-icon" aria-hidden="true"></span>
+        </button>
+      </div>
     </div>
     <div class="qa-tbl-scroll">
       <table class="qa-dtbl">
@@ -3916,6 +3954,7 @@ function render() {{
 
 // ─── QA QUALITY TAB ──────────────────────────────────────────────────────────
 let qaChartsInitialized = false;
+let qaCurrentFiltered = [];
 let qaTrendChart = null;
 let qaDonutChart = null;
 
@@ -4376,23 +4415,23 @@ function qaApplyFilters() {{
     const agent=(document.getElementById('qa-sel-agent')?.value||'').trim();
     const head=(document.getElementById('qa-sel-head')?.value||'').trim();
     const startStr=qaFmtDate(qaDrpStart), endStr=qaFmtDate(qaDrpEnd);
-    const filtered=qaRawData.filter(r=>{{
+    qaCurrentFiltered=qaRawData.filter(r=>{{
         const rDate=(r.ts||'').slice(0,10);
         return rDate>=startStr&&rDate<=endStr&&
             (!coach||r.coach===coach)&&
             (!agent||r.agent===agent)&&
             (!head||r.supervisor===head);
     }});
-    qaUpdateKPIs(filtered);
-    qaUpdateTrend(filtered);
-    qaRenderCriteria(filtered);
-    qaRenderCoaching(filtered);
-    qaRenderLeaderboard(filtered);
-    qaRenderTable(filtered);
+    qaUpdateKPIs(qaCurrentFiltered);
+    qaUpdateTrend(qaCurrentFiltered);
+    qaRenderCriteria(qaCurrentFiltered);
+    qaRenderCoaching(qaCurrentFiltered);
+    qaRenderLeaderboard(qaCurrentFiltered);
+    qaRenderTable(qaCurrentFiltered);
     const sub=document.getElementById('qa-donut-sub');
-    if(sub) sub.textContent=filtered.length+' evaluation'+(filtered.length===1?'':'s');
+    if(sub) sub.textContent=qaCurrentFiltered.length+' evaluation'+(qaCurrentFiltered.length===1?'':'s');
     if (qaDonutChart){{
-        const scores=filtered.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
+        const scores=qaCurrentFiltered.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
         const buckets=QA_BANDS.map(b=>scores.filter(s=>s>=b.min&&s<=b.max).length);
         qaDonutChart.data.datasets[0].data=buckets;
         qaDonutChart.update();
@@ -4516,6 +4555,59 @@ function initQualityCharts() {{
     qaApplyFilters();
 }}
 
+function setQAFocusMode(active) {{
+    document.body.classList.toggle('qa-focus-mode', active);
+    const btn = document.getElementById('qa-detail-focus-toggle');
+    if (btn) {{
+        btn.setAttribute('aria-label', active ? 'Collapse table' : 'Expand table');
+        btn.setAttribute('title',      active ? 'Collapse table' : 'Expand table');
+    }}
+}}
+
+function toggleQAFocusMode() {{
+    setQAFocusMode(!document.body.classList.contains('qa-focus-mode'));
+}}
+
+function downloadQAExcel() {{
+    const rows = qaCurrentFiltered.map(r => {{
+        const obj = {{
+            'Evaluation Date': (r.ts||'').slice(0,10),
+            'Emp Name':        r.agent||'',
+            'Immediate Head':  r.supervisor||'',
+            'QA Coach':        r.coach||'',
+            'Score':           r.score||'',
+        }};
+        QA_CRIT_META.forEach(c => {{ obj[c.name] = r[c.key]||''; }});
+        obj['Investigation']    = r.invest||'';
+        obj['Feedback Summary'] = r.feedback||'';
+        return obj;
+    }});
+    const dateTag = new Date().toISOString().slice(0,10);
+    if (window.XLSX) {{
+        const ws = XLSX.utils.json_to_sheet(rows);
+        ws['!cols'] = Object.keys(rows[0]||{{}}).map(k =>
+            ({{wch: k==='Feedback Summary'?50:k==='Emp Name'||k==='Immediate Head'?22:Math.max(14,k.length+2)}})
+        );
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'QA Evaluations');
+        XLSX.writeFile(wb, `qa_evaluations_${{dateTag}}.xlsx`);
+    }} else {{
+        const headers = Object.keys(rows[0]||{{}});
+        const headerHtml = headers.map(h=>`<th>${{h}}</th>`).join('');
+        const rowHtml = rows.map(r=>
+            `<tr>${{headers.map(h=>`<td>${{String(r[h]||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}}</td>`).join('')}}</tr>`
+        ).join('');
+        const blob = new Blob(
+            [`<html><head><meta charset="UTF-8"></head><body><table><thead><tr>${{headerHtml}}</tr></thead><tbody>${{rowHtml}}</tbody></table></body></html>`],
+            {{type:'application/vnd.ms-excel'}}
+        );
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `qa_evaluations_${{dateTag}}.xls`;
+        a.click();
+    }}
+}}
+
 // ─── END QA QUALITY TAB ───────────────────────────────────────────────────────
 
 function switchTab(tabName) {{
@@ -4542,6 +4634,9 @@ function switchTab(tabName) {{
     }}
     if (!isMasterlist) {{
         setMasterlistFocusMode(false);
+    }}
+    if (tabName !== "quality") {{
+        setQAFocusMode(false);
     }}
 
     if (isMasterlist || isCoaching) {{
