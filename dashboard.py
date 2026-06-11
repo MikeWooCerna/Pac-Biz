@@ -1993,8 +1993,8 @@ def main():
     body.qa-focus-mode #qualityPanel .qa-sum-strip,
     body.qa-focus-mode #qualityPanel .qa-g3,
     body.qa-focus-mode #qualityPanel .qa-g2 {{ display: none; }}
-    body.qa-focus-mode [id$="-detail-card"] {{ min-height: 0; height: calc(100vh - 190px); }}
-    body.qa-focus-mode [id$="-detail-card"] .qa-tbl-scroll {{ max-height: none; height: calc(100% - 56px); }}
+    body.qa-focus-mode #qa-detail-card {{ min-height: 0; height: calc(100vh - 190px); }}
+    body.qa-focus-mode #qa-detail-card .qa-tbl-scroll {{ max-height: none; height: calc(100% - 56px); }}
 
     .nowrap {{
         white-space: nowrap;
@@ -2300,20 +2300,6 @@ def main():
         #qualityPanel .qa-g3 {{ grid-template-columns:1fr }}
         #qualityPanel .qa-g2 {{ grid-template-columns:1fr }}
     }}
-    /* Account blocks */
-    #qualityPanel .qa-acct-block {{ border-bottom:2px solid #E2E8F0;background:#fff }}
-    #qualityPanel .qa-acct-block:last-child {{ border-bottom:none }}
-    #qualityPanel .qa-acct-hdr {{ display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 20px;background:#fff;cursor:pointer;user-select:none }}
-    #qualityPanel .qa-acct-hdr:hover {{ background:#FAFBFC }}
-    #qualityPanel .qa-acct-hdr-left {{ flex:1;min-width:0 }}
-    #qualityPanel .qa-acct-hdr-stats {{ display:flex;gap:20px;flex-shrink:0 }}
-    #qualityPanel .qa-acct-stat {{ display:flex;flex-direction:column;align-items:center;min-width:60px }}
-    #qualityPanel .qa-acct-stat-l {{ font-size:9px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.06em }}
-    #qualityPanel .qa-acct-stat-v {{ font-size:14px;font-weight:800;color:#1E293B }}
-    #qualityPanel .qa-acct-chevron {{ background:none;border:1px solid #E2E8F0;border-radius:6px;width:28px;height:28px;cursor:pointer;color:#64748B;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0 }}
-    #qualityPanel .qa-acct-chevron:hover {{ background:#F1F5F9 }}
-    #qualityPanel .qa-acct-body {{ border-top:1px solid #F1F5F9 }}
-    body.qa-focus-mode .qa-acct-hdr {{ display:none }}
 </style>
 </head>
 
@@ -2616,9 +2602,112 @@ def main():
 
 <div id="qa-kpi-sentinel"></div>
 
-{_qa_block_html('m7', 'M7 – Ride-hailing support', 'M7 Ride Quality Evaluations', 'M7 Account', 'qa-b-blue', 90, len(m7), expanded=True)}
-
-{_qa_block_html('parentis', 'Parentis Health', 'Parentis Health Quality Evaluations', 'Parentis Account', 'qa-b-teal', 90, len(parentis), expanded=False)}
+<div class="qa-page" id="qa-shared-page">
+  <div class="qa-section-head">
+    <div>
+      <div class="qa-sh-title" id="qa-sh-title">All Accounts &mdash; Quality Assurance</div>
+      <div class="qa-sh-sub" id="qa-view-sub">&mdash;</div>
+    </div>
+    <div class="qa-badges">
+      <span class="qa-badge qa-b-amber" id="qa-badge-account">All Accounts</span>
+      <span class="qa-badge qa-b-green" id="qa-badge-agents">&mdash; Agents</span>
+      <span class="qa-badge qa-b-teal" id="qa-badge-evals">&mdash; Evaluations</span>
+      <span class="qa-badge qa-b-amber">Pass threshold: 90%</span>
+    </div>
+  </div>
+  <div class="qa-kpi-row">
+    <div class="qa-kpi qa-knavy"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg></div><div class="qa-kpi-lbl">Avg QA Score</div></div><div class="qa-kpi-val" id="qa-kpi-avg">&mdash;</div><div class="qa-kpi-d qa-dn" id="qa-kpi-avg-sub">&mdash;</div></div>
+    <div class="qa-kpi qa-kgreen"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><div class="qa-kpi-lbl">Pass Rate</div></div><div class="qa-kpi-val" id="qa-kpi-pass">&mdash;</div><div class="qa-kpi-d qa-du" id="qa-kpi-pass-sub">&mdash;</div></div>
+    <div class="qa-kpi qa-kteal"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#0F766E" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></div><div class="qa-kpi-lbl">Total Evaluations</div></div><div class="qa-kpi-val" id="qa-kpi-evals">&mdash;</div><div class="qa-kpi-d qa-dn" id="qa-kpi-evals-sub">&mdash;</div></div>
+    <div class="qa-kpi qa-kpurple"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#6D28D9" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg></div><div class="qa-kpi-lbl">Total Agents</div></div><div class="qa-kpi-val" id="qa-kpi-agents">&mdash;</div><div class="qa-kpi-d qa-dn">Evaluated this period</div></div>
+    <div class="qa-kpi qa-kamber"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg></div><div class="qa-kpi-lbl">Lowest Score</div></div><div class="qa-kpi-val" id="qa-kpi-low">&mdash;</div><div class="qa-kpi-d qa-dd" id="qa-kpi-low-sub">&mdash;</div></div>
+    <div class="qa-kpi qa-kcoral"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="qa-kpi-lbl">Below 90%</div></div><div class="qa-kpi-val" id="qa-kpi-below">&mdash;</div><div class="qa-kpi-d qa-dd" id="qa-kpi-below-sub">&mdash;</div></div>
+  </div>
+  <div class="qa-sum-strip">
+    <div class="qa-sum-card" style="border-top:3px solid #0F9B58"><div class="qa-sum-lbl">Avg QA score</div><div class="qa-sum-val" id="qa-sum-avg" style="color:#0F9B58">&mdash;</div><div class="qa-sum-sub">All evaluations in range</div><div class="qa-sum-score" id="qa-sum-avg-note" style="color:#0F9B58">&mdash;</div></div>
+    <div class="qa-sum-card" style="border-top:3px solid #0891B2"><div class="qa-sum-lbl">Pass rate</div><div class="qa-sum-val" id="qa-sum-pass" style="color:#0891B2">&mdash;</div><div class="qa-sum-sub" id="qa-sum-pass-sub">&mdash;</div><div class="qa-sum-score" style="color:#0F9B58">Pass threshold: 90%</div></div>
+    <div class="qa-sum-card" style="border-top:3px solid #0D3B6E"><div class="qa-sum-lbl">Top performer</div><div class="qa-sum-val" id="qa-sum-top" style="color:#0D3B6E;font-size:15px">&mdash;</div><div class="qa-sum-sub" id="qa-sum-top-sub">&mdash;</div><div class="qa-sum-score" id="qa-sum-top-pass" style="color:#0F9B58">&mdash;</div></div>
+    <div class="qa-sum-card" style="border-top:3px solid #F59E0B"><div class="qa-sum-lbl">Needs attention</div><div class="qa-sum-val" id="qa-sum-attn" style="color:#0D3B6E;font-size:15px">&mdash;</div><div class="qa-sum-sub" id="qa-sum-attn-sub">&mdash;</div><div class="qa-sum-score" style="color:#E85D3F">Coaching recommended</div></div>
+  </div>
+  <div class="qa-g3">
+    <div class="qa-card">
+      <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>QA Score Trend</div><div class="qa-cs" id="qa-trend-sub">Weekly avg (Mon&ndash;Sun) &middot; Target: 90%</div></div><span class="qa-cb qa-cbg" id="qa-trend-badge">&mdash;</span></div>
+      <div class="qa-cbody" style="padding:10px 14px"><div style="position:relative;height:160px"><canvas id="qa-trend-chart"></canvas></div></div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>Criteria pass rates</div><div class="qa-cs" id="qa-crit-sub">All 22 criteria &middot; sorted by pass rate</div></div><span class="qa-cb qa-cba">Score breakdown</span></div>
+      <div style="padding:0 14px">
+        <div style="max-height:220px;overflow-y:auto;padding:10px 0;border-bottom:1px solid #E2E8F0" id="qa-criteria-bars"></div>
+        <div style="padding:6px 0 8px;font-size:10px;color:#CBD5E1">&#9679; Scroll to see all 22 criteria</div>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-ch"><div><div class="qa-ct">Score distribution</div><div class="qa-cs" id="qa-donut-sub">All evaluations</div></div></div>
+      <div class="qa-cbody" style="padding:10px 14px">
+        <div style="position:relative;height:160px"><canvas id="qa-donut-chart"></canvas></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:8px" id="qa-donut-legend"></div>
+      </div>
+    </div>
+  </div>
+  <div class="qa-g2">
+    <div class="qa-card">
+      <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>Agent leaderboard</div><div class="qa-cs">Ranked by avg score</div></div><span class="qa-cb qa-cbb" id="qa-lb-badge">&mdash;</span></div>
+      <div class="qa-cbody" style="padding:0 16px 8px">
+        <table class="qa-lbt"><thead><tr><th>#</th><th>Agent</th><th>Evals</th><th>Avg</th><th>Min</th><th>Max</th><th>Pass</th><th>Account</th></tr></thead><tbody id="qa-leaderboard"></tbody></table>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg>Coaching opportunities</div><div class="qa-cs">Criteria below 95% pass rate</div></div><span class="qa-cb qa-cbr" id="qa-coaching-count">&mdash;</span></div>
+      <div class="qa-cbody" style="padding:10px 16px">
+        <div id="qa-coaching-bars"></div>
+        <div style="height:1px;background:#F1F5F9;margin:12px 0"></div>
+        <div style="font-size:10px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.04em;margin-bottom:7px">QA coach breakdown</div>
+        <div style="display:flex;gap:8px" id="qa-coach-breakdown"></div>
+      </div>
+    </div>
+  </div>
+  <div class="qa-card" id="qa-detail-card">
+    <div class="qa-ch">
+      <div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>All evaluations &mdash; detail table</div></div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="qa-cb qa-cbb" id="qa-tbl-count">&mdash;</span>
+        <button onclick="downloadQAExcel()" title="Download Excel" style="font-size:11px;padding:3px 10px;border:1px solid #CBD5E1;border-radius:5px;background:#fff;color:#475569;cursor:pointer;display:flex;align-items:center;gap:4px;white-space:nowrap">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Excel
+        </button>
+        <button id="qa-focus-toggle" onclick="toggleQAFocusMode()" title="Expand table" aria-label="Expand table" style="width:28px;height:28px;border:1px solid #CBD5E1;border-radius:5px;background:#fff;color:#475569;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <span class="qa-focus-icon" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+    <div class="qa-tbl-scroll">
+      <table class="qa-dtbl">
+        <thead><tr>
+          <th style="min-width:130px">Evaluation Date</th>
+          <th style="min-width:155px">Emp Name</th>
+          <th style="min-width:110px">Immediate Head</th>
+          <th style="min-width:110px">QA Coach</th>
+          <th style="min-width:90px">Account</th>
+          <th style="min-width:55px">Score</th>
+          <th style="min-width:75px">Opening In</th><th style="min-width:75px">Opening Out</th>
+          <th style="min-width:65px">Closing</th><th style="min-width:75px">Approp. Resp</th>
+          <th style="min-width:65px">No Resp</th><th style="min-width:60px">Fillers</th>
+          <th style="min-width:80px">Acknowledge</th><th style="min-width:70px">Hold Proc.</th>
+          <th style="min-width:70px">Ack. Hold</th><th style="min-width:70px">Resp. Eff.</th>
+          <th style="min-width:60px">Empathy</th><th style="min-width:60px">Adjust</th>
+          <th style="min-width:55px">Mute</th><th style="min-width:70px">Active List.</th>
+          <th style="min-width:70px">Answered Q</th><th style="min-width:65px">Probing Q</th>
+          <th style="min-width:70px">Cust. Verif.</th><th style="min-width:65px">Clarif.</th>
+          <th style="min-width:65px">Lost SOP</th><th style="min-width:65px">Rudeness</th>
+          <th style="min-width:75px">Transaction</th><th style="min-width:65px">Speech</th>
+          <th style="min-width:75px">Investigation</th>
+          <th style="min-width:240px">Feedback Summary</th>
+        </tr></thead>
+        <tbody id="qa-detail-table"></tbody>
+      </table>
+    </div>
+    <div style="padding:6px 16px;font-size:10px;color:#94A3B8;border-top:1px solid #F1F5F9" id="qa-tbl-footer">&mdash;</div>
+  </div>
+</div>
 
 </div>
 
@@ -4078,14 +4167,13 @@ function render() {{
 
 // ─── QA QUALITY TAB ──────────────────────────────────────────────────────────
 let qaChartsInitialized = false;
-const qaCharts = {{ m7: {{trend:null,donut:null}}, parentis: {{trend:null,donut:null}} }};
-const qaBlockExpanded = {{ m7: true, parentis: false }};
+let qaTrendChart = null;
+let qaDonutChart = null;
 let qaCurrentFiltered = [];
 
-const QA_ACCOUNTS = [
-    {{id:'m7',       name:'M7 – Ride-hailing support', data:qaRawData,       threshold:90, supervisors:'Charito Caitor / Almyr Beltran'}},
-    {{id:'parentis', name:'Parentis Health',                data:parentisRawData,  threshold:90, supervisors:'Charito Caitor'}},
-];
+// Tag rows at init time
+qaRawData.forEach(r => r._acct = 'M7');
+parentisRawData.forEach(r => r._acct = 'Parentis');
 
 // Date range picker state — default: first of current month → today
 const _qaToday = new Date(); _qaToday.setHours(0,0,0,0);
@@ -4166,6 +4254,13 @@ function qaYN(v) {{
     return '<span style="color:#94A3B8">&mdash;</span>';
 }}
 
+function qaGetActiveData() {{
+    const acct = (document.getElementById('qa-sel-account')?.value||'').trim();
+    if (acct === 'm7') return qaRawData;
+    if (acct === 'parentis') return parentisRawData;
+    return [...qaRawData, ...parentisRawData];
+}}
+
 // ─── Date Range Picker ────────────────────────────────────────────────────────
 function qaUpdateDRPLabel() {{
     const el = document.getElementById('qa-drp-label');
@@ -4242,10 +4337,9 @@ function qaRenderOneCal(side, year, month) {{
         const dt=new Date(dStr+'T00:00:00');
         let cls='qa-cal-d';
         if(dt.getTime()===today.getTime()) cls+=' today';
-        const start=qaDrpStart, end=qaDrpEnd||qaDrpHoverDate;
+        const start=qaDrpStart, end=qaDrpEnd;
         if(start&&dt.getTime()===start.getTime()) cls+=' sel-start';
         else if(end&&dt.getTime()===end.getTime()) cls+=' sel-end';
-        else if(qaDrpPhase===1&&qaDrpHoverDate&&start&&dt>start&&dt<qaDrpHoverDate) cls+=' sel-preview';
         else if(start&&end&&dt>start&&dt<end) cls+=' in-range';
         html+=`<button class="${{cls}}" type="button" onmouseenter="qaHoverDay('${{dStr}}')" onclick="qaPickDay('${{dStr}}')">${{d}}</button>`;
     }}
@@ -4268,11 +4362,10 @@ function qaHoverDay(dStr) {{
         cal.querySelectorAll('.qa-cal-d').forEach(btn=>{{
             const ds=btn.getAttribute('onclick')?.match(/qaPickDay\\('([^']+)'\\)/)?.[1]; if(!ds) return;
             const dt=new Date(ds+'T00:00:00');
-            const start=qaDrpStart;
             btn.classList.remove('sel-start','sel-end','sel-preview','in-range');
-            if(start&&dt.getTime()===start.getTime()) btn.classList.add('sel-start');
+            if(qaDrpStart&&dt.getTime()===qaDrpStart.getTime()) btn.classList.add('sel-start');
             else if(dt.getTime()===d.getTime()) btn.classList.add('sel-end');
-            else if(start&&dt>start&&dt<d) btn.classList.add('sel-preview');
+            else if(qaDrpStart&&dt>qaDrpStart&&dt<d) btn.classList.add('sel-preview');
         }});
     }});
 }}
@@ -4310,41 +4403,18 @@ function qaResetDRP() {{
     qaDrpPhase=0; qaUpdateDRPLabel(); qaCloseDatePicker(); qaApplyFilters();
 }}
 
-// ─── Account block toggle ─────────────────────────────────────────────────────
-function qaToggleBlock(aid, e) {{
-    if(e) e.stopPropagation();
-    const body=document.getElementById('qa-body-'+aid);
-    const chevron=document.getElementById(aid+'-chevron');
-    const block=document.getElementById('qa-block-'+aid);
-    if(!body) return;
-    const isOpen=body.style.display!=='none';
-    body.style.display=isOpen?'none':'';
-    if(chevron) chevron.textContent=isOpen?'▼':'▲';
-    if(block) block.classList.toggle('expanded',!isOpen);
-    qaBlockExpanded[aid]=!isOpen;
-    if(!isOpen) {{
-        initAccountCharts(aid);
-        qaApplyFilters();
-    }}
-}}
-
 // ─── Account change ───────────────────────────────────────────────────────────
 function qaOnAccountChange() {{
-    const acct=(document.getElementById('qa-sel-account')?.value||'').trim();
-    QA_ACCOUNTS.forEach(a=>{{
-        const block=document.getElementById('qa-block-'+a.id);
-        if(block) block.style.display=(!acct||acct===a.id)?'':'none';
+    ['qa-sel-coach','qa-sel-agent','qa-sel-head'].forEach(id=>{{
+        const el=document.getElementById(id); if(el) el.value='';
     }});
     qaPopulateSelects();
     qaApplyFilters();
 }}
 
-// ─── Selects / filters ────────────────────────────────────────────────────────
+// ─── Selects ──────────────────────────────────────────────────────────────────
 function qaPopulateSelects() {{
-    const acct=(document.getElementById('qa-sel-account')?.value||'').trim();
-    const pool=acct
-        ? (QA_ACCOUNTS.find(a=>a.id===acct)?.data||[])
-        : QA_ACCOUNTS.flatMap(a=>a.data);
+    const pool = qaGetActiveData();
     [['qa-sel-coach','All QA Coaches',pool.map(r=>r.coach)],
      ['qa-sel-agent','All Agents',    pool.map(r=>r.agent)],
      ['qa-sel-head', 'All Immediate Heads', pool.map(r=>r.supervisor)]].forEach(([id,dflt,vals])=>{{
@@ -4352,7 +4422,7 @@ function qaPopulateSelects() {{
         const cur=el.value;
         const arr=[...new Set(vals.filter(Boolean))].sort();
         el.innerHTML=`<option value="">${{dflt}}</option>`+arr.map(v=>`<option value="${{qaEscapeHtml(v)}}">${{qaEscapeHtml(v)}}</option>`).join('');
-        el.value=cur;
+        el.value=arr.includes(cur)?cur:'';
     }});
 }}
 
@@ -4383,8 +4453,21 @@ function qaBuildTrend(data) {{
     }});
 }}
 
-// ─── Per-account rendering ────────────────────────────────────────────────────
-function qaUpdateAccountKPIs(data, aid) {{
+// ─── Render functions ─────────────────────────────────────────────────────────
+function qaUpdateKPIs(data) {{
+    const acct=(document.getElementById('qa-sel-account')?.value||'').trim();
+    const titleEl=document.getElementById('qa-sh-title');
+    const badgeEl=document.getElementById('qa-badge-account');
+    if(titleEl) {{
+        if(acct==='m7') titleEl.textContent='M7 — Quality Assurance';
+        else if(acct==='parentis') titleEl.textContent='Parentis Health — Quality Assurance';
+        else titleEl.textContent='All Accounts — Quality Assurance';
+    }}
+    if(badgeEl) {{
+        if(acct==='m7') {{ badgeEl.textContent='M7 Account'; badgeEl.className='qa-badge qa-b-blue'; }}
+        else if(acct==='parentis') {{ badgeEl.textContent='Parentis Health'; badgeEl.className='qa-badge qa-b-teal'; }}
+        else {{ badgeEl.textContent='All Accounts'; badgeEl.className='qa-badge qa-b-amber'; }}
+    }}
     const scores=data.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
     const n=data.length;
     const agents=new Set(data.map(r=>r.agent).filter(Boolean));
@@ -4393,74 +4476,66 @@ function qaUpdateAccountKPIs(data, aid) {{
     const passRate=scores.length?passCount/scores.length*100:null;
     const belowCount=scores.filter(s=>s<90).length;
     const minScore=scores.length?Math.min(...scores):null;
-    const set=(id,v)=>{{const el=document.getElementById(aid+'-'+id);if(el)el.textContent=v;}};
-    set('kpi-avg',    avg?avg.toFixed(1)+'%':'—');
-    set('kpi-pass',   passRate!==null?passRate.toFixed(1)+'%':'—');
-    set('kpi-evals',  n);
-    set('kpi-agents', agents.size);
-    set('kpi-low',    minScore!==null?minScore.toFixed(0)+'%':'—');
-    set('kpi-below',  belowCount);
-    set('kpi-avg-sub',  avg!==null?(avg>=90?'✔ Above threshold':'⚠ Below target'):'—');
-    set('kpi-pass-sub', passCount+' of '+n+' pass');
-    set('kpi-evals-sub',agents.size+' agent'+(agents.size===1?'':'s'));
-    set('kpi-low-sub',  minScore!==null?(minScore<90?'⚠ Below threshold':'Within range'):'—');
-    set('kpi-below-sub',belowCount?belowCount+' eval'+(belowCount===1?'':'s')+' below 90%':'None below 90%');
-    set('hdr-avg',   avg?avg.toFixed(1)+'%':'—');
-    set('hdr-pass',  passRate!==null?passRate.toFixed(1)+'%':'—');
-    set('hdr-below', belowCount?String(belowCount):'—');
-    const agBadge=document.getElementById(aid+'-hdr-agents');
-    if(agBadge) agBadge.textContent=agents.size+' Agent'+(agents.size===1?'':'s');
-    const evBadge=document.getElementById(aid+'-hdr-evals');
-    if(evBadge) evBadge.textContent=n+' Evaluation'+(n===1?'':'s');
-    const bBadge=document.getElementById(aid+'-badge-agents');
-    if(bBadge) bBadge.textContent=agents.size+' Agents';
-    const bEv=document.getElementById(aid+'-badge-evals');
-    if(bEv) bEv.textContent=n+' Evaluations';
-    const bc=document.getElementById(aid+'-banner-count');
-    if(bc) bc.textContent=n;
+    const set=(id,v)=>{{const el=document.getElementById(id);if(el)el.textContent=v;}};
+    set('qa-kpi-avg',    avg?avg.toFixed(1)+'%':'—');
+    set('qa-kpi-pass',   passRate!==null?passRate.toFixed(1)+'%':'—');
+    set('qa-kpi-evals',  n);
+    set('qa-kpi-agents', agents.size);
+    set('qa-kpi-low',    minScore!==null?minScore.toFixed(0)+'%':'—');
+    set('qa-kpi-below',  belowCount);
+    set('qa-kpi-avg-sub',  avg!==null?(avg>=90?'✔ Above threshold':'⚠ Below target'):'—');
+    set('qa-kpi-pass-sub', passCount+' of '+n+' pass');
+    set('qa-kpi-evals-sub',agents.size+' agent'+(agents.size===1?'':'s'));
+    set('qa-kpi-low-sub',  minScore!==null?(minScore<90?'⚠ Below threshold':'Within range'):'—');
+    set('qa-kpi-below-sub',belowCount?belowCount+' eval'+(belowCount===1?'':'s')+' below 90%':'None below 90%');
+    const agBadge=document.getElementById('qa-badge-agents');
+    if(agBadge) agBadge.textContent=agents.size+' Agents';
+    const evBadge=document.getElementById('qa-badge-evals');
+    if(evBadge) evBadge.textContent=n+' Evaluations';
+    const viewSub=document.getElementById('qa-view-sub');
+    if(viewSub) {{
+        const s=qaFmtDisplay(qaDrpStart), e=qaDrpEnd?qaFmtDisplay(qaDrpEnd):'…';
+        viewSub.textContent=`${{s}} – ${{e}} · ${{agents.size}} agent${{agents.size===1?'':'s'}} · ${{n}} evaluation${{n===1?'':'s'}}`;
+    }}
     const byAgent={{}};
     data.forEach(r=>{{
         if(!r.agent) return;
         const s=Number(r.score);
         if(!isNaN(s)&&s>0){{if(!byAgent[r.agent])byAgent[r.agent]={{scores:[]}};byAgent[r.agent].scores.push(s);}}
     }});
-    const agentArr=Object.entries(byAgent).map(([name,d])=>{{const a=qaAvg(d.scores);return{{name,avg:a,n:d.scores.length}};}})
+    const agentArr=Object.entries(byAgent).map(([name,d])=>{{return {{name,avg:qaAvg(d.scores),n:d.scores.length}};}})
         .filter(a=>a.n>0).sort((a,b)=>b.avg-a.avg);
-    set('sum-avg',      avg?avg.toFixed(1)+'%':'—');
-    set('sum-avg-note', avg!==null?(avg>=90?'✓ Above 90% threshold':'⚠ Below target'):'—');
-    set('sum-pass',     passRate!==null?passRate.toFixed(1)+'%':'—');
-    set('sum-pass-sub', passCount+' of '+n+' evaluations');
-    set('sum-top',      agentArr[0]?.name||'—');
-    set('sum-top-sub',  agentArr[0]?'Avg '+agentArr[0].avg.toFixed(1)+'% · '+agentArr[0].n+' eval'+(agentArr[0].n===1?'':'s'):'');
-    set('sum-top-pass', agentArr[0]?agentArr[0].avg.toFixed(1)+'%':'—');
+    set('qa-sum-avg',      avg?avg.toFixed(1)+'%':'—');
+    set('qa-sum-avg-note', avg!==null?(avg>=90?'✓ Above 90% threshold':'⚠ Below target'):'—');
+    set('qa-sum-pass',     passRate!==null?passRate.toFixed(1)+'%':'—');
+    set('qa-sum-pass-sub', passCount+' of '+n+' evaluations');
+    set('qa-sum-top',      agentArr[0]?.name||'—');
+    set('qa-sum-top-sub',  agentArr[0]?'Avg '+agentArr[0].avg.toFixed(1)+'% · '+agentArr[0].n+' eval'+(agentArr[0].n===1?'':'s'):'');
+    set('qa-sum-top-pass', agentArr[0]?agentArr[0].avg.toFixed(1)+'%':'—');
     const critStats=qaComputeCriteria(data).filter(c=>c.pct!==null).sort((a,b)=>a.pct-b.pct);
     const worst=critStats[0];
-    set('sum-attn',     worst?worst.name:'—');
-    set('sum-attn-sub', worst?worst.pct+'% pass rate':'');
-    set('view-sub', (() => {{
-        const s=qaFmtDisplay(qaDrpStart), e=qaDrpEnd?qaFmtDisplay(qaDrpEnd):'…';
-        return `${{s}} · ${{e}} · ${{agents.size}} agent${{agents.size===1?'':'s'}} · ${{n}} evaluation${{n===1?'':'s'}}`;
-    }})());
+    set('qa-sum-attn',     worst?worst.name:'—');
+    set('qa-sum-attn-sub', worst?worst.pct+'% pass rate':'');
 }}
 
-function qaUpdateTrendForAccount(data, aid) {{
-    const chart=qaCharts[aid]?.trend; if(!chart) return;
+function qaUpdateTrend(data) {{
+    if(!qaTrendChart) return;
     const trend=qaBuildTrend(data);
     const labels=trend.map(t=>t.week), avgs=trend.map(t=>t.avg), target=labels.map(()=>90);
-    chart.data.labels=labels;
-    chart.data.datasets[0].data=avgs;
-    chart.data.datasets[1].data=target;
-    chart.update();
+    qaTrendChart.data.labels=labels;
+    qaTrendChart.data.datasets[0].data=avgs;
+    qaTrendChart.data.datasets[1].data=target;
+    qaTrendChart.update();
     const last2=avgs.slice(-2), tv=last2.length===2?last2[1]-last2[0]:0;
-    const badge=document.getElementById(aid+'-trend-badge');
+    const badge=document.getElementById('qa-trend-badge');
     if(badge){{
         badge.textContent=avgs.length?(tv>=0?'▲ '+Math.abs(tv).toFixed(1)+'%':'▼ '+Math.abs(tv).toFixed(1)+'%'):'—';
         badge.className='qa-cb '+(tv>=0?'qa-cbg':'qa-cbr');
     }}
 }}
 
-function qaRenderCriteriaForAccount(data, aid) {{
-    const el=document.getElementById(aid+'-criteria-bars'); if(!el) return;
+function qaRenderCriteria(data) {{
+    const el=document.getElementById('qa-criteria-bars'); if(!el) return;
     if(!data.length){{el.innerHTML="<div style='padding:12px;color:#94A3B8;font-size:12px'>No data</div>";return;}}
     const stats=qaComputeCriteria(data).filter(c=>c.pct!==null||c.na).sort((a,b)=>{{
         if(a.na&&!b.na)return 1;if(!a.na&&b.na)return -1;return(a.pct||0)-(b.pct||0);
@@ -4470,14 +4545,14 @@ function qaRenderCriteriaForAccount(data, aid) {{
         const color=c.pct>=95?'#0F9B58':c.pct>=90?'#F59E0B':'#E85D3F';
         return`<div style="margin-bottom:7px"><div style="display:flex;justify-content:space-between;font-size:10px;color:#475569;margin-bottom:2px"><span>${{qaEscapeHtml(c.name)}}</span><span style="font-weight:700;color:${{color}}">${{c.pct}}%</span></div><div style="height:5px;background:#F1F5F9;border-radius:3px;overflow:hidden"><div style="height:100%;width:${{c.pct}}%;background:${{color}};border-radius:3px;transition:width .4s"></div></div></div>`;
     }}).join('');
-    const sub=document.getElementById(aid+'-crit-sub');
+    const sub=document.getElementById('qa-crit-sub');
     if(sub)sub.textContent=stats.length+' criteria · sorted by pass rate';
 }}
 
-function qaRenderCoachingForAccount(data, aid) {{
-    const barsEl=document.getElementById(aid+'-coaching-bars');
-    const bdEl=document.getElementById(aid+'-coach-breakdown');
-    const cntEl=document.getElementById(aid+'-coaching-count');
+function qaRenderCoaching(data) {{
+    const barsEl=document.getElementById('qa-coaching-bars');
+    const bdEl=document.getElementById('qa-coach-breakdown');
+    const cntEl=document.getElementById('qa-coaching-count');
     if(!barsEl) return;
     const stats=qaComputeCriteria(data).filter(c=>c.pct!==null&&c.pct<95).sort((a,b)=>a.pct-b.pct);
     if(cntEl)cntEl.textContent=stats.length?stats.length+' criteria':'All clear';
@@ -4494,39 +4569,42 @@ function qaRenderCoachingForAccount(data, aid) {{
     }}
 }}
 
-function qaRenderLeaderboardForAccount(data, aid) {{
-    const el=document.getElementById(aid+'-leaderboard');
-    const badge=document.getElementById(aid+'-lb-badge');
+function qaRenderLeaderboard(data) {{
+    const el=document.getElementById('qa-leaderboard');
+    const badge=document.getElementById('qa-lb-badge');
     if(!el) return;
     const byAgent={{}};
     data.forEach(r=>{{
         if(!r.agent) return;
         const s=Number(r.score);if(isNaN(s)||s<=0)return;
-        if(!byAgent[r.agent])byAgent[r.agent]={{scores:[]}};
+        if(!byAgent[r.agent])byAgent[r.agent]={{scores:[],acct:r._acct||''}};
         byAgent[r.agent].scores.push(s);
     }});
     const agents=Object.entries(byAgent).map(([name,d])=>{{
         const avg=qaAvg(d.scores), pass=d.scores.filter(s=>s>=90).length;
         const words=name.split(' ').slice(0,2).join(' ');
         const av=QA_AV[name]||{{bg:'#F1F5F9',tc:'#475569',ini:name.split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase()}};
-        return{{name,words,av,avg,min:Math.min(...d.scores),max:Math.max(...d.scores),pass,passRate:d.scores.length?pass/d.scores.length*100:0,n:d.scores.length}};
+        return{{name,words,av,avg,min:Math.min(...d.scores),max:Math.max(...d.scores),pass,passRate:d.scores.length?pass/d.scores.length*100:0,n:d.scores.length,acct:d.acct}};
     }}).sort((a,b)=>b.avg-a.avg);
     if(badge)badge.textContent=agents.length+' agents';
     el.innerHTML=agents.map((a,i)=>{{
         const chipCls=qaChipCls(a.avg);
-        return`<tr><td style="font-size:11px;color:#94A3B8">${{i+1}}</td><td><div style="display:flex;align-items:center;gap:6px"><span style="width:24px;height:24px;border-radius:50%;background:${{a.av.bg}};color:${{a.av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{a.av.ini}}</span><span style="font-weight:600;font-size:11px">${{qaEscapeHtml(a.words)}}</span></div></td><td style="text-align:center">${{a.n}}</td><td><span class="qa-chip ${{chipCls}}">${{a.avg.toFixed(1)}}%</span></td><td style="text-align:center;font-size:11px">${{a.min.toFixed(1)}}%</td><td style="text-align:center;font-size:11px">${{a.max.toFixed(1)}}%</td><td style="text-align:center;color:${{a.passRate>=90?'#0F9B58':'#E85D3F'}};font-size:11px">${{a.passRate.toFixed(0)}}%</td></tr>`;
-    }}).join('')||`<tr><td colspan="7" style="text-align:center;color:#94A3B8;padding:16px">No data</td></tr>`;
+        const acctPill=a.acct==='M7'
+            ?`<span style="background:#EFF6FF;color:#1D4ED8;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">M7</span>`
+            :`<span style="background:#FFF0F3;color:#9F1239;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Parentis</span>`;
+        return`<tr><td style="font-size:11px;color:#94A3B8">${{i+1}}</td><td><div style="display:flex;align-items:center;gap:6px"><span style="width:24px;height:24px;border-radius:50%;background:${{a.av.bg}};color:${{a.av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{a.av.ini}}</span><span style="font-weight:600;font-size:11px">${{qaEscapeHtml(a.words)}}</span></div></td><td style="text-align:center">${{a.n}}</td><td><span class="qa-chip ${{chipCls}}">${{a.avg.toFixed(1)}}%</span></td><td style="text-align:center;font-size:11px">${{a.min.toFixed(1)}}%</td><td style="text-align:center;font-size:11px">${{a.max.toFixed(1)}}%</td><td style="text-align:center;color:${{a.passRate>=90?'#0F9B58':'#E85D3F'}};font-size:11px">${{a.passRate.toFixed(0)}}%</td><td>${{acctPill}}</td></tr>`;
+    }}).join('')||`<tr><td colspan="8" style="text-align:center;color:#94A3B8;padding:16px">No data</td></tr>`;
 }}
 
-function qaRenderTableForAccount(data, aid) {{
-    const el=document.getElementById(aid+'-detail-table');
-    const count=document.getElementById(aid+'-tbl-count');
-    const foot=document.getElementById(aid+'-tbl-footer');
+function qaRenderTable(data) {{
+    const el=document.getElementById('qa-detail-table');
+    const count=document.getElementById('qa-tbl-count');
+    const foot=document.getElementById('qa-tbl-footer');
     if(!el) return;
     const rows=data.slice().sort((a,b)=>(b.ts||'').localeCompare(a.ts||''));
     if(count)count.textContent=rows.length+' records';
-    const acctData=QA_ACCOUNTS.find(a=>a.id===aid)?.data||[];
-    if(foot)foot.textContent='Showing '+rows.length+' of '+acctData.length+' evaluations';
+    const total=qaGetActiveData().length;
+    if(foot)foot.textContent='Showing '+rows.length+' of '+total+' evaluations';
     const critKeys=['os_in','os_out','closing','approp','no_resp','fillers','ack','hold','ack_hold',
                     'resp_eff','empathy','adjust','mute','active','answered','probing','verif',
                     'clarif','lost_sop','rude','trans','speech'];
@@ -4534,6 +4612,9 @@ function qaRenderTableForAccount(data, aid) {{
         const score=Number(r.score),sc=!isNaN(score)&&score>0?score:null;
         const chipCls=sc!==null?qaChipCls(sc):'',disp=sc!==null?sc.toFixed(1)+'%':'—';
         const av=QA_AV[r.agent]||{{bg:'#F1F5F9',tc:'#475569',ini:(r.agent||'?').split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase()}};
+        const acctPill=r._acct==='M7'
+            ?`<span style="background:#EFF6FF;color:#1D4ED8;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">M7</span>`
+            :`<span style="background:#FFF0F3;color:#9F1239;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Parentis</span>`;
         const critCells=critKeys.map(k=>{{
             const v=r[k];
             if(k==='rude'){{
@@ -4544,19 +4625,19 @@ function qaRenderTableForAccount(data, aid) {{
             if(k==='lost_sop'&&(!v||v==='Not Applicable'))return'<td style="text-align:center;color:#94A3B8">N/A</td>';
             return`<td style="text-align:center">${{qaYN(v)}}</td>`;
         }});
-        return`<tr><td style="white-space:nowrap;font-size:11px">${{qaEscapeHtml((r.ts||'—').slice(0,10))}}</td><td><div style="display:flex;align-items:center;gap:5px"><span style="width:22px;height:22px;border-radius:50%;background:${{av.bg}};color:${{av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{av.ini}}</span><span style="font-weight:600;font-size:11px">${{qaEscapeHtml(r.agent||'—')}}</span></div></td><td style="font-size:11px">${{qaEscapeHtml(r.supervisor||'—')}}</td><td style="font-size:11px">${{qaEscapeHtml(r.coach||'—')}}</td><td><span class="qa-chip ${{chipCls}}">${{disp}}</span></td>${{critCells.join('')}}<td style="font-size:10px;color:#475569;white-space:nowrap">${{qaEscapeHtml(r.invest||'—')}}</td><td style="max-width:240px;white-space:normal;font-size:10px;color:#475569">${{qaEscapeHtml(r.feedback||'—')}}</td></tr>`;
-    }}).join('')||`<tr><td colspan="29" style="text-align:center;color:#94A3B8;padding:20px">No data</td></tr>`;
+        return`<tr><td style="white-space:nowrap;font-size:11px">${{qaEscapeHtml((r.ts||'—').slice(0,10))}}</td><td><div style="display:flex;align-items:center;gap:5px"><span style="width:22px;height:22px;border-radius:50%;background:${{av.bg}};color:${{av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{av.ini}}</span><span style="font-weight:600;font-size:11px">${{qaEscapeHtml(r.agent||'—')}}</span></div></td><td style="font-size:11px">${{qaEscapeHtml(r.supervisor||'—')}}</td><td style="font-size:11px">${{qaEscapeHtml(r.coach||'—')}}</td><td>${{acctPill}}</td><td><span class="qa-chip ${{chipCls}}">${{disp}}</span></td>${{critCells.join('')}}<td style="font-size:10px;color:#475569;white-space:nowrap">${{qaEscapeHtml(r.invest||'—')}}</td><td style="max-width:240px;white-space:normal;font-size:10px;color:#475569">${{qaEscapeHtml(r.feedback||'—')}}</td></tr>`;
+    }}).join('')||`<tr><td colspan="30" style="text-align:center;color:#94A3B8;padding:20px">No data</td></tr>`;
 }}
 
-function qaUpdateDonutForAccount(data, aid) {{
-    const chart=qaCharts[aid]?.donut; if(!chart) return;
+function qaUpdateDonut(data) {{
+    if(!qaDonutChart) return;
     const scores=data.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
     const buckets=QA_BANDS.map(b=>scores.filter(s=>s>=b.min&&s<=b.max).length);
-    chart.data.datasets[0].data=buckets;
-    chart.update();
-    const sub=document.getElementById(aid+'-donut-sub');
+    qaDonutChart.data.datasets[0].data=buckets;
+    qaDonutChart.update();
+    const sub=document.getElementById('qa-donut-sub');
     if(sub)sub.textContent=data.length+' evaluation'+(data.length===1?'':'s');
-    const legEl=document.getElementById(aid+'-donut-legend');
+    const legEl=document.getElementById('qa-donut-legend');
     if(legEl){{
         const total=scores.length;
         legEl.innerHTML=QA_BANDS.map((b,i)=>{{
@@ -4572,44 +4653,35 @@ function qaApplyFilters() {{
     const agent=(document.getElementById('qa-sel-agent')?.value||'').trim();
     const head=(document.getElementById('qa-sel-head')?.value||'').trim();
     const startStr=qaFmtDate(qaDrpStart), endStr=qaFmtDate(qaDrpEnd);
-    let allFiltered=[];
-    QA_ACCOUNTS.forEach(a=>{{
-        const block=document.getElementById('qa-block-'+a.id);
-        if(block&&block.style.display==='none') return;
-        const filtered=a.data.filter(r=>{{
-            const rDate=(r.ts||'').slice(0,10);
-            return rDate>=startStr&&rDate<=endStr&&
-                (!coach||r.coach===coach)&&
-                (!agent||r.agent===agent)&&
-                (!head||r.supervisor===head);
-        }});
-        if(qaBlockExpanded[a.id]) {{
-            qaUpdateAccountKPIs(filtered, a.id);
-            qaUpdateTrendForAccount(filtered, a.id);
-            qaRenderCriteriaForAccount(filtered, a.id);
-            qaRenderCoachingForAccount(filtered, a.id);
-            qaRenderLeaderboardForAccount(filtered, a.id);
-            qaRenderTableForAccount(filtered, a.id);
-            qaUpdateDonutForAccount(filtered, a.id);
-        }} else {{
-            qaUpdateAccountKPIs(filtered, a.id);
-        }}
-        allFiltered=allFiltered.concat(filtered);
+    const pool=qaGetActiveData();
+    const filtered=pool.filter(r=>{{
+        const rDate=(r.ts||'').slice(0,10);
+        return rDate>=startStr&&rDate<=endStr&&
+            (!coach||r.coach===coach)&&
+            (!agent||r.agent===agent)&&
+            (!head||r.supervisor===head);
     }});
-    qaCurrentFiltered=allFiltered;
-    const allScores=allFiltered.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
-    const allAgents=new Set(allFiltered.map(r=>r.agent).filter(Boolean));
-    const allAvg=allScores.length?qaAvg(allScores):null;
-    const allPass=allScores.length?allScores.filter(s=>s>=90).length/allScores.length*100:null;
-    const allBelow=allScores.filter(s=>s<90).length;
-    const allLow=allScores.filter(s=>s>=90&&s<95).length;
+    qaCurrentFiltered=filtered;
+    qaUpdateKPIs(filtered);
+    qaUpdateTrend(filtered);
+    qaRenderCriteria(filtered);
+    qaRenderCoaching(filtered);
+    qaRenderLeaderboard(filtered);
+    qaRenderTable(filtered);
+    qaUpdateDonut(filtered);
+    const scores=filtered.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
+    const agents=new Set(filtered.map(r=>r.agent).filter(Boolean));
+    const avg=scores.length?qaAvg(scores):null;
+    const pass=scores.length?scores.filter(s=>s>=90).length/scores.length*100:null;
+    const below=scores.filter(s=>s<90).length;
+    const low=scores.filter(s=>s>=90&&s<95).length;
     const sset=(id,v)=>{{const el=document.getElementById(id);if(el)el.textContent=v;}};
-    sset('qa-strip-avg',  allAvg?allAvg.toFixed(1)+'%':'—');
-    sset('qa-strip-pass', allPass!==null?allPass.toFixed(1)+'%':'—');
-    sset('qa-strip-evals',allFiltered.length);
-    sset('qa-strip-agents',allAgents.size);
-    sset('qa-strip-below',allBelow);
-    sset('qa-strip-low',  allLow);
+    sset('qa-strip-avg',  avg?avg.toFixed(1)+'%':'—');
+    sset('qa-strip-pass', pass!==null?pass.toFixed(1)+'%':'—');
+    sset('qa-strip-evals',filtered.length);
+    sset('qa-strip-agents',agents.size);
+    sset('qa-strip-below',below);
+    sset('qa-strip-low',  low);
 }}
 
 function qaClearFilters() {{
@@ -4620,66 +4692,6 @@ function qaClearFilters() {{
 }}
 
 // ─── Chart initialization ─────────────────────────────────────────────────────
-function initAccountCharts(aid) {{
-    if(qaCharts[aid]?.trendInit) return;
-    if(!qaCharts[aid]) qaCharts[aid]={{}};
-    qaCharts[aid].trendInit=true;
-
-    const trendLabelPlugin={{
-        id:'trendLabels_'+aid,
-        afterDatasetsDraw(chart){{
-            const ds=chart.data.datasets[0],meta=chart.getDatasetMeta(0),ctx2=chart.ctx;
-            ctx2.save();ctx2.font='700 9px sans-serif';ctx2.fillStyle='#0D3B6E';ctx2.textAlign='center';
-            meta.data.forEach((pt,i)=>{{const v=ds.data[i];if(v!=null)ctx2.fillText(v.toFixed(1)+'%',pt.x,pt.y-8);}});
-            ctx2.restore();
-        }}
-    }};
-    const donutLabelPlugin={{
-        id:'donutLabels_'+aid,
-        afterDatasetsDraw(chart){{
-            const ds=chart.data.datasets[0],meta=chart.getDatasetMeta(0),ctx2=chart.ctx;
-            const total=ds.data.reduce((a,b)=>a+(b||0),0);
-            ctx2.save();ctx2.font='700 9px sans-serif';ctx2.textAlign='center';
-            meta.data.forEach((arc,i)=>{{
-                const v=ds.data[i];if(!v)return;
-                const angle=(arc.startAngle+arc.endAngle)/2,r=(arc.outerRadius+arc.innerRadius)/2;
-                const x=arc.x+Math.cos(angle)*r,y=arc.y+Math.sin(angle)*r;
-                ctx2.fillStyle='#fff';
-                const pct=total?Math.round(v/total*100):0;
-                if(pct>=5)ctx2.fillText(pct+'%',x,y+3);
-            }});
-            ctx2.restore();
-        }}
-    }};
-
-    const trendCtx=document.getElementById(aid+'-trend-chart');
-    if(trendCtx){{
-        qaCharts[aid].trend=new Chart(trendCtx,{{
-            type:'line',
-            plugins:[trendLabelPlugin],
-            data:{{labels:[],datasets:[
-                {{label:'Avg QA Score',data:[],borderColor:'#0D3B6E',backgroundColor:'rgba(13,59,110,0.08)',tension:0.3,fill:true,pointRadius:4,pointHoverRadius:6,pointBackgroundColor:'#0D3B6E'}},
-                {{label:'Target (90%)',data:[],borderColor:'#E85D3F',borderDash:[5,4],borderWidth:1.5,pointRadius:0,fill:false}}
-            ]}},
-            options:{{
-                responsive:true,maintainAspectRatio:false,
-                layout:{{padding:{{top:24,bottom:0}}}},
-                plugins:{{legend:{{display:true,position:'bottom',labels:{{font:{{size:10}},boxWidth:12}}}},tooltip:{{callbacks:{{label:ctx=>ctx.parsed.y.toFixed(1)+'%'}}}}}},
-                scales:{{y:{{min:80,max:100,ticks:{{callback:v=>v+'%',font:{{size:9}}}},grid:{{color:'#F1F5F9'}}}},x:{{ticks:{{font:{{size:9}},maxRotation:30}},grid:{{display:false}}}}}}
-            }}
-        }});
-    }}
-    const donutCtx=document.getElementById(aid+'-donut-chart');
-    if(donutCtx){{
-        qaCharts[aid].donut=new Chart(donutCtx,{{
-            type:'doughnut',
-            plugins:[donutLabelPlugin],
-            data:{{labels:QA_BANDS.map(b=>b.label),datasets:[{{data:[0,0,0,0],backgroundColor:QA_BANDS.map(b=>b.color),borderWidth:2,borderColor:'#fff'}}]}},
-            options:{{responsive:true,maintainAspectRatio:false,cutout:'50%',layout:{{padding:8}},plugins:{{legend:{{display:false}},tooltip:{{callbacks:{{label:ctx=>`${{ctx.label}}: ${{ctx.parsed}}`}}}}}}}}
-        }});
-    }}
-}}
-
 function initQualityCharts() {{
     if(qaChartsInitialized) return;
     qaChartsInitialized=true;
@@ -4701,47 +4713,88 @@ function initQualityCharts() {{
         obs.observe(sentinel);
     }}
 
-    QA_ACCOUNTS.forEach(a=>{{
-        if(qaBlockExpanded[a.id]) initAccountCharts(a.id);
-    }});
+    const trendLabelPlugin={{
+        id:'qaTrendLabels',
+        afterDatasetsDraw(chart){{
+            const ds=chart.data.datasets[0],meta=chart.getDatasetMeta(0),ctx2=chart.ctx;
+            ctx2.save();ctx2.font='700 9px sans-serif';ctx2.fillStyle='#0D3B6E';ctx2.textAlign='center';
+            meta.data.forEach((pt,i)=>{{const v=ds.data[i];if(v!=null)ctx2.fillText(v.toFixed(1)+'%',pt.x,pt.y-8);}});
+            ctx2.restore();
+        }}
+    }};
+    const donutLabelPlugin={{
+        id:'qaDonutLabels',
+        afterDatasetsDraw(chart){{
+            const ds=chart.data.datasets[0],meta=chart.getDatasetMeta(0),ctx2=chart.ctx;
+            const total=ds.data.reduce((a,b)=>a+(b||0),0);
+            ctx2.save();ctx2.font='700 9px sans-serif';ctx2.textAlign='center';
+            meta.data.forEach((arc,i)=>{{
+                const v=ds.data[i];if(!v)return;
+                const angle=(arc.startAngle+arc.endAngle)/2,r=(arc.outerRadius+arc.innerRadius)/2;
+                const x=arc.x+Math.cos(angle)*r,y=arc.y+Math.sin(angle)*r;
+                ctx2.fillStyle='#fff';
+                const pct=total?Math.round(v/total*100):0;
+                if(pct>=5)ctx2.fillText(pct+'%',x,y+3);
+            }});
+            ctx2.restore();
+        }}
+    }};
+
+    const trendCtx=document.getElementById('qa-trend-chart');
+    if(trendCtx){{
+        qaTrendChart=new Chart(trendCtx,{{
+            type:'line',
+            plugins:[trendLabelPlugin],
+            data:{{labels:[],datasets:[
+                {{label:'Avg QA Score',data:[],borderColor:'#0D3B6E',backgroundColor:'rgba(13,59,110,0.08)',tension:0.3,fill:true,pointRadius:4,pointHoverRadius:6,pointBackgroundColor:'#0D3B6E'}},
+                {{label:'Target (90%)',data:[],borderColor:'#E85D3F',borderDash:[5,4],borderWidth:1.5,pointRadius:0,fill:false}}
+            ]}},
+            options:{{
+                responsive:true,maintainAspectRatio:false,
+                layout:{{padding:{{top:24,bottom:0}}}},
+                plugins:{{legend:{{display:true,position:'bottom',labels:{{font:{{size:10}},boxWidth:12}}}},tooltip:{{callbacks:{{label:ctx=>ctx.parsed.y.toFixed(1)+'%'}}}}}},
+                scales:{{y:{{min:80,max:100,ticks:{{callback:v=>v+'%',font:{{size:9}}}},grid:{{color:'#F1F5F9'}}}},x:{{ticks:{{font:{{size:9}},maxRotation:30}},grid:{{display:false}}}}}}
+            }}
+        }});
+    }}
+    const donutCtx=document.getElementById('qa-donut-chart');
+    if(donutCtx){{
+        qaDonutChart=new Chart(donutCtx,{{
+            type:'doughnut',
+            plugins:[donutLabelPlugin],
+            data:{{labels:QA_BANDS.map(b=>b.label),datasets:[{{data:[0,0,0,0],backgroundColor:QA_BANDS.map(b=>b.color),borderWidth:2,borderColor:'#fff'}}]}},
+            options:{{responsive:true,maintainAspectRatio:false,cutout:'50%',layout:{{padding:8}},plugins:{{legend:{{display:false}},tooltip:{{callbacks:{{label:ctx=>`${{ctx.label}}: ${{ctx.parsed}}`}}}}}}}}
+        }});
+    }}
 
     qaPopulateSelects();
     qaUpdateDRPLabel();
     qaApplyFilters();
 }}
 
-function setQAFocusMode(active, aid) {{
-    if(!aid) aid='m7';
+function setQAFocusMode(active) {{
     document.body.classList.toggle('qa-focus-mode',active);
-    const btn=document.getElementById(aid+'-focus-toggle');
+    const btn=document.getElementById('qa-focus-toggle');
     if(btn){{
         btn.setAttribute('aria-label',active?'Collapse table':'Expand table');
         btn.setAttribute('title',active?'Collapse table':'Expand table');
     }}
 }}
 
-function toggleQAFocusMode(aid) {{
-    setQAFocusMode(!document.body.classList.contains('qa-focus-mode'),aid);
+function toggleQAFocusMode() {{
+    setQAFocusMode(!document.body.classList.contains('qa-focus-mode'));
 }}
 
-function downloadQAExcel(aid) {{
-    const acct=QA_ACCOUNTS.find(a=>a.id===aid);
-    const coach=(document.getElementById('qa-sel-coach')?.value||'').trim();
-    const agent=(document.getElementById('qa-sel-agent')?.value||'').trim();
-    const head=(document.getElementById('qa-sel-head')?.value||'').trim();
-    const startStr=qaFmtDate(qaDrpStart), endStr=qaFmtDate(qaDrpEnd);
-    const data=(acct?.data||[]).filter(r=>{{
-        const rDate=(r.ts||'').slice(0,10);
-        return rDate>=startStr&&rDate<=endStr&&(!coach||r.coach===coach)&&(!agent||r.agent===agent)&&(!head||r.supervisor===head);
-    }});
-    const rows=data.map(r=>{{
-        const obj={{'Evaluation Date':(r.ts||'').slice(0,10),'Emp Name':r.agent||'','Immediate Head':r.supervisor||'','QA Coach':r.coach||'','Score':r.score||''}};
+function downloadQAExcel() {{
+    const rows=qaCurrentFiltered.map(r=>{{
+        const obj={{'Evaluation Date':(r.ts||'').slice(0,10),'Emp Name':r.agent||'','Account':r._acct||'','Immediate Head':r.supervisor||'','QA Coach':r.coach||'','Score':r.score||''}};
         QA_CRIT_META.forEach(c=>{{obj[c.name]=r[c.key]||'';}});
         obj['Investigation']=r.invest||'';obj['Feedback Summary']=r.feedback||'';
         return obj;
     }});
     const dateTag=new Date().toISOString().slice(0,10);
-    const fname=`qa_${{aid}}_evaluations_${{dateTag}}`;
+    const acct=(document.getElementById('qa-sel-account')?.value||'all').trim()||'all';
+    const fname=`qa_${{acct}}_evaluations_${{dateTag}}`;
     if(window.XLSX){{
         const ws=XLSX.utils.json_to_sheet(rows);
         ws['!cols']=Object.keys(rows[0]||{{}}).map(k=>({{wch:k==='Feedback Summary'?50:k==='Emp Name'||k==='Immediate Head'?22:Math.max(14,k.length+2)}}));
@@ -4785,8 +4838,7 @@ function switchTab(tabName) {{
         setMasterlistFocusMode(false);
     }}
     if (tabName !== "quality") {{
-        setQAFocusMode(false, 'm7');
-        setQAFocusMode(false, 'parentis');
+        setQAFocusMode(false);
     }}
 
     if (isMasterlist || isCoaching) {{
