@@ -4733,9 +4733,12 @@ function qaApplyFilters() {{
 }}
 
 function qaClearFilters() {{
+    const acctEl=document.getElementById('qa-sel-account');
+    if(acctEl) acctEl.value='';
     ['qa-sel-coach','qa-sel-agent','qa-sel-head'].forEach(id=>{{
         const el=document.getElementById(id);if(el)el.value='';
     }});
+    qaPopulateSelects();
     qaResetDRP();
 }}
 
