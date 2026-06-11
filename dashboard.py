@@ -1204,7 +1204,7 @@ def main():
 
     .topbar {{
         height: 8px;
-        background: linear-gradient(90deg, var(--green), var(--blue));
+        background: linear-gradient(90deg, #1B8A2E, var(--green));
     }}
 
     .sticky-dashboard-header {{
@@ -2237,7 +2237,7 @@ def main():
     #qualityPanel .qa-sum-sub {{ font-size:10px;color:#64748B;margin-top:3px }}
     #qualityPanel .qa-sum-score {{ font-size:11px;font-weight:700;margin-top:3px }}
     /* Grids & cards */
-    #qualityPanel .qa-g3 {{ display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:12px }}
+    #qualityPanel .qa-g3 {{ display:grid;grid-template-columns:1.6fr 1fr 1fr 0.85fr;gap:12px }}
     #qualityPanel .qa-g2 {{ display:grid;grid-template-columns:1.3fr 1fr;gap:12px }}
     #qualityPanel .qa-card {{ background:#fff;border-radius:10px;border:1px solid #E2E8F0;overflow:hidden }}
     #qualityPanel .qa-ch {{ padding:11px 16px;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;justify-content:space-between;gap:8px }}
@@ -2642,6 +2642,15 @@ def main():
       </div>
     </div>
     <div class="qa-card">
+      <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg>Coaching opportunities</div><div class="qa-cs">Criteria below 95% pass rate</div></div><span class="qa-cb qa-cbr" id="qa-coaching-count">&mdash;</span></div>
+      <div class="qa-cbody" style="padding:10px 16px">
+        <div id="qa-coaching-bars"></div>
+        <div style="height:1px;background:#F1F5F9;margin:12px 0"></div>
+        <div style="font-size:10px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.04em;margin-bottom:7px">QA coach breakdown</div>
+        <div style="display:flex;gap:8px" id="qa-coach-breakdown"></div>
+      </div>
+    </div>
+    <div class="qa-card">
       <div class="qa-ch"><div><div class="qa-ct">Score distribution</div><div class="qa-cs" id="qa-donut-sub">All evaluations</div></div></div>
       <div class="qa-cbody" style="padding:10px 14px">
         <div style="position:relative;height:160px"><canvas id="qa-donut-chart"></canvas></div>
@@ -2657,12 +2666,9 @@ def main():
       </div>
     </div>
     <div class="qa-card">
-      <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg>Coaching opportunities</div><div class="qa-cs">Criteria below 95% pass rate</div></div><span class="qa-cb qa-cbr" id="qa-coaching-count">&mdash;</span></div>
-      <div class="qa-cbody" style="padding:10px 16px">
-        <div id="qa-coaching-bars"></div>
-        <div style="height:1px;background:#F1F5F9;margin:12px 0"></div>
-        <div style="font-size:10px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.04em;margin-bottom:7px">QA coach breakdown</div>
-        <div style="display:flex;gap:8px" id="qa-coach-breakdown"></div>
+      <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg>QA Coach leaderboard</div><div class="qa-cs">Ranked by avg score</div></div><span class="qa-cb qa-cbb" id="qa-coach-lb-badge">&mdash;</span></div>
+      <div class="qa-cbody" style="padding:0 16px 8px">
+        <table class="qa-lbt"><thead><tr><th>#</th><th>QA Coach</th><th>Evals</th><th>Avg Score</th><th>Min</th><th>Max</th><th>Pass</th></tr></thead><tbody id="qa-coach-leaderboard"></tbody></table>
       </div>
     </div>
   </div>
@@ -4596,6 +4602,28 @@ function qaRenderLeaderboard(data) {{
     }}).join('')||`<tr><td colspan="8" style="text-align:center;color:#94A3B8;padding:16px">No data</td></tr>`;
 }}
 
+function qaRenderCoachLeaderboard(data) {{
+    const el=document.getElementById('qa-coach-leaderboard');
+    const badge=document.getElementById('qa-coach-lb-badge');
+    if(!el) return;
+    const byCoach={{}};
+    data.forEach(r=>{{
+        if(!r.coach) return;
+        const s=Number(r.score);if(isNaN(s)||s<=0)return;
+        if(!byCoach[r.coach])byCoach[r.coach]={{scores:[]}};
+        byCoach[r.coach].scores.push(s);
+    }});
+    const coaches=Object.entries(byCoach).map(([name,d])=>{{
+        const avg=qaAvg(d.scores), pass=d.scores.filter(s=>s>=90).length;
+        return{{name,avg,min:Math.min(...d.scores),max:Math.max(...d.scores),pass,passRate:d.scores.length?pass/d.scores.length*100:0,n:d.scores.length}};
+    }}).sort((a,b)=>b.avg-a.avg);
+    if(badge)badge.textContent=coaches.length+' coaches';
+    el.innerHTML=coaches.map((c,i)=>{{
+        const chipCls=qaChipCls(c.avg);
+        return`<tr><td style="font-size:11px;color:#94A3B8">${{i+1}}</td><td style="font-weight:600;font-size:11px">${{qaEscapeHtml(c.name)}}</td><td style="text-align:center">${{c.n}}</td><td><span class="qa-chip ${{chipCls}}">${{c.avg.toFixed(1)}}%</span></td><td style="text-align:center;font-size:11px">${{c.min.toFixed(1)}}%</td><td style="text-align:center;font-size:11px">${{c.max.toFixed(1)}}%</td><td style="text-align:center;color:${{c.passRate>=90?'#0F9B58':'#E85D3F'}};font-size:11px">${{c.passRate.toFixed(0)}}%</td></tr>`;
+    }}).join('')||`<tr><td colspan="7" style="text-align:center;color:#94A3B8;padding:16px">No data</td></tr>`;
+}}
+
 function qaRenderTable(data) {{
     const el=document.getElementById('qa-detail-table');
     const count=document.getElementById('qa-tbl-count');
@@ -4667,6 +4695,7 @@ function qaApplyFilters() {{
     qaRenderCriteria(filtered);
     qaRenderCoaching(filtered);
     qaRenderLeaderboard(filtered);
+    qaRenderCoachLeaderboard(filtered);
     qaRenderTable(filtered);
     qaUpdateDonut(filtered);
     const scores=filtered.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
