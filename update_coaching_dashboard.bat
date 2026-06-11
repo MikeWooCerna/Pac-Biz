@@ -3,6 +3,7 @@ setlocal
 
 set "COACHING_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Coaching"
 set "M7_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\M7"
+set "PARENTIS_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Parentis Health"
 set "MASTERLIST_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Masterlist"
 
 echo.
@@ -23,6 +24,16 @@ cd /d "%M7_DIR%"
 if errorlevel 1 goto :fail
 
 py -3 m7_pull.py
+if errorlevel 1 goto :fail
+
+echo.
+echo ========================================
+echo Updating Parentis Health QA data from Google Sheets
+echo ========================================
+cd /d "%PARENTIS_DIR%"
+if errorlevel 1 goto :fail
+
+py -3 parentis_pull.py
 if errorlevel 1 goto :fail
 
 echo.
