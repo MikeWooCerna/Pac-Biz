@@ -2157,6 +2157,9 @@ def main():
     #qualityPanel .qa-fsel.hl {{ border-color:#0D3B6E;background-color:#EFF6FF;color:#0D3B6E;font-weight:700 }}
     #qualityPanel .qa-fdiv {{ width:1px;height:34px;background:#E2E8F0;align-self:flex-end }}
     #qualityPanel .qa-btn-clear {{ height:34px;padding:0 16px;font-size:12px;border:1px solid #E85D3F;border-radius:7px;background:#fff;color:#E85D3F;cursor:pointer;font-weight:600;align-self:flex-end }}
+    #qualityPanel .qa-filter-bar .qa-bar-info {{ margin-left:auto;display:flex;align-items:center;gap:6px;flex-shrink:0 }}
+    #qualityPanel .qa-info-pill {{ font-size:10px;font-weight:700;color:#0F9B58;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:5px;padding:3px 9px;white-space:nowrap }}
+    #qualityPanel .qa-coach-lbt thead tr th {{ background:#00A651;color:#fff;font-weight:700 }}
     /* Date range picker */
     #qualityPanel .qa-date-range-wrap {{ position:relative }}
     #qualityPanel .qa-date-range-btn {{ height:34px;padding:0 12px;font-size:12px;border:1px solid #CBD5E1;border-radius:7px;background:#fff;color:#374151;cursor:pointer;font-weight:500;display:flex;align-items:center;gap:7px;white-space:nowrap;min-width:210px }}
@@ -2581,6 +2584,10 @@ def main():
   </div>
   <div class="qa-fdiv"></div>
   <button class="qa-btn-clear" onclick="qaClearFilters()">&times; Clear</button>
+  <div class="qa-bar-info">
+    <span class="qa-info-pill" id="qa-pill-qa-accounts">2 QA Accounts Loaded</span>
+    <span class="qa-info-pill" id="qa-pill-total-accounts">&mdash; Accounts</span>
+  </div>
 </div>
 
 <!-- Compact KPI strip (appears on scroll) -->
@@ -2668,7 +2675,7 @@ def main():
     <div class="qa-card">
       <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg>QA Coach leaderboard</div><div class="qa-cs">Ranked by avg score</div></div><span class="qa-cb qa-cbb" id="qa-coach-lb-badge">&mdash;</span></div>
       <div class="qa-cbody" style="padding:0 16px 8px">
-        <table class="qa-lbt"><thead><tr><th>#</th><th>QA Coach</th><th>Evals</th><th>Avg Score</th><th>Min</th><th>Max</th><th>Pass</th></tr></thead><tbody id="qa-coach-leaderboard"></tbody></table>
+        <table class="qa-lbt qa-coach-lbt"><thead><tr><th>#</th><th>QA Coach</th><th>Evals</th><th>Avg Score</th><th>Min</th><th>Max</th><th>Pass</th></tr></thead><tbody id="qa-coach-leaderboard"></tbody></table>
       </div>
     </div>
   </div>
@@ -4798,6 +4805,17 @@ function initQualityCharts() {{
 
     qaPopulateSelects();
     qaUpdateDRPLabel();
+
+    // Info pills
+    const qaAcctsLoaded=[qaRawData,parentisRawData].filter(d=>d.length>0).length;
+    const qaPillAccts=document.getElementById('qa-pill-qa-accounts');
+    if(qaPillAccts)qaPillAccts.textContent=qaAcctsLoaded+' QA Account'+(qaAcctsLoaded===1?'':'s')+' Loaded';
+    const qaPillTotal=document.getElementById('qa-pill-total-accounts');
+    if(qaPillTotal){{
+        const n=Number(document.getElementById('approvedAccounts')?.textContent)||0;
+        if(n>0)qaPillTotal.textContent=n+' Accounts';
+    }}
+
     qaApplyFilters();
 }}
 
