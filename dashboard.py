@@ -2150,6 +2150,9 @@ def main():
 
     /* ── Quality tab ── */
     #qualityPanel {{ background:#F1F5F9;padding:0 }}
+    #qualityPanel .qa-sticky-ctrl {{ position:sticky;top:var(--qa-stick-top,112px);z-index:90;background:#fff;border-bottom:2px solid transparent;transition:box-shadow .2s,border-color .2s }}
+    #qualityPanel .qa-sticky-ctrl.scrolled {{ box-shadow:0 4px 16px rgba(0,0,0,.10);border-bottom-color:#E2E8F0 }}
+    #qualityPanel .qa-sticky-ctrl .qa-section-head {{ padding:8px 20px 10px;border-top:1px solid #F1F5F9 }}
     #qualityPanel .qa-filter-bar {{ background:#fff;border-bottom:1px solid #E2E8F0;padding:8px 20px;display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap }}
     #qualityPanel .qa-fg {{ display:flex;flex-direction:column;gap:3px }}
     #qualityPanel .qa-fg label {{ font-size:10px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.06em }}
@@ -2527,6 +2530,7 @@ def main():
 
 <div class="tab-panel" id="qualityPanel" data-tab="quality" role="tabpanel">
 
+<div class="qa-sticky-ctrl" id="qa-sticky-ctrl">
 <!-- Filter bar -->
 <div class="qa-filter-bar">
   <div class="qa-fg">
@@ -2590,6 +2594,20 @@ def main():
   </div>
 </div>
 
+<div class="qa-section-head">
+  <div>
+    <div class="qa-sh-title" id="qa-sh-title">All Accounts &mdash; Quality Assurance</div>
+    <div class="qa-sh-sub" id="qa-view-sub">&mdash;</div>
+  </div>
+  <div class="qa-badges">
+    <span class="qa-badge qa-b-amber" id="qa-badge-account">All Accounts</span>
+    <span class="qa-badge qa-b-green" id="qa-badge-agents">&mdash; Agents</span>
+    <span class="qa-badge qa-b-teal" id="qa-badge-evals">&mdash; Evaluations</span>
+    <span class="qa-badge qa-b-amber">Pass threshold: 90%</span>
+  </div>
+</div>
+</div><!-- /qa-sticky-ctrl -->
+
 <!-- Compact KPI strip (appears on scroll) -->
 <div class="qa-kpi-strip" id="qa-kpi-strip">
   <div class="qa-kpi-strip-items">
@@ -2610,18 +2628,6 @@ def main():
 <div id="qa-kpi-sentinel"></div>
 
 <div class="qa-page" id="qa-shared-page">
-  <div class="qa-section-head">
-    <div>
-      <div class="qa-sh-title" id="qa-sh-title">All Accounts &mdash; Quality Assurance</div>
-      <div class="qa-sh-sub" id="qa-view-sub">&mdash;</div>
-    </div>
-    <div class="qa-badges">
-      <span class="qa-badge qa-b-amber" id="qa-badge-account">All Accounts</span>
-      <span class="qa-badge qa-b-green" id="qa-badge-agents">&mdash; Agents</span>
-      <span class="qa-badge qa-b-teal" id="qa-badge-evals">&mdash; Evaluations</span>
-      <span class="qa-badge qa-b-amber">Pass threshold: 90%</span>
-    </div>
-  </div>
   <div class="qa-kpi-row">
     <div class="qa-kpi qa-knavy"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg></div><div class="qa-kpi-lbl">Avg QA Score</div></div><div class="qa-kpi-val" id="qa-kpi-avg">&mdash;</div><div class="qa-kpi-d qa-dn" id="qa-kpi-avg-sub">&mdash;</div></div>
     <div class="qa-kpi qa-kgreen"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><div class="qa-kpi-lbl">Pass Rate</div></div><div class="qa-kpi-val" id="qa-kpi-pass">&mdash;</div><div class="qa-kpi-d qa-du" id="qa-kpi-pass-sub">&mdash;</div></div>
@@ -4740,11 +4746,23 @@ function initQualityCharts() {{
         if(wrap&&!wrap.contains(e.target)) qaCloseDatePicker();
     }});
 
+    // measure main header and set sticky top offset
+    const mainHdr=document.querySelector('.sticky-dashboard-header');
+    if(mainHdr){{
+        const panel=document.getElementById('qualityPanel');
+        if(panel) panel.style.setProperty('--qa-stick-top', mainHdr.offsetHeight+'px');
+    }}
+
     const sentinel=document.getElementById('qa-kpi-sentinel');
     if(sentinel){{
         const strip=document.getElementById('qa-kpi-strip');
+        const stickyCtrl=document.getElementById('qa-sticky-ctrl');
         const obs=new IntersectionObserver(entries=>{{
-            entries.forEach(en=>{{if(strip)strip.classList.toggle('visible',!en.isIntersecting);}});
+            entries.forEach(en=>{{
+                const off=!en.isIntersecting;
+                if(strip) strip.classList.toggle('visible',off);
+                if(stickyCtrl) stickyCtrl.classList.toggle('scrolled',off);
+            }});
         }},{{threshold:0}});
         obs.observe(sentinel);
     }}
