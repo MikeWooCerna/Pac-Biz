@@ -1090,7 +1090,7 @@ def _qa_block_html(aid, display_name, live_banner_name, badge_label, badge_cls, 
         <div class="qa-card">
           <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>Agent leaderboard</div><div class="qa-cs">Ranked by avg score</div></div><span class="qa-cb qa-cbb" id="{aid}-lb-badge">&mdash;</span></div>
           <div class="qa-cbody" style="padding:0 16px 8px">
-            <table class="qa-lbt"><thead><tr><th>#</th><th>Agent</th><th>Evals</th><th>Avg</th><th>Min</th><th>Max</th><th>Pass</th></tr></thead><tbody id="{aid}-leaderboard"></tbody></table>
+            <table class="qa-lbt"><thead><tr><th>#</th><th>Agent</th><th>Evals</th><th>Avg</th><th>Min</th><th>Max</th><th>Comp Score</th></tr></thead><tbody id="{aid}-leaderboard"></tbody></table>
           </div>
         </div>
         <div class="qa-card">
@@ -2681,13 +2681,13 @@ def main():
     <div class="qa-card">
       <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>Agent leaderboard</div><div class="qa-cs">Ranked by avg score</div></div><span class="qa-cb qa-cbb" id="qa-lb-badge">&mdash;</span></div>
       <div class="qa-cbody" style="padding:0 16px 8px">
-        <table class="qa-lbt"><thead><tr><th>#</th><th>Agent</th><th>Evals</th><th>Avg</th><th>Min</th><th>Max</th><th>Pass</th><th>Account</th></tr></thead><tbody id="qa-leaderboard"></tbody></table>
+        <table class="qa-lbt"><thead><tr><th>#</th><th>Agent</th><th>Evals</th><th>Avg</th><th>Min</th><th>Max</th><th>Comp Score</th><th>Account</th></tr></thead><tbody id="qa-leaderboard"></tbody></table>
       </div>
     </div>
     <div class="qa-card">
       <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg>QA Coach leaderboard</div><div class="qa-cs">Ranked by avg score</div></div><span class="qa-cb qa-cbb" id="qa-coach-lb-badge">&mdash;</span></div>
       <div class="qa-cbody" style="padding:0 16px 8px">
-        <table class="qa-lbt qa-coach-lbt"><thead><tr><th>#</th><th>QA Coach</th><th>Evals</th><th>Avg Score</th><th>Min</th><th>Max</th><th>Pass</th></tr></thead><tbody id="qa-coach-leaderboard"></tbody></table>
+        <table class="qa-lbt qa-coach-lbt"><thead><tr><th>#</th><th>QA Coach</th><th>Evals</th><th>Avg Score</th><th>Min</th><th>Max</th><th>Comp Score</th></tr></thead><tbody id="qa-coach-leaderboard"></tbody></table>
       </div>
     </div>
   </div>
