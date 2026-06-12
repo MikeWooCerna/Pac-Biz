@@ -1033,8 +1033,8 @@ def _qa_block_html(aid, display_name, live_banner_name, badge_label, badge_cls, 
     </div>
     <div class="qa-acct-hdr-stats" id="{aid}-hdr-stats">
       <div class="qa-acct-stat"><span class="qa-acct-stat-l">Avg Score</span><span class="qa-acct-stat-v" id="{aid}-hdr-avg">&mdash;</span></div>
-      <div class="qa-acct-stat"><span class="qa-acct-stat-l">Pass Rate</span><span class="qa-acct-stat-v" id="{aid}-hdr-pass">&mdash;</span></div>
-      <div class="qa-acct-stat"><span class="qa-acct-stat-l">Below 90%</span><span class="qa-acct-stat-v" id="{aid}-hdr-below" style="color:#FCA5A5">&mdash;</span></div>
+      <div class="qa-acct-stat"><span class="qa-acct-stat-l">Compliance Score</span><span class="qa-acct-stat-v" id="{aid}-hdr-pass">&mdash;</span></div>
+      <div class="qa-acct-stat"><span class="qa-acct-stat-l">Below 85%</span><span class="qa-acct-stat-v" id="{aid}-hdr-below" style="color:#FCA5A5">&mdash;</span></div>
     </div>
     <button class="qa-acct-chevron" type="button" id="{aid}-chevron">{chevron}</button>
   </div>
@@ -1054,15 +1054,15 @@ def _qa_block_html(aid, display_name, live_banner_name, badge_label, badge_cls, 
       </div>
       <div class="qa-kpi-row">
         <div class="qa-kpi qa-knavy"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg></div><div class="qa-kpi-lbl">Avg QA Score</div></div><div class="qa-kpi-val" id="{aid}-kpi-avg">&mdash;</div><div class="qa-kpi-d qa-dn" id="{aid}-kpi-avg-sub">&mdash;</div></div>
-        <div class="qa-kpi qa-kgreen"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><div class="qa-kpi-lbl">Pass Rate</div></div><div class="qa-kpi-val" id="{aid}-kpi-pass">&mdash;</div><div class="qa-kpi-d qa-du" id="{aid}-kpi-pass-sub">&mdash;</div></div>
+        <div class="qa-kpi qa-kgreen"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><div class="qa-kpi-lbl">Compliance Score</div></div><div class="qa-kpi-val" id="{aid}-kpi-pass">&mdash;</div><div class="qa-kpi-d qa-du" id="{aid}-kpi-pass-sub">&mdash;</div></div>
         <div class="qa-kpi qa-kteal"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#0F766E" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></div><div class="qa-kpi-lbl">Total Evaluations</div></div><div class="qa-kpi-val" id="{aid}-kpi-evals">&mdash;</div><div class="qa-kpi-d qa-dn" id="{aid}-kpi-evals-sub">&mdash;</div></div>
         <div class="qa-kpi qa-kpurple"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#6D28D9" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg></div><div class="qa-kpi-lbl">Total Agents</div></div><div class="qa-kpi-val" id="{aid}-kpi-agents">&mdash;</div><div class="qa-kpi-d qa-dn">Evaluated this period</div></div>
         <div class="qa-kpi qa-kamber"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg></div><div class="qa-kpi-lbl">Lowest Score</div></div><div class="qa-kpi-val" id="{aid}-kpi-low">&mdash;</div><div class="qa-kpi-d qa-dd" id="{aid}-kpi-low-sub">&mdash;</div></div>
-        <div class="qa-kpi qa-kcoral"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="qa-kpi-lbl">Below 90%</div></div><div class="qa-kpi-val" id="{aid}-kpi-below">&mdash;</div><div class="qa-kpi-d qa-dd" id="{aid}-kpi-below-sub">&mdash;</div></div>
+        <div class="qa-kpi qa-kcoral"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="qa-kpi-lbl">Below 85%</div></div><div class="qa-kpi-val" id="{aid}-kpi-below">&mdash;</div><div class="qa-kpi-d qa-dd" id="{aid}-kpi-below-sub">&mdash;</div></div>
       </div>
       <div class="qa-sum-strip">
         <div class="qa-sum-card" style="border-top:3px solid #0F9B58"><div class="qa-sum-lbl">Avg QA score</div><div class="qa-sum-val" id="{aid}-sum-avg" style="color:#0F9B58">&mdash;</div><div class="qa-sum-sub">All evaluations in range</div><div class="qa-sum-score" id="{aid}-sum-avg-note" style="color:#0F9B58">&mdash;</div></div>
-        <div class="qa-sum-card" style="border-top:3px solid #0891B2"><div class="qa-sum-lbl">Pass rate</div><div class="qa-sum-val" id="{aid}-sum-pass" style="color:#0891B2">&mdash;</div><div class="qa-sum-sub" id="{aid}-sum-pass-sub">&mdash;</div><div class="qa-sum-score" style="color:#0F9B58">Pass threshold: {threshold}%</div></div>
+        <div class="qa-sum-card" style="border-top:3px solid #0891B2"><div class="qa-sum-lbl">Compliance Score</div><div class="qa-sum-val" id="{aid}-sum-pass" style="color:#0891B2">&mdash;</div><div class="qa-sum-sub" id="{aid}-sum-pass-sub">&mdash;</div><div class="qa-sum-score" style="color:#0F9B58">Pass threshold: {threshold}%</div></div>
         <div class="qa-sum-card" style="border-top:3px solid #0D3B6E"><div class="qa-sum-lbl">Top performer</div><div class="qa-sum-val" id="{aid}-sum-top" style="color:#0D3B6E;font-size:15px">&mdash;</div><div class="qa-sum-sub" id="{aid}-sum-top-sub">&mdash;</div><div class="qa-sum-score" id="{aid}-sum-top-pass" style="color:#0F9B58">&mdash;</div></div>
         <div class="qa-sum-card" style="border-top:3px solid #F59E0B"><div class="qa-sum-lbl">Needs attention</div><div class="qa-sum-val" id="{aid}-sum-attn" style="color:#0D3B6E;font-size:15px">&mdash;</div><div class="qa-sum-sub" id="{aid}-sum-attn-sub">&mdash;</div><div class="qa-sum-score" style="color:#E85D3F">Coaching recommended</div></div>
       </div>
@@ -2609,20 +2609,20 @@ def main():
     <span class="qa-badge qa-b-amber" id="qa-badge-account">All Accounts</span>
     <span class="qa-badge qa-b-green" id="qa-badge-agents">&mdash; Agents</span>
     <span class="qa-badge qa-b-teal" id="qa-badge-evals">&mdash; Evaluations</span>
-    <span class="qa-badge qa-b-amber">Pass threshold: 90%</span>
+    <span class="qa-badge qa-b-amber">Pass threshold: 85%</span>
   </div>
 </div>
   <div class="qa-kpi-row">
     <div class="qa-kpi qa-knavy"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg></div><div class="qa-kpi-lbl">Avg QA Score</div></div><div class="qa-kpi-val" id="qa-kpi-avg">&mdash;</div><div class="qa-kpi-d qa-dn" id="qa-kpi-avg-sub">&mdash;</div></div>
-    <div class="qa-kpi qa-kgreen"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><div class="qa-kpi-lbl">Pass Rate</div></div><div class="qa-kpi-val" id="qa-kpi-pass">&mdash;</div><div class="qa-kpi-d qa-du" id="qa-kpi-pass-sub">&mdash;</div></div>
+    <div class="qa-kpi qa-kgreen"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><div class="qa-kpi-lbl">Compliance Score</div></div><div class="qa-kpi-val" id="qa-kpi-pass">&mdash;</div><div class="qa-kpi-d qa-du" id="qa-kpi-pass-sub">&mdash;</div></div>
     <div class="qa-kpi qa-kteal"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#0F766E" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg></div><div class="qa-kpi-lbl">Total Evaluations</div></div><div class="qa-kpi-val" id="qa-kpi-evals">&mdash;</div><div class="qa-kpi-d qa-dn" id="qa-kpi-evals-sub">&mdash;</div></div>
     <div class="qa-kpi qa-kpurple"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#6D28D9" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg></div><div class="qa-kpi-lbl">Total Agents</div></div><div class="qa-kpi-val" id="qa-kpi-agents">&mdash;</div><div class="qa-kpi-d qa-dn">Evaluated this period</div></div>
     <div class="qa-kpi qa-kamber"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg></div><div class="qa-kpi-lbl">Lowest Score</div></div><div class="qa-kpi-val" id="qa-kpi-low">&mdash;</div><div class="qa-kpi-d qa-dd" id="qa-kpi-low-sub">&mdash;</div></div>
-    <div class="qa-kpi qa-kcoral"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="qa-kpi-lbl">Below 90%</div></div><div class="qa-kpi-val" id="qa-kpi-below">&mdash;</div><div class="qa-kpi-d qa-dd" id="qa-kpi-below-sub">&mdash;</div></div>
+    <div class="qa-kpi qa-kcoral"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="qa-kpi-lbl">Below 85%</div></div><div class="qa-kpi-val" id="qa-kpi-below">&mdash;</div><div class="qa-kpi-d qa-dd" id="qa-kpi-below-sub">&mdash;</div></div>
   </div>
   <div class="qa-sum-strip">
     <div class="qa-sum-card" style="border-top:3px solid #0F9B58"><div class="qa-sum-lbl">Avg QA score</div><div class="qa-sum-val" id="qa-sum-avg" style="color:#0F9B58">&mdash;</div><div class="qa-sum-sub">All evaluations in range</div><div class="qa-sum-score" id="qa-sum-avg-note" style="color:#0F9B58">&mdash;</div></div>
-    <div class="qa-sum-card" style="border-top:3px solid #0891B2"><div class="qa-sum-lbl">Pass rate</div><div class="qa-sum-val" id="qa-sum-pass" style="color:#0891B2">&mdash;</div><div class="qa-sum-sub" id="qa-sum-pass-sub">&mdash;</div><div class="qa-sum-score" style="color:#0F9B58">Pass threshold: 90%</div></div>
+    <div class="qa-sum-card" style="border-top:3px solid #0891B2"><div class="qa-sum-lbl">Compliance Score</div><div class="qa-sum-val" id="qa-sum-pass" style="color:#0891B2">&mdash;</div><div class="qa-sum-sub" id="qa-sum-pass-sub">&mdash;</div><div class="qa-sum-score" style="color:#0F9B58">Pass threshold: 85%</div></div>
     <div class="qa-sum-card" style="border-top:3px solid #0D3B6E"><div class="qa-sum-lbl">Top performer</div><div class="qa-sum-val" id="qa-sum-top" style="color:#0D3B6E;font-size:15px">&mdash;</div><div class="qa-sum-sub" id="qa-sum-top-sub">&mdash;</div><div class="qa-sum-score" id="qa-sum-top-pass" style="color:#0F9B58">&mdash;</div></div>
     <div class="qa-sum-card" style="border-top:3px solid #F59E0B"><div class="qa-sum-lbl">Needs attention</div><div class="qa-sum-val" id="qa-sum-attn" style="color:#0D3B6E;font-size:15px">&mdash;</div><div class="qa-sum-sub" id="qa-sum-attn-sub">&mdash;</div><div class="qa-sum-score" style="color:#E85D3F">Coaching recommended</div></div>
   </div>
@@ -2633,13 +2633,13 @@ def main():
   <div class="qa-kpi-strip-items">
     <div class="qa-kpi-strip-item"><span class="qa-kpi-strip-label">Avg score</span><span class="qa-kpi-strip-val" id="qa-strip-avg">&mdash;</span></div>
     <div class="qa-kpi-strip-sep"></div>
-    <div class="qa-kpi-strip-item"><span class="qa-kpi-strip-label">Pass rate</span><span class="qa-kpi-strip-val" id="qa-strip-pass">&mdash;</span></div>
+    <div class="qa-kpi-strip-item"><span class="qa-kpi-strip-label">Compliance Score</span><span class="qa-kpi-strip-val" id="qa-strip-pass">&mdash;</span></div>
     <div class="qa-kpi-strip-sep"></div>
     <div class="qa-kpi-strip-item"><span class="qa-kpi-strip-label">Evals</span><span class="qa-kpi-strip-val" id="qa-strip-evals">&mdash;</span></div>
     <div class="qa-kpi-strip-sep"></div>
     <div class="qa-kpi-strip-item"><span class="qa-kpi-strip-label">Agents</span><span class="qa-kpi-strip-val" id="qa-strip-agents">&mdash;</span></div>
     <div class="qa-kpi-strip-sep"></div>
-    <div class="qa-kpi-strip-item"><span class="qa-kpi-strip-label">Below 90%</span><span class="qa-kpi-strip-val" id="qa-strip-below" style="color:#FCA5A5">&mdash;</span></div>
+    <div class="qa-kpi-strip-item"><span class="qa-kpi-strip-label">Below 85%</span><span class="qa-kpi-strip-val" id="qa-strip-below" style="color:#FCA5A5">&mdash;</span></div>
     <div class="qa-kpi-strip-sep"></div>
     <div class="qa-kpi-strip-item"><span class="qa-kpi-strip-label">Lowest</span><span class="qa-kpi-strip-val" id="qa-strip-low" style="color:#FCD34D">&mdash;</span></div>
   </div>
@@ -2650,7 +2650,7 @@ def main():
 <div class="qa-page" id="qa-shared-page">
   <div class="qa-g3">
     <div class="qa-card">
-      <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>QA Score Trend</div><div class="qa-cs" id="qa-trend-sub">Weekly avg (Mon&ndash;Sun) &middot; Target: 90%</div></div><span class="qa-cb qa-cbg" id="qa-trend-badge">&mdash;</span></div>
+      <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>QA Score Trend</div><div class="qa-cs" id="qa-trend-sub">Weekly avg (Mon&ndash;Sun) &middot; Target: 85%</div></div><span class="qa-cb qa-cbg" id="qa-trend-badge">&mdash;</span></div>
       <div class="qa-cbody" style="padding:10px 14px"><div style="position:relative;height:160px"><canvas id="qa-trend-chart"></canvas></div></div>
     </div>
     <div class="qa-card">
@@ -4250,8 +4250,8 @@ const QA_AV = {{
 const QA_BANDS = [
     {{label:"100%",     min:100, max:100, color:"#0F9B58"}},
     {{label:"95–99%",  min:95,  max:99,  color:"#0891B2"}},
-    {{label:"90–94%",  min:90,  max:94,  color:"#F59E0B"}},
-    {{label:"Below 90%",min:0,   max:89,  color:"#E85D3F"}},
+    {{label:"85–94%",  min:85,  max:94,  color:"#F59E0B"}},
+    {{label:"Below 85%",min:0,   max:84,  color:"#E85D3F"}},
 ];
 
 const QA_MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -4271,7 +4271,7 @@ function qaFmtDisplay(d) {{
     return QA_MONTHS_S[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
 }}
 function qaChipCls(s) {{
-    return s>=95?'qa-cg':s>=90?'qa-cam':'qa-crr';
+    return s>=95?'qa-cg':s>=85?'qa-cam':'qa-crr';
 }}
 function qaYN(v) {{
     if (v==='Yes') return '<span style="color:#0F9B58;font-weight:600">✓</span>';
@@ -4497,9 +4497,9 @@ function qaUpdateKPIs(data) {{
     const n=data.length;
     const agents=new Set(data.map(r=>r.agent).filter(Boolean));
     const avg=scores.length?qaAvg(scores):null;
-    const passCount=scores.filter(s=>s>=90).length;
+    const passCount=scores.filter(s=>s>=85).length;
     const passRate=scores.length?passCount/scores.length*100:null;
-    const belowCount=scores.filter(s=>s<90).length;
+    const belowCount=scores.filter(s=>s<85).length;
     const minScore=scores.length?Math.min(...scores):null;
     const set=(id,v)=>{{const el=document.getElementById(id);if(el)el.textContent=v;}};
     set('qa-kpi-avg',    avg?avg.toFixed(1)+'%':'—');
@@ -4508,11 +4508,11 @@ function qaUpdateKPIs(data) {{
     set('qa-kpi-agents', agents.size);
     set('qa-kpi-low',    minScore!==null?minScore.toFixed(0)+'%':'—');
     set('qa-kpi-below',  belowCount);
-    set('qa-kpi-avg-sub',  avg!==null?(avg>=90?'✔ Above threshold':'⚠ Below target'):'—');
-    set('qa-kpi-pass-sub', passCount+' of '+n+' pass');
+    set('qa-kpi-avg-sub',  avg!==null?(avg>=85?'✔ Above threshold':'⚠ Below target'):'—');
+    set('qa-kpi-pass-sub', passCount+' of '+n+' compliant');
     set('qa-kpi-evals-sub',agents.size+' agent'+(agents.size===1?'':'s'));
-    set('qa-kpi-low-sub',  minScore!==null?(minScore<90?'⚠ Below threshold':'Within range'):'—');
-    set('qa-kpi-below-sub',belowCount?belowCount+' eval'+(belowCount===1?'':'s')+' below 90%':'None below 90%');
+    set('qa-kpi-low-sub',  minScore!==null?(minScore<85?'⚠ Below threshold':'Within range'):'—');
+    set('qa-kpi-below-sub',belowCount?belowCount+' eval'+(belowCount===1?'':'s')+' below 85%':'None below 85%');
     const agBadge=document.getElementById('qa-badge-agents');
     if(agBadge) agBadge.textContent=agents.size+' Agents';
     const evBadge=document.getElementById('qa-badge-evals');
@@ -4531,7 +4531,7 @@ function qaUpdateKPIs(data) {{
     const agentArr=Object.entries(byAgent).map(([name,d])=>{{return {{name,avg:qaAvg(d.scores),n:d.scores.length}};}})
         .filter(a=>a.n>0).sort((a,b)=>b.avg-a.avg);
     set('qa-sum-avg',      avg?avg.toFixed(1)+'%':'—');
-    set('qa-sum-avg-note', avg!==null?(avg>=90?'✓ Above 90% threshold':'⚠ Below target'):'—');
+    set('qa-sum-avg-note', avg!==null?(avg>=85?'✓ Above 85% threshold':'⚠ Below target'):'—');
     set('qa-sum-pass',     passRate!==null?passRate.toFixed(1)+'%':'—');
     set('qa-sum-pass-sub', passCount+' of '+n+' evaluations');
     set('qa-sum-top',      agentArr[0]?.name||'—');
@@ -4546,7 +4546,7 @@ function qaUpdateKPIs(data) {{
 function qaUpdateTrend(data) {{
     if(!qaTrendChart) return;
     const trend=qaBuildTrend(data);
-    const labels=trend.map(t=>t.week), avgs=trend.map(t=>t.avg), target=labels.map(()=>90);
+    const labels=trend.map(t=>t.week), avgs=trend.map(t=>t.avg), target=labels.map(()=>85);
     qaTrendChart.data.labels=labels;
     qaTrendChart.data.datasets[0].data=avgs;
     qaTrendChart.data.datasets[1].data=target;
@@ -4567,7 +4567,7 @@ function qaRenderCriteria(data) {{
     }});
     el.innerHTML=stats.map(c=>{{
         if(c.na)return`<div style="margin-bottom:7px"><div style="display:flex;justify-content:space-between;font-size:10px;color:#475569;margin-bottom:2px"><span>${{qaEscapeHtml(c.name)}}</span><span style="color:#94A3B8">N/A</span></div><div style="height:5px;background:#F1F5F9;border-radius:3px"></div></div>`;
-        const color=c.pct>=95?'#0F9B58':c.pct>=90?'#F59E0B':'#E85D3F';
+        const color=c.pct>=95?'#0F9B58':c.pct>=85?'#F59E0B':'#E85D3F';
         return`<div style="margin-bottom:7px"><div style="display:flex;justify-content:space-between;font-size:10px;color:#475569;margin-bottom:2px"><span>${{qaEscapeHtml(c.name)}}</span><span style="font-weight:700;color:${{color}}">${{c.pct}}%</span></div><div style="height:5px;background:#F1F5F9;border-radius:3px;overflow:hidden"><div style="height:100%;width:${{c.pct}}%;background:${{color}};border-radius:3px;transition:width .4s"></div></div></div>`;
     }}).join('');
     const sub=document.getElementById('qa-crit-sub');
@@ -4582,7 +4582,7 @@ function qaRenderCoaching(data) {{
     const stats=qaComputeCriteria(data).filter(c=>c.pct!==null&&c.pct<95).sort((a,b)=>a.pct-b.pct);
     if(cntEl)cntEl.textContent=stats.length?stats.length+' criteria':'All clear';
     barsEl.innerHTML=stats.length?stats.map(c=>{{
-        const color=c.pct>=90?'#F59E0B':'#E85D3F';
+        const color=c.pct>=85?'#F59E0B':'#E85D3F';
         return`<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:11px;color:#1E293B;margin-bottom:3px"><span>${{qaEscapeHtml(c.name)}}</span><span style="font-weight:700;color:${{color}}">${{c.pct}}%</span></div><div style="height:6px;background:#F1F5F9;border-radius:3px;overflow:hidden"><div style="height:100%;width:${{c.pct}}%;background:${{color}};border-radius:3px"></div></div></div>`;
     }}).join(''):`<div style="text-align:center;padding:16px;color:#0F9B58;font-size:12px">✓ All criteria above 95% — great job!</div>`;
     if(bdEl){{
@@ -4606,7 +4606,7 @@ function qaRenderLeaderboard(data) {{
         byAgent[r.agent].scores.push(s);
     }});
     const agents=Object.entries(byAgent).map(([name,d])=>{{
-        const avg=qaAvg(d.scores), pass=d.scores.filter(s=>s>=90).length;
+        const avg=qaAvg(d.scores), pass=d.scores.filter(s=>s>=85).length;
         const words=name.split(' ').slice(0,2).join(' ');
         const av=QA_AV[name]||{{bg:'#F1F5F9',tc:'#475569',ini:name.split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase()}};
         return{{name,words,av,avg,min:Math.min(...d.scores),max:Math.max(...d.scores),pass,passRate:d.scores.length?pass/d.scores.length*100:0,n:d.scores.length,acct:d.acct}};
@@ -4617,7 +4617,7 @@ function qaRenderLeaderboard(data) {{
         const acctPill=a.acct==='M7'
             ?`<span style="background:#EFF6FF;color:#1D4ED8;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">M7</span>`
             :`<span style="background:#FFF0F3;color:#9F1239;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Parentis</span>`;
-        return`<tr><td style="font-size:11px;color:#94A3B8">${{i+1}}</td><td><div style="display:flex;align-items:center;gap:6px"><span style="width:24px;height:24px;border-radius:50%;background:${{a.av.bg}};color:${{a.av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{a.av.ini}}</span><span style="font-weight:600;font-size:11px">${{qaEscapeHtml(a.words)}}</span></div></td><td style="text-align:center">${{a.n}}</td><td><span class="qa-chip ${{chipCls}}">${{a.avg.toFixed(1)}}%</span></td><td style="text-align:center;font-size:11px">${{a.min.toFixed(1)}}%</td><td style="text-align:center;font-size:11px">${{a.max.toFixed(1)}}%</td><td style="text-align:center;color:${{a.passRate>=90?'#0F9B58':'#E85D3F'}};font-size:11px">${{a.passRate.toFixed(0)}}%</td><td>${{acctPill}}</td></tr>`;
+        return`<tr><td style="font-size:11px;color:#94A3B8">${{i+1}}</td><td><div style="display:flex;align-items:center;gap:6px"><span style="width:24px;height:24px;border-radius:50%;background:${{a.av.bg}};color:${{a.av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{a.av.ini}}</span><span style="font-weight:600;font-size:11px">${{qaEscapeHtml(a.words)}}</span></div></td><td style="text-align:center">${{a.n}}</td><td><span class="qa-chip ${{chipCls}}">${{a.avg.toFixed(1)}}%</span></td><td style="text-align:center;font-size:11px">${{a.min.toFixed(1)}}%</td><td style="text-align:center;font-size:11px">${{a.max.toFixed(1)}}%</td><td style="text-align:center;color:${{a.passRate>=85?'#0F9B58':'#E85D3F'}};font-size:11px">${{a.passRate.toFixed(0)}}%</td><td>${{acctPill}}</td></tr>`;
     }}).join('')||`<tr><td colspan="8" style="text-align:center;color:#94A3B8;padding:16px">No data</td></tr>`;
 }}
 
@@ -4633,13 +4633,13 @@ function qaRenderCoachLeaderboard(data) {{
         byCoach[r.coach].scores.push(s);
     }});
     const coaches=Object.entries(byCoach).map(([name,d])=>{{
-        const avg=qaAvg(d.scores), pass=d.scores.filter(s=>s>=90).length;
+        const avg=qaAvg(d.scores), pass=d.scores.filter(s=>s>=85).length;
         return{{name,avg,min:Math.min(...d.scores),max:Math.max(...d.scores),pass,passRate:d.scores.length?pass/d.scores.length*100:0,n:d.scores.length}};
     }}).sort((a,b)=>b.avg-a.avg);
     if(badge)badge.textContent=coaches.length+' coaches';
     el.innerHTML=coaches.map((c,i)=>{{
         const chipCls=qaChipCls(c.avg);
-        return`<tr><td style="font-size:11px;color:#94A3B8">${{i+1}}</td><td style="font-weight:600;font-size:11px">${{qaEscapeHtml(c.name)}}</td><td style="text-align:center">${{c.n}}</td><td><span class="qa-chip ${{chipCls}}">${{c.avg.toFixed(1)}}%</span></td><td style="text-align:center;font-size:11px">${{c.min.toFixed(1)}}%</td><td style="text-align:center;font-size:11px">${{c.max.toFixed(1)}}%</td><td style="text-align:center;color:${{c.passRate>=90?'#0F9B58':'#E85D3F'}};font-size:11px">${{c.passRate.toFixed(0)}}%</td></tr>`;
+        return`<tr><td style="font-size:11px;color:#94A3B8">${{i+1}}</td><td style="font-weight:600;font-size:11px">${{qaEscapeHtml(c.name)}}</td><td style="text-align:center">${{c.n}}</td><td><span class="qa-chip ${{chipCls}}">${{c.avg.toFixed(1)}}%</span></td><td style="text-align:center;font-size:11px">${{c.min.toFixed(1)}}%</td><td style="text-align:center;font-size:11px">${{c.max.toFixed(1)}}%</td><td style="text-align:center;color:${{c.passRate>=85?'#0F9B58':'#E85D3F'}};font-size:11px">${{c.passRate.toFixed(0)}}%</td></tr>`;
     }}).join('')||`<tr><td colspan="7" style="text-align:center;color:#94A3B8;padding:16px">No data</td></tr>`;
 }}
 
@@ -4720,9 +4720,9 @@ function qaApplyFilters() {{
     const scores=filtered.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
     const agents=new Set(filtered.map(r=>r.agent).filter(Boolean));
     const avg=scores.length?qaAvg(scores):null;
-    const pass=scores.length?scores.filter(s=>s>=90).length/scores.length*100:null;
-    const below=scores.filter(s=>s<90).length;
-    const low=scores.filter(s=>s>=90&&s<95).length;
+    const pass=scores.length?scores.filter(s=>s>=85).length/scores.length*100:null;
+    const below=scores.filter(s=>s<85).length;
+    const low=scores.filter(s=>s>=85&&s<95).length;
     const sset=(id,v)=>{{const el=document.getElementById(id);if(el)el.textContent=v;}};
     sset('qa-strip-avg',  avg?avg.toFixed(1)+'%':'—');
     sset('qa-strip-pass', pass!==null?pass.toFixed(1)+'%':'—');
@@ -4810,7 +4810,7 @@ function initQualityCharts() {{
             plugins:[trendLabelPlugin],
             data:{{labels:[],datasets:[
                 {{label:'Avg QA Score',data:[],borderColor:'#0D3B6E',backgroundColor:'rgba(13,59,110,0.08)',tension:0.3,fill:true,pointRadius:4,pointHoverRadius:6,pointBackgroundColor:'#0D3B6E'}},
-                {{label:'Target (90%)',data:[],borderColor:'#E85D3F',borderDash:[5,4],borderWidth:1.5,pointRadius:0,fill:false}}
+                {{label:'Target (85%)',data:[],borderColor:'#E85D3F',borderDash:[5,4],borderWidth:1.5,pointRadius:0,fill:false}}
             ]}},
             options:{{
                 responsive:true,maintainAspectRatio:false,
