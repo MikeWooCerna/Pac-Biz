@@ -4737,10 +4737,11 @@ function qaUpdateKPIs(data) {{
 function qaUpdateTrend(data) {{
     if(!qaTrendChart) return;
     const trend=qaBuildTrend(data);
-    const labels=trend.map(t=>t.week), avgs=trend.map(t=>t.avg), target=labels.map(()=>85);
+    const labels=trend.map(t=>t.week), avgs=trend.map(t=>t.avg), counts=trend.map(t=>t.n), target=labels.map(()=>85);
     qaTrendChart.data.labels=labels;
     qaTrendChart.data.datasets[0].data=avgs;
     qaTrendChart.data.datasets[1].data=target;
+    qaTrendChart.data.datasets[2].data=counts;
     qaTrendChart.update();
     const last2=avgs.slice(-2), tv=last2.length===2?last2[1]-last2[0]:0;
     const badge=document.getElementById('qa-trend-badge');
@@ -5039,14 +5040,19 @@ function initQualityCharts() {{
             type:'line',
             plugins:[trendLabelPlugin],
             data:{{labels:[],datasets:[
-                {{label:'Avg QA Score',data:[],borderColor:'#0D3B6E',backgroundColor:'rgba(13,59,110,0.08)',tension:0.3,fill:true,pointRadius:4,pointHoverRadius:6,pointBackgroundColor:'#0D3B6E'}},
-                {{label:'Target (85%)',data:[],borderColor:'#E85D3F',borderDash:[5,4],borderWidth:1.5,pointRadius:0,fill:false}}
+                {{label:'Avg QA Score',data:[],borderColor:'#0D3B6E',backgroundColor:'rgba(13,59,110,0.08)',tension:0.3,fill:true,pointRadius:4,pointHoverRadius:6,pointBackgroundColor:'#0D3B6E',yAxisID:'y',order:0}},
+                {{label:'Target (85%)',data:[],borderColor:'#E85D3F',borderDash:[5,4],borderWidth:1.5,pointRadius:0,fill:false,yAxisID:'y',order:0}},
+                {{type:'bar',label:'Total Evaluations',data:[],backgroundColor:'rgba(57,181,74,0.3)',borderColor:'#39B54A',borderWidth:1,yAxisID:'y1',barPercentage:0.6,categoryPercentage:0.7,order:1}}
             ]}},
             options:{{
                 responsive:true,maintainAspectRatio:false,
                 layout:{{padding:{{top:24,bottom:0}}}},
-                plugins:{{legend:{{display:true,position:'bottom',labels:{{font:{{size:10}},boxWidth:12}}}},tooltip:{{callbacks:{{label:ctx=>ctx.parsed.y.toFixed(1)+'%'}}}}}},
-                scales:{{y:{{min:80,max:100,ticks:{{callback:v=>v+'%',font:{{size:9}}}},grid:{{color:'#F1F5F9'}}}},x:{{ticks:{{font:{{size:9}},maxRotation:30}},grid:{{display:false}}}}}}
+                plugins:{{legend:{{display:true,position:'bottom',labels:{{font:{{size:10}},boxWidth:12}}}},tooltip:{{callbacks:{{label:ctx=>ctx.datasetIndex===2?ctx.parsed.y+' evals':ctx.parsed.y.toFixed(1)+'%'}}}}}},
+                scales:{{
+                    y:{{min:80,max:100,ticks:{{callback:v=>v+'%',font:{{size:9}}}},grid:{{color:'#F1F5F9'}}}},
+                    y1:{{position:'right',beginAtZero:true,ticks:{{font:{{size:9}},precision:0}},grid:{{display:false}}}},
+                    x:{{ticks:{{font:{{size:9}},maxRotation:30}},grid:{{display:false}}}}
+                }}
             }}
         }});
     }}
