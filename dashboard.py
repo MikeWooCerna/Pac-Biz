@@ -2854,10 +2854,16 @@ def main():
       </div>
     </div>
     <div class="qa-card">
-      <div class="qa-ch"><div><div class="qa-ct">Score distribution</div><div class="qa-cs" id="qa-donut-sub">All evaluations</div></div></div>
+      <div class="qa-ch"><div><div class="qa-ct" id="qa-dist-title">Score distribution</div><div class="qa-cs" id="qa-donut-sub">All evaluations</div></div></div>
       <div class="qa-cbody" style="padding:10px 14px;display:flex;flex-direction:column;justify-content:center">
-        <div style="position:relative;height:160px;flex-shrink:0"><canvas id="qa-donut-chart"></canvas></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:8px" id="qa-donut-legend"></div>
+        <div id="qa-score-dist-wrap">
+          <div style="position:relative;height:160px;flex-shrink:0"><canvas id="qa-donut-chart"></canvas></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:8px" id="qa-donut-legend"></div>
+        </div>
+        <div id="qa-eval-dist-wrap" style="display:none">
+          <div style="position:relative;height:160px;flex-shrink:0"><canvas id="qa-eval-dist-chart"></canvas></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:8px" id="qa-eval-dist-legend"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -4381,6 +4387,7 @@ function render() {{
 let qaChartsInitialized = false;
 let qaTrendChart = null;
 let qaDonutChart = null;
+let qaEvalDistChart = null;
 let qaCurrentFiltered = [];
 
 // Tag rows at init time
@@ -4926,6 +4933,45 @@ function qaUpdateDonut(data) {{
     }}
 }}
 
+function qaUpdateEvalDist(data) {{
+    if(!qaEvalDistChart) return;
+    const accts=[
+        {{key:'M7',color:'#1D4ED8'}},
+        {{key:'Parentis',color:'#9F1239'}},
+        {{key:'Britelift',color:'#C2410C'}},
+        {{key:'RideX',color:'#6D28D9'}}
+    ];
+    const counts=accts.map(a=>data.filter(r=>r._acct===a.key).length);
+    const total=counts.reduce((s,v)=>s+v,0);
+    qaEvalDistChart.data.datasets[0].data=counts;
+    qaEvalDistChart.update();
+    const sub=document.getElementById('qa-donut-sub');
+    if(sub) sub.textContent=total+' evaluation'+(total===1?'':'s')+' across all accounts';
+    const legEl=document.getElementById('qa-eval-dist-legend');
+    if(legEl){{
+        legEl.innerHTML=accts.map((a,i)=>{{
+            const pct=total?(counts[i]/total*100).toFixed(1)+'%':'0%';
+            return`<div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#475569"><span style="width:8px;height:8px;border-radius:50%;background:${{a.color}};flex-shrink:0"></span><span>${{a.key}}</span><span style="margin-left:auto;font-weight:700;color:${{a.color}}">${{pct}}</span></div>`;
+        }}).join('');
+    }}
+}}
+
+function qaToggleDistWidget(isAllAccounts) {{
+    const title=document.getElementById('qa-dist-title');
+    const scoreWrap=document.getElementById('qa-score-dist-wrap');
+    const evalWrap=document.getElementById('qa-eval-dist-wrap');
+    if(!title||!scoreWrap||!evalWrap) return;
+    if(isAllAccounts){{
+        title.textContent='Evaluation distribution';
+        scoreWrap.style.display='none';
+        evalWrap.style.display='';
+    }} else {{
+        title.textContent='Score distribution';
+        scoreWrap.style.display='';
+        evalWrap.style.display='none';
+    }}
+}}
+
 // ─── Main filter apply ────────────────────────────────────────────────────────
 function qaApplyFilters() {{
     const coach=(document.getElementById('qa-sel-coach')?.value||'').trim();
@@ -4948,7 +4994,9 @@ function qaApplyFilters() {{
     qaRenderLeaderboard(filtered);
     qaRenderCoachLeaderboard(filtered);
     qaRenderTable(filtered);
-    qaUpdateDonut(filtered);
+    const acct=(document.getElementById('qa-sel-account')?.value||'').trim();
+    qaToggleDistWidget(!acct);
+    if(acct) qaUpdateDonut(filtered); else qaUpdateEvalDist(filtered);
     const scores=filtered.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
     const agents=new Set(filtered.map(r=>r.agent).filter(Boolean));
     const avg=scores.length?qaAvg(scores):null;
@@ -5077,6 +5125,57 @@ function initQualityCharts() {{
             plugins:[donutLabelPlugin],
             data:{{labels:QA_BANDS.map(b=>b.label),datasets:[{{data:[0,0,0,0],backgroundColor:QA_BANDS.map(b=>b.color),borderWidth:2,borderColor:'#fff'}}]}},
             options:{{responsive:true,maintainAspectRatio:false,cutout:'50%',layout:{{padding:8}},plugins:{{legend:{{display:false}},tooltip:{{callbacks:{{label:ctx=>`${{ctx.label}}: ${{ctx.parsed}}`}}}}}}}}
+        }});
+    }}
+    const evalDistLabelPlugin={{
+        id:'qaEvalDistLabels',
+        afterDatasetsDraw(chart){{
+            const ds=chart.data.datasets[0],meta=chart.getDatasetMeta(0),ctx2=chart.ctx;
+            const total=ds.data.reduce((a,b)=>a+(b||0),0);
+            if(!total)return;
+            ctx2.save();
+            meta.data.forEach((arc,i)=>{{
+                const v=ds.data[i];if(!v)return;
+                const mid=(arc.startAngle+arc.endAngle)/2;
+                const cx=arc.x,cy=arc.y;
+                const midR=(arc.innerRadius+arc.outerRadius)/2;
+                // Count inside arc
+                ctx2.font='bold 11px sans-serif';ctx2.fillStyle='#fff';ctx2.textAlign='center';ctx2.textBaseline='middle';
+                ctx2.fillText(v,cx+Math.cos(mid)*midR,cy+Math.sin(mid)*midR);
+                // Leader line + account name outside
+                const x1=cx+Math.cos(mid)*(arc.outerRadius+2);
+                const y1=cy+Math.sin(mid)*(arc.outerRadius+2);
+                const x2=cx+Math.cos(mid)*(arc.outerRadius+10);
+                const y2=cy+Math.sin(mid)*(arc.outerRadius+10);
+                const right=Math.cos(mid)>=0;
+                const x3=x2+(right?7:-7),y3=y2;
+                ctx2.beginPath();ctx2.moveTo(x1,y1);ctx2.lineTo(x2,y2);ctx2.lineTo(x3,y3);
+                ctx2.strokeStyle=ds.backgroundColor[i];ctx2.lineWidth=1;ctx2.stroke();
+                ctx2.font='bold 8px sans-serif';ctx2.fillStyle='#374151';
+                ctx2.textAlign=right?'left':'right';ctx2.textBaseline='middle';
+                ctx2.fillText(chart.data.labels[i],x3+(right?2:-2),y3);
+            }});
+            ctx2.restore();
+        }}
+    }};
+    const evalDistCtx=document.getElementById('qa-eval-dist-chart');
+    if(evalDistCtx){{
+        qaEvalDistChart=new Chart(evalDistCtx,{{
+            type:'doughnut',
+            plugins:[evalDistLabelPlugin],
+            data:{{labels:['M7','Parentis','Britelift','RideX'],datasets:[{{data:[0,0,0,0],backgroundColor:['#1D4ED8','#9F1239','#C2410C','#6D28D9'],borderWidth:2,borderColor:'#fff'}}]}},
+            options:{{
+                responsive:true,maintainAspectRatio:false,cutout:'50%',
+                layout:{{padding:{{top:20,bottom:20,left:42,right:42}}}},
+                plugins:{{
+                    legend:{{display:false}},
+                    tooltip:{{callbacks:{{label:ctx=>{{
+                        const tot=ctx.dataset.data.reduce((a,b)=>a+(b||0),0);
+                        const pct=tot?(ctx.dataset.data[ctx.dataIndex]/tot*100).toFixed(1)+'%':'0%';
+                        return`${{ctx.label}}: ${{ctx.dataset.data[ctx.dataIndex]}} evaluation${{ctx.dataset.data[ctx.dataIndex]===1?'':'s'}} (${{pct}})`;
+                    }}}}}}
+                }}
+            }}
         }});
     }}
 
