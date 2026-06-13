@@ -2892,9 +2892,9 @@ def main():
       <table class="qa-dtbl">
         <thead><tr>
           <th style="min-width:130px;cursor:pointer;user-select:none" data-qa-sort="ts" onclick="qaSortTable('ts')">Evaluation Date <span class="sort-indicator">▼</span></th>
-          <th style="min-width:155px;cursor:pointer;user-select:none" data-qa-sort="agent" onclick="qaSortTable('agent')">Emp Name <span class="sort-indicator"></span></th>
-          <th style="min-width:110px;cursor:pointer;user-select:none" data-qa-sort="supervisor" onclick="qaSortTable('supervisor')">Immediate Head <span class="sort-indicator"></span></th>
-          <th style="min-width:110px;cursor:pointer;user-select:none" data-qa-sort="coach" onclick="qaSortTable('coach')">QA Coach <span class="sort-indicator"></span></th>
+          <th style="min-width:200px;cursor:pointer;user-select:none" data-qa-sort="agent" onclick="qaSortTable('agent')">Emp Name <span class="sort-indicator"></span></th>
+          <th style="min-width:160px;cursor:pointer;user-select:none" data-qa-sort="supervisor" onclick="qaSortTable('supervisor')">Immediate Head <span class="sort-indicator"></span></th>
+          <th style="min-width:160px;cursor:pointer;user-select:none" data-qa-sort="coach" onclick="qaSortTable('coach')">QA Coach <span class="sort-indicator"></span></th>
           <th style="min-width:90px">Account</th>
           <th style="min-width:55px;cursor:pointer;user-select:none" data-qa-sort="score" onclick="qaSortTable('score')">Score <span class="sort-indicator"></span></th>
           <th style="min-width:75px">Opening In</th><th style="min-width:75px">Opening Out</th>
@@ -4890,7 +4890,7 @@ function qaRenderTable(data) {{
             if(k==='lost_sop'&&(!v||v==='Not Applicable'))return'<td style="text-align:center;color:#94A3B8">N/A</td>';
             return`<td style="text-align:center">${{qaYN(v)}}</td>`;
         }});
-        return`<tr><td style="white-space:nowrap;font-size:11px">${{qaEscapeHtml((r.ts||'—').slice(0,10))}}</td><td><div style="display:flex;align-items:center;gap:5px"><span style="width:22px;height:22px;border-radius:50%;background:${{av.bg}};color:${{av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{av.ini}}</span><span style="font-weight:600;font-size:11px">${{qaEscapeHtml(r.agent||'—')}}</span></div></td><td style="font-size:11px">${{qaEscapeHtml(r.supervisor||'—')}}</td><td style="font-size:11px">${{qaEscapeHtml(r.coach||'—')}}</td><td>${{acctPill}}</td><td><span class="qa-chip ${{chipCls}}">${{disp}}</span></td>${{critCells.join('')}}<td style="font-size:10px;color:#475569;white-space:nowrap">${{qaEscapeHtml(r.invest||'—')}}</td><td style="max-width:240px;white-space:normal;font-size:10px;color:#475569">${{qaEscapeHtml(r.feedback||'—')}}</td></tr>`;
+        return`<tr><td style="white-space:nowrap;font-size:11px">${{qaEscapeHtml((r.ts||'—').slice(0,10))}}</td><td style="max-width:200px;overflow:hidden" title="${{qaEscapeHtml(r.agent||'')}}"><div style="display:flex;align-items:center;gap:5px;overflow:hidden"><span style="width:22px;height:22px;border-radius:50%;background:${{av.bg}};color:${{av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{av.ini}}</span><span style="font-weight:600;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">${{qaEscapeHtml(r.agent||'—')}}</span></div></td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.supervisor||'')}}">${{qaEscapeHtml(r.supervisor||'—')}}</td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.coach||'')}}">${{qaEscapeHtml(r.coach||'—')}}</td><td>${{acctPill}}</td><td><span class="qa-chip ${{chipCls}}">${{disp}}</span></td>${{critCells.join('')}}<td style="font-size:10px;color:#475569;white-space:nowrap">${{qaEscapeHtml(r.invest||'—')}}</td><td style="max-width:240px;white-space:normal;font-size:10px;color:#475569">${{qaEscapeHtml(r.feedback||'—')}}</td></tr>`;
     }}).join('')||`<tr><td colspan="30" style="text-align:center;color:#94A3B8;padding:20px">No data</td></tr>`;
     const thead=el.closest('table')?.querySelector('thead');
     if(thead){{
