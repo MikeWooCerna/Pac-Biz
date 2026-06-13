@@ -145,6 +145,46 @@ BRITELIFT_COLUMN_MAP = {
     "EMPLOYEE_ID":                                           "emp_id",
 }
 
+RIDEX_DIR = Path(os.getenv("RIDEX_DIR", r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\RideX"))
+RIDEX_SCRIPT = RIDEX_DIR / "Ridex_pull.py"
+RIDEX_OUTPUT_FILE = RIDEX_DIR / "RIDEX_RAW.xlsx"
+
+RIDEX_COLUMN_MAP = {
+    "Timestamp":                                              "ts",
+    "Call Date":                                             "date",
+    "Emp Name":                                              "agent",
+    "Score":                                                 "score",
+    "Evaluation Type":                                       "type",
+    "QA":                                                    "coach",
+    "Immediate Supervisor":                                  "supervisor",
+    "Conducted Thorough Investigation":                      "invest",
+    "Feedback Summary ":                                     "feedback",
+    "Opening Spiel (Inbound Calls) - 1pt":                   "os_in",
+    "Opening Spiel (Outbound Calls) - 1pt":                  "os_out",
+    "Closing Spiel - 1pt":                                   "closing",
+    "Appropriate Response - 2pts":                           "approp",
+    "No Response - 2pts":                                    "no_resp",
+    "Fillers / Slang Words - 2pts":                          "fillers",
+    "Acknowledgement / Ownsership - 1pt":                    "ack",
+    "Proper Handling of Pauses or Hold Requests - 2pts":     "hold",
+    "Acknowledges and Thank the Customer for Waiting - 1pt": "ack_hold",
+    "Response Efficiency - 2pts":                            "resp_eff",
+    "Empathy / Sympathy - 3pts":                             "empathy",
+    "Adjust to Customer's Level - 3pts":                     "adjust",
+    "Mute Button Usage - 1pt":                               "mute",
+    "Active Listening - 5pts":                               "active",
+    "Answered Customer's Questions - 4pts":                  "answered",
+    "Probing Questions - 4pts":                              "probing",
+    "Customer Verification - 10pts":                         "verif",
+    "Clarification When Information is Missed - 4pts":       "clarif",
+    "Lost Item SOP - 6pts":                                  "lost_sop",
+    "Rudeness - 20pts":                                      "rude",
+    "Transaction Completion - 20pts":                        "trans",
+    "Speech Clarify - 5pts":                                 "speech",
+    "QA_ID":                                                 "qa_id",
+    "EMPLOYEE_ID":                                           "emp_id",
+}
+
 COACHING_VALIDATION_ERRORS_FILE = COACHING_OUTPUT_FILE.parent / "coaching_validation_errors.csv"
 COACHING_TIMEZONE = ZoneInfo("Asia/Manila")
 COACHING_TIMEZONE_NAME = "Asia/Manila"
@@ -628,6 +668,56 @@ def load_britelift_data():
                                      "invest", "feedback"])
     result = transform_britelift_data(source)
     print(f"Britelift QA rows: {len(result)}")
+    return result
+
+
+def transform_ridex_data(source):
+    return _transform_qa_source(source, RIDEX_COLUMN_MAP)
+
+
+def refresh_ridex_output():
+    if not RIDEX_SCRIPT.exists():
+        return False
+    try:
+        result = subprocess.run(
+            [sys.executable, str(RIDEX_SCRIPT)],
+            cwd=str(RIDEX_DIR),
+            capture_output=True,
+            text=True,
+            timeout=120,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        print(f"Skipping RideX pull: {exc}")
+        return False
+    if result.returncode != 0:
+        msg = result.stderr.strip() or result.stdout.strip() or "No details."
+        print(f"Skipping RideX pull: {msg}")
+        return False
+    if result.stdout.strip():
+        print(result.stdout.strip())
+    return True
+
+
+def read_ridex_workbook():
+    if not RIDEX_OUTPUT_FILE.exists():
+        return pd.DataFrame()
+    try:
+        return clean_columns(pd.read_excel(RIDEX_OUTPUT_FILE))
+    except Exception as exc:
+        print(f"Skipping RideX workbook load: {exc}")
+        return pd.DataFrame()
+
+
+def load_ridex_data():
+    refresh_ridex_output()
+    source = read_ridex_workbook()
+    if source.empty:
+        return pd.DataFrame(columns=["qa_id", "eval_key", "emp_id", "ts", "date",
+                                     "agent", "score", "type", "coach", "supervisor",
+                                     "invest", "feedback"])
+    result = transform_ridex_data(source)
+    print(f"RideX QA rows: {len(result)}")
     return result
 
 
@@ -1246,6 +1336,7 @@ def main():
     m7 = load_m7_data()
     parentis = load_parentis_data()
     britelift = load_britelift_data()
+    ridex = load_ridex_data()
 
     refresh_time = datetime.now().strftime("%Y-%m-%d %I:%M %p")
 
@@ -2663,6 +2754,7 @@ def main():
       <option value="m7">M7 &ndash; Ride-hailing support</option>
       <option value="parentis">Parentis Health</option>
       <option value="britelift">Britelift</option>
+      <option value="ridex">RideX</option>
     </select>
   </div>
   <div class="qa-fg">
@@ -2840,6 +2932,7 @@ const coachingData = {to_records(coaching)};
 const qaRawData = {to_records(m7)};
 const parentisRawData = {to_records(parentis)};
 const briteliftRawData = {to_records(britelift)};
+const ridexRawData = {to_records(ridex)};
 
 const COLORS = ["#004C97", "#39B54A", "#002B5C", "#7AC943", "#00AEEF", "#94A3B8"];
 const COACHING_CATEGORY_COLORS = {{
@@ -4293,6 +4386,7 @@ let qaCurrentFiltered = [];
 qaRawData.forEach(r => r._acct = 'M7');
 parentisRawData.forEach(r => r._acct = 'Parentis');
 briteliftRawData.forEach(r => r._acct = 'Britelift');
+ridexRawData.forEach(r => r._acct = 'RideX');
 
 // Date range picker state — default: first of current month → today
 const _qaToday = new Date(); _qaToday.setHours(0,0,0,0);
@@ -4378,7 +4472,8 @@ function qaGetActiveData() {{
     if (acct === 'm7') return qaRawData;
     if (acct === 'parentis') return parentisRawData;
     if (acct === 'britelift') return briteliftRawData;
-    return [...qaRawData, ...parentisRawData, ...briteliftRawData];
+    if (acct === 'ridex') return ridexRawData;
+    return [...qaRawData, ...parentisRawData, ...briteliftRawData, ...ridexRawData];
 }}
 
 // ─── Date Range Picker ────────────────────────────────────────────────────────
@@ -4713,6 +4808,8 @@ function qaRenderLeaderboard(data) {{
             ?`<span style="background:#EFF6FF;color:#1D4ED8;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">M7</span>`
             :a.acct==='Britelift'
             ?`<span style="background:#FFF7ED;color:#C2410C;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Britelift</span>`
+            :a.acct==='RideX'
+            ?`<span style="background:#F5F3FF;color:#6D28D9;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">RideX</span>`
             :`<span style="background:#FFF0F3;color:#9F1239;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Parentis</span>`;
         return`<tr><td style="font-size:11px;color:#94A3B8">${{i+1}}</td><td><div style="display:flex;align-items:center;gap:6px"><span style="width:24px;height:24px;border-radius:50%;background:${{a.av.bg}};color:${{a.av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{a.av.ini}}</span><span style="font-weight:600;font-size:11px">${{qaEscapeHtml(a.words)}}</span></div></td><td style="text-align:center">${{a.n}}</td><td><span class="qa-chip ${{chipCls}}">${{a.avg.toFixed(1)}}%</span></td><td style="text-align:center;font-size:11px">${{a.min.toFixed(1)}}%</td><td style="text-align:center;font-size:11px">${{a.max.toFixed(1)}}%</td><td style="text-align:center;color:${{a.passRate>=85?'#0F9B58':'#E85D3F'}};font-size:11px">${{a.passRate.toFixed(0)}}%</td><td>${{acctPill}}</td></tr>`;
     }}).join('')||`<tr><td colspan="8" style="text-align:center;color:#94A3B8;padding:16px">No data</td></tr>`;
@@ -4760,6 +4857,8 @@ function qaRenderTable(data) {{
             ?`<span style="background:#EFF6FF;color:#1D4ED8;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">M7</span>`
             :r._acct==='Britelift'
             ?`<span style="background:#FFF7ED;color:#C2410C;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Britelift</span>`
+            :r._acct==='RideX'
+            ?`<span style="background:#F5F3FF;color:#6D28D9;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">RideX</span>`
             :`<span style="background:#FFF0F3;color:#9F1239;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Parentis</span>`;
         const critCells=critKeys.map(k=>{{
             const v=r[k];
@@ -4933,7 +5032,7 @@ function initQualityCharts() {{
     qaUpdateDRPLabel();
 
     // Info pills
-    const qaAcctsLoaded=[qaRawData,parentisRawData,briteliftRawData].filter(d=>d.length>0).length;
+    const qaAcctsLoaded=[qaRawData,parentisRawData,briteliftRawData,ridexRawData].filter(d=>d.length>0).length;
     const qaPillAccts=document.getElementById('qa-pill-qa-accounts');
     if(qaPillAccts)qaPillAccts.textContent=qaAcctsLoaded+' QA Account'+(qaAcctsLoaded===1?'':'s')+' Loaded';
     const qaPillTotal=document.getElementById('qa-pill-total-accounts');
