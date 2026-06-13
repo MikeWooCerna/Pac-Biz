@@ -2839,8 +2839,8 @@ def main():
     </div>
     <div class="qa-card">
       <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>Criteria pass rates</div><div class="qa-cs" id="qa-crit-sub">All 22 criteria &middot; sorted by pass rate</div></div><span class="qa-cb qa-cba">Score breakdown</span></div>
-      <div style="padding:0 14px">
-        <div style="max-height:220px;overflow-y:auto;padding:10px 0;border-bottom:1px solid #E2E8F0" id="qa-criteria-bars"></div>
+      <div style="padding:0 14px;flex:1;display:flex;flex-direction:column">
+        <div style="flex:1;overflow-y:auto;padding:10px 0;border-bottom:1px solid #E2E8F0" id="qa-criteria-bars"></div>
         <div style="padding:6px 0 8px;font-size:10px;color:#CBD5E1">&#9679; Scroll to see all 22 criteria</div>
       </div>
     </div>
@@ -2855,7 +2855,7 @@ def main():
     </div>
     <div class="qa-card">
       <div class="qa-ch"><div><div class="qa-ct">Score distribution</div><div class="qa-cs" id="qa-donut-sub">All evaluations</div></div></div>
-      <div class="qa-cbody" style="padding:10px 14px">
+      <div class="qa-cbody" style="padding:10px 14px;display:flex;flex-direction:column;justify-content:center">
         <div style="position:relative;height:160px"><canvas id="qa-donut-chart"></canvas></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:8px" id="qa-donut-legend"></div>
       </div>
