@@ -1249,7 +1249,7 @@ def _qa_block_html(aid, display_name, live_banner_name, badge_label, badge_cls, 
       <div class="qa-g3">
         <div class="qa-card">
           <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>QA Score Trend</div><div class="qa-cs" id="{aid}-trend-sub">Weekly avg (Mon&ndash;Sun) &middot; Target: {threshold}%</div></div><span class="qa-cb qa-cbg" id="{aid}-trend-badge">&mdash;</span></div>
-          <div class="qa-cbody" style="padding:10px 14px"><div style="position:relative;height:160px"><canvas id="{aid}-trend-chart"></canvas></div></div>
+          <div class="qa-cbody" style="padding:10px 14px;display:flex;flex-direction:column"><div style="position:relative;flex:1;min-height:140px"><canvas id="{aid}-trend-chart"></canvas></div></div>
         </div>
         <div class="qa-card">
           <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>Criteria pass rates</div><div class="qa-cs" id="{aid}-crit-sub">All 22 criteria &middot; sorted by pass rate</div></div><span class="qa-cb qa-cba">Account specific</span></div>
@@ -2432,12 +2432,12 @@ def main():
     /* Grids & cards */
     #qualityPanel .qa-g3 {{ display:grid;grid-template-columns:1.6fr 1fr 1fr 0.85fr;gap:12px }}
     #qualityPanel .qa-g2 {{ display:grid;grid-template-columns:1.3fr 1fr;gap:12px }}
-    #qualityPanel .qa-card {{ background:#fff;border-radius:10px;border:1px solid #E2E8F0;overflow:hidden }}
+    #qualityPanel .qa-card {{ background:#fff;border-radius:10px;border:1px solid #E2E8F0;overflow:hidden;display:flex;flex-direction:column }}
     #qualityPanel .qa-ch {{ padding:11px 16px;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;justify-content:space-between;gap:8px }}
     #qualityPanel .qa-ct {{ font-size:12px;font-weight:700;color:#1E293B;display:flex;align-items:center;gap:6px }}
     #qualityPanel .qa-ct svg {{ width:13px;height:13px;color:#94A3B8 }}
     #qualityPanel .qa-cs {{ font-size:10px;color:#94A3B8;margin-top:1px }}
-    #qualityPanel .qa-cbody {{ padding:12px 16px }}
+    #qualityPanel .qa-cbody {{ padding:12px 16px;flex:1 }}
     #qualityPanel .qa-cb {{ font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;white-space:nowrap }}
     #qualityPanel .qa-cbg {{ background:#F0FDF4;color:#15803D }} #qualityPanel .qa-cbb {{ background:#EFF6FF;color:#1D4ED8 }}
     #qualityPanel .qa-cba {{ background:#FFFBEB;color:#B45309 }} #qualityPanel .qa-cbr {{ background:#FEF2F2;color:#DC2626 }}
@@ -2835,7 +2835,7 @@ def main():
   <div class="qa-g3">
     <div class="qa-card">
       <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>QA Score Trend</div><div class="qa-cs" id="qa-trend-sub">Weekly avg (Mon&ndash;Sun) &middot; Target: 85%</div></div><span class="qa-cb qa-cbg" id="qa-trend-badge">&mdash;</span></div>
-      <div class="qa-cbody" style="padding:10px 14px"><div style="position:relative;height:160px"><canvas id="qa-trend-chart"></canvas></div></div>
+      <div class="qa-cbody" style="padding:10px 14px;display:flex;flex-direction:column"><div style="position:relative;flex:1;min-height:140px"><canvas id="qa-trend-chart"></canvas></div></div>
     </div>
     <div class="qa-card">
       <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>Criteria pass rates</div><div class="qa-cs" id="qa-crit-sub">All 22 criteria &middot; sorted by pass rate</div></div><span class="qa-cb qa-cba">Score breakdown</span></div>
