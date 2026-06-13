@@ -2856,7 +2856,7 @@ def main():
     <div class="qa-card">
       <div class="qa-ch"><div><div class="qa-ct">Score distribution</div><div class="qa-cs" id="qa-donut-sub">All evaluations</div></div></div>
       <div class="qa-cbody" style="padding:10px 14px;display:flex;flex-direction:column;justify-content:center">
-        <div style="position:relative;height:160px"><canvas id="qa-donut-chart"></canvas></div>
+        <div style="position:relative;height:160px;flex-shrink:0"><canvas id="qa-donut-chart"></canvas></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:8px" id="qa-donut-legend"></div>
       </div>
     </div>
