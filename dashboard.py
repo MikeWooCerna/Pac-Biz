@@ -2891,12 +2891,12 @@ def main():
     <div class="qa-tbl-scroll">
       <table class="qa-dtbl">
         <thead><tr>
-          <th style="min-width:130px">Evaluation Date</th>
-          <th style="min-width:155px">Emp Name</th>
-          <th style="min-width:110px">Immediate Head</th>
-          <th style="min-width:110px">QA Coach</th>
+          <th style="min-width:130px;cursor:pointer;user-select:none" data-qa-sort="ts" onclick="qaSortTable('ts')">Evaluation Date <span class="sort-indicator">▼</span></th>
+          <th style="min-width:155px;cursor:pointer;user-select:none" data-qa-sort="agent" onclick="qaSortTable('agent')">Emp Name <span class="sort-indicator"></span></th>
+          <th style="min-width:110px;cursor:pointer;user-select:none" data-qa-sort="supervisor" onclick="qaSortTable('supervisor')">Immediate Head <span class="sort-indicator"></span></th>
+          <th style="min-width:110px;cursor:pointer;user-select:none" data-qa-sort="coach" onclick="qaSortTable('coach')">QA Coach <span class="sort-indicator"></span></th>
           <th style="min-width:90px">Account</th>
-          <th style="min-width:55px">Score</th>
+          <th style="min-width:55px;cursor:pointer;user-select:none" data-qa-sort="score" onclick="qaSortTable('score')">Score <span class="sort-indicator"></span></th>
           <th style="min-width:75px">Opening In</th><th style="min-width:75px">Opening Out</th>
           <th style="min-width:65px">Closing</th><th style="min-width:75px">Approp. Resp</th>
           <th style="min-width:65px">No Resp</th><th style="min-width:60px">Fillers</th>
@@ -3047,6 +3047,7 @@ const coachingSortState = {{
     field: "Coaching Date",
     direction: "desc",
 }};
+const qaTableSortState = {{field:'ts', dir:'desc'}};
 
 function norm(v) {{
     return (v ?? "").toString().trim();
@@ -4837,12 +4838,29 @@ function qaRenderCoachLeaderboard(data) {{
     }}).join('')||`<tr><td colspan="7" style="text-align:center;color:#94A3B8;padding:16px">No data</td></tr>`;
 }}
 
+function qaSortTable(field) {{
+    if (qaTableSortState.field === field) {{
+        qaTableSortState.dir = qaTableSortState.dir === 'asc' ? 'desc' : 'asc';
+    }} else {{
+        qaTableSortState.field = field;
+        qaTableSortState.dir = (field === 'ts' || field === 'score') ? 'desc' : 'asc';
+    }}
+    qaRenderTable(qaCurrentFiltered);
+}}
+
 function qaRenderTable(data) {{
     const el=document.getElementById('qa-detail-table');
     const count=document.getElementById('qa-tbl-count');
     const foot=document.getElementById('qa-tbl-footer');
     if(!el) return;
-    const rows=data.slice().sort((a,b)=>(b.ts||'').localeCompare(a.ts||''));
+    const {{field:sf, dir:sd}} = qaTableSortState;
+    const smul = sd === 'asc' ? 1 : -1;
+    const rows = data.slice().sort((a,b) => {{
+        if (sf === 'score') {{
+            return smul * ((Number(a.score)||0) - (Number(b.score)||0));
+        }}
+        return smul * (a[sf]||'').localeCompare(b[sf]||'');
+    }});
     if(count)count.textContent=rows.length+' records';
     const total=qaGetActiveData().length;
     if(foot)foot.textContent='Showing '+rows.length+' of '+total+' evaluations';
@@ -4872,6 +4890,20 @@ function qaRenderTable(data) {{
         }});
         return`<tr><td style="white-space:nowrap;font-size:11px">${{qaEscapeHtml((r.ts||'—').slice(0,10))}}</td><td><div style="display:flex;align-items:center;gap:5px"><span style="width:22px;height:22px;border-radius:50%;background:${{av.bg}};color:${{av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{av.ini}}</span><span style="font-weight:600;font-size:11px">${{qaEscapeHtml(r.agent||'—')}}</span></div></td><td style="font-size:11px">${{qaEscapeHtml(r.supervisor||'—')}}</td><td style="font-size:11px">${{qaEscapeHtml(r.coach||'—')}}</td><td>${{acctPill}}</td><td><span class="qa-chip ${{chipCls}}">${{disp}}</span></td>${{critCells.join('')}}<td style="font-size:10px;color:#475569;white-space:nowrap">${{qaEscapeHtml(r.invest||'—')}}</td><td style="max-width:240px;white-space:normal;font-size:10px;color:#475569">${{qaEscapeHtml(r.feedback||'—')}}</td></tr>`;
     }}).join('')||`<tr><td colspan="30" style="text-align:center;color:#94A3B8;padding:20px">No data</td></tr>`;
+    const thead=el.closest('table')?.querySelector('thead');
+    if(thead){{
+        thead.querySelectorAll('th[data-qa-sort]').forEach(th=>{{
+            const ind=th.querySelector('.sort-indicator');
+            if(!ind) return;
+            if(th.dataset.qaSort===sf){{
+                ind.textContent=sd==='asc'?'▲':'▼';
+                th.style.color='#0D3B6E';
+            }} else {{
+                ind.textContent='';
+                th.style.color='';
+            }}
+        }});
+    }}
 }}
 
 function qaUpdateDonut(data) {{
