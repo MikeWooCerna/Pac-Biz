@@ -4936,10 +4936,10 @@ function qaUpdateDonut(data) {{
 function qaUpdateEvalDist(data) {{
     if(!qaEvalDistChart) return;
     const accts=[
-        {{key:'M7',color:'#1D4ED8'}},
-        {{key:'Parentis',color:'#9F1239'}},
-        {{key:'Britelift',color:'#C2410C'}},
-        {{key:'RideX',color:'#6D28D9'}}
+        {{key:'M7',color:'#4F81BD'}},
+        {{key:'Parentis',color:'#2C3E8C'}},
+        {{key:'Britelift',color:'#C0392B'}},
+        {{key:'RideX',color:'#8E44AD'}}
     ];
     const counts=accts.map(a=>data.filter(r=>r._acct===a.key).length);
     const total=counts.reduce((s,v)=>s+v,0);
@@ -5140,20 +5140,20 @@ function initQualityCharts() {{
                 const cx=arc.x,cy=arc.y;
                 const midR=(arc.innerRadius+arc.outerRadius)/2;
                 // Count inside arc
-                ctx2.font='bold 11px sans-serif';ctx2.fillStyle='#fff';ctx2.textAlign='center';ctx2.textBaseline='middle';
+                ctx2.font='bold 13px sans-serif';ctx2.fillStyle='#fff';ctx2.textAlign='center';ctx2.textBaseline='middle';
                 ctx2.fillText(v,cx+Math.cos(mid)*midR,cy+Math.sin(mid)*midR);
                 // Leader line + account name outside
-                const x1=cx+Math.cos(mid)*(arc.outerRadius+2);
-                const y1=cy+Math.sin(mid)*(arc.outerRadius+2);
-                const x2=cx+Math.cos(mid)*(arc.outerRadius+10);
-                const y2=cy+Math.sin(mid)*(arc.outerRadius+10);
+                const x1=cx+Math.cos(mid)*(arc.outerRadius+4);
+                const y1=cy+Math.sin(mid)*(arc.outerRadius+4);
+                const x2=cx+Math.cos(mid)*(arc.outerRadius+16);
+                const y2=cy+Math.sin(mid)*(arc.outerRadius+16);
                 const right=Math.cos(mid)>=0;
-                const x3=x2+(right?7:-7),y3=y2;
+                const x3=x2+(right?8:-8),y3=y2;
                 ctx2.beginPath();ctx2.moveTo(x1,y1);ctx2.lineTo(x2,y2);ctx2.lineTo(x3,y3);
-                ctx2.strokeStyle=ds.backgroundColor[i];ctx2.lineWidth=1;ctx2.stroke();
-                ctx2.font='bold 8px sans-serif';ctx2.fillStyle='#374151';
+                ctx2.strokeStyle=ds.backgroundColor[i];ctx2.lineWidth=1.5;ctx2.stroke();
+                ctx2.font='bold 10px sans-serif';ctx2.fillStyle=ds.backgroundColor[i];
                 ctx2.textAlign=right?'left':'right';ctx2.textBaseline='middle';
-                ctx2.fillText(chart.data.labels[i],x3+(right?2:-2),y3);
+                ctx2.fillText(chart.data.labels[i],x3+(right?3:-3),y3);
             }});
             ctx2.restore();
         }}
@@ -5163,7 +5163,7 @@ function initQualityCharts() {{
         qaEvalDistChart=new Chart(evalDistCtx,{{
             type:'doughnut',
             plugins:[evalDistLabelPlugin],
-            data:{{labels:['M7','Parentis','Britelift','RideX'],datasets:[{{data:[0,0,0,0],backgroundColor:['#1D4ED8','#9F1239','#C2410C','#6D28D9'],borderWidth:2,borderColor:'#fff'}}]}},
+            data:{{labels:['M7','Parentis','Britelift','RideX'],datasets:[{{data:[0,0,0,0],backgroundColor:['#4F81BD','#2C3E8C','#C0392B','#8E44AD'],borderWidth:2,borderColor:'#fff'}}]}},
             options:{{
                 responsive:true,maintainAspectRatio:false,cutout:'50%',
                 layout:{{padding:{{top:20,bottom:20,left:42,right:42}}}},
