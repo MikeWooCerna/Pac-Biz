@@ -185,6 +185,10 @@ RIDEX_COLUMN_MAP = {
     "EMPLOYEE_ID":                                           "emp_id",
 }
 
+HAMILTON_DIR = Path(os.getenv("HAMILTON_DIR", r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\Hamilton"))
+HAMILTON_SCRIPT = HAMILTON_DIR / "Hamilton_pull.py"
+HAMILTON_OUTPUT_FILE = HAMILTON_DIR / "HAMILTON_RAW.xlsx"
+
 COACHING_VALIDATION_ERRORS_FILE = COACHING_OUTPUT_FILE.parent / "coaching_validation_errors.csv"
 COACHING_TIMEZONE = ZoneInfo("Asia/Manila")
 COACHING_TIMEZONE_NAME = "Asia/Manila"
@@ -718,6 +722,137 @@ def load_ridex_data():
                                      "invest", "feedback"])
     result = transform_ridex_data(source)
     print(f"RideX QA rows: {len(result)}")
+    return result
+
+
+def transform_hamilton_data(source):
+    df = source.copy()
+    rename = {
+        "evaluation_date":    "ts",
+        "Emp Name":           "agent",
+        "QA":                 "coach",
+        "Immediate Supervisor": "supervisor",
+        "evaluation_status":  "status",
+        "overall_score_ai":   "score_ai",
+        "overall_score_human": "score_human",
+        "QA_ID":              "qa_id",
+        "EMPLOYEE_ID":        "emp_id",
+    }
+    df = df.rename(columns={k: v for k, v in rename.items() if k in df.columns})
+
+    def fmt_ts(v):
+        try:
+            dt = pd.to_datetime(str(v), errors="coerce")
+            if pd.notna(dt):
+                return dt.strftime("%Y-%m-%d %H:%M")
+        except Exception:
+            pass
+        return ""
+
+    if "ts" in df.columns:
+        df["ts"] = df["ts"].apply(fmt_ts)
+
+    if "status" in df.columns:
+        df["status"] = df["status"].apply(
+            lambda v: str(v).strip().lower() if str(v).strip() not in ("", "nan") else "rated"
+        )
+
+    score_ai_s = pd.to_numeric(df.get("score_ai", pd.Series(dtype=float)), errors="coerce").fillna(0)
+    df["score_ai"] = score_ai_s.round(1)
+
+    score_h_s = pd.to_numeric(df.get("score_human", pd.Series(dtype=float)), errors="coerce")
+    df["score_human"] = [round(float(v), 1) if pd.notna(v) else None for v in score_h_s]
+
+    def effective_score(row):
+        if str(row.get("status", "")).lower() == "corrected":
+            v = row.get("score_human")
+            try:
+                if v is not None:
+                    return int(round(float(v)))
+            except Exception:
+                pass
+        v = row.get("score_ai", 0)
+        try:
+            return int(round(float(v)))
+        except Exception:
+            return 0
+
+    df["score"] = df.apply(effective_score, axis=1)
+
+    def get_week_start(ts_val):
+        try:
+            s = str(ts_val).split()[0]
+            dt = pd.to_datetime(s, errors="coerce")
+            if pd.isna(dt):
+                return ""
+            monday = dt - timedelta(days=dt.weekday())
+            return monday.strftime("%Y-%m-%d")
+        except Exception:
+            return ""
+
+    if "ts" in df.columns:
+        df["week_start"] = df["ts"].apply(get_week_start)
+
+    if "emp_id" in df.columns and "ts" in df.columns:
+        df["eval_key"] = (
+            df["emp_id"].astype(str)
+            + "_"
+            + df["ts"].str.replace(r"[-: ]", "", regex=True)
+        )
+
+    keep = [
+        "qa_id", "eval_key", "emp_id", "ts", "week_start",
+        "agent", "score", "score_ai", "score_human", "status",
+        "coach", "supervisor",
+    ]
+    return df[[c for c in keep if c in df.columns]]
+
+
+def refresh_hamilton_output():
+    if not HAMILTON_SCRIPT.exists():
+        return False
+    try:
+        result = subprocess.run(
+            [sys.executable, str(HAMILTON_SCRIPT)],
+            cwd=str(HAMILTON_DIR),
+            capture_output=True,
+            text=True,
+            timeout=120,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        print(f"Skipping Hamilton pull: {exc}")
+        return False
+    if result.returncode != 0:
+        msg = result.stderr.strip() or result.stdout.strip() or "No details."
+        print(f"Skipping Hamilton pull: {msg}")
+        return False
+    if result.stdout.strip():
+        print(result.stdout.strip())
+    return True
+
+
+def read_hamilton_workbook():
+    if not HAMILTON_OUTPUT_FILE.exists():
+        return pd.DataFrame()
+    try:
+        return clean_columns(pd.read_excel(HAMILTON_OUTPUT_FILE))
+    except Exception as exc:
+        print(f"Skipping Hamilton workbook load: {exc}")
+        return pd.DataFrame()
+
+
+def load_hamilton_data():
+    refresh_hamilton_output()
+    source = read_hamilton_workbook()
+    if source.empty:
+        return pd.DataFrame(columns=[
+            "qa_id", "eval_key", "emp_id", "ts", "week_start",
+            "agent", "score", "score_ai", "score_human", "status",
+            "coach", "supervisor",
+        ])
+    result = transform_hamilton_data(source)
+    print(f"Hamilton QA rows: {len(result)}")
     return result
 
 
@@ -1337,6 +1472,7 @@ def main():
     parentis = load_parentis_data()
     britelift = load_britelift_data()
     ridex = load_ridex_data()
+    hamilton = load_hamilton_data()
 
     refresh_time = datetime.now().strftime("%Y-%m-%d %I:%M %p")
 
@@ -2755,6 +2891,7 @@ def main():
       <option value="parentis">Parentis Health</option>
       <option value="britelift">Britelift</option>
       <option value="ridex">RideX</option>
+      <option value="hamilton">Hamilton</option>
     </select>
   </div>
   <div class="qa-fg">
@@ -2867,6 +3004,33 @@ def main():
       </div>
     </div>
   </div>
+  <div id="qa-aivh-card" style="display:none;margin-bottom:14px">
+    <!-- KPI tile strip -->
+    <div id="qa-aivh-kpi-strip" style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:10px"></div>
+    <!-- Gap distribution + summary row -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <!-- Gap Distribution card -->
+      <div class="qa-card" style="margin-bottom:0">
+        <div class="qa-ch"><div><div class="qa-ct">Gap Distribution</div><div class="qa-cs">H&minus;AI score difference</div></div></div>
+        <div class="qa-cbody" style="padding:10px 14px;display:flex;gap:14px;align-items:center">
+          <div style="position:relative;width:120px;height:120px;flex-shrink:0"><canvas id="qa-aivh-gap-donut"></canvas></div>
+          <div style="flex:1">
+            <div id="qa-aivh-gap-list" style="display:flex;flex-direction:column;gap:5px;font-size:11px"></div>
+            <div id="qa-aivh-gap-range" style="margin-top:8px;font-size:10px;color:#94A3B8"></div>
+          </div>
+        </div>
+      </div>
+      <!-- AI vs Human Summary card -->
+      <div style="background:#0F172A;border-radius:10px;padding:16px 18px;display:flex;flex-direction:column;gap:10px">
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#F8FAFC">AI vs Human Score Comparison</div>
+          <div style="font-size:11px;color:#94A3B8;margin-top:2px">Based on corrected evaluations only</div>
+        </div>
+        <div style="display:flex;gap:8px" id="qa-aivh-chips"></div>
+        <div id="qa-aivh-insight" style="font-size:11px;color:#CBD5E1;line-height:1.5;border-top:1px solid #1E293B;padding-top:8px"></div>
+      </div>
+    </div>
+  </div>
   <div class="qa-g2">
     <div class="qa-card">
       <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>Agent leaderboard</div><div class="qa-cs">Ranked by avg score</div></div><span class="qa-cb qa-cbb" id="qa-lb-badge">&mdash;</span></div>
@@ -2939,6 +3103,7 @@ const qaRawData = {to_records(m7)};
 const parentisRawData = {to_records(parentis)};
 const briteliftRawData = {to_records(britelift)};
 const ridexRawData = {to_records(ridex)};
+const hamiltonRawData = {to_records(hamilton)};
 
 const COLORS = ["#004C97", "#39B54A", "#002B5C", "#7AC943", "#00AEEF", "#94A3B8"];
 const COACHING_CATEGORY_COLORS = {{
@@ -4388,6 +4553,7 @@ let qaChartsInitialized = false;
 let qaTrendChart = null;
 let qaDonutChart = null;
 let qaEvalDistChart = null;
+let qaAivhGapDonut = null;
 let qaCurrentFiltered = [];
 
 // Tag rows at init time
@@ -4395,6 +4561,7 @@ qaRawData.forEach(r => r._acct = 'M7');
 parentisRawData.forEach(r => r._acct = 'Parentis');
 briteliftRawData.forEach(r => r._acct = 'Britelift');
 ridexRawData.forEach(r => r._acct = 'RideX');
+hamiltonRawData.forEach(r => r._acct = 'Hamilton');
 
 // Date range picker state — default: first of current month → today
 const _qaToday = new Date(); _qaToday.setHours(0,0,0,0);
@@ -4481,7 +4648,8 @@ function qaGetActiveData() {{
     if (acct === 'parentis') return parentisRawData;
     if (acct === 'britelift') return briteliftRawData;
     if (acct === 'ridex') return ridexRawData;
-    return [...qaRawData, ...parentisRawData, ...briteliftRawData, ...ridexRawData];
+    if (acct === 'hamilton') return hamiltonRawData;
+    return [...qaRawData, ...parentisRawData, ...briteliftRawData, ...ridexRawData, ...hamiltonRawData];
 }}
 
 // ─── Date Range Picker ────────────────────────────────────────────────────────
@@ -4684,11 +4852,17 @@ function qaUpdateKPIs(data) {{
     if(titleEl) {{
         if(acct==='m7') titleEl.textContent='M7 — Quality Assurance';
         else if(acct==='parentis') titleEl.textContent='Parentis Health — Quality Assurance';
+        else if(acct==='britelift') titleEl.textContent='Britelift — Quality Assurance';
+        else if(acct==='ridex') titleEl.textContent='RideX — Quality Assurance';
+        else if(acct==='hamilton') titleEl.textContent='Hamilton — Quality Assurance';
         else titleEl.textContent='All Accounts — Quality Assurance';
     }}
     if(badgeEl) {{
         if(acct==='m7') {{ badgeEl.textContent='M7 Account'; badgeEl.className='qa-badge qa-b-blue'; }}
         else if(acct==='parentis') {{ badgeEl.textContent='Parentis Health'; badgeEl.className='qa-badge qa-b-teal'; }}
+        else if(acct==='britelift') {{ badgeEl.textContent='Britelift'; badgeEl.className='qa-badge qa-b-amber'; }}
+        else if(acct==='ridex') {{ badgeEl.textContent='RideX'; badgeEl.className='qa-badge qa-b-purple'; }}
+        else if(acct==='hamilton') {{ badgeEl.textContent='Hamilton'; badgeEl.className='qa-badge qa-b-teal'; }}
         else {{ badgeEl.textContent='All Accounts'; badgeEl.className='qa-badge qa-b-amber'; }}
     }}
     const scores=data.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
@@ -4820,6 +4994,8 @@ function qaRenderLeaderboard(data) {{
             ?`<span style="background:#FFF7ED;color:#C2410C;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Britelift</span>`
             :a.acct==='RideX'
             ?`<span style="background:#F5F3FF;color:#6D28D9;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">RideX</span>`
+            :a.acct==='Hamilton'
+            ?`<span style="background:#ECFDF5;color:#065F46;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Hamilton</span>`
             :`<span style="background:#FFF0F3;color:#9F1239;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Parentis</span>`;
         return`<tr><td style="font-size:11px;color:#94A3B8">${{i+1}}</td><td><div style="display:flex;align-items:center;gap:6px"><span style="width:24px;height:24px;border-radius:50%;background:${{a.av.bg}};color:${{a.av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{a.av.ini}}</span><span style="font-weight:600;font-size:11px">${{qaEscapeHtml(a.words)}}</span></div></td><td style="text-align:center">${{a.n}}</td><td><span class="qa-chip ${{chipCls}}">${{a.avg.toFixed(1)}}%</span></td><td style="text-align:center;font-size:11px">${{a.min.toFixed(1)}}%</td><td style="text-align:center;font-size:11px">${{a.max.toFixed(1)}}%</td><td style="text-align:center;color:${{a.passRate>=85?'#0F9B58':'#E85D3F'}};font-size:11px">${{a.passRate.toFixed(0)}}%</td><td>${{acctPill}}</td></tr>`;
     }}).join('')||`<tr><td colspan="8" style="text-align:center;color:#94A3B8;padding:16px">No data</td></tr>`;
@@ -4886,6 +5062,8 @@ function qaRenderTable(data) {{
             ?`<span style="background:#FFF7ED;color:#C2410C;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Britelift</span>`
             :r._acct==='RideX'
             ?`<span style="background:#F5F3FF;color:#6D28D9;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">RideX</span>`
+            :r._acct==='Hamilton'
+            ?`<span style="background:#ECFDF5;color:#065F46;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Hamilton</span>`
             :`<span style="background:#FFF0F3;color:#9F1239;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Parentis</span>`;
         const critCells=critKeys.map(k=>{{
             const v=r[k];
@@ -4939,7 +5117,8 @@ function qaUpdateEvalDist(data) {{
         {{key:'M7',color:'#4F81BD'}},
         {{key:'Parentis',color:'#2C3E8C'}},
         {{key:'Britelift',color:'#C0392B'}},
-        {{key:'RideX',color:'#8E44AD'}}
+        {{key:'RideX',color:'#8E44AD'}},
+        {{key:'Hamilton',color:'#065F46'}}
     ];
     const counts=accts.map(a=>data.filter(r=>r._acct===a.key).length);
     const total=counts.reduce((s,v)=>s+v,0);
@@ -4953,6 +5132,93 @@ function qaUpdateEvalDist(data) {{
             const pct=total?(counts[i]/total*100).toFixed(1)+'%':'0%';
             return`<div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#475569"><span style="width:8px;height:8px;border-radius:50%;background:${{a.color}};flex-shrink:0"></span><span>${{a.key}}</span><span style="margin-left:auto;font-weight:700;color:${{a.color}}">${{pct}}</span></div>`;
         }}).join('');
+    }}
+}}
+
+function qaUpdateAivh(data) {{
+    const corrected=data.filter(r=>r.status==='corrected'&&r.score_ai!=null&&r.score_human!=null&&r.score_human!=='');
+    const total=data.length;
+    const nCorr=corrected.length;
+    const avgAi=nCorr?corrected.reduce((s,r)=>s+Number(r.score_ai),0)/nCorr:0;
+    const avgHu=nCorr?corrected.reduce((s,r)=>s+Number(r.score_human),0)/nCorr:0;
+    const avgGap=avgHu-avgAi;
+
+    // Gap categories
+    const gaps=corrected.map(r=>Number(r.score_human)-Number(r.score_ai));
+    const nHgtA=gaps.filter(g=>g>0).length;
+    const nEq=gaps.filter(g=>g===0).length;
+    const nAgtH=gaps.filter(g=>g<0).length;
+    const maxGap=gaps.length?Math.max(...gaps):0;
+    const minGap=gaps.length?Math.min(...gaps):0;
+    const pHgtA=nCorr?Math.round(nHgtA/nCorr*100):0;
+    const pEq=nCorr?Math.round(nEq/nCorr*100):0;
+    const pAgtH=nCorr?Math.round(nAgtH/nCorr*100):0;
+
+    // --- KPI tile strip ---
+    const strip=document.getElementById('qa-aivh-kpi-strip');
+    if(strip){{
+        const tiles=[
+            {{label:'AI AVG SCORE',val:nCorr?avgAi.toFixed(1)+'%':'—',sub:nCorr+' corrected evals',bg:'#1E3A5F',fg:'#BFDBFE',vfg:'#EFF6FF'}},
+            {{label:'HUMAN AVG SCORE',val:nCorr?avgHu.toFixed(1)+'%':'—',sub:(avgGap>=0?'+':'')+avgGap.toFixed(1)+'% vs AI',bg:'#064E3B',fg:'#6EE7B7',vfg:'#ECFDF5'}},
+            {{label:'AVG GAP (H-AI)',val:nCorr?(avgGap>=0?'+':'')+avgGap.toFixed(1)+'%':'—',sub:'Human scored higher',bg:'#134E4A',fg:'#99F6E4',vfg:'#F0FDFA'}},
+            {{label:'HUMAN > AI',val:nHgtA,sub:pHgtA+'% of corrected',bg:'#3B0764',fg:'#D8B4FE',vfg:'#FAF5FF'}},
+            {{label:'EXACT MATCH',val:nEq,sub:pEq+'% aligned',bg:'#78350F',fg:'#FDE68A',vfg:'#FFFBEB'}},
+            {{label:'AI > HUMAN',val:nAgtH,sub:pAgtH+'% — AI scored higher',bg:'#7F1D1D',fg:'#FCA5A5',vfg:'#FEF2F2'}},
+        ];
+        strip.innerHTML=tiles.map(t=>`
+            <div style="background:${{t.bg}};border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:4px">
+                <span style="font-size:9px;font-weight:700;color:${{t.fg}};text-transform:uppercase;letter-spacing:.05em">${{t.label}}</span>
+                <span style="font-size:20px;font-weight:800;color:${{t.vfg}};line-height:1.1">${{t.val}}</span>
+                <span style="font-size:9px;color:${{t.fg}};opacity:.8">${{t.sub}}</span>
+            </div>`).join('');
+    }}
+
+    // --- Gap Distribution donut ---
+    const gapList=document.getElementById('qa-aivh-gap-list');
+    if(gapList){{
+        const cats=[
+            {{label:'Human > AI',n:nHgtA,pct:pHgtA,color:'#1D4ED8'}},
+            {{label:'Exact Match',n:nEq,pct:pEq,color:'#94A3B8'}},
+            {{label:'AI > Human',n:nAgtH,pct:pAgtH,color:'#EF4444'}},
+        ];
+        gapList.innerHTML=cats.map(c=>`
+            <div style="display:flex;align-items:center;gap:6px">
+                <span style="width:8px;height:8px;border-radius:50%;background:${{c.color}};flex-shrink:0"></span>
+                <span style="color:#475569;flex:1">${{c.label}}</span>
+                <span style="font-weight:700;color:#1E293B">${{c.n}}</span>
+                <span style="color:#94A3B8">(${{c.pct}}%)</span>
+            </div>`).join('');
+    }}
+    const gapRange=document.getElementById('qa-aivh-gap-range');
+    if(gapRange){{
+        gapRange.innerHTML=nCorr
+            ?`Max gap: <strong>+${{maxGap.toFixed(1)}}%</strong> &nbsp; Min: <strong>${{(minGap>=0?'+':'')+minGap.toFixed(1)}}%</strong>`
+            :'No corrected evals';
+    }}
+    if(qaAivhGapDonut){{
+        qaAivhGapDonut.data.datasets[0].data=[nHgtA,nEq,nAgtH];
+        qaAivhGapDonut.update();
+    }}
+
+    // --- Summary card chips + insight ---
+    const chips=document.getElementById('qa-aivh-chips');
+    if(chips){{
+        const chipData=[
+            {{label:'AI avg',val:nCorr?avgAi.toFixed(1)+'%':'—',bg:'#1E3A8A',fg:'#BFDBFE'}},
+            {{label:'Human avg',val:nCorr?avgHu.toFixed(1)+'%':'—',bg:'#065F46',fg:'#6EE7B7'}},
+            {{label:'Avg gap',val:nCorr?(avgGap>=0?'+':'')+avgGap.toFixed(1)+'%':'—',bg:'#134E4A',fg:'#99F6E4'}},
+        ];
+        chips.innerHTML=chipData.map(c=>`<div style="background:${{c.bg}};border-radius:6px;padding:6px 10px;display:flex;flex-direction:column;gap:1px"><span style="font-size:9px;color:${{c.fg}};font-weight:600;text-transform:uppercase;letter-spacing:.04em">${{c.label}}</span><span style="font-size:14px;font-weight:800;color:#F8FAFC">${{c.val}}</span></div>`).join('');
+    }}
+    const insight=document.getElementById('qa-aivh-insight');
+    if(insight){{
+        if(nCorr){{
+            const topDir=nHgtA>nAgtH?'Human QA scored higher than AI':'AI scored higher than Human QA';
+            const pctTop=nHgtA>nAgtH?pHgtA:pAgtH;
+            insight.innerHTML=`<span style="color:#FBBF24;margin-right:6px">&#8226;</span>In <strong style="color:#F8FAFC">${{pctTop}}%</strong> of corrected evals, ${{topDir}}. The average correction added <strong style="color:#F8FAFC">${{(avgGap>=0?'+':'')+avgGap.toFixed(1)}} pts</strong>, indicating QA reviewers tend to ${{avgGap>=0?'raise':'lower'}} scores after human review.`;
+        }} else {{
+            insight.textContent='No corrected evaluations in the selected period.';
+        }}
     }}
 }}
 
@@ -4997,6 +5263,9 @@ function qaApplyFilters() {{
     const acct=(document.getElementById('qa-sel-account')?.value||'').trim();
     qaToggleDistWidget(!acct);
     if(acct) qaUpdateDonut(filtered); else qaUpdateEvalDist(filtered);
+    const aivhCard=document.getElementById('qa-aivh-card');
+    if(aivhCard)aivhCard.style.display=(acct==='hamilton')?'':'none';
+    if(acct==='hamilton')qaUpdateAivh(filtered);
     const scores=filtered.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
     const agents=new Set(filtered.map(r=>r.agent).filter(Boolean));
     const avg=scores.length?qaAvg(scores):null;
@@ -5163,7 +5432,7 @@ function initQualityCharts() {{
         qaEvalDistChart=new Chart(evalDistCtx,{{
             type:'doughnut',
             plugins:[evalDistLabelPlugin],
-            data:{{labels:['M7','Parentis','Britelift','RideX'],datasets:[{{data:[0,0,0,0],backgroundColor:['#4F81BD','#2C3E8C','#C0392B','#8E44AD'],borderWidth:2,borderColor:'#fff'}}]}},
+            data:{{labels:['M7','Parentis','Britelift','RideX','Hamilton'],datasets:[{{data:[0,0,0,0,0],backgroundColor:['#4F81BD','#2C3E8C','#C0392B','#8E44AD','#065F46'],borderWidth:2,borderColor:'#fff'}}]}},
             options:{{
                 responsive:true,maintainAspectRatio:false,cutout:'50%',
                 layout:{{padding:{{top:20,bottom:20,left:42,right:42}}}},
@@ -5179,11 +5448,29 @@ function initQualityCharts() {{
         }});
     }}
 
+    const aivhDonutCtx=document.getElementById('qa-aivh-gap-donut');
+    if(aivhDonutCtx){{
+        qaAivhGapDonut=new Chart(aivhDonutCtx,{{
+            type:'doughnut',
+            data:{{
+                labels:['Human > AI','Equal','AI > Human'],
+                datasets:[{{data:[0,0,0],backgroundColor:['#1D4ED8','#94A3B8','#EF4444'],borderWidth:2,borderColor:'#fff'}}]
+            }},
+            options:{{
+                responsive:true,maintainAspectRatio:false,cutout:'68%',
+                plugins:{{
+                    legend:{{display:false}},
+                    tooltip:{{callbacks:{{label:ctx=>`${{ctx.label}}: ${{ctx.parsed}} (${{ctx.dataset.data.reduce((a,b)=>a+b,0)?Math.round(ctx.parsed/ctx.dataset.data.reduce((a,b)=>a+b,0)*100):0}}%)`}}}}
+                }}
+            }}
+        }});
+    }}
+
     qaPopulateSelects();
     qaUpdateDRPLabel();
 
     // Info pills
-    const qaAcctsLoaded=[qaRawData,parentisRawData,briteliftRawData,ridexRawData].filter(d=>d.length>0).length;
+    const qaAcctsLoaded=[qaRawData,parentisRawData,briteliftRawData,ridexRawData,hamiltonRawData].filter(d=>d.length>0).length;
     const qaPillAccts=document.getElementById('qa-pill-qa-accounts');
     if(qaPillAccts)qaPillAccts.textContent=qaAcctsLoaded+' QA Account'+(qaAcctsLoaded===1?'':'s')+' Loaded';
     const qaPillTotal=document.getElementById('qa-pill-total-accounts');
