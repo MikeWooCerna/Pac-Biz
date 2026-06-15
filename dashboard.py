@@ -189,6 +189,33 @@ HAMILTON_DIR = Path(os.getenv("HAMILTON_DIR", r"C:\Users\Mike Woo Cerna\Document
 HAMILTON_SCRIPT = HAMILTON_DIR / "Hamilton_pull.py"
 HAMILTON_OUTPUT_FILE = HAMILTON_DIR / "HAMILTON_RAW.xlsx"
 
+# Maps standard detail-table criterion keys → Hamilton base column name (without _AI/_Max suffix)
+HAMILTON_CRIT_MAP = {
+    "os_in":    "Opening_Spiel_Inbound_Call",
+    "os_out":   "Greetings_Call_Script",
+    "closing":  "Closing_Spiel",
+    "approp":   "Appropriate_Response",
+    "no_resp":  "No_Response",
+    "fillers":  "Fillers_Slang_Words",
+    "ack":      "Acknowledgement_Ownership",
+    "hold":     "Proper_Handling_of_Hold",
+    "ack_hold": "Thank_You_After_Hold",
+    "resp_eff": "Resolution_Etiquette",
+    "empathy":  "Concern_Handled_Properly",
+    "adjust":   "Professionalism",
+    "mute":     "Mute_Button_Usage",
+    "active":   "Listening_Attentively",
+    "answered": "Answers_Customer_Questions",
+    "probing":  "Probing_Questions",
+    "verif":    "Customer_Verification_Measures",
+    "clarif":   "Clarifies_When_Needed",
+    "lost_sop": "Follow_up_SOP_Lost_Item_etc",
+    "rude":     "Tone_Rudeness",
+    "trans":    "Transfer_Escalation",
+    "speech":   "Communication_Quality",
+    "gen_q":    "General_Questions",
+}
+
 COACHING_VALIDATION_ERRORS_FILE = COACHING_OUTPUT_FILE.parent / "coaching_validation_errors.csv"
 COACHING_TIMEZONE = ZoneInfo("Asia/Manila")
 COACHING_TIMEZONE_NAME = "Asia/Manila"
@@ -800,11 +827,40 @@ def transform_hamilton_data(source):
             + df["ts"].str.replace(r"[-: ]", "", regex=True)
         )
 
+    # Map Hamilton criterion columns to standard detail-table keys
+    for std_key, ham_base in HAMILTON_CRIT_MAP.items():
+        ai_col  = f"{ham_base}_AI"
+        max_col = f"{ham_base}_Max"
+        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        if std_key == "rude":
+            df[std_key] = [
+                None if mx == 0 else ("No" if ai >= mx else "Yes")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+        elif std_key == "lost_sop":
+            df[std_key] = [
+                "Not Applicable" if mx == 0 else ("Yes" if ai > 0 else "No")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+        elif std_key in {"os_out", "adjust", "gen_q", "verif", "resp_eff", "speech"}:
+            # Main Hamilton attributes — pass requires full marks (ai >= max)
+            df[std_key] = [
+                None if mx == 0 else ("Yes" if ai >= mx else "No")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+        else:
+            df[std_key] = [
+                None if mx == 0 else ("Yes" if ai > 0 else "No")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+
+    crit_keys = list(HAMILTON_CRIT_MAP.keys())
     keep = [
         "qa_id", "eval_key", "emp_id", "ts", "week_start",
         "agent", "score", "score_ai", "score_human", "status",
         "coach", "supervisor",
-    ]
+    ] + crit_keys
     return df[[c for c in keep if c in df.columns]]
 
 
@@ -2941,7 +2997,17 @@ def main():
     <div class="qa-kpi qa-kamber"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg></div><div class="qa-kpi-lbl">Lowest Score</div></div><div class="qa-kpi-val" id="qa-kpi-low">&mdash;</div><div class="qa-kpi-d qa-dd" id="qa-kpi-low-sub">&mdash;</div></div>
     <div class="qa-kpi qa-kcoral"><div class="qa-kpi-head"><div class="qa-kpi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="qa-kpi-lbl">Below 85%</div></div><div class="qa-kpi-val" id="qa-kpi-below">&mdash;</div><div class="qa-kpi-d qa-dd" id="qa-kpi-below-sub">&mdash;</div></div>
   </div>
-  <div class="qa-sum-strip">
+  <!-- Hamilton-only key criteria strip (shown when Hamilton account selected) -->
+  <div id="qa-hamilton-crit" style="display:none;padding:0 20px 8px">
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px">
+      <div class="qa-sum-card" style="border-top:3px solid #065F46"><div class="qa-sum-lbl">Greetings Script</div><div class="qa-sum-val" id="qa-hcrit-greet-val" style="color:#065F46">&mdash;</div><div class="qa-sum-sub" id="qa-hcrit-greet-sub">&mdash;</div><div class="qa-sum-score" style="color:#065F46">Hamilton criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #0F766E"><div class="qa-sum-lbl">Professionalism</div><div class="qa-sum-val" id="qa-hcrit-prof-val" style="color:#0F766E">&mdash;</div><div class="qa-sum-sub" id="qa-hcrit-prof-sub">&mdash;</div><div class="qa-sum-score" style="color:#0F766E">Hamilton criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #0891B2"><div class="qa-sum-lbl">General Questions</div><div class="qa-sum-val" id="qa-hcrit-genq-val" style="color:#0891B2">&mdash;</div><div class="qa-sum-sub" id="qa-hcrit-genq-sub">&mdash;</div><div class="qa-sum-score" style="color:#0891B2">Hamilton criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #1D4ED8"><div class="qa-sum-lbl">Cust. Verification</div><div class="qa-sum-val" id="qa-hcrit-verif-val" style="color:#1D4ED8">&mdash;</div><div class="qa-sum-sub" id="qa-hcrit-verif-sub">&mdash;</div><div class="qa-sum-score" style="color:#1D4ED8">Hamilton criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #6D28D9"><div class="qa-sum-lbl">Resolution Etiquette</div><div class="qa-sum-val" id="qa-hcrit-resol-val" style="color:#6D28D9">&mdash;</div><div class="qa-sum-sub" id="qa-hcrit-resol-sub">&mdash;</div><div class="qa-sum-score" style="color:#6D28D9">Hamilton criterion</div></div>
+    </div>
+  </div>
+  <div class="qa-sum-strip" id="qa-sum-strip-main">
     <div class="qa-sum-card" style="border-top:3px solid #0F9B58"><div class="qa-sum-lbl">Avg QA score</div><div class="qa-sum-val" id="qa-sum-avg" style="color:#0F9B58">&mdash;</div><div class="qa-sum-sub">All evaluations in range</div><div class="qa-sum-score" id="qa-sum-avg-note" style="color:#0F9B58">&mdash;</div></div>
     <div class="qa-sum-card" style="border-top:3px solid #0891B2"><div class="qa-sum-lbl">Compliance Score</div><div class="qa-sum-val" id="qa-sum-pass" style="color:#0891B2">&mdash;</div><div class="qa-sum-sub" id="qa-sum-pass-sub">&mdash;</div><div class="qa-sum-score" style="color:#0F9B58">Pass threshold: 85%</div></div>
     <div class="qa-sum-card" style="border-top:3px solid #0D3B6E"><div class="qa-sum-lbl">Top performer</div><div class="qa-sum-val" id="qa-sum-top" style="color:#0D3B6E;font-size:15px">&mdash;</div><div class="qa-sum-sub" id="qa-sum-top-sub">&mdash;</div><div class="qa-sum-score" id="qa-sum-top-pass" style="color:#0F9B58">&mdash;</div></div>
@@ -2998,7 +3064,7 @@ def main():
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:8px" id="qa-donut-legend"></div>
         </div>
         <div id="qa-eval-dist-wrap" style="display:none">
-          <div style="position:relative;height:160px;flex-shrink:0"><canvas id="qa-eval-dist-chart"></canvas></div>
+          <div style="position:relative;height:200px;flex-shrink:0"><canvas id="qa-eval-dist-chart"></canvas></div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:8px" id="qa-eval-dist-legend"></div>
         </div>
       </div>
@@ -5135,11 +5201,31 @@ function qaUpdateEvalDist(data) {{
     }}
 }}
 
+function qaUpdateHamiltonCrit(data) {{
+    const crits=[
+        {{key:'os_out',  valId:'qa-hcrit-greet-val',subId:'qa-hcrit-greet-sub'}},
+        {{key:'adjust',  valId:'qa-hcrit-prof-val', subId:'qa-hcrit-prof-sub'}},
+        {{key:'gen_q',   valId:'qa-hcrit-genq-val', subId:'qa-hcrit-genq-sub'}},
+        {{key:'verif',   valId:'qa-hcrit-verif-val',subId:'qa-hcrit-verif-sub'}},
+        {{key:'resp_eff',valId:'qa-hcrit-resol-val',subId:'qa-hcrit-resol-sub'}},
+    ];
+    crits.forEach(c=>{{
+        const rel=data.filter(r=>r[c.key]!=null&&r[c.key]!=='');
+        const passed=rel.filter(r=>r[c.key]==='Yes').length;
+        const pct=rel.length?(passed/rel.length*100).toFixed(1)+'%':'—';
+        const vEl=document.getElementById(c.valId);
+        const sEl=document.getElementById(c.subId);
+        if(vEl)vEl.textContent=pct;
+        if(sEl)sEl.textContent=rel.length?passed+' of '+rel.length+' passed':'No data';
+    }});
+}}
+
 function qaUpdateAivh(data) {{
     const corrected=data.filter(r=>r.status==='corrected'&&r.score_ai!=null&&r.score_human!=null&&r.score_human!=='');
     const total=data.length;
     const nCorr=corrected.length;
-    const avgAi=nCorr?corrected.reduce((s,r)=>s+Number(r.score_ai),0)/nCorr:0;
+    const allAiVals=data.filter(r=>r.score_ai!=null).map(r=>Number(r.score_ai));
+    const avgAi=allAiVals.length?allAiVals.reduce((s,v)=>s+v,0)/allAiVals.length:0;
     const avgHu=nCorr?corrected.reduce((s,r)=>s+Number(r.score_human),0)/nCorr:0;
     const avgGap=avgHu-avgAi;
 
@@ -5158,7 +5244,7 @@ function qaUpdateAivh(data) {{
     const strip=document.getElementById('qa-aivh-kpi-strip');
     if(strip){{
         const tiles=[
-            {{label:'AI AVG SCORE',val:nCorr?avgAi.toFixed(1)+'%':'—',sub:nCorr+' corrected evals',bg:'#1E3A5F',fg:'#BFDBFE',vfg:'#EFF6FF'}},
+            {{label:'AI AVG SCORE',val:avgAi>0?avgAi.toFixed(1)+'%':'—',sub:total+' total evals',bg:'#1E3A5F',fg:'#BFDBFE',vfg:'#EFF6FF'}},
             {{label:'HUMAN AVG SCORE',val:nCorr?avgHu.toFixed(1)+'%':'—',sub:(avgGap>=0?'+':'')+avgGap.toFixed(1)+'% vs AI',bg:'#064E3B',fg:'#6EE7B7',vfg:'#ECFDF5'}},
             {{label:'AVG GAP (H-AI)',val:nCorr?(avgGap>=0?'+':'')+avgGap.toFixed(1)+'%':'—',sub:'Human scored higher',bg:'#134E4A',fg:'#99F6E4',vfg:'#F0FDFA'}},
             {{label:'HUMAN > AI',val:nHgtA,sub:pHgtA+'% of corrected',bg:'#3B0764',fg:'#D8B4FE',vfg:'#FAF5FF'}},
@@ -5266,6 +5352,11 @@ function qaApplyFilters() {{
     const aivhCard=document.getElementById('qa-aivh-card');
     if(aivhCard)aivhCard.style.display=(acct==='hamilton')?'':'none';
     if(acct==='hamilton')qaUpdateAivh(filtered);
+    const hCritEl=document.getElementById('qa-hamilton-crit');
+    if(hCritEl)hCritEl.style.display=(acct==='hamilton')?'':'none';
+    if(acct==='hamilton')qaUpdateHamiltonCrit(filtered);
+    const sumStripMain=document.getElementById('qa-sum-strip-main');
+    if(sumStripMain)sumStripMain.style.display=(acct==='hamilton')?'none':'';
     const scores=filtered.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
     const agents=new Set(filtered.map(r=>r.agent).filter(Boolean));
     const avg=scores.length?qaAvg(scores):null;
@@ -5396,34 +5487,82 @@ function initQualityCharts() {{
             options:{{responsive:true,maintainAspectRatio:false,cutout:'50%',layout:{{padding:8}},plugins:{{legend:{{display:false}},tooltip:{{callbacks:{{label:ctx=>`${{ctx.label}}: ${{ctx.parsed}}`}}}}}}}}
         }});
     }}
+    // Slices below 2 % of total get no outside label (still shown in tooltip/legend).
+    // All visible labels go into two fixed columns — one left, one right — so they are
+    // always outside the arc ring regardless of slice angle.  Collisions are resolved
+    // by spreading labels vertically within each column.
     const evalDistLabelPlugin={{
         id:'qaEvalDistLabels',
         afterDatasetsDraw(chart){{
             const ds=chart.data.datasets[0],meta=chart.getDatasetMeta(0),ctx2=chart.ctx;
             const total=ds.data.reduce((a,b)=>a+(b||0),0);
             if(!total)return;
+            const validArcs=meta.data.filter(a=>a.outerRadius>0);
+            if(!validArcs.length)return;
+            const CX=validArcs[0].x, CY=validArcs[0].y, OR=validArcs[0].outerRadius;
+            const area=chart.chartArea;
             ctx2.save();
+
+            // Pass 1 — count inside arc (skip arcs too thin to read)
             meta.data.forEach((arc,i)=>{{
                 const v=ds.data[i];if(!v)return;
+                if(arc.endAngle-arc.startAngle<0.3)return;
                 const mid=(arc.startAngle+arc.endAngle)/2;
-                const cx=arc.x,cy=arc.y;
-                const midR=(arc.innerRadius+arc.outerRadius)/2;
-                // Count inside arc
-                ctx2.font='bold 13px sans-serif';ctx2.fillStyle='#fff';ctx2.textAlign='center';ctx2.textBaseline='middle';
-                ctx2.fillText(v,cx+Math.cos(mid)*midR,cy+Math.sin(mid)*midR);
-                // Leader line + account name outside
-                const x1=cx+Math.cos(mid)*(arc.outerRadius+4);
-                const y1=cy+Math.sin(mid)*(arc.outerRadius+4);
-                const x2=cx+Math.cos(mid)*(arc.outerRadius+16);
-                const y2=cy+Math.sin(mid)*(arc.outerRadius+16);
-                const right=Math.cos(mid)>=0;
-                const x3=x2+(right?8:-8),y3=y2;
-                ctx2.beginPath();ctx2.moveTo(x1,y1);ctx2.lineTo(x2,y2);ctx2.lineTo(x3,y3);
-                ctx2.strokeStyle=ds.backgroundColor[i];ctx2.lineWidth=1.5;ctx2.stroke();
-                ctx2.font='bold 10px sans-serif';ctx2.fillStyle=ds.backgroundColor[i];
-                ctx2.textAlign=right?'left':'right';ctx2.textBaseline='middle';
-                ctx2.fillText(chart.data.labels[i],x3+(right?3:-3),y3);
+                const r=(arc.innerRadius+arc.outerRadius)/2;
+                ctx2.font='bold 13px sans-serif';ctx2.fillStyle='#fff';
+                ctx2.textAlign='center';ctx2.textBaseline='middle';
+                ctx2.fillText(v,CX+Math.cos(mid)*r,CY+Math.sin(mid)*r);
             }});
+
+            // Pass 2 — collect outside-label candidates (>= 2 % of total)
+            const lbs=[];
+            meta.data.forEach((arc,i)=>{{
+                const v=ds.data[i];if(!v||v/total<0.02)return;
+                const mid=(arc.startAngle+arc.endAngle)/2;
+                const cm=Math.cos(mid),sm=Math.sin(mid);
+                lbs.push({{i,v,mid,cm,sm,
+                    label:chart.data.labels[i],color:ds.backgroundColor[i],
+                    right:cm>=0,y:CY+sm*(OR+18)}});
+            }});
+
+            // Fixed columns — always clear of the arc ring
+            const COL_OFF=24, TICK=9;
+            const rColX=CX+OR+COL_OFF, lColX=CX-OR-COL_OFF;
+
+            // Pass 3 — deterministic spread: centre labels around their idealY centroid,
+            // evenly spaced by MIN_GAP, then clamp the whole group inside the chart area.
+            const MIN_GAP=17;
+            for(const isRight of [true,false]){{
+                const grp=lbs.filter(l=>l.right===isRight).sort((a,b)=>a.y-b.y);
+                if(!grp.length)continue;
+                const n=grp.length;
+                const span=(n-1)*MIN_GAP;
+                const centY=grp.reduce((s,l)=>s+l.y,0)/n;
+                let startY=centY-span/2;
+                startY=Math.max(area.top+6,Math.min(area.bottom-6-span,startY));
+                grp.forEach((lb,i)=>{{lb.y=startY+i*MIN_GAP;}});
+            }}
+
+            // Pass 4 — draw leader line and label
+            lbs.forEach(lb=>{{
+                const dir=lb.right?1:-1;
+                const colX=lb.right?rColX:lColX;
+                const tickEndX=colX+dir*TICK;
+                const ax=CX+lb.cm*OR, ay=CY+lb.sm*OR;   // arc surface
+                const sx=CX+lb.cm*(OR+5), sy=CY+lb.sm*(OR+5); // 5 px radial stub
+
+                ctx2.beginPath();
+                ctx2.moveTo(ax,ay);
+                ctx2.lineTo(sx,sy);         // radial stub
+                ctx2.lineTo(colX,lb.y);     // diagonal to column at resolved y
+                ctx2.lineTo(tickEndX,lb.y); // horizontal tick
+                ctx2.strokeStyle=lb.color;ctx2.lineWidth=1.5;ctx2.stroke();
+
+                ctx2.font='bold 10px sans-serif';ctx2.fillStyle=lb.color;
+                ctx2.textAlign=lb.right?'left':'right';ctx2.textBaseline='middle';
+                ctx2.fillText(lb.label,tickEndX+dir*3,lb.y);
+            }});
+
             ctx2.restore();
         }}
     }};
@@ -5435,7 +5574,7 @@ function initQualityCharts() {{
             data:{{labels:['M7','Parentis','Britelift','RideX','Hamilton'],datasets:[{{data:[0,0,0,0,0],backgroundColor:['#4F81BD','#2C3E8C','#C0392B','#8E44AD','#065F46'],borderWidth:2,borderColor:'#fff'}}]}},
             options:{{
                 responsive:true,maintainAspectRatio:false,cutout:'50%',
-                layout:{{padding:{{top:20,bottom:20,left:42,right:42}}}},
+                layout:{{padding:{{top:28,bottom:28,left:28,right:28}}}},
                 plugins:{{
                     legend:{{display:false}},
                     tooltip:{{callbacks:{{label:ctx=>{{
