@@ -1440,20 +1440,20 @@ def _qa_block_html(aid, display_name, live_banner_name, badge_label, badge_cls, 
       <div class="qa-g3">
         <div class="qa-card">
           <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>QA Score Trend</div><div class="qa-cs" id="{aid}-trend-sub">Weekly avg (Mon&ndash;Sun) &middot; Target: {threshold}%</div></div><span class="qa-cb qa-cbg" id="{aid}-trend-badge">&mdash;</span></div>
-          <div class="qa-cbody" style="padding:10px 14px;display:flex;flex-direction:column"><div style="position:relative;flex:1;min-height:140px"><canvas id="{aid}-trend-chart"></canvas></div></div>
+          <div class="qa-cbody" style="padding:6px 10px;display:flex;flex-direction:column"><div style="position:relative;flex:1;min-height:90px"><canvas id="{aid}-trend-chart"></canvas></div></div>
         </div>
         <div class="qa-card">
           <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>Criteria pass rates</div><div class="qa-cs" id="{aid}-crit-sub">All 22 criteria &middot; sorted by pass rate</div></div><span class="qa-cb qa-cba">Account specific</span></div>
           <div style="padding:0 14px">
-            <div style="max-height:220px;overflow-y:auto;padding:10px 0;border-bottom:1px solid #E2E8F0" id="{aid}-criteria-bars"></div>
-            <div style="padding:6px 0 8px;font-size:10px;color:#CBD5E1">&#9679; Scroll to see all 22 criteria</div>
+            <div style="max-height:120px;overflow-y:auto;padding:4px 0;border-bottom:1px solid #E2E8F0" id="{aid}-criteria-bars"></div>
+            <div style="padding:3px 0 4px;font-size:10px;color:#CBD5E1">&#9679; Scroll to see all 22 criteria</div>
           </div>
         </div>
         <div class="qa-card">
           <div class="qa-ch"><div><div class="qa-ct">Score distribution</div><div class="qa-cs" id="{aid}-donut-sub">All evaluations</div></div></div>
-          <div class="qa-cbody" style="padding:10px 14px">
-            <div style="position:relative;height:160px"><canvas id="{aid}-donut-chart"></canvas></div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:8px" id="{aid}-donut-legend"></div>
+          <div class="qa-cbody" style="padding:6px 10px">
+            <div style="position:relative;height:130px"><canvas id="{aid}-donut-chart"></canvas></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:5px" id="{aid}-donut-legend"></div>
           </div>
         </div>
       </div>
@@ -2625,16 +2625,16 @@ def main():
     #qualityPanel .qa-g3 {{ display:grid;grid-template-columns:1.6fr 1fr 1fr 0.85fr;gap:12px }}
     #qualityPanel .qa-g2 {{ display:grid;grid-template-columns:1.3fr 1fr;gap:12px }}
     #qualityPanel .qa-card {{ background:#fff;border-radius:10px;border:1px solid #E2E8F0;overflow:hidden;display:flex;flex-direction:column }}
-    #qualityPanel .qa-ch {{ padding:11px 16px;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;justify-content:space-between;gap:8px }}
+    #qualityPanel .qa-ch {{ padding:7px 12px;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;justify-content:space-between;gap:8px }}
     #qualityPanel .qa-ct {{ font-size:12px;font-weight:700;color:#1E293B;display:flex;align-items:center;gap:6px }}
     #qualityPanel .qa-ct svg {{ width:13px;height:13px;color:#94A3B8 }}
     #qualityPanel .qa-cs {{ font-size:10px;color:#94A3B8;margin-top:1px }}
-    #qualityPanel .qa-cbody {{ padding:12px 16px;flex:1 }}
+    #qualityPanel .qa-cbody {{ padding:8px 12px;flex:1 }}
     #qualityPanel .qa-cb {{ font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;white-space:nowrap }}
     #qualityPanel .qa-cbg {{ background:#F0FDF4;color:#15803D }} #qualityPanel .qa-cbb {{ background:#EFF6FF;color:#1D4ED8 }}
     #qualityPanel .qa-cba {{ background:#FFFBEB;color:#B45309 }} #qualityPanel .qa-cbr {{ background:#FEF2F2;color:#DC2626 }}
     /* Criteria bars */
-    #qualityPanel .qa-cr-row {{ display:flex;align-items:center;gap:8px;margin-bottom:7px }}
+    #qualityPanel .qa-cr-row {{ display:flex;align-items:center;gap:6px;margin-bottom:4px }}
     #qualityPanel .qa-cr-row:last-child {{ margin-bottom:0 }}
     #qualityPanel .qa-cr-lbl {{ font-size:11px;color:#374151;font-weight:500;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0 }}
     #qualityPanel .qa-cr-elig {{ font-size:9px;color:#CBD5E1;min-width:24px;text-align:center;flex-shrink:0 }}
@@ -2652,7 +2652,7 @@ def main():
     #qualityPanel .qa-chip {{ display:inline-block;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:700 }}
     #qualityPanel .qa-cg {{ background:#F0FDF4;color:#15803D }} #qualityPanel .qa-cam {{ background:#FFFBEB;color:#B45309 }} #qualityPanel .qa-crr {{ background:#FEF2F2;color:#DC2626 }}
     /* Coaching bars */
-    #qualityPanel .qa-cch-row {{ display:flex;align-items:center;gap:8px;margin-bottom:8px }}
+    #qualityPanel .qa-cch-row {{ display:flex;align-items:center;gap:6px;margin-bottom:4px }}
     #qualityPanel .qa-cch-row:last-child {{ margin-bottom:0 }}
     #qualityPanel .qa-cch-lbl {{ font-size:11px;font-weight:500;color:#374151;width:158px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis }}
     #qualityPanel .qa-cch-bg {{ flex:1;height:7px;background:#F1F5F9;border-radius:4px;overflow:hidden }}
@@ -3038,34 +3038,34 @@ def main():
   <div class="qa-g3">
     <div class="qa-card">
       <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>QA Score Trend</div><div class="qa-cs" id="qa-trend-sub">Weekly avg (Mon&ndash;Sun) &middot; Target: 85%</div></div><span class="qa-cb qa-cbg" id="qa-trend-badge">&mdash;</span></div>
-      <div class="qa-cbody" style="padding:10px 14px;display:flex;flex-direction:column"><div style="position:relative;flex:1;min-height:140px"><canvas id="qa-trend-chart"></canvas></div></div>
+      <div class="qa-cbody" style="padding:6px 10px;display:flex;flex-direction:column"><div style="position:relative;flex:1;min-height:90px"><canvas id="qa-trend-chart"></canvas></div></div>
     </div>
     <div class="qa-card">
       <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>Criteria pass rates</div><div class="qa-cs" id="qa-crit-sub">All 22 criteria &middot; sorted by pass rate</div></div><span class="qa-cb qa-cba">Score breakdown</span></div>
       <div style="padding:0 14px;flex:1;display:flex;flex-direction:column;justify-content:center">
-        <div style="max-height:220px;overflow-y:auto;padding:10px 0;border-bottom:1px solid #E2E8F0" id="qa-criteria-bars"></div>
-        <div style="padding:6px 0 8px;font-size:10px;color:#CBD5E1">&#9679; Scroll to see all 22 criteria</div>
+        <div style="max-height:120px;overflow-y:auto;padding:4px 0;border-bottom:1px solid #E2E8F0" id="qa-criteria-bars"></div>
+        <div style="padding:3px 0 4px;font-size:10px;color:#CBD5E1">&#9679; Scroll to see all 22 criteria</div>
       </div>
     </div>
     <div class="qa-card">
       <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg>Coaching opportunities</div><div class="qa-cs">Criteria below 95% pass rate</div></div><span class="qa-cb qa-cbr" id="qa-coaching-count">&mdash;</span></div>
-      <div class="qa-cbody" style="padding:10px 16px">
-        <div id="qa-coaching-bars"></div>
-        <div style="height:1px;background:#F1F5F9;margin:12px 0"></div>
-        <div style="font-size:10px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.04em;margin-bottom:7px">QA coach breakdown</div>
+      <div class="qa-cbody" style="padding:6px 10px">
+        <div id="qa-coaching-bars" style="max-height:110px;overflow-y:auto"></div>
+        <div style="height:1px;background:#F1F5F9;margin:6px 0"></div>
+        <div style="font-size:10px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px">QA coach breakdown</div>
         <div style="display:flex;gap:8px" id="qa-coach-breakdown"></div>
       </div>
     </div>
     <div class="qa-card">
       <div class="qa-ch"><div><div class="qa-ct" id="qa-dist-title">Score distribution</div><div class="qa-cs" id="qa-donut-sub">All evaluations</div></div></div>
-      <div class="qa-cbody" style="padding:10px 14px;display:flex;flex-direction:column;justify-content:center">
+      <div class="qa-cbody" style="padding:6px 10px;display:flex;flex-direction:column;justify-content:center">
         <div id="qa-score-dist-wrap">
-          <div style="position:relative;height:160px;flex-shrink:0"><canvas id="qa-donut-chart"></canvas></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:8px" id="qa-donut-legend"></div>
+          <div style="position:relative;height:130px;flex-shrink:0"><canvas id="qa-donut-chart"></canvas></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:5px" id="qa-donut-legend"></div>
         </div>
         <div id="qa-eval-dist-wrap" style="display:none">
-          <div style="position:relative;height:200px;flex-shrink:0"><canvas id="qa-eval-dist-chart"></canvas></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:8px" id="qa-eval-dist-legend"></div>
+          <div style="position:relative;height:150px;flex-shrink:0"><canvas id="qa-eval-dist-chart"></canvas></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:5px" id="qa-eval-dist-legend"></div>
         </div>
       </div>
     </div>
