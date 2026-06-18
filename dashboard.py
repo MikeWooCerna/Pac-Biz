@@ -5309,6 +5309,8 @@ function qaRenderLeaderboard(data) {{
             ?`<span style="background:#F5F3FF;color:#6D28D9;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">RideX</span>`
             :a.acct==='Hamilton'
             ?`<span style="background:#ECFDF5;color:#065F46;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Hamilton</span>`
+            :a.acct==='Skyline'
+            ?`<span style="background:#F0F9FF;color:#0369A1;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Skyline</span>`
             :`<span style="background:#FFF0F3;color:#9F1239;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Parentis</span>`;
         return`<tr><td style="font-size:11px;color:#94A3B8">${{i+1}}</td><td><div style="display:flex;align-items:center;gap:6px"><span style="width:24px;height:24px;border-radius:50%;background:${{a.av.bg}};color:${{a.av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{a.av.ini}}</span><span style="font-weight:600;font-size:11px">${{qaEscapeHtml(a.words)}}</span></div></td><td style="text-align:center">${{a.n}}</td><td><span class="qa-chip ${{chipCls}}">${{a.avg.toFixed(1)}}%</span></td><td style="text-align:center;font-size:11px">${{a.min.toFixed(1)}}%</td><td style="text-align:center;font-size:11px">${{a.max.toFixed(1)}}%</td><td style="text-align:center;color:${{a.passRate>=85?'#0F9B58':'#E85D3F'}};font-size:11px">${{a.passRate.toFixed(0)}}%</td><td>${{acctPill}}</td></tr>`;
     }}).join('')||`<tr><td colspan="8" style="text-align:center;color:#94A3B8;padding:16px">No data</td></tr>`;
@@ -5377,6 +5379,8 @@ function qaRenderTable(data) {{
             ?`<span style="background:#F5F3FF;color:#6D28D9;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">RideX</span>`
             :r._acct==='Hamilton'
             ?`<span style="background:#ECFDF5;color:#065F46;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Hamilton</span>`
+            :r._acct==='Skyline'
+            ?`<span style="background:#F0F9FF;color:#0369A1;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Skyline</span>`
             :`<span style="background:#FFF0F3;color:#9F1239;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Parentis</span>`;
         const critCells=critKeys.map(k=>{{
             const v=r[k];
