@@ -3235,6 +3235,7 @@ def main():
         </div>
         <div id="coachingSummaryTable"></div>
         <div class="disclaimer">Coaching will be only be counted once status is <span class="completed-word">Completed</span></div>
+        <div id="summaryCoachingCov" style="height:310px;max-width:360px;margin:10px auto 0"></div>
     </div>
     <div class="empty-widget-space" id="summarySpacer"></div>
     <div class="chart-card full" id="coachingLogsCard">
@@ -4628,25 +4629,65 @@ function coachingStatusChart(data) {{
     );
 }}
 
-function coachingCoverageChart(data) {{
-    const coachedSet = new Set(data.map(r => r["Emp Name"]).filter(Boolean));
-    const baseData = coachingData.filter(r =>
-        filterMatches(COACHING_FILTERS.emp, norm(r["Emp Name"])) &&
-        filterMatches(COACHING_FILTERS.leader, norm(r["Coached by"]))
-    );
-    const totalSet = new Set(baseData.map(r => r["Emp Name"]).filter(Boolean));
+function getCoverageStatus(pct) {{
+    if(pct >= 75) return '🟢 Full Coverage';
+    if(pct >= 50) return '🔵 High Coverage';
+    if(pct >= 25) return '🟠 Moderate Coverage';
+    return '🔴 Low Coverage';
+}}
+
+function computeCoachingCoverageMetrics(data) {{
+    const completedCount = data.filter(r => isCompletedStatus(r["Coaching Status"])).length;
+    const coachedSet = new Set(data.map(r => norm(r["Emp Name"])).filter(Boolean));
     const coachedCount = coachedSet.size;
-    const totalCount = Math.max(totalSet.size, coachedCount);
-    const notCoachedCount = Math.max(0, totalCount - coachedCount);
-    const coverageRows = [
-        {{name: "Coached", count: coachedCount}},
-        {{name: "Not Coached", count: notCoachedCount}},
-    ];
-    renderDonutWithSummary(
-        "coachingCoverageDonut", "Coaching Coverage",
-        coverageRows, ["#00A651", "#CBD5E1"],
-        "Total Direct Reports", "percent", " Agents"
-    );
+    const mlBySup = {{}};
+    const hasStatus = masterlist.some(r => (r["Employment Status"] || "").trim() !== "");
+    masterlist.forEach(r => {{
+        const sup = norm(r["Immediate Supervisor"]);
+        const emp = norm(r["Emp Name"]);
+        if(!sup || !emp) return;
+        if(hasStatus) {{
+            const st = (r["Employment Status"] || "").toLowerCase().trim();
+            if(st && st !== "active") return;
+        }}
+        if(!mlBySup[sup]) mlBySup[sup] = new Set();
+        mlBySup[sup].add(emp);
+    }});
+    const dataLeaders = [...new Set(data.map(r => norm(r["Coached by"])).filter(Boolean))];
+    const leadersInML = dataLeaders.filter(l => mlBySup[l]);
+    let totalDR = null, coveragePct = null, coverageStatus;
+    if(dataLeaders.length === 0) {{
+        totalDR = 0; coveragePct = 0; coverageStatus = getCoverageStatus(0);
+    }} else if(leadersInML.length === 0) {{
+        coverageStatus = '⚪ Direct Reports Not Configured';
+    }} else {{
+        const allDR = new Set();
+        leadersInML.forEach(l => mlBySup[l].forEach(e => allDR.add(e)));
+        totalDR = allDR.size;
+        coveragePct = totalDR > 0 ? Math.round((coachedCount / totalDR) * 100) : 0;
+        coverageStatus = getCoverageStatus(coveragePct);
+        if(leadersInML.length < dataLeaders.length) coverageStatus += ' (partial data)';
+    }}
+    return {{ completedCount, coachedCount, totalDR, coveragePct, coverageStatus }};
+}}
+
+function _renderCoverageDonut(elementId, metrics) {{
+    const totalDR = metrics.totalDR !== null ? metrics.totalDR : metrics.coachedCount;
+    const notCoachedCount = Math.max(0, totalDR - metrics.coachedCount);
+    const coverageRows = metrics.totalDR !== null
+        ? [{{name: "Coached", count: metrics.coachedCount}}, {{name: "Not Coached", count: notCoachedCount}}]
+        : [{{name: "Coached", count: metrics.coachedCount}}];
+    const colors = metrics.totalDR !== null ? ["#00A651", "#CBD5E1"] : ["#00A651"];
+    const totalLabel = metrics.totalDR !== null ? "Total Direct Reports" : "Coached Agents";
+    renderDonutWithSummary(elementId, "Coaching Coverage", coverageRows, colors, totalLabel, "percent", " Agents");
+}}
+
+function coachingCoverageChart(metrics) {{
+    _renderCoverageDonut("coachingCoverageDonut", metrics);
+}}
+
+function coachingSummaryCoverageChart(metrics) {{
+    _renderCoverageDonut("summaryCoachingCov", metrics);
 }}
 
 function gaugePoint(cx, cy, radius, angle) {{
@@ -4919,21 +4960,27 @@ function renderCoaching() {{
     setText("coachingCompleted", completed);
     setText("coachingPending", pending);
 
-    const meta = document.getElementById("coachingLoadedMeta");
-    if (meta) {{
-        meta.textContent = `${{data.length.toLocaleString()}} of ${{coachingData.length.toLocaleString()}} records shown`;
+    const loadedMeta = document.getElementById("coachingLoadedMeta");
+    if(loadedMeta) {{
+        loadedMeta.textContent = `${{data.length.toLocaleString()}} of ${{coachingData.length.toLocaleString()}} records shown`;
     }}
+
+    const covMetrics = computeCoachingCoverageMetrics(data);
 
     coachingCategoryChart(data);
     coachingStatusChart(data);
-    coachingCoverageChart(data);
+    coachingCoverageChart(covMetrics);
     coachingConfidenceGauge(data);
+
     const summary = coachingSummaryPivot(data);
     const summaryMeta = document.getElementById("coachingSummaryMeta");
-    if (summaryMeta) {{
-        summaryMeta.textContent = `${{summary.completedCount.toLocaleString()}} completed coaching sessions`;
+    if(summaryMeta) {{
+        const drStr = covMetrics.totalDR !== null ? covMetrics.totalDR : "Unknown";
+        const covStr = covMetrics.coveragePct !== null ? `${{covMetrics.coveragePct}}%` : "N/A";
+        summaryMeta.textContent = `${{covMetrics.completedCount.toLocaleString()}} Sessions | ${{covMetrics.coachedCount}}/${{drStr}} Agents Coached | ${{covStr}} Coverage | ${{covMetrics.coverageStatus}}`;
     }}
     renderDataTable("coachingSummaryTable", summary.rows, summary.columns);
+    coachingSummaryCoverageChart(covMetrics);
     coachingTable(data);
 }}
 
