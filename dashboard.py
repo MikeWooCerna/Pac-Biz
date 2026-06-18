@@ -2211,7 +2211,7 @@ def main():
     .coaching-chart-row {{
         display: grid;
         grid-column: 1 / -1;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 12px;
     }}
     .coaching-chart-row .chart-card {{
@@ -3216,6 +3216,10 @@ def main():
         <div class="chart-card" id="coaching-status-card">
             <button class="coaching-expand-btn" onclick="toggleCoachingCardExpand('coaching-status-card')" title="Expand"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button>
             <div id="coachingStatusDonut"></div>
+        </div>
+        <div class="chart-card" id="coaching-cov-card">
+            <button class="coaching-expand-btn" onclick="toggleCoachingCardExpand('coaching-cov-card')" title="Expand"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button>
+            <div id="coachingCoverageDonut"></div>
         </div>
         <div class="chart-card" id="coaching-conf-card">
             <button class="coaching-expand-btn" onclick="toggleCoachingCardExpand('coaching-conf-card')" title="Expand"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button>
@@ -4624,6 +4628,27 @@ function coachingStatusChart(data) {{
     );
 }}
 
+function coachingCoverageChart(data) {{
+    const coachedSet = new Set(data.map(r => r["Emp Name"]).filter(Boolean));
+    const baseData = coachingData.filter(r =>
+        filterMatches(COACHING_FILTERS.emp, norm(r["Emp Name"])) &&
+        filterMatches(COACHING_FILTERS.leader, norm(r["Coached by"]))
+    );
+    const totalSet = new Set(baseData.map(r => r["Emp Name"]).filter(Boolean));
+    const coachedCount = coachedSet.size;
+    const totalCount = Math.max(totalSet.size, coachedCount);
+    const notCoachedCount = Math.max(0, totalCount - coachedCount);
+    const coverageRows = [
+        {{name: "Coached", count: coachedCount}},
+        {{name: "Not Coached", count: notCoachedCount}},
+    ];
+    renderDonutWithSummary(
+        "coachingCoverageDonut", "Coaching Coverage",
+        coverageRows, ["#00A651", "#CBD5E1"],
+        "Total Direct Reports", "percent", " Agents"
+    );
+}}
+
 function gaugePoint(cx, cy, radius, angle) {{
     const rad = angle * Math.PI / 180;
     return {{
@@ -4901,6 +4926,7 @@ function renderCoaching() {{
 
     coachingCategoryChart(data);
     coachingStatusChart(data);
+    coachingCoverageChart(data);
     coachingConfidenceGauge(data);
     const summary = coachingSummaryPivot(data);
     const summaryMeta = document.getElementById("coachingSummaryMeta");
