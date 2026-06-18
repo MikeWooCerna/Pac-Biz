@@ -560,8 +560,8 @@ def read_m7_workbook():
 
 # Canonical agent/supervisor name aliases (key = lowercase stripped variant)
 NAME_ALIASES = {
-    "espeleta, kenneth b": "Kenneth Espeleta",
-    "kenneth espeleta":    "Kenneth Espeleta",
+    "espeleta, kenneth b": "Espeleta, Kenneth B",
+    "kenneth espeleta":    "Espeleta, Kenneth B",
 }
 
 def _apply_name_aliases(series):
@@ -926,6 +926,9 @@ def transform_hamilton_data(source):
         "agent", "score", "score_ai", "score_human", "status",
         "coach", "supervisor",
     ] + crit_keys
+    for col in ("agent", "supervisor", "coach"):
+        if col in df.columns:
+            df[col] = _apply_name_aliases(df[col])
     return df[[c for c in keep if c in df.columns]]
 
 
@@ -1104,6 +1107,9 @@ def transform_skyline_data(source):
         "agent", "score", "score_ai", "score_human", "status",
         "coach", "supervisor",
     ] + crit_keys
+    for col in ("agent", "supervisor", "coach"):
+        if col in df.columns:
+            df[col] = _apply_name_aliases(df[col])
     return df[[c for c in keep if c in df.columns]]
 
 
