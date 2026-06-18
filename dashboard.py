@@ -189,6 +189,10 @@ HAMILTON_DIR = Path(os.getenv("HAMILTON_DIR", r"C:\Users\Mike Woo Cerna\Document
 HAMILTON_SCRIPT = HAMILTON_DIR / "Hamilton_pull.py"
 HAMILTON_OUTPUT_FILE = HAMILTON_DIR / "HAMILTON_RAW.xlsx"
 
+SKYLINE_DIR = Path(os.getenv("SKYLINE_DIR", r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\Skyline"))
+SKYLINE_SCRIPT = SKYLINE_DIR / "Skyline_pull.py"
+SKYLINE_OUTPUT_FILE = SKYLINE_DIR / "SKYLINE_RAW.xlsx"
+
 # Maps standard detail-table criterion keys → Hamilton base column name (without _AI/_Max suffix)
 HAMILTON_CRIT_MAP = {
     "os_in":    "Opening_Spiel_Inbound_Call",
@@ -214,6 +218,49 @@ HAMILTON_CRIT_MAP = {
     "trans":    "Transfer_Escalation",
     "speech":   "Communication_Quality",
     "gen_q":    "General_Questions",
+}
+
+# Maps standard detail-table criterion keys → Skyline base column name (without _AI/_Max suffix)
+SKYLINE_CRIT_MAP = {
+    "os_in":    "Opening_Spiel_Inbound_Call",
+    "os_out":   "Greetings_Call_Script",
+    "closing":  "Closing_Spiel",
+    "approp":   "Appropriate_Response",
+    "no_resp":  "No_Response",
+    "fillers":  "Fillers_Slang_Words",
+    "ack":      "Acknowledgment_Ownership",
+    "hold":     "Proper_Handling_of_Pauses_or_Hold_Requests",
+    "ack_hold": "Acknowledges_and_Thanks_the_Customer_for_Waiting",
+    "resp_eff": "Resolution_Etiquette",
+    "empathy":  "Empathy_Sympathy",
+    "adjust":   "Professionalism",
+    "mute":     "Mute_Button_Usage",
+    "active":   "Listening_Attentively",
+    "answered": "Answered_Customer_s_Questions",
+    "probing":  "Probing_Questions",
+    "verif":    "Customer_Verification_Measures",
+    "clarif":   "Clarification_When_Information_is_Missed",
+    "lost_sop": "Lost_Item_SOP",
+    "rude":     "Rudeness",
+    "trans":    "Successfully_Processed",
+    "speech":   "Communication_Quality",
+    "gen_q":    "General_Questions",
+}
+
+# Skyline-unique criteria not in the standard QA_CRIT_META
+SKYLINE_EXTRA_CRIT_MAP = {
+    "sl_avoid_int":  "Avoiding_Interruptions_Verbal_Collision",
+    "sl_no_vern":    "No_Vernacular_Local_Language",
+    "sl_dead_air_l": "Dead_Air_Length_of_Pause",
+    "sl_dead_air_nr":"Dead_Air_Spiel_No_Response_from_Customer",
+    "sl_verif_sub":  "Customer_Verification",
+    "sl_ride_cncl":  "Ride_Cancellation_SOP",
+    "sl_timeliness": "Timeliness_in_Handling",
+    "sl_stutter":    "Stuttering",
+    "sl_grammar":    "Grammar",
+    "sl_pronunc":    "Pronunciation",
+    "sl_tone":       "Tone_of_Voice",
+    "sl_prolong":    "Prolonging_the_Call",
 }
 
 COACHING_VALIDATION_ERRORS_FILE = COACHING_OUTPUT_FILE.parent / "coaching_validation_errors.csv"
@@ -912,6 +959,184 @@ def load_hamilton_data():
     return result
 
 
+def transform_skyline_data(source):
+    df = source.copy()
+    rename = {
+        "evaluation_date":     "ts",
+        "Emp Name":            "agent",
+        "QA":                  "coach",
+        "Immediate Supervisor":"supervisor",
+        "evaluation_status":   "status",
+        "overall_score_ai":    "score_ai",
+        "overall_score_human": "score_human",
+        "QA_ID":               "qa_id",
+        "EMPLOYEE_ID":         "emp_id",
+    }
+    df = df.rename(columns={k: v for k, v in rename.items() if k in df.columns})
+
+    def fmt_ts(v):
+        try:
+            dt = pd.to_datetime(str(v), errors="coerce")
+            if pd.notna(dt):
+                return dt.strftime("%Y-%m-%d %H:%M")
+        except Exception:
+            pass
+        return ""
+
+    if "ts" in df.columns:
+        df["ts"] = df["ts"].apply(fmt_ts)
+
+    if "status" in df.columns:
+        df["status"] = df["status"].apply(
+            lambda v: str(v).strip().lower() if str(v).strip() not in ("", "nan") else "rated"
+        )
+
+    score_ai_s = pd.to_numeric(df.get("score_ai", pd.Series(dtype=float)), errors="coerce").fillna(0)
+    df["score_ai"] = score_ai_s.round(1)
+
+    score_h_s = pd.to_numeric(df.get("score_human", pd.Series(dtype=float)), errors="coerce")
+    df["score_human"] = [round(float(v), 1) if pd.notna(v) else None for v in score_h_s]
+
+    def effective_score(row):
+        if str(row.get("status", "")).lower() == "corrected":
+            v = row.get("score_human")
+            try:
+                if v is not None:
+                    return int(round(float(v)))
+            except Exception:
+                pass
+        v = row.get("score_ai", 0)
+        try:
+            return int(round(float(v)))
+        except Exception:
+            return 0
+
+    df["score"] = df.apply(effective_score, axis=1)
+
+    def get_week_start(ts_val):
+        try:
+            s = str(ts_val).split()[0]
+            dt = pd.to_datetime(s, errors="coerce")
+            if pd.isna(dt):
+                return ""
+            monday = dt - timedelta(days=dt.weekday())
+            return monday.strftime("%Y-%m-%d")
+        except Exception:
+            return ""
+
+    if "ts" in df.columns:
+        df["week_start"] = df["ts"].apply(get_week_start)
+
+    if "emp_id" in df.columns and "ts" in df.columns:
+        df["eval_key"] = (
+            df["emp_id"].astype(str)
+            + "_"
+            + df["ts"].str.replace(r"[-: ]", "", regex=True)
+        )
+
+    # Map standard criterion keys to Skyline columns
+    SKYLINE_MAIN_ATTRS = {"os_out", "adjust", "gen_q", "verif", "resp_eff", "speech"}
+    for std_key, sl_base in SKYLINE_CRIT_MAP.items():
+        ai_col  = f"{sl_base}_AI"
+        max_col = f"{sl_base}_Max"
+        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        if std_key == "rude":
+            df[std_key] = [
+                None if mx == 0 else ("No" if ai >= mx else "Yes")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+        elif std_key == "lost_sop":
+            df[std_key] = [
+                "Not Applicable" if mx == 0 else ("Yes" if ai > 0 else "No")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+        elif std_key in SKYLINE_MAIN_ATTRS:
+            df[std_key] = [
+                None if mx == 0 else ("Yes" if ai >= mx else "No")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+        else:
+            df[std_key] = [
+                None if mx == 0 else ("Yes" if ai > 0 else "No")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+
+    # Map Skyline-unique criteria
+    SKYLINE_NA_KEYS = {"sl_ride_cncl", "sl_timeliness"}
+    for sl_key, sl_base in SKYLINE_EXTRA_CRIT_MAP.items():
+        ai_col  = f"{sl_base}_AI"
+        max_col = f"{sl_base}_Max"
+        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        if sl_key in SKYLINE_NA_KEYS:
+            df[sl_key] = [
+                "Not Applicable" if mx == 0 else ("Yes" if ai > 0 else "No")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+        else:
+            df[sl_key] = [
+                None if mx == 0 else ("Yes" if ai > 0 else "No")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+
+    crit_keys = list(SKYLINE_CRIT_MAP.keys()) + list(SKYLINE_EXTRA_CRIT_MAP.keys())
+    keep = [
+        "qa_id", "eval_key", "emp_id", "ts", "week_start",
+        "agent", "score", "score_ai", "score_human", "status",
+        "coach", "supervisor",
+    ] + crit_keys
+    return df[[c for c in keep if c in df.columns]]
+
+
+def refresh_skyline_output():
+    if not SKYLINE_SCRIPT.exists():
+        return False
+    try:
+        result = subprocess.run(
+            [sys.executable, str(SKYLINE_SCRIPT)],
+            cwd=str(SKYLINE_DIR),
+            capture_output=True,
+            text=True,
+            timeout=120,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        print(f"Skipping Skyline pull: {exc}")
+        return False
+    if result.returncode != 0:
+        msg = result.stderr.strip() or result.stdout.strip() or "No details."
+        print(f"Skipping Skyline pull: {msg}")
+        return False
+    if result.stdout.strip():
+        print(result.stdout.strip())
+    return True
+
+
+def read_skyline_workbook():
+    if not SKYLINE_OUTPUT_FILE.exists():
+        return pd.DataFrame()
+    try:
+        return clean_columns(pd.read_excel(SKYLINE_OUTPUT_FILE))
+    except Exception as exc:
+        print(f"Skipping Skyline workbook load: {exc}")
+        return pd.DataFrame()
+
+
+def load_skyline_data():
+    refresh_skyline_output()
+    source = read_skyline_workbook()
+    if source.empty:
+        return pd.DataFrame(columns=[
+            "qa_id", "eval_key", "emp_id", "ts", "week_start",
+            "agent", "score", "score_ai", "score_human", "status",
+            "coach", "supervisor",
+        ])
+    result = transform_skyline_data(source)
+    print(f"Skyline QA rows: {len(result)}")
+    return result
+
+
 def load_existing_records_from_html(variable_name):
     output_path = Path(OUTPUT_FILE)
     if not output_path.exists():
@@ -1529,6 +1754,7 @@ def main():
     britelift = load_britelift_data()
     ridex = load_ridex_data()
     hamilton = load_hamilton_data()
+    skyline = load_skyline_data()
 
     refresh_time = datetime.now().strftime("%Y-%m-%d %I:%M %p")
 
@@ -2597,6 +2823,7 @@ def main():
     #qualityPanel .qa-b-green {{ background:#F0FDF4;color:#15803D;border-color:#BBF7D0 }}
     #qualityPanel .qa-b-teal {{ background:#F0FDFA;color:#0F766E;border-color:#99F6E4 }}
     #qualityPanel .qa-b-amber {{ background:#FFFBEB;color:#B45309;border-color:#FDE68A }}
+    #qualityPanel .qa-b-skyline {{ background:#F0F9FF;color:#0369A1;border-color:#BAE6FD }}
     /* KPI cards */
     #qualityPanel .qa-kpi-row {{ display:grid;grid-template-columns:repeat(6,1fr);gap:8px }}
     #qualityPanel .qa-kpi {{ background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #E2E8F0;position:relative;overflow:hidden }}
@@ -2948,6 +3175,7 @@ def main():
       <option value="britelift">Britelift</option>
       <option value="ridex">RideX</option>
       <option value="hamilton">Hamilton</option>
+      <option value="skyline">Skyline</option>
     </select>
   </div>
   <div class="qa-fg">
@@ -3005,6 +3233,17 @@ def main():
       <div class="qa-sum-card" style="border-top:3px solid #0891B2"><div class="qa-sum-lbl">General Questions</div><div class="qa-sum-val" id="qa-hcrit-genq-val" style="color:#0891B2">&mdash;</div><div class="qa-sum-sub" id="qa-hcrit-genq-sub">&mdash;</div><div class="qa-sum-score" style="color:#0891B2">Hamilton criterion</div></div>
       <div class="qa-sum-card" style="border-top:3px solid #1D4ED8"><div class="qa-sum-lbl">Cust. Verification</div><div class="qa-sum-val" id="qa-hcrit-verif-val" style="color:#1D4ED8">&mdash;</div><div class="qa-sum-sub" id="qa-hcrit-verif-sub">&mdash;</div><div class="qa-sum-score" style="color:#1D4ED8">Hamilton criterion</div></div>
       <div class="qa-sum-card" style="border-top:3px solid #6D28D9"><div class="qa-sum-lbl">Resolution Etiquette</div><div class="qa-sum-val" id="qa-hcrit-resol-val" style="color:#6D28D9">&mdash;</div><div class="qa-sum-sub" id="qa-hcrit-resol-sub">&mdash;</div><div class="qa-sum-score" style="color:#6D28D9">Hamilton criterion</div></div>
+    </div>
+  </div>
+  <!-- Skyline-only key criteria strip (shown when Skyline account selected) -->
+  <div id="qa-skyline-crit" style="display:none;padding:0 20px 8px">
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px">
+      <div class="qa-sum-card" style="border-top:3px solid #0369A1"><div class="qa-sum-lbl">Greetings Script</div><div class="qa-sum-val" id="qa-scrit-greet-val" style="color:#0369A1">&mdash;</div><div class="qa-sum-sub" id="qa-scrit-greet-sub">&mdash;</div><div class="qa-sum-score" style="color:#0369A1">Skyline criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #0F766E"><div class="qa-sum-lbl">Professionalism</div><div class="qa-sum-val" id="qa-scrit-prof-val" style="color:#0F766E">&mdash;</div><div class="qa-sum-sub" id="qa-scrit-prof-sub">&mdash;</div><div class="qa-sum-score" style="color:#0F766E">Skyline criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #0891B2"><div class="qa-sum-lbl">General Questions</div><div class="qa-sum-val" id="qa-scrit-genq-val" style="color:#0891B2">&mdash;</div><div class="qa-sum-sub" id="qa-scrit-genq-sub">&mdash;</div><div class="qa-sum-score" style="color:#0891B2">Skyline criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #1D4ED8"><div class="qa-sum-lbl">Cust. Verification</div><div class="qa-sum-val" id="qa-scrit-verif-val" style="color:#1D4ED8">&mdash;</div><div class="qa-sum-sub" id="qa-scrit-verif-sub">&mdash;</div><div class="qa-sum-score" style="color:#1D4ED8">Skyline criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #6D28D9"><div class="qa-sum-lbl">Resolution Etiquette</div><div class="qa-sum-val" id="qa-scrit-resol-val" style="color:#6D28D9">&mdash;</div><div class="qa-sum-sub" id="qa-scrit-resol-sub">&mdash;</div><div class="qa-sum-score" style="color:#6D28D9">Skyline criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #9D174D"><div class="qa-sum-lbl">Communication Qual.</div><div class="qa-sum-val" id="qa-scrit-comm-val" style="color:#9D174D">&mdash;</div><div class="qa-sum-sub" id="qa-scrit-comm-sub">&mdash;</div><div class="qa-sum-score" style="color:#9D174D">Skyline criterion</div></div>
     </div>
   </div>
   <div class="qa-sum-strip" id="qa-sum-strip-main">
@@ -3170,6 +3409,7 @@ const parentisRawData = {to_records(parentis)};
 const briteliftRawData = {to_records(britelift)};
 const ridexRawData = {to_records(ridex)};
 const hamiltonRawData = {to_records(hamilton)};
+const skylineRawData = {to_records(skyline)};
 
 const COLORS = ["#004C97", "#39B54A", "#002B5C", "#7AC943", "#00AEEF", "#94A3B8"];
 const COACHING_CATEGORY_COLORS = {{
@@ -4628,6 +4868,7 @@ parentisRawData.forEach(r => r._acct = 'Parentis');
 briteliftRawData.forEach(r => r._acct = 'Britelift');
 ridexRawData.forEach(r => r._acct = 'RideX');
 hamiltonRawData.forEach(r => r._acct = 'Hamilton');
+skylineRawData.forEach(r => r._acct = 'Skyline');
 
 // Date range picker state — default: last 30 days
 const _qaToday = new Date(); _qaToday.setHours(0,0,0,0);
@@ -4715,7 +4956,8 @@ function qaGetActiveData() {{
     if (acct === 'britelift') return briteliftRawData;
     if (acct === 'ridex') return ridexRawData;
     if (acct === 'hamilton') return hamiltonRawData;
-    return [...qaRawData, ...parentisRawData, ...briteliftRawData, ...ridexRawData, ...hamiltonRawData];
+    if (acct === 'skyline') return skylineRawData;
+    return [...qaRawData, ...parentisRawData, ...briteliftRawData, ...ridexRawData, ...hamiltonRawData, ...skylineRawData];
 }}
 
 // ─── Date Range Picker ────────────────────────────────────────────────────────
@@ -4921,6 +5163,7 @@ function qaUpdateKPIs(data) {{
         else if(acct==='britelift') titleEl.textContent='Britelift — Quality Assurance';
         else if(acct==='ridex') titleEl.textContent='RideX — Quality Assurance';
         else if(acct==='hamilton') titleEl.textContent='Hamilton — Quality Assurance';
+        else if(acct==='skyline') titleEl.textContent='Skyline — Quality Assurance';
         else titleEl.textContent='All Accounts — Quality Assurance';
     }}
     if(badgeEl) {{
@@ -4929,6 +5172,7 @@ function qaUpdateKPIs(data) {{
         else if(acct==='britelift') {{ badgeEl.textContent='Britelift'; badgeEl.className='qa-badge qa-b-amber'; }}
         else if(acct==='ridex') {{ badgeEl.textContent='RideX'; badgeEl.className='qa-badge qa-b-purple'; }}
         else if(acct==='hamilton') {{ badgeEl.textContent='Hamilton'; badgeEl.className='qa-badge qa-b-teal'; }}
+        else if(acct==='skyline') {{ badgeEl.textContent='Skyline'; badgeEl.className='qa-badge qa-b-skyline'; }}
         else {{ badgeEl.textContent='All Accounts'; badgeEl.className='qa-badge qa-b-amber'; }}
     }}
     const scores=data.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
@@ -5184,7 +5428,8 @@ function qaUpdateEvalDist(data) {{
         {{key:'Parentis',color:'#2C3E8C'}},
         {{key:'Britelift',color:'#C0392B'}},
         {{key:'RideX',color:'#8E44AD'}},
-        {{key:'Hamilton',color:'#065F46'}}
+        {{key:'Hamilton',color:'#065F46'}},
+        {{key:'Skyline',color:'#0EA5E9'}}
     ];
     const counts=accts.map(a=>data.filter(r=>r._acct===a.key).length);
     const total=counts.reduce((s,v)=>s+v,0);
@@ -5208,6 +5453,26 @@ function qaUpdateHamiltonCrit(data) {{
         {{key:'gen_q',   valId:'qa-hcrit-genq-val', subId:'qa-hcrit-genq-sub'}},
         {{key:'verif',   valId:'qa-hcrit-verif-val',subId:'qa-hcrit-verif-sub'}},
         {{key:'resp_eff',valId:'qa-hcrit-resol-val',subId:'qa-hcrit-resol-sub'}},
+    ];
+    crits.forEach(c=>{{
+        const rel=data.filter(r=>r[c.key]!=null&&r[c.key]!=='');
+        const passed=rel.filter(r=>r[c.key]==='Yes').length;
+        const pct=rel.length?(passed/rel.length*100).toFixed(1)+'%':'—';
+        const vEl=document.getElementById(c.valId);
+        const sEl=document.getElementById(c.subId);
+        if(vEl)vEl.textContent=pct;
+        if(sEl)sEl.textContent=rel.length?passed+' of '+rel.length+' passed':'No data';
+    }});
+}}
+
+function qaUpdateSkylineCrit(data) {{
+    const crits=[
+        {{key:'os_out',  valId:'qa-scrit-greet-val',subId:'qa-scrit-greet-sub'}},
+        {{key:'adjust',  valId:'qa-scrit-prof-val', subId:'qa-scrit-prof-sub'}},
+        {{key:'gen_q',   valId:'qa-scrit-genq-val', subId:'qa-scrit-genq-sub'}},
+        {{key:'verif',   valId:'qa-scrit-verif-val',subId:'qa-scrit-verif-sub'}},
+        {{key:'resp_eff',valId:'qa-scrit-resol-val',subId:'qa-scrit-resol-sub'}},
+        {{key:'speech',  valId:'qa-scrit-comm-val', subId:'qa-scrit-comm-sub'}},
     ];
     crits.forEach(c=>{{
         const rel=data.filter(r=>r[c.key]!=null&&r[c.key]!=='');
@@ -5350,13 +5615,16 @@ function qaApplyFilters() {{
     qaToggleDistWidget(!acct);
     if(acct) qaUpdateDonut(filtered); else qaUpdateEvalDist(filtered);
     const aivhCard=document.getElementById('qa-aivh-card');
-    if(aivhCard)aivhCard.style.display=(acct==='hamilton')?'':'none';
-    if(acct==='hamilton')qaUpdateAivh(filtered);
+    if(aivhCard)aivhCard.style.display=(acct==='hamilton'||acct==='skyline')?'':'none';
+    if(acct==='hamilton'||acct==='skyline')qaUpdateAivh(filtered);
     const hCritEl=document.getElementById('qa-hamilton-crit');
     if(hCritEl)hCritEl.style.display=(acct==='hamilton')?'':'none';
     if(acct==='hamilton')qaUpdateHamiltonCrit(filtered);
+    const sCritEl=document.getElementById('qa-skyline-crit');
+    if(sCritEl)sCritEl.style.display=(acct==='skyline')?'':'none';
+    if(acct==='skyline')qaUpdateSkylineCrit(filtered);
     const sumStripMain=document.getElementById('qa-sum-strip-main');
-    if(sumStripMain)sumStripMain.style.display=(acct==='hamilton')?'none':'';
+    if(sumStripMain)sumStripMain.style.display=(acct==='hamilton'||acct==='skyline')?'none':'';
     const scores=filtered.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
     const agents=new Set(filtered.map(r=>r.agent).filter(Boolean));
     const avg=scores.length?qaAvg(scores):null;
@@ -5460,7 +5728,7 @@ function initQualityCharts() {{
     qaUpdateDRPLabel();
 
     // Info pills
-    const qaAcctsLoaded=[qaRawData,parentisRawData,briteliftRawData,ridexRawData,hamiltonRawData].filter(d=>d.length>0).length;
+    const qaAcctsLoaded=[qaRawData,parentisRawData,briteliftRawData,ridexRawData,hamiltonRawData,skylineRawData].filter(d=>d.length>0).length;
     const qaPillAccts=document.getElementById('qa-pill-qa-accounts');
     if(qaPillAccts)qaPillAccts.textContent=qaAcctsLoaded+' QA Account'+(qaAcctsLoaded===1?'':'s')+' Loaded';
     const qaPillTotal=document.getElementById('qa-pill-total-accounts');
@@ -5586,7 +5854,7 @@ function initQualityCharts() {{
         qaEvalDistChart=new Chart(evalDistCtx,{{
             type:'doughnut',
             plugins:[evalDistLabelPlugin],
-            data:{{labels:['M7','Parentis','Britelift','RideX','Hamilton'],datasets:[{{data:[0,0,0,0,0],backgroundColor:['#4F81BD','#2C3E8C','#C0392B','#8E44AD','#065F46'],borderWidth:2,borderColor:'#fff'}}]}},
+            data:{{labels:['M7','Parentis','Britelift','RideX','Hamilton','Skyline'],datasets:[{{data:[0,0,0,0,0,0],backgroundColor:['#4F81BD','#2C3E8C','#C0392B','#8E44AD','#065F46','#0EA5E9'],borderWidth:2,borderColor:'#fff'}}]}},
             options:{{
                 responsive:true,maintainAspectRatio:false,cutout:'50%',
                 layout:{{padding:{{top:28,bottom:28,left:28,right:28}}}},

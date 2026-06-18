@@ -7,6 +7,7 @@ set "PARENTIS_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Parentis Health"
 set "BRITELIFT_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Britelift"
 set "RIDEX_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\RideX"
 set "HAMILTON_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Hamilton"
+set "SKYLINE_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Skyline"
 set "MASTERLIST_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Masterlist"
 
 echo.
@@ -67,6 +68,16 @@ cd /d "%HAMILTON_DIR%"
 if errorlevel 1 goto :fail
 
 py -3 Hamilton_pull.py
+if errorlevel 1 goto :fail
+
+echo.
+echo ========================================
+echo Updating Skyline QA data from Google Sheets
+echo ========================================
+cd /d "%SKYLINE_DIR%"
+if errorlevel 1 goto :fail
+
+py -3 Skyline_pull.py
 if errorlevel 1 goto :fail
 
 echo.
