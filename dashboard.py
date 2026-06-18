@@ -2768,6 +2768,7 @@ def main():
     #qualityPanel .qa-filter-bar .qa-bar-info {{ margin-left:auto;display:flex;align-items:center;gap:6px;flex-shrink:0 }}
     #qualityPanel .qa-info-pill {{ font-size:10px;font-weight:700;color:#0F9B58;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:5px;padding:3px 9px;white-space:nowrap }}
     #qualityPanel .qa-agent-lbt thead tr th {{ background:#0D3B6E;color:#fff;font-weight:700 }}
+    #qualityPanel .qa-tl-lbt thead tr th {{ background:#7C3AED;color:#fff;font-weight:700 }}
     #qualityPanel .qa-coach-lbt thead tr th {{ background:#00A651;color:#fff;font-weight:700 }}
     /* Date range picker */
     #qualityPanel .qa-date-range-wrap {{ position:relative }}
@@ -2851,7 +2852,7 @@ def main():
     #qualityPanel .qa-sum-score {{ font-size:11px;font-weight:700;margin-top:3px }}
     /* Grids & cards */
     #qualityPanel .qa-g3 {{ display:grid;grid-template-columns:1.6fr 1fr 1fr 0.85fr;gap:12px }}
-    #qualityPanel .qa-g2 {{ display:grid;grid-template-columns:1.3fr 1fr;gap:12px }}
+    #qualityPanel .qa-g2 {{ display:grid;grid-template-columns:repeat(3,1fr);gap:12px }}
     #qualityPanel .qa-card {{ background:#fff;border-radius:10px;border:1px solid #E2E8F0;overflow:hidden;display:flex;flex-direction:column }}
     #qualityPanel .qa-ch {{ padding:7px 12px;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;justify-content:space-between;gap:8px }}
     #qualityPanel .qa-ct {{ font-size:12px;font-weight:700;color:#1E293B;display:flex;align-items:center;gap:6px }}
@@ -3346,6 +3347,12 @@ def main():
       <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>Agent leaderboard</div><div class="qa-cs">Ranked by avg score</div></div><span class="qa-cb qa-cbb" id="qa-lb-badge">&mdash;</span></div>
       <div class="qa-cbody" style="padding:0 16px 8px">
         <table class="qa-lbt qa-agent-lbt"><thead><tr><th>#</th><th>Agent</th><th>Evals</th><th>Avg</th><th>Min</th><th>Max</th><th>Comp Score</th><th>Account</th></tr></thead><tbody id="qa-leaderboard"></tbody></table>
+      </div>
+    </div>
+    <div class="qa-card">
+      <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Team Leader leaderboard</div><div class="qa-cs">Ranked by avg score</div></div><span class="qa-cb qa-cbb" id="qa-tl-lb-badge">&mdash;</span></div>
+      <div class="qa-cbody" style="padding:0 16px 8px">
+        <table class="qa-lbt qa-tl-lbt"><thead><tr><th>#</th><th>Team Leader</th><th>Evals</th><th>Avg Score</th><th>Min</th><th>Max</th><th>Comp Score</th></tr></thead><tbody id="qa-tl-leaderboard"></tbody></table>
       </div>
     </div>
     <div class="qa-card">
@@ -5318,6 +5325,28 @@ function qaRenderLeaderboard(data) {{
     }}).join('')||`<tr><td colspan="8" style="text-align:center;color:#94A3B8;padding:16px">No data</td></tr>`;
 }}
 
+function qaRenderTLLeaderboard(data) {{
+    const el=document.getElementById('qa-tl-leaderboard');
+    const badge=document.getElementById('qa-tl-lb-badge');
+    if(!el) return;
+    const byTL={{}};
+    data.forEach(r=>{{
+        if(!r.supervisor) return;
+        const s=Number(r.score);if(isNaN(s)||s<=0)return;
+        if(!byTL[r.supervisor])byTL[r.supervisor]={{scores:[]}};
+        byTL[r.supervisor].scores.push(s);
+    }});
+    const tls=Object.entries(byTL).map(([name,d])=>{{
+        const avg=qaAvg(d.scores),pass=d.scores.filter(s=>s>=85).length;
+        return{{name,avg,min:Math.min(...d.scores),max:Math.max(...d.scores),pass,passRate:d.scores.length?pass/d.scores.length*100:0,n:d.scores.length}};
+    }}).sort((a,b)=>b.avg-a.avg);
+    if(badge)badge.textContent=tls.length+' team leaders';
+    el.innerHTML=tls.map((t,i)=>{{
+        const chipCls=qaChipCls(t.avg);
+        return`<tr><td style="font-size:11px;color:#94A3B8">${{i+1}}</td><td style="font-weight:600;font-size:11px">${{qaEscapeHtml(t.name)}}</td><td style="text-align:center">${{t.n}}</td><td><span class="qa-chip ${{chipCls}}">${{t.avg.toFixed(1)}}%</span></td><td style="text-align:center;font-size:11px">${{t.min.toFixed(1)}}%</td><td style="text-align:center;font-size:11px">${{t.max.toFixed(1)}}%</td><td style="text-align:center;color:${{t.passRate>=85?'#0F9B58':'#E85D3F'}};font-size:11px">${{t.passRate.toFixed(0)}}%</td></tr>`;
+    }}).join('')||`<tr><td colspan="7" style="text-align:center;color:#94A3B8;padding:16px">No data</td></tr>`;
+}}
+
 function qaRenderCoachLeaderboard(data) {{
     const el=document.getElementById('qa-coach-leaderboard');
     const badge=document.getElementById('qa-coach-lb-badge');
@@ -5649,6 +5678,7 @@ function qaApplyFilters() {{
     qaRenderCriteria(filtered);
     qaRenderCoaching(filtered);
     qaRenderLeaderboard(filtered);
+    qaRenderTLLeaderboard(filtered);
     qaRenderCoachLeaderboard(filtered);
     qaRenderTable(filtered);
     const acct=(document.getElementById('qa-sel-account')?.value||'').trim();
