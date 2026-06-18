@@ -2767,6 +2767,7 @@ def main():
     #qualityPanel .qa-btn-clear {{ height:34px;padding:0 16px;font-size:12px;border:1px solid #E85D3F;border-radius:7px;background:#fff;color:#E85D3F;cursor:pointer;font-weight:600;align-self:flex-end }}
     #qualityPanel .qa-filter-bar .qa-bar-info {{ margin-left:auto;display:flex;align-items:center;gap:6px;flex-shrink:0 }}
     #qualityPanel .qa-info-pill {{ font-size:10px;font-weight:700;color:#0F9B58;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:5px;padding:3px 9px;white-space:nowrap }}
+    #qualityPanel .qa-agent-lbt thead tr th {{ background:#0D3B6E;color:#fff;font-weight:700 }}
     #qualityPanel .qa-coach-lbt thead tr th {{ background:#00A651;color:#fff;font-weight:700 }}
     /* Date range picker */
     #qualityPanel .qa-date-range-wrap {{ position:relative }}
@@ -3344,7 +3345,7 @@ def main():
     <div class="qa-card">
       <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>Agent leaderboard</div><div class="qa-cs">Ranked by avg score</div></div><span class="qa-cb qa-cbb" id="qa-lb-badge">&mdash;</span></div>
       <div class="qa-cbody" style="padding:0 16px 8px">
-        <table class="qa-lbt"><thead><tr><th>#</th><th>Agent</th><th>Evals</th><th>Avg</th><th>Min</th><th>Max</th><th>Comp Score</th><th>Account</th></tr></thead><tbody id="qa-leaderboard"></tbody></table>
+        <table class="qa-lbt qa-agent-lbt"><thead><tr><th>#</th><th>Agent</th><th>Evals</th><th>Avg</th><th>Min</th><th>Max</th><th>Comp Score</th><th>Account</th></tr></thead><tbody id="qa-leaderboard"></tbody></table>
       </div>
     </div>
     <div class="qa-card">
