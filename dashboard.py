@@ -616,6 +616,8 @@ def _transform_qa_source(source, column_map):
         df["agent"] = _apply_name_aliases(df["agent"])
     if "supervisor" in df.columns:
         df["supervisor"] = _apply_name_aliases(df["supervisor"])
+    if "coach" in df.columns:
+        df["coach"] = _apply_name_aliases(df["coach"])
 
     if "emp_id" in df.columns and "ts" in df.columns:
         df["eval_key"] = (
