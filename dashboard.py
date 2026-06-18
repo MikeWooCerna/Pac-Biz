@@ -2870,10 +2870,13 @@ def main():
     #qualityPanel .qa-cr-val {{ font-size:11px;font-weight:700;min-width:38px;text-align:right;flex-shrink:0 }}
     /* Leaderboard */
     #qualityPanel .qa-lbt {{ width:100%;border-collapse:collapse;font-size:11px }}
-    #qualityPanel .qa-lbt th {{ padding:6px 8px;text-align:left;font-size:9px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #F1F5F9;white-space:nowrap }}
+    #qualityPanel .qa-lbt th {{ padding:6px 8px;text-align:left;font-size:9px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #F1F5F9;white-space:nowrap;position:sticky;top:0;z-index:2;background:#fff }}
     #qualityPanel .qa-lbt td {{ padding:7px 8px;border-bottom:1px solid #F8FAFC;vertical-align:middle }}
     #qualityPanel .qa-lbt tr:last-child td {{ border-bottom:none }}
     #qualityPanel .qa-lbt tr:hover td {{ background:#F8FAFC }}
+    /* Fixed-height leaderboard cards with internal scroll */
+    #qualityPanel .qa-g2 .qa-card {{ max-height:300px }}
+    #qualityPanel .qa-g2 .qa-card .qa-cbody {{ min-height:0;overflow-y:auto }}
     #qualityPanel .qa-rk {{ font-size:11px;font-weight:800;color:#94A3B8;width:18px;text-align:center }}
     #qualityPanel .qa-rk.gold {{ color:#F59E0B }} #qualityPanel .qa-rk.silver {{ color:#94A3B8 }} #qualityPanel .qa-rk.bronze {{ color:#B45309 }}
     #qualityPanel .qa-chip {{ display:inline-block;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:700 }}
