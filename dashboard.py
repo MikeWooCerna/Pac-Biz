@@ -3235,7 +3235,6 @@ def main():
         </div>
         <div id="coachingSummaryTable"></div>
         <div class="disclaimer">Coaching will be only be counted once status is <span class="completed-word">Completed</span></div>
-        <div id="summaryCoachingCov" style="height:310px;max-width:360px;margin:10px auto 0"></div>
     </div>
     <div class="empty-widget-space" id="summarySpacer"></div>
     <div class="chart-card full" id="coachingLogsCard">
@@ -4637,9 +4636,12 @@ function getCoverageStatus(pct) {{
 }}
 
 function computeCoachingCoverageMetrics(data) {{
-    const completedCount = data.filter(r => isCompletedStatus(r["Coaching Status"])).length;
-    const coachedSet = new Set(data.map(r => norm(r["Emp Name"])).filter(Boolean));
+    // Sessions and coached agents = completed records only
+    const completedData = data.filter(r => isCompletedStatus(r["Coaching Status"]));
+    const completedCount = completedData.length;
+    const coachedSet = new Set(completedData.map(r => norm(r["Emp Name"])).filter(Boolean));
     const coachedCount = coachedSet.size;
+    // Build masterlist: supervisor -> Set of active agents
     const mlBySup = {{}};
     const hasStatus = masterlist.some(r => (r["Employment Status"] || "").trim() !== "");
     masterlist.forEach(r => {{
@@ -4653,10 +4655,12 @@ function computeCoachingCoverageMetrics(data) {{
         if(!mlBySup[sup]) mlBySup[sup] = new Set();
         mlBySup[sup].add(emp);
     }});
-    const dataLeaders = [...new Set(data.map(r => norm(r["Coached by"])).filter(Boolean))];
-    const leadersInML = dataLeaders.filter(l => mlBySup[l]);
+    // Denominator: ALL historic TLs from coachingData, filtered by leader filter if active
+    const allHistoricLeaders = new Set(coachingData.map(r => norm(r["Coached by"])).filter(Boolean));
+    const targetLeaders = [...allHistoricLeaders].filter(l => filterMatches(COACHING_FILTERS.leader, l));
+    const leadersInML = targetLeaders.filter(l => mlBySup[l]);
     let totalDR = null, coveragePct = null, coverageStatus;
-    if(dataLeaders.length === 0) {{
+    if(targetLeaders.length === 0) {{
         totalDR = 0; coveragePct = 0; coverageStatus = getCoverageStatus(0);
     }} else if(leadersInML.length === 0) {{
         coverageStatus = '⚪ Direct Reports Not Configured';
@@ -4666,7 +4670,7 @@ function computeCoachingCoverageMetrics(data) {{
         totalDR = allDR.size;
         coveragePct = totalDR > 0 ? Math.round((coachedCount / totalDR) * 100) : 0;
         coverageStatus = getCoverageStatus(coveragePct);
-        if(leadersInML.length < dataLeaders.length) coverageStatus += ' (partial data)';
+        if(leadersInML.length < targetLeaders.length) coverageStatus += ' (partial data)';
     }}
     return {{ completedCount, coachedCount, totalDR, coveragePct, coverageStatus }};
 }}
@@ -4684,10 +4688,6 @@ function _renderCoverageDonut(elementId, metrics) {{
 
 function coachingCoverageChart(metrics) {{
     _renderCoverageDonut("coachingCoverageDonut", metrics);
-}}
-
-function coachingSummaryCoverageChart(metrics) {{
-    _renderCoverageDonut("summaryCoachingCov", metrics);
 }}
 
 function gaugePoint(cx, cy, radius, angle) {{
@@ -4980,7 +4980,6 @@ function renderCoaching() {{
         summaryMeta.textContent = `${{covMetrics.completedCount.toLocaleString()}} Sessions | ${{covMetrics.coachedCount}}/${{drStr}} Agents Coached | ${{covStr}} Coverage | ${{covMetrics.coverageStatus}}`;
     }}
     renderDataTable("coachingSummaryTable", summary.rows, summary.columns);
-    coachingSummaryCoverageChart(covMetrics);
     coachingTable(data);
 }}
 
