@@ -2220,6 +2220,55 @@ def main():
         overflow: hidden;
         display: flex;
         flex-direction: column;
+        position: relative;
+    }}
+    .coaching-expand-btn {{
+        position: absolute;
+        top: 7px;
+        right: 7px;
+        z-index: 10;
+        background: rgba(255,255,255,0.88);
+        border: 1px solid #E2E8F0;
+        border-radius: 6px;
+        width: 26px;
+        height: 26px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #64748B;
+        padding: 0;
+        transition: background .15s, color .15s, border-color .15s;
+    }}
+    .coaching-expand-btn:hover {{
+        background: #EFF6FF;
+        color: #0D3B6E;
+        border-color: #0D3B6E;
+    }}
+    /* Expanded card state */
+    .coaching-chart-row.has-expanded .chart-card:not(.expanded) {{
+        display: none;
+    }}
+    .chart-card.expanded {{
+        grid-column: 1 / -1;
+        height: 560px !important;
+        max-height: 560px !important;
+    }}
+    .chart-card.expanded .coaching-donut-plot {{
+        flex: 0 0 390px;
+        height: 390px;
+    }}
+    .chart-card.expanded .chart-summary-rows {{
+        gap: 8px 28px;
+    }}
+    .chart-card.expanded .chart-summary-row {{
+        font-size: 12px;
+    }}
+    .chart-card.expanded .score-gauge {{
+        height: 510px;
+    }}
+    .chart-card.expanded .score-gauge svg {{
+        height: 510px;
     }}
 
     .coaching-summary-card {{
@@ -3159,10 +3208,19 @@ def main():
 
 <div class="tab-panel" id="coachingPanel" data-tab="coaching" role="tabpanel">
 <div class="grid coaching-grid">
-    <div class="coaching-chart-row">
-        <div class="chart-card"><div id="coachingCategoryDonut"></div></div>
-        <div class="chart-card"><div id="coachingStatusDonut"></div></div>
-        <div class="chart-card"><div id="coachingConfidenceGauge"></div></div>
+    <div class="coaching-chart-row" id="coaching-chart-row">
+        <div class="chart-card" id="coaching-cat-card">
+            <button class="coaching-expand-btn" onclick="toggleCoachingCardExpand('coaching-cat-card')" title="Expand"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button>
+            <div id="coachingCategoryDonut"></div>
+        </div>
+        <div class="chart-card" id="coaching-status-card">
+            <button class="coaching-expand-btn" onclick="toggleCoachingCardExpand('coaching-status-card')" title="Expand"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button>
+            <div id="coachingStatusDonut"></div>
+        </div>
+        <div class="chart-card" id="coaching-conf-card">
+            <button class="coaching-expand-btn" onclick="toggleCoachingCardExpand('coaching-conf-card')" title="Expand"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button>
+            <div id="coachingConfidenceGauge"></div>
+        </div>
     </div>
     <div class="chart-card coaching-summary-card" id="summarySection">
         <div class="table-heading">
@@ -4270,6 +4328,22 @@ function renderDonutWithSummary(id, title, data, colors, totalLabel, textInfo = 
     container.innerHTML = `<div class="coaching-donut-widget"><div class="coaching-donut-plot" id="${{id}}Plot"></div><div class="coaching-donut-summary" id="${{id}}Summary"></div></div>`;
     donut(`${{id}}Plot`, title, data, textInfo, colors, false);
     document.getElementById(`${{id}}Summary`).innerHTML = chartSummaryMarkup(data, colors, totalLabel, totalSuffix);
+}}
+
+function toggleCoachingCardExpand(cardId) {{
+    const card = document.getElementById(cardId);
+    if(!card) return;
+    const row = document.getElementById('coaching-chart-row');
+    const isExpanded = card.classList.toggle('expanded');
+    if(row) row.classList.toggle('has-expanded', isExpanded);
+    const btn = card.querySelector('.coaching-expand-btn');
+    if(btn) {{
+        btn.title = isExpanded ? 'Collapse' : 'Expand';
+        btn.innerHTML = isExpanded
+            ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/></svg>'
+            : '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
+    }}
+    if(window.Plotly) setTimeout(()=>window.dispatchEvent(new Event('resize')), 80);
 }}
 
 function bar(id, title, data, yTitle, maxItems = 10) {{
