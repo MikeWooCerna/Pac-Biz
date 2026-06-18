@@ -2892,7 +2892,8 @@ def main():
     #qualityPanel .qa-tbl-scroll {{ overflow-x:auto;max-height:420px;overflow-y:auto }}
     #qualityPanel .qa-dtbl {{ width:100%;border-collapse:collapse;font-size:11px }}
     #qualityPanel .qa-dtbl th {{ padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #E2E8F0;background:#F8FAFC;white-space:nowrap;position:sticky;top:0;z-index:1 }}
-    #qualityPanel .qa-dtbl td {{ padding:6px 10px;border-bottom:1px solid #F8FAFC;vertical-align:top }}
+    #qualityPanel .qa-dtbl td {{ padding:6px 10px;border-bottom:1px solid #F8FAFC;vertical-align:middle }}
+    #qualityPanel .qa-dtbl tbody tr {{ height:34px;box-sizing:border-box }}
     #qualityPanel .qa-dtbl tr:hover td {{ background:#F8FAFC }}
     #qualityPanel .qa-dtbl tr:last-child td {{ border-bottom:none }}
     /* Sticky first 5 columns */
@@ -3366,7 +3367,7 @@ def main():
         </button>
       </div>
     </div>
-    <div class="qa-tbl-scroll">
+    <div class="qa-tbl-scroll" id="qa-tbl-scroll-main">
       <table class="qa-dtbl">
         <thead><tr>
           <th style="min-width:130px;cursor:pointer;user-select:none" data-qa-sort="ts" onclick="qaSortTable('ts')">Evaluation Date <span class="sort-indicator">▼</span></th>
@@ -5348,52 +5349,80 @@ function qaSortTable(field) {{
     qaRenderTable(qaCurrentFiltered);
 }}
 
+// ─── Virtual scroll state for QA detail table ─────────────────────────────────
+let qaVsRows=[];
+const QA_VS_ROW_H=34;   // px — must match CSS tbody tr height
+const QA_VS_BUFFER=12;  // extra rows rendered above/below viewport
+let qaVsRaf=null;
+
+function qaRowHtml(r){{
+    const score=Number(r.score),sc=!isNaN(score)&&score>0?score:null;
+    const chipCls=sc!==null?qaChipCls(sc):'',disp=sc!==null?sc.toFixed(1)+'%':'—';
+    const av=QA_AV[r.agent]||{{bg:'#F1F5F9',tc:'#475569',ini:(r.agent||'?').split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase()}};
+    const acctPill=r._acct==='M7'
+        ?`<span style="background:#EFF6FF;color:#1D4ED8;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">M7</span>`
+        :r._acct==='Britelift'
+        ?`<span style="background:#FFF7ED;color:#C2410C;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Britelift</span>`
+        :r._acct==='RideX'
+        ?`<span style="background:#F5F3FF;color:#6D28D9;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">RideX</span>`
+        :r._acct==='Hamilton'
+        ?`<span style="background:#ECFDF5;color:#065F46;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Hamilton</span>`
+        :r._acct==='Skyline'
+        ?`<span style="background:#F0F9FF;color:#0369A1;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Skyline</span>`
+        :`<span style="background:#FFF0F3;color:#9F1239;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Parentis</span>`;
+    const critKeys=['os_in','os_out','closing','approp','no_resp','fillers','ack','hold','ack_hold',
+                    'resp_eff','empathy','adjust','mute','active','answered','probing','verif',
+                    'clarif','lost_sop','rude','trans','speech'];
+    const critCells=critKeys.map(k=>{{
+        const v=r[k];
+        if(k==='rude'){{
+            if(v==='No') return'<td style="text-align:center"><span style="color:#0F9B58;font-weight:600">✓</span></td>';
+            if(v==='Yes')return'<td style="text-align:center"><span style="color:#E85D3F;font-weight:600">✗</span></td>';
+            return'<td style="text-align:center"><span style="color:#94A3B8">&mdash;</span></td>';
+        }}
+        if(k==='lost_sop'&&(!v||v==='Not Applicable'))return'<td style="text-align:center;color:#94A3B8">N/A</td>';
+        return`<td style="text-align:center">${{qaYN(v)}}</td>`;
+    }});
+    const fbTxt=qaEscapeHtml(r.feedback||'—');
+    return`<tr><td style="white-space:nowrap;font-size:11px">${{qaEscapeHtml((r.ts||'—').slice(0,10))}}</td><td style="max-width:200px;overflow:hidden" title="${{qaEscapeHtml(r.agent||'')}}"><div style="display:flex;align-items:center;gap:5px;overflow:hidden"><span style="width:22px;height:22px;border-radius:50%;background:${{av.bg}};color:${{av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{av.ini}}</span><span style="font-weight:600;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">${{qaEscapeHtml(r.agent||'—')}}</span></div></td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.supervisor||'')}}">${{qaEscapeHtml(r.supervisor||'—')}}</td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.coach||'')}}">${{qaEscapeHtml(r.coach||'—')}}</td><td>${{acctPill}}</td><td><span class="qa-chip ${{chipCls}}">${{disp}}</span></td>${{critCells.join('')}}<td style="font-size:10px;color:#475569;white-space:nowrap">${{qaEscapeHtml(r.invest||'—')}}</td><td style="max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;color:#475569" title="${{fbTxt}}">${{fbTxt}}</td></tr>`;
+}}
+
+function qaRenderVisibleRows(){{
+    const el=document.getElementById('qa-detail-table');
+    const scroller=document.getElementById('qa-tbl-scroll-main');
+    if(!el||!scroller) return;
+    if(!qaVsRows.length){{
+        el.innerHTML=`<tr><td colspan="30" style="text-align:center;color:#94A3B8;padding:20px">No data</td></tr>`;
+        return;
+    }}
+    const scrollTop=scroller.scrollTop;
+    const viewH=scroller.clientHeight;
+    const total=qaVsRows.length;
+    const startIdx=Math.max(0,Math.floor(scrollTop/QA_VS_ROW_H)-QA_VS_BUFFER);
+    const endIdx=Math.min(total,Math.ceil((scrollTop+viewH)/QA_VS_ROW_H)+QA_VS_BUFFER);
+    const topH=startIdx*QA_VS_ROW_H;
+    const botH=(total-endIdx)*QA_VS_ROW_H;
+    let html='';
+    if(topH>0) html+=`<tr style="height:${{topH}}px;pointer-events:none"><td colspan="30" style="padding:0;border:none"></td></tr>`;
+    html+=qaVsRows.slice(startIdx,endIdx).map(qaRowHtml).join('');
+    if(botH>0) html+=`<tr style="height:${{botH}}px;pointer-events:none"><td colspan="30" style="padding:0;border:none"></td></tr>`;
+    el.innerHTML=html;
+}}
+
 function qaRenderTable(data) {{
     const el=document.getElementById('qa-detail-table');
     const count=document.getElementById('qa-tbl-count');
     const foot=document.getElementById('qa-tbl-footer');
     if(!el) return;
-    const {{field:sf, dir:sd}} = qaTableSortState;
-    const smul = sd === 'asc' ? 1 : -1;
-    const rows = data.slice().sort((a,b) => {{
-        if (sf === 'score') {{
-            return smul * ((Number(a.score)||0) - (Number(b.score)||0));
-        }}
-        return smul * (a[sf]||'').localeCompare(b[sf]||'');
+    const {{field:sf,dir:sd}}=qaTableSortState;
+    const smul=sd==='asc'?1:-1;
+    qaVsRows=data.slice().sort((a,b)=>{{
+        if(sf==='score') return smul*((Number(a.score)||0)-(Number(b.score)||0));
+        return smul*(a[sf]||'').localeCompare(b[sf]||'');
     }});
-    if(count)count.textContent=rows.length+' records';
+    if(count)count.textContent=qaVsRows.length+' records';
     const total=qaGetActiveData().length;
-    if(foot)foot.textContent='Showing '+rows.length+' of '+total+' evaluations';
-    const critKeys=['os_in','os_out','closing','approp','no_resp','fillers','ack','hold','ack_hold',
-                    'resp_eff','empathy','adjust','mute','active','answered','probing','verif',
-                    'clarif','lost_sop','rude','trans','speech'];
-    el.innerHTML=rows.map(r=>{{
-        const score=Number(r.score),sc=!isNaN(score)&&score>0?score:null;
-        const chipCls=sc!==null?qaChipCls(sc):'',disp=sc!==null?sc.toFixed(1)+'%':'—';
-        const av=QA_AV[r.agent]||{{bg:'#F1F5F9',tc:'#475569',ini:(r.agent||'?').split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase()}};
-        const acctPill=r._acct==='M7'
-            ?`<span style="background:#EFF6FF;color:#1D4ED8;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">M7</span>`
-            :r._acct==='Britelift'
-            ?`<span style="background:#FFF7ED;color:#C2410C;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Britelift</span>`
-            :r._acct==='RideX'
-            ?`<span style="background:#F5F3FF;color:#6D28D9;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">RideX</span>`
-            :r._acct==='Hamilton'
-            ?`<span style="background:#ECFDF5;color:#065F46;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Hamilton</span>`
-            :r._acct==='Skyline'
-            ?`<span style="background:#F0F9FF;color:#0369A1;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Skyline</span>`
-            :`<span style="background:#FFF0F3;color:#9F1239;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Parentis</span>`;
-        const critCells=critKeys.map(k=>{{
-            const v=r[k];
-            if(k==='rude'){{
-                if(v==='No') return'<td style="text-align:center"><span style="color:#0F9B58;font-weight:600">✓</span></td>';
-                if(v==='Yes')return'<td style="text-align:center"><span style="color:#E85D3F;font-weight:600">✗</span></td>';
-                return'<td style="text-align:center"><span style="color:#94A3B8">&mdash;</span></td>';
-            }}
-            if(k==='lost_sop'&&(!v||v==='Not Applicable'))return'<td style="text-align:center;color:#94A3B8">N/A</td>';
-            return`<td style="text-align:center">${{qaYN(v)}}</td>`;
-        }});
-        return`<tr><td style="white-space:nowrap;font-size:11px">${{qaEscapeHtml((r.ts||'—').slice(0,10))}}</td><td style="max-width:200px;overflow:hidden" title="${{qaEscapeHtml(r.agent||'')}}"><div style="display:flex;align-items:center;gap:5px;overflow:hidden"><span style="width:22px;height:22px;border-radius:50%;background:${{av.bg}};color:${{av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{av.ini}}</span><span style="font-weight:600;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">${{qaEscapeHtml(r.agent||'—')}}</span></div></td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.supervisor||'')}}">${{qaEscapeHtml(r.supervisor||'—')}}</td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.coach||'')}}">${{qaEscapeHtml(r.coach||'—')}}</td><td>${{acctPill}}</td><td><span class="qa-chip ${{chipCls}}">${{disp}}</span></td>${{critCells.join('')}}<td style="font-size:10px;color:#475569;white-space:nowrap">${{qaEscapeHtml(r.invest||'—')}}</td><td style="max-width:240px;white-space:normal;font-size:10px;color:#475569">${{qaEscapeHtml(r.feedback||'—')}}</td></tr>`;
-    }}).join('')||`<tr><td colspan="30" style="text-align:center;color:#94A3B8;padding:20px">No data</td></tr>`;
+    if(foot)foot.textContent='Showing '+qaVsRows.length+' of '+total+' evaluations';
     const thead=el.closest('table')?.querySelector('thead');
     if(thead){{
         thead.querySelectorAll('th[data-qa-sort]').forEach(th=>{{
@@ -5408,6 +5437,9 @@ function qaRenderTable(data) {{
             }}
         }});
     }}
+    const scroller=document.getElementById('qa-tbl-scroll-main');
+    if(scroller) scroller.scrollTop=0;
+    qaRenderVisibleRows();
 }}
 
 function qaUpdateDonut(data) {{
@@ -5689,6 +5721,14 @@ function initQualityCharts() {{
             }});
         }},{{threshold:0}});
         obs.observe(sentinel);
+    }}
+
+    const qaTblScroller=document.getElementById('qa-tbl-scroll-main');
+    if(qaTblScroller){{
+        qaTblScroller.addEventListener('scroll',()=>{{
+            if(qaVsRaf) cancelAnimationFrame(qaVsRaf);
+            qaVsRaf=requestAnimationFrame(qaRenderVisibleRows);
+        }},{{passive:true}});
     }}
 
     const trendLabelPlugin={{
