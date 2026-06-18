@@ -4629,9 +4629,9 @@ briteliftRawData.forEach(r => r._acct = 'Britelift');
 ridexRawData.forEach(r => r._acct = 'RideX');
 hamiltonRawData.forEach(r => r._acct = 'Hamilton');
 
-// Date range picker state — default: first of current month → today
+// Date range picker state — default: last 30 days
 const _qaToday = new Date(); _qaToday.setHours(0,0,0,0);
-let qaDrpStart = new Date(_qaToday.getFullYear(), _qaToday.getMonth(), 1);
+let qaDrpStart = new Date(_qaToday.getTime() - 29 * 86400000);
 let qaDrpEnd   = new Date(_qaToday);
 let qaDrpPhase    = 0;
 let qaDrpOpen     = false;
@@ -4855,7 +4855,7 @@ function qaApplyDRP() {{ if(qaDrpEnd) {{ qaCloseDatePicker(); qaApplyFilters(); 
 
 function qaResetDRP() {{
     const _t=new Date(); _t.setHours(0,0,0,0);
-    qaDrpStart=new Date(_t.getFullYear(),_t.getMonth(),1);
+    qaDrpStart=new Date(_t.getTime()-29*86400000);
     qaDrpEnd=new Date(_t);
     qaDrpPhase=0; qaUpdateDRPLabel(); qaCloseDatePicker(); qaApplyFilters();
 }}
@@ -5456,6 +5456,21 @@ function initQualityCharts() {{
         }}
     }};
 
+    qaPopulateSelects();
+    qaUpdateDRPLabel();
+
+    // Info pills
+    const qaAcctsLoaded=[qaRawData,parentisRawData,briteliftRawData,ridexRawData,hamiltonRawData].filter(d=>d.length>0).length;
+    const qaPillAccts=document.getElementById('qa-pill-qa-accounts');
+    if(qaPillAccts)qaPillAccts.textContent=qaAcctsLoaded+' QA Account'+(qaAcctsLoaded===1?'':'s')+' Loaded';
+    const qaPillTotal=document.getElementById('qa-pill-total-accounts');
+    if(qaPillTotal){{
+        const n=Number(document.getElementById('approvedAccounts')?.textContent)||0;
+        if(n>0)qaPillTotal.textContent=n+' Accounts';
+    }}
+
+    try {{
+
     const trendCtx=document.getElementById('qa-trend-chart');
     if(trendCtx){{
         qaTrendChart=new Chart(trendCtx,{{
@@ -5605,17 +5620,8 @@ function initQualityCharts() {{
         }});
     }}
 
-    qaPopulateSelects();
-    qaUpdateDRPLabel();
-
-    // Info pills
-    const qaAcctsLoaded=[qaRawData,parentisRawData,briteliftRawData,ridexRawData,hamiltonRawData].filter(d=>d.length>0).length;
-    const qaPillAccts=document.getElementById('qa-pill-qa-accounts');
-    if(qaPillAccts)qaPillAccts.textContent=qaAcctsLoaded+' QA Account'+(qaAcctsLoaded===1?'':'s')+' Loaded';
-    const qaPillTotal=document.getElementById('qa-pill-total-accounts');
-    if(qaPillTotal){{
-        const n=Number(document.getElementById('approvedAccounts')?.textContent)||0;
-        if(n>0)qaPillTotal.textContent=n+' Accounts';
+    }} catch(e) {{
+        console.warn('Quality chart init failed:', e);
     }}
 
     qaApplyFilters();
