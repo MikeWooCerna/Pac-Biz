@@ -2852,7 +2852,7 @@ def main():
     #qualityPanel .qa-sum-score {{ font-size:11px;font-weight:700;margin-top:3px }}
     /* Grids & cards */
     #qualityPanel .qa-g3 {{ display:grid;grid-template-columns:1.6fr 1fr 1fr 0.85fr;gap:12px }}
-    #qualityPanel .qa-g2 {{ display:grid;grid-template-columns:repeat(3,1fr);gap:12px }}
+    #qualityPanel .qa-g2 {{ display:grid;grid-template-columns:repeat(3,1fr);gap:12px;grid-auto-rows:300px;align-items:stretch }}
     #qualityPanel .qa-card {{ background:#fff;border-radius:10px;border:1px solid #E2E8F0;overflow:hidden;display:flex;flex-direction:column }}
     #qualityPanel .qa-ch {{ padding:7px 12px;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;justify-content:space-between;gap:8px }}
     #qualityPanel .qa-ct {{ font-size:12px;font-weight:700;color:#1E293B;display:flex;align-items:center;gap:6px }}
@@ -2871,14 +2871,16 @@ def main():
     #qualityPanel .qa-cr-fill {{ height:100%;border-radius:3px }}
     #qualityPanel .qa-cr-val {{ font-size:11px;font-weight:700;min-width:38px;text-align:right;flex-shrink:0 }}
     /* Leaderboard */
-    #qualityPanel .qa-lbt {{ width:100%;border-collapse:collapse;font-size:11px }}
-    #qualityPanel .qa-lbt th {{ padding:6px 8px;text-align:left;font-size:9px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #F1F5F9;white-space:nowrap;position:sticky;top:0;z-index:2;background:#fff }}
-    #qualityPanel .qa-lbt td {{ padding:7px 8px;border-bottom:1px solid #F8FAFC;vertical-align:middle }}
+    #qualityPanel .qa-lbt {{ width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed }}
+    #qualityPanel .qa-lbt th {{ padding:6px 8px;text-align:left;font-size:9px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #F1F5F9;white-space:nowrap;overflow:hidden;position:sticky;top:0;z-index:2;background:#fff }}
+    #qualityPanel .qa-lbt td {{ padding:6px 8px;border-bottom:1px solid #F8FAFC;vertical-align:middle }}
+    #qualityPanel .qa-lbt tbody tr {{ height:36px }}
+    #qualityPanel .qa-lbt td:nth-child(2) {{ overflow:hidden;white-space:nowrap;text-overflow:ellipsis }}
     #qualityPanel .qa-lbt tr:last-child td {{ border-bottom:none }}
     #qualityPanel .qa-lbt tr:hover td {{ background:#F8FAFC }}
-    /* Fixed-height leaderboard cards with internal scroll */
-    #qualityPanel .qa-g2 .qa-card {{ max-height:300px }}
-    #qualityPanel .qa-g2 .qa-card .qa-cbody {{ min-height:0;overflow-y:auto }}
+    /* Fixed-height leaderboard cards — all three identical */
+    #qualityPanel .qa-g2 .qa-card {{ height:100%;display:flex;flex-direction:column }}
+    #qualityPanel .qa-g2 .qa-card .qa-cbody {{ flex:1;min-height:0;overflow-y:auto }}
     #qualityPanel .qa-rk {{ font-size:11px;font-weight:800;color:#94A3B8;width:18px;text-align:center }}
     #qualityPanel .qa-rk.gold {{ color:#F59E0B }} #qualityPanel .qa-rk.silver {{ color:#94A3B8 }} #qualityPanel .qa-rk.bronze {{ color:#B45309 }}
     #qualityPanel .qa-chip {{ display:inline-block;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:700 }}
@@ -3346,19 +3348,19 @@ def main():
     <div class="qa-card">
       <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>Agent leaderboard</div><div class="qa-cs">Ranked by avg score</div></div><span class="qa-cb qa-cbb" id="qa-lb-badge">&mdash;</span></div>
       <div class="qa-cbody" style="padding:0 16px 8px">
-        <table class="qa-lbt qa-agent-lbt"><thead><tr><th>#</th><th>Agent</th><th>Evals</th><th>Avg</th><th>Min</th><th>Max</th><th>Comp Score</th><th>Account</th></tr></thead><tbody id="qa-leaderboard"></tbody></table>
+        <table class="qa-lbt qa-agent-lbt"><colgroup><col style="width:7%"><col><col style="width:11%"><col style="width:11%"><col style="width:10%"><col style="width:10%"><col style="width:13%"><col style="width:13%"></colgroup><thead><tr><th>#</th><th>Agent</th><th>Evals</th><th>Avg</th><th>Min</th><th>Max</th><th>Comp Score</th><th>Account</th></tr></thead><tbody id="qa-leaderboard"></tbody></table>
       </div>
     </div>
     <div class="qa-card">
       <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Team Leader leaderboard</div><div class="qa-cs">Ranked by avg score</div></div><span class="qa-cb qa-cbb" id="qa-tl-lb-badge">&mdash;</span></div>
       <div class="qa-cbody" style="padding:0 16px 8px">
-        <table class="qa-lbt qa-tl-lbt"><thead><tr><th>#</th><th>Team Leader</th><th>Evals</th><th>Avg Score</th><th>Min</th><th>Max</th><th>Comp Score</th></tr></thead><tbody id="qa-tl-leaderboard"></tbody></table>
+        <table class="qa-lbt qa-tl-lbt"><colgroup><col style="width:8%"><col><col style="width:12%"><col style="width:13%"><col style="width:12%"><col style="width:12%"><col style="width:16%"></colgroup><thead><tr><th>#</th><th>Team Leader</th><th>Evals</th><th>Avg</th><th>Min</th><th>Max</th><th>Comp Score</th></tr></thead><tbody id="qa-tl-leaderboard"></tbody></table>
       </div>
     </div>
     <div class="qa-card">
       <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg>QA Coach leaderboard</div><div class="qa-cs">Ranked by avg score</div></div><span class="qa-cb qa-cbb" id="qa-coach-lb-badge">&mdash;</span></div>
       <div class="qa-cbody" style="padding:0 16px 8px">
-        <table class="qa-lbt qa-coach-lbt"><thead><tr><th>#</th><th>QA Coach</th><th>Evals</th><th>Avg Score</th><th>Min</th><th>Max</th><th>Comp Score</th></tr></thead><tbody id="qa-coach-leaderboard"></tbody></table>
+        <table class="qa-lbt qa-coach-lbt"><colgroup><col style="width:8%"><col><col style="width:12%"><col style="width:13%"><col style="width:12%"><col style="width:12%"><col style="width:16%"></colgroup><thead><tr><th>#</th><th>QA Coach</th><th>Evals</th><th>Avg</th><th>Min</th><th>Max</th><th>Comp Score</th></tr></thead><tbody id="qa-coach-leaderboard"></tbody></table>
       </div>
     </div>
   </div>
