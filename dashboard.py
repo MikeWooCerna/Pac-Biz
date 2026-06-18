@@ -4227,7 +4227,7 @@ function renderDataTable(id, rows, columns, sortState = null) {{
     document.getElementById(id).innerHTML = html;
 }}
 
-function donut(id, title, data, textInfo = "percent", colors = COLORS) {{
+function donut(id, title, data, textInfo = "percent", colors = COLORS, showLegend = true) {{
     Plotly.newPlot(id, [{{
         labels: data.map(d => d.name),
         values: data.map(d => d.count),
@@ -4244,7 +4244,8 @@ function donut(id, title, data, textInfo = "percent", colors = COLORS) {{
         height: 280,
         margin: {{l: 10, r: 10, t: 45, b: 10}},
         paper_bgcolor: "white",
-        font: {{family: "Arial", size: 11}}
+        font: {{family: "Arial", size: 11}},
+        showlegend: showLegend,
     }}, {{responsive: true}});
 }}
 
@@ -4267,7 +4268,7 @@ function renderDonutWithSummary(id, title, data, colors, totalLabel, textInfo = 
     const container = document.getElementById(id);
     if (!container) return;
     container.innerHTML = `<div class="coaching-donut-widget"><div class="coaching-donut-plot" id="${{id}}Plot"></div><div class="coaching-donut-summary" id="${{id}}Summary"></div></div>`;
-    donut(`${{id}}Plot`, title, data, textInfo, colors);
+    donut(`${{id}}Plot`, title, data, textInfo, colors, false);
     document.getElementById(`${{id}}Summary`).innerHTML = chartSummaryMarkup(data, colors, totalLabel, totalSuffix);
 }}
 
