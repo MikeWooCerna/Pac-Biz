@@ -2691,6 +2691,7 @@ def main():
 
     .coaching-donut-plot {{
         flex: 0 0 210px;
+        height: 210px;
     }}
 
     .coaching-donut-summary {{
@@ -2709,18 +2710,18 @@ def main():
 
     .chart-summary-rows {{
         display: grid;
-        align-content: start;
-        gap: 6px;
-        max-height: 80px;
-        overflow-y: auto;
-        padding-right: 4px;
+        grid-template-columns: 1fr 1fr;
+        gap: 5px 18px;
+        overflow: hidden;
     }}
 
     .chart-summary-row {{
         display: grid;
-        grid-template-columns: 12px minmax(0, 1fr) auto;
+        grid-template-columns: 10px minmax(0, 1fr) auto;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
+        font-size: 11px;
+        line-height: 1.2;
     }}
 
     .chart-summary-swatch {{
@@ -2744,7 +2745,7 @@ def main():
 
     .chart-summary-total {{
         flex-shrink: 0;
-        margin-top: 2px;
+        margin-top: 6px;
         padding-top: 6px;
         border-top: 1px solid #E5E7EB;
         color: var(--muted);
