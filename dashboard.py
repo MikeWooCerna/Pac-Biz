@@ -2208,6 +2208,13 @@ def main():
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 12px;
     }}
+    .coaching-chart-row .chart-card {{
+        height: 340px;
+        max-height: 340px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }}
 
     .coaching-summary-card {{
         grid-column: 1;
@@ -2672,18 +2679,35 @@ def main():
     .coaching-donut-widget {{
         display: flex;
         flex-direction: column;
-        min-height: 410px;
+        height: 100%;
+        overflow: hidden;
     }}
 
     .coaching-donut-plot {{
-        flex: 0 0 280px;
+        flex: 0 0 210px;
+    }}
+
+    .coaching-donut-summary {{
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }}
+
+    .chart-summary {{
+        display: flex;
+        flex-direction: column;
+        height: 100%;
     }}
 
     .chart-summary-rows {{
         display: grid;
         align-content: start;
         gap: 6px;
-        min-height: 112px;
+        max-height: 80px;
+        overflow-y: auto;
+        padding-right: 4px;
     }}
 
     .chart-summary-row {{
@@ -2713,6 +2737,7 @@ def main():
     }}
 
     .chart-summary-total {{
+        flex-shrink: 0;
         margin-top: 2px;
         padding-top: 6px;
         border-top: 1px solid #E5E7EB;
@@ -4234,7 +4259,7 @@ function chartSummaryMarkup(data, colors, totalLabel, totalSuffix = "") {{
 function renderDonutWithSummary(id, title, data, colors, totalLabel, textInfo = "none", totalSuffix = "") {{
     const container = document.getElementById(id);
     if (!container) return;
-    container.innerHTML = `<div class="coaching-donut-widget"><div class="coaching-donut-plot" id="${{id}}Plot"></div><div id="${{id}}Summary"></div></div>`;
+    container.innerHTML = `<div class="coaching-donut-widget"><div class="coaching-donut-plot" id="${{id}}Plot"></div><div class="coaching-donut-summary" id="${{id}}Summary"></div></div>`;
     donut(`${{id}}Plot`, title, data, textInfo, colors);
     document.getElementById(`${{id}}Summary`).innerHTML = chartSummaryMarkup(data, colors, totalLabel, totalSuffix);
 }}
