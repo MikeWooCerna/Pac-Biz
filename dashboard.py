@@ -4697,7 +4697,7 @@ function _renderCoverageDonut(elementId, metrics) {{
     const coverageRows = metrics.totalDR !== null
         ? [{{name: "Coached", count: metrics.coachedCount}}, {{name: "Not Coached", count: notCoachedCount}}]
         : [{{name: "Coached", count: metrics.coachedCount}}];
-    const colors = metrics.totalDR !== null ? ["#00A651", "#CBD5E1"] : ["#00A651"];
+    const colors = metrics.totalDR !== null ? ["#00A651", "#DC2626"] : ["#00A651"];
     const totalLabel = metrics.totalDR !== null ? "Total Direct Reports" : "Coached Agents";
     renderDonutWithSummary(elementId, "Coaching Coverage", coverageRows, colors, totalLabel, "percent", " Agents");
 }}
