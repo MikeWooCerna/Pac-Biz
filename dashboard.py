@@ -558,6 +558,18 @@ def read_m7_workbook():
         return pd.DataFrame()
 
 
+# Canonical agent/supervisor name aliases (key = lowercase stripped variant)
+NAME_ALIASES = {
+    "espeleta, kenneth b": "Kenneth Espeleta",
+    "kenneth espeleta":    "Kenneth Espeleta",
+}
+
+def _apply_name_aliases(series):
+    return series.apply(
+        lambda v: NAME_ALIASES.get(str(v).strip().lower(), str(v).strip()) if v else v
+    )
+
+
 def _transform_qa_source(source, column_map):
     df = source.rename(columns={k: v for k, v in column_map.items() if k in source.columns})
 
@@ -600,6 +612,10 @@ def _transform_qa_source(source, column_map):
         df["score"] = pd.to_numeric(df["score"], errors="coerce").fillna(0).astype(int)
     if "feedback" in df.columns:
         df["feedback"] = df["feedback"].apply(clean_val)
+    if "agent" in df.columns:
+        df["agent"] = _apply_name_aliases(df["agent"])
+    if "supervisor" in df.columns:
+        df["supervisor"] = _apply_name_aliases(df["supervisor"])
 
     if "emp_id" in df.columns and "ts" in df.columns:
         df["eval_key"] = (
