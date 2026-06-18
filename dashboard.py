@@ -2751,6 +2751,22 @@ def main():
         flex-direction: column;
     }}
 
+    /* Host div: propagates card height through to the widget/summary/footer chain */
+    .coaching-donut-host {{
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+    }}
+    .coaching-donut-host > .coaching-donut-widget {{
+        flex: 1;
+        min-height: 0;
+    }}
+    /* Footer anchored to bottom via margin-top: auto */
+    .coaching-donut-host .chart-summary-total {{
+        margin-top: auto;
+    }}
+
     .chart-summary {{
         display: flex;
         flex-direction: column;
@@ -3211,15 +3227,15 @@ def main():
     <div class="coaching-chart-row" id="coaching-chart-row">
         <div class="chart-card" id="coaching-cat-card">
             <button class="coaching-expand-btn" onclick="toggleCoachingCardExpand('coaching-cat-card')" title="Expand"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button>
-            <div id="coachingCategoryDonut"></div>
+            <div id="coachingCategoryDonut" class="coaching-donut-host"></div>
         </div>
         <div class="chart-card" id="coaching-status-card">
             <button class="coaching-expand-btn" onclick="toggleCoachingCardExpand('coaching-status-card')" title="Expand"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button>
-            <div id="coachingStatusDonut"></div>
+            <div id="coachingStatusDonut" class="coaching-donut-host"></div>
         </div>
         <div class="chart-card" id="coaching-cov-card">
             <button class="coaching-expand-btn" onclick="toggleCoachingCardExpand('coaching-cov-card')" title="Expand"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button>
-            <div id="coachingCoverageDonut"></div>
+            <div id="coachingCoverageDonut" class="coaching-donut-host"></div>
         </div>
         <div class="chart-card" id="coaching-conf-card">
             <button class="coaching-expand-btn" onclick="toggleCoachingCardExpand('coaching-conf-card')" title="Expand"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button>
