@@ -6728,8 +6728,9 @@ function qaApplyFilters() {{
     qaToggleDistWidget(!acct);
     if(acct) qaUpdateDonut(filtered); else qaUpdateEvalDist(filtered);
     const aivhCard=document.getElementById('qa-aivh-card');
-    if(aivhCard)aivhCard.style.display=(acct==='hamilton'||acct==='skyline')?'':'none';
-    if(acct==='hamilton'||acct==='skyline')qaUpdateAivh(filtered);
+    const aivhAccts=['hamilton','skyline','vip','ch','rc'];
+    if(aivhCard)aivhCard.style.display=(aivhAccts.includes(acct))?'':'none';
+    if(aivhAccts.includes(acct))qaUpdateAivh(filtered);
     const hCritEl=document.getElementById('qa-hamilton-crit');
     if(hCritEl)hCritEl.style.display=(acct==='hamilton')?'':'none';
     if(acct==='hamilton')qaUpdateHamiltonCrit(filtered);
