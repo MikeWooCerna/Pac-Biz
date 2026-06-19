@@ -3745,7 +3745,7 @@ def main():
           <th style="min-width:70px">Ack. Hold</th><th style="min-width:70px">Resp. Eff.</th>
           <th style="min-width:60px">Empathy</th><th style="min-width:60px">Adjust</th>
           <th style="min-width:55px">Mute</th><th style="min-width:70px">Active List.</th>
-          <th style="min-width:70px">Answered Q</th><th style="min-width:65px">Probing Q</th>
+          <th style="min-width:65px">General Q</th><th style="min-width:70px">Answered Q</th><th style="min-width:65px">Probing Q</th>
           <th style="min-width:70px">Cust. Verif.</th><th style="min-width:65px">Clarif.</th>
           <th style="min-width:65px">Lost SOP</th><th style="min-width:65px">Rudeness</th>
           <th style="min-width:75px">Transaction</th><th style="min-width:65px">Speech</th>
@@ -5861,7 +5861,7 @@ function qaRowHtml(r){{
         ?`<span style="background:#FFFBEB;color:#B45309;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">VIP</span>`
         :`<span style="background:#FFF0F3;color:#9F1239;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Parentis</span>`;
     const critKeys=['os_in','os_out','closing','approp','no_resp','fillers','ack','hold','ack_hold',
-                    'resp_eff','empathy','adjust','mute','active','answered','probing','verif',
+                    'resp_eff','empathy','adjust','mute','active','gen_q','answered','probing','verif',
                     'clarif','lost_sop','rude','trans','speech'];
     const critCells=critKeys.map(k=>{{
         const v=r[k];
