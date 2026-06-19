@@ -5839,6 +5839,8 @@ function qaRowHtml(r){{
         ?`<span style="background:#ECFDF5;color:#065F46;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Hamilton</span>`
         :r._acct==='Skyline'
         ?`<span style="background:#F0F9FF;color:#0369A1;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Skyline</span>`
+        :r._acct==='VIP'
+        ?`<span style="background:#FFFBEB;color:#B45309;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">VIP</span>`
         :`<span style="background:#FFF0F3;color:#9F1239;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Parentis</span>`;
     const critKeys=['os_in','os_out','closing','approp','no_resp','fillers','ack','hold','ack_hold',
                     'resp_eff','empathy','adjust','mute','active','answered','probing','verif',
