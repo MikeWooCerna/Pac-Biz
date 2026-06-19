@@ -201,6 +201,10 @@ CH_DIR = Path(os.getenv("CH_DIR", r"C:\Users\Mike Woo Cerna\Documents\PB\Quality
 CH_SCRIPT = CH_DIR / "ch_pull.py"
 CH_OUTPUT_FILE = CH_DIR / "CH_RAW.xlsx"
 
+RC_DIR = Path(os.getenv("RC_DIR", r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\Reno Cab"))
+RC_SCRIPT = RC_DIR / "rc_pull.py"
+RC_OUTPUT_FILE = RC_DIR / "RC_RAW.xlsx"
+
 # Maps standard detail-table criterion keys → Hamilton base column name (without _AI/_Max suffix)
 HAMILTON_CRIT_MAP = {
     "os_in":    "Opening_Spiel_Inbound_Call",
@@ -345,6 +349,40 @@ VIP_EXTRA_CRIT_MAP = {
     "vip_cust_verif_oth": "Customer_Verification_Other_Measures",
     "vip_res_etiq":       "Resolution_Etiquette",
     "vip_sop":            "VIP_Standard_Operating_Procedure",
+}
+
+RC_CRIT_MAP = {
+    "os_in":    "Opening_Spiel_Inbound_Call",
+    "os_out":   "Greetings_Call_Script",
+    "closing":  "Closing_Spiel",
+    "approp":   "Appropriate_Response",
+    "no_resp":  "No_response",
+    "fillers":  "Fillers_Slang_Words",
+    "ack":      "Acknowledgement_Ownership",
+    "hold":     "Proper_Handling_of_Pauses_or_Hold_Requests",
+    "ack_hold": "Acknowledges_and_Thank_the_Customer_for_Waiting",
+    "resp_eff": "Response_Efficiency",
+    "empathy":  "Empathy_Sympathy",
+    "adjust":   "Adjusts_to_Customer_s_Level",
+    "mute":     "Mute_Button_Usage",
+    "active":   "Active_listening",
+    "gen_q":    "General_Questions",
+    "answered": "Answered_Customer_s_Questions",
+    "probing":  "Probing_Questions",
+    "verif":    "Customer_Verification",
+    "clarif":   "Clarification_When_Information_is_Missed",
+    "lost_sop": "Lost_Item_SOP",
+    "rude":     "Rudeness",
+    "trans":    "Transaction_Completion",
+    "speech":   "Speech_Clarify",
+}
+
+RC_EXTRA_CRIT_MAP = {
+    "rc_profess":         "Professionalism",
+    "rc_verif_other":     "Verification_Other_Measures",
+    "rc_res_etiq":        "Resolution_Etiquette",
+    "rc_comm_quality":    "Communication_Quality",
+    "rc_cust_verif_meas": "Customer_Verification_Measures",
 }
 
 COACHING_VALIDATION_ERRORS_FILE = COACHING_OUTPUT_FILE.parent / "coaching_validation_errors.csv"
@@ -1595,6 +1633,178 @@ def load_ch_data():
     return result
 
 
+def transform_rc_data(source):
+    df = source.copy()
+    rename = {
+        "evaluation_date":      "ts",
+        "Emp Name":             "agent",
+        "QA":                   "coach",
+        "Immediate Supervisor": "supervisor",
+        "evaluation_status":    "status",
+        "overall_score_ai":     "score_ai",
+        "overall_score_human":  "score_human",
+        "QA_ID":                "qa_id",
+        "EMPLOYEE_ID":          "emp_id",
+    }
+    df = df.rename(columns={k: v for k, v in rename.items() if k in df.columns})
+
+    def fmt_ts(v):
+        try:
+            dt = pd.to_datetime(str(v), errors="coerce")
+            if pd.notna(dt):
+                return dt.strftime("%Y-%m-%d %H:%M")
+        except Exception:
+            pass
+        return ""
+
+    if "ts" in df.columns:
+        df["ts"] = df["ts"].apply(fmt_ts)
+
+    if "status" in df.columns:
+        df["status"] = df["status"].apply(
+            lambda v: str(v).strip().lower() if str(v).strip() not in ("", "nan") else "rated"
+        )
+
+    score_ai_s = pd.to_numeric(df.get("score_ai", pd.Series(dtype=float)), errors="coerce").fillna(0)
+    df["score_ai"] = score_ai_s.round(1)
+
+    score_h_s = pd.to_numeric(df.get("score_human", pd.Series(dtype=float)), errors="coerce")
+    df["score_human"] = [round(float(v), 1) if pd.notna(v) else None for v in score_h_s]
+
+    def effective_score(row):
+        if str(row.get("status", "")).lower() == "corrected":
+            v = row.get("score_human")
+            try:
+                if v is not None:
+                    return int(round(float(v)))
+            except Exception:
+                pass
+        v = row.get("score_ai", 0)
+        try:
+            return int(round(float(v)))
+        except Exception:
+            return 0
+
+    df["score"] = df.apply(effective_score, axis=1)
+
+    def get_week_start(ts_val):
+        try:
+            s = str(ts_val).split()[0]
+            dt = pd.to_datetime(s, errors="coerce")
+            if pd.isna(dt):
+                return ""
+            monday = dt - timedelta(days=dt.weekday())
+            return monday.strftime("%Y-%m-%d")
+        except Exception:
+            return ""
+
+    if "ts" in df.columns:
+        df["week_start"] = df["ts"].apply(get_week_start)
+
+    if "emp_id" in df.columns and "ts" in df.columns:
+        df["eval_key"] = (
+            df["emp_id"].astype(str)
+            + "_"
+            + df["ts"].str.replace(r"[-: ]", "", regex=True)
+        )
+
+    RC_MAIN_ATTRS = {"os_out", "adjust", "gen_q", "verif", "resp_eff", "speech"}
+    for std_key, rc_base in RC_CRIT_MAP.items():
+        ai_col  = f"{rc_base}_AI"
+        max_col = f"{rc_base}_Max"
+        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        if std_key == "rude":
+            df[std_key] = [
+                None if mx == 0 else ("No" if ai >= mx else "Yes")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+        elif std_key == "lost_sop":
+            df[std_key] = [
+                "Not Applicable" if mx == 0 else ("Yes" if ai > 0 else "No")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+        elif std_key in RC_MAIN_ATTRS:
+            df[std_key] = [
+                None if mx == 0 else ("Yes" if ai >= mx else "No")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+        else:
+            df[std_key] = [
+                None if mx == 0 else ("Yes" if ai > 0 else "No")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+
+    for rc_key, rc_base in RC_EXTRA_CRIT_MAP.items():
+        ai_col  = f"{rc_base}_AI"
+        max_col = f"{rc_base}_Max"
+        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        df[rc_key] = [
+            None if mx == 0 else ("Yes" if ai > 0 else "No")
+            for ai, mx in zip(ai_s, max_s)
+        ]
+
+    crit_keys = list(RC_CRIT_MAP.keys()) + list(RC_EXTRA_CRIT_MAP.keys())
+    keep = [
+        "qa_id", "eval_key", "emp_id", "ts", "week_start",
+        "agent", "score", "score_ai", "score_human", "status",
+        "coach", "supervisor",
+    ] + crit_keys
+    for col in ("agent", "supervisor", "coach"):
+        if col in df.columns:
+            df[col] = _apply_name_aliases(df[col])
+    return df[[c for c in keep if c in df.columns]]
+
+
+def refresh_rc_output():
+    if not RC_SCRIPT.exists():
+        return False
+    try:
+        result = subprocess.run(
+            [sys.executable, str(RC_SCRIPT)],
+            cwd=str(RC_DIR),
+            capture_output=True,
+            text=True,
+            timeout=120,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        print(f"Skipping Reno Cab pull: {exc}")
+        return False
+    if result.returncode != 0:
+        msg = result.stderr.strip() or result.stdout.strip() or "No details."
+        print(f"Skipping Reno Cab pull: {msg}")
+        return False
+    if result.stdout.strip():
+        print(result.stdout.strip())
+    return True
+
+
+def read_rc_workbook():
+    if not RC_OUTPUT_FILE.exists():
+        return pd.DataFrame()
+    try:
+        return clean_columns(pd.read_excel(RC_OUTPUT_FILE))
+    except Exception as exc:
+        print(f"Skipping Reno Cab workbook load: {exc}")
+        return pd.DataFrame()
+
+
+def load_rc_data():
+    refresh_rc_output()
+    source = read_rc_workbook()
+    if source.empty:
+        return pd.DataFrame(columns=[
+            "qa_id", "eval_key", "emp_id", "ts", "week_start",
+            "agent", "score", "score_ai", "score_human", "status",
+            "coach", "supervisor",
+        ])
+    result = transform_rc_data(source)
+    print(f"Reno Cab QA rows: {len(result)}")
+    return result
+
+
 def load_existing_records_from_html(variable_name):
     output_path = Path(OUTPUT_FILE)
     if not output_path.exists():
@@ -2215,6 +2425,7 @@ def main():
     skyline = load_skyline_data()
     vip = load_vip_data()
     ch = load_ch_data()
+    rc = load_rc_data()
 
     refresh_time = datetime.now().strftime("%Y-%m-%d %I:%M %p")
 
@@ -3464,6 +3675,8 @@ def main():
     .vip-mode .vip-extra-col{{display:table-cell}}
     .ch-extra-col{{display:none}}
     .ch-mode .ch-extra-col{{display:table-cell}}
+    .rc-extra-col{{display:none}}
+    .rc-mode .rc-extra-col{{display:table-cell}}
     #qualityPanel .qa-av {{ width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;vertical-align:middle;margin-right:4px }}
     #qualityPanel .qa-yn-y {{ color:#0F9B58;font-weight:700;font-size:11px }}
     #qualityPanel .qa-yn-n {{ color:#E85D3F;font-weight:700;font-size:11px }}
@@ -3754,6 +3967,7 @@ def main():
       <option value="skyline">Skyline</option>
       <option value="vip">VIP</option>
       <option value="ch">C&amp;H</option>
+      <option value="rc">Reno Cab</option>
     </select>
   </div>
   <div class="qa-fg">
@@ -3981,6 +4195,11 @@ def main():
           <th class="ch-extra-col" style="min-width:90px">CV Measures</th>
           <th class="ch-extra-col" style="min-width:80px">Res. Etiquette</th>
           <th class="ch-extra-col" style="min-width:75px">Subjective</th>
+          <th class="rc-extra-col" style="min-width:80px">Professionalism</th>
+          <th class="rc-extra-col" style="min-width:70px">Verif. Other</th>
+          <th class="rc-extra-col" style="min-width:80px">Res. Etiquette</th>
+          <th class="rc-extra-col" style="min-width:80px">Comm. Quality</th>
+          <th class="rc-extra-col" style="min-width:90px">CV Measures</th>
           <th style="min-width:75px">Investigation</th>
           <th style="min-width:240px">Feedback Summary</th>
         </tr></thead>
@@ -4010,6 +4229,7 @@ const hamiltonRawData = {to_records(hamilton)};
 const skylineRawData = {to_records(skyline)};
 const vipRawData = {to_records(vip)};
 const chRawData = {to_records(ch)};
+const rcRawData = {to_records(rc)};
 
 const COLORS = ["#004C97", "#39B54A", "#002B5C", "#7AC943", "#00AEEF", "#94A3B8"];
 const COACHING_CATEGORY_COLORS = {{
@@ -5556,6 +5776,7 @@ hamiltonRawData.forEach(r => r._acct = 'Hamilton');
 skylineRawData.forEach(r => r._acct = 'Skyline');
 vipRawData.forEach(r => r._acct = 'VIP');
 chRawData.forEach(r => r._acct = 'C&H');
+rcRawData.forEach(r => r._acct = 'Reno Cab');
 
 // Date range picker state — default: last 30 days
 const _qaToday = new Date(); _qaToday.setHours(0,0,0,0);
@@ -5646,7 +5867,8 @@ function qaGetActiveData() {{
     if (acct === 'skyline') return skylineRawData;
     if (acct === 'vip') return vipRawData;
     if (acct === 'ch') return chRawData;
-    return [...qaRawData, ...parentisRawData, ...briteliftRawData, ...ridexRawData, ...hamiltonRawData, ...skylineRawData, ...vipRawData, ...chRawData];
+    if (acct === 'rc') return rcRawData;
+    return [...qaRawData, ...parentisRawData, ...briteliftRawData, ...ridexRawData, ...hamiltonRawData, ...skylineRawData, ...vipRawData, ...chRawData, ...rcRawData];
 }}
 
 // ─── Date Range Picker ────────────────────────────────────────────────────────
@@ -5855,6 +6077,7 @@ function qaUpdateKPIs(data) {{
         else if(acct==='skyline') titleEl.textContent='Skyline — Quality Assurance';
         else if(acct==='vip') titleEl.textContent='VIP — Quality Assurance';
         else if(acct==='ch') titleEl.textContent='C&H — Quality Assurance';
+        else if(acct==='rc') titleEl.textContent='Reno Cab — Quality Assurance';
         else titleEl.textContent='All Accounts — Quality Assurance';
     }}
     if(badgeEl) {{
@@ -5866,6 +6089,7 @@ function qaUpdateKPIs(data) {{
         else if(acct==='skyline') {{ badgeEl.textContent='Skyline'; badgeEl.className='qa-badge qa-b-skyline'; }}
         else if(acct==='vip') {{ badgeEl.textContent='VIP'; badgeEl.className='qa-badge qa-b-amber'; }}
         else if(acct==='ch') {{ badgeEl.textContent='C&H'; badgeEl.className='qa-badge qa-b-teal'; }}
+        else if(acct==='rc') {{ badgeEl.textContent='Reno Cab'; badgeEl.className='qa-badge qa-b-green'; }}
         else {{ badgeEl.textContent='All Accounts'; badgeEl.className='qa-badge qa-b-amber'; }}
     }}
     const tblScroll=document.getElementById('qa-tbl-scroll-main');
@@ -5874,6 +6098,8 @@ function qaUpdateKPIs(data) {{
         else tblScroll.classList.remove('vip-mode');
         if(acct==='ch') tblScroll.classList.add('ch-mode');
         else tblScroll.classList.remove('ch-mode');
+        if(acct==='rc') tblScroll.classList.add('rc-mode');
+        else tblScroll.classList.remove('rc-mode');
     }}
     const scores=data.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
     const n=data.length;
@@ -6012,6 +6238,8 @@ function qaRenderLeaderboard(data) {{
             ?`<span style="background:#FFFBEB;color:#B45309;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">VIP</span>`
             :a.acct==='C&H'
             ?`<span style="background:#F0FDFA;color:#0F766E;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">C&amp;H</span>`
+            :a.acct==='Reno Cab'
+            ?`<span style="background:#F0FDF4;color:#15803D;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Reno Cab</span>`
             :`<span style="background:#FFF0F3;color:#9F1239;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Parentis</span>`;
         return`<tr><td style="font-size:11px;color:#94A3B8">${{i+1}}</td><td><div style="display:flex;align-items:center;gap:6px"><span style="width:24px;height:24px;border-radius:50%;background:${{a.av.bg}};color:${{a.av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{a.av.ini}}</span><span style="font-weight:600;font-size:11px">${{qaEscapeHtml(a.words)}}</span></div></td><td style="text-align:center">${{a.n}}</td><td><span class="qa-chip ${{chipCls}}">${{a.avg.toFixed(1)}}%</span></td><td style="text-align:center;font-size:11px">${{a.min.toFixed(1)}}%</td><td style="text-align:center;font-size:11px">${{a.max.toFixed(1)}}%</td><td style="text-align:center;color:${{a.passRate>=85?'#0F9B58':'#E85D3F'}};font-size:11px">${{a.passRate.toFixed(0)}}%</td><td>${{acctPill}}</td></tr>`;
     }}).join('')||`<tr><td colspan="8" style="text-align:center;color:#94A3B8;padding:16px">No data</td></tr>`;
@@ -6095,6 +6323,8 @@ function qaRowHtml(r){{
         ?`<span style="background:#FFFBEB;color:#B45309;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">VIP</span>`
         :r._acct==='C&H'
         ?`<span style="background:#F0FDFA;color:#0F766E;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">C&amp;H</span>`
+        :r._acct==='Reno Cab'
+        ?`<span style="background:#F0FDF4;color:#15803D;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Reno Cab</span>`
         :`<span style="background:#FFF0F3;color:#9F1239;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Parentis</span>`;
     const critKeys=['os_in','os_out','closing','approp','no_resp','fillers','ack','hold','ack_hold',
                     'resp_eff','empathy','adjust','mute','active','gen_q','answered','probing','verif',
@@ -6123,8 +6353,15 @@ function qaRowHtml(r){{
         if(v==='Not Applicable')return'<td class="ch-extra-col" style="text-align:center;color:#94A3B8">N/A</td>';
         return`<td class="ch-extra-col" style="text-align:center">${{qaYN(v)}}</td>`;
     }});
+    const rcExtraKeys=['rc_profess','rc_verif_other','rc_res_etiq','rc_comm_quality','rc_cust_verif_meas'];
+    const rcExtraCells=rcExtraKeys.map(k=>{{
+        const v=r[k];
+        if(!v||v===null||v==='')return'<td class="rc-extra-col" style="text-align:center"><span style="color:#94A3B8">&mdash;</span></td>';
+        if(v==='Not Applicable')return'<td class="rc-extra-col" style="text-align:center;color:#94A3B8">N/A</td>';
+        return`<td class="rc-extra-col" style="text-align:center">${{qaYN(v)}}</td>`;
+    }});
     const fbTxt=qaEscapeHtml(r.feedback||'—');
-    return`<tr><td style="white-space:nowrap;font-size:11px">${{qaEscapeHtml((r.ts||'—').slice(0,10))}}</td><td style="max-width:200px;overflow:hidden" title="${{qaEscapeHtml(r.agent||'')}}"><div style="display:flex;align-items:center;gap:5px;overflow:hidden"><span style="width:22px;height:22px;border-radius:50%;background:${{av.bg}};color:${{av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{av.ini}}</span><span style="font-weight:600;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">${{qaEscapeHtml(r.agent||'—')}}</span></div></td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.supervisor||'')}}">${{qaEscapeHtml(r.supervisor||'—')}}</td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.coach||'')}}">${{qaEscapeHtml(r.coach||'—')}}</td><td>${{acctPill}}</td><td><span class="qa-chip ${{chipCls}}">${{disp}}</span></td>${{critCells.join('')}}${{vipExtraCells.join('')}}${{chExtraCells.join('')}}<td style="font-size:10px;color:#475569;white-space:nowrap">${{qaEscapeHtml(r.invest||'—')}}</td><td style="max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;color:#475569" title="${{fbTxt}}">${{fbTxt}}</td></tr>`;
+    return`<tr><td style="white-space:nowrap;font-size:11px">${{qaEscapeHtml((r.ts||'—').slice(0,10))}}</td><td style="max-width:200px;overflow:hidden" title="${{qaEscapeHtml(r.agent||'')}}"><div style="display:flex;align-items:center;gap:5px;overflow:hidden"><span style="width:22px;height:22px;border-radius:50%;background:${{av.bg}};color:${{av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{av.ini}}</span><span style="font-weight:600;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">${{qaEscapeHtml(r.agent||'—')}}</span></div></td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.supervisor||'')}}">${{qaEscapeHtml(r.supervisor||'—')}}</td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.coach||'')}}">${{qaEscapeHtml(r.coach||'—')}}</td><td>${{acctPill}}</td><td><span class="qa-chip ${{chipCls}}">${{disp}}</span></td>${{critCells.join('')}}${{vipExtraCells.join('')}}${{chExtraCells.join('')}}${{rcExtraCells.join('')}}<td style="font-size:10px;color:#475569;white-space:nowrap">${{qaEscapeHtml(r.invest||'—')}}</td><td style="max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;color:#475569" title="${{fbTxt}}">${{fbTxt}}</td></tr>`;
 }}
 
 function qaRenderVisibleRows(){{
@@ -6210,7 +6447,8 @@ function qaUpdateEvalDist(data) {{
         {{key:'Hamilton',color:'#065F46'}},
         {{key:'Skyline',color:'#0EA5E9'}},
         {{key:'VIP',color:'#D97706'}},
-        {{key:'C&H',color:'#0891B2'}}
+        {{key:'C&H',color:'#0891B2'}},
+        {{key:'Reno Cab',color:'#16A34A'}}
     ];
     const counts=accts.map(a=>data.filter(r=>r._acct===a.key).length);
     const total=counts.reduce((s,v)=>s+v,0);
@@ -6518,7 +6756,7 @@ function initQualityCharts() {{
     qaUpdateDRPLabel();
 
     // Info pills
-    const qaAcctsLoaded=[qaRawData,parentisRawData,briteliftRawData,ridexRawData,hamiltonRawData,skylineRawData,vipRawData,chRawData].filter(d=>d.length>0).length;
+    const qaAcctsLoaded=[qaRawData,parentisRawData,briteliftRawData,ridexRawData,hamiltonRawData,skylineRawData,vipRawData,chRawData,rcRawData].filter(d=>d.length>0).length;
     const qaPillAccts=document.getElementById('qa-pill-qa-accounts');
     if(qaPillAccts)qaPillAccts.textContent=qaAcctsLoaded+' QA Account'+(qaAcctsLoaded===1?'':'s')+' Loaded';
     const qaPillTotal=document.getElementById('qa-pill-total-accounts');
@@ -6644,7 +6882,7 @@ function initQualityCharts() {{
         qaEvalDistChart=new Chart(evalDistCtx,{{
             type:'doughnut',
             plugins:[evalDistLabelPlugin],
-            data:{{labels:['M7','Parentis','Britelift','RideX','Hamilton','Skyline','VIP','C&H'],datasets:[{{data:[0,0,0,0,0,0,0,0],backgroundColor:['#4F81BD','#2C3E8C','#C0392B','#8E44AD','#065F46','#0EA5E9','#D97706','#0891B2'],borderWidth:2,borderColor:'#fff'}}]}},
+            data:{{labels:['M7','Parentis','Britelift','RideX','Hamilton','Skyline','VIP','C&H','Reno Cab'],datasets:[{{data:[0,0,0,0,0,0,0,0,0],backgroundColor:['#4F81BD','#2C3E8C','#C0392B','#8E44AD','#065F46','#0EA5E9','#D97706','#0891B2','#16A34A'],borderWidth:2,borderColor:'#fff'}}]}},
             options:{{
                 responsive:true,maintainAspectRatio:false,cutout:'50%',
                 layout:{{padding:{{top:28,bottom:28,left:28,right:28}}}},
