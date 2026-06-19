@@ -6249,7 +6249,7 @@ function initQualityCharts() {{
     qaUpdateDRPLabel();
 
     // Info pills
-    const qaAcctsLoaded=[qaRawData,parentisRawData,briteliftRawData,ridexRawData,hamiltonRawData,skylineRawData].filter(d=>d.length>0).length;
+    const qaAcctsLoaded=[qaRawData,parentisRawData,briteliftRawData,ridexRawData,hamiltonRawData,skylineRawData,vipRawData].filter(d=>d.length>0).length;
     const qaPillAccts=document.getElementById('qa-pill-qa-accounts');
     if(qaPillAccts)qaPillAccts.textContent=qaAcctsLoaded+' QA Account'+(qaAcctsLoaded===1?'':'s')+' Loaded';
     const qaPillTotal=document.getElementById('qa-pill-total-accounts');
