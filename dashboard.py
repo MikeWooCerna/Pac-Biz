@@ -209,6 +209,10 @@ TI_DIR = Path(os.getenv("TI_DIR", r"C:\Users\Mike Woo Cerna\Documents\PB\Quality
 TI_SCRIPT = TI_DIR / "ti_pull.py"
 TI_OUTPUT_FILE = TI_DIR / "TI_RAW.xlsx"
 
+DC_DIR = Path(os.getenv("DC_DIR", r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\Data Carz"))
+DC_SCRIPT = DC_DIR / "dc_pull.py"
+DC_OUTPUT_FILE = DC_DIR / "DC_RAW.xlsx"
+
 # Maps standard detail-table criterion keys → Hamilton base column name (without _AI/_Max suffix)
 HAMILTON_CRIT_MAP = {
     "os_in":    "Opening_Spiel_Inbound_Call",
@@ -421,6 +425,39 @@ TI_EXTRA_CRIT_MAP = {
     "ti_verif_other":  "Customer_Verification_Other_Measures",
     "ti_res_etiq":     "Resolution_Etiquette",
     "ti_comm_quality": "Communication_Quality",
+}
+
+DC_CRIT_MAP = {
+    "os_in":    "Opening_Spiel_Inbound_Call",
+    "os_out":   "Greetings_Call_Script",
+    "closing":  "Closing_Spiel",
+    "approp":   "Appropriate_Response",
+    "no_resp":  "No_Response",
+    "fillers":  "Fillers_Slang_Words",
+    "ack":      "Acknowledgement_Ownership",
+    "hold":     "Proper_Handling_of_Pauses_or_Hold_Requests",
+    "ack_hold": "Acknowledges_and_Thanks_the_Customer_for_Waiting",
+    "resp_eff": "Prompt_Response_to_Customer",
+    "empathy":  "Empathy_Sympathy",
+    "adjust":   "Adjusts_to_Customer_s_Level",
+    "mute":     "Mute_Button_Usage",
+    "active":   "Listening_Attentively",
+    "gen_q":    "General_Questions",
+    "answered": "Answered_Customer_s_Questions",
+    "probing":  "Probing_Questions",
+    "verif":    "Customer_Verification",
+    "clarif":   "Clarification_When_Information_is_Missed",
+    "lost_sop": "Lost_Item_SOP",
+    "rude":     "Rudeness",
+    "trans":    "Successfully_Processed",
+    "speech":   "Speech_Clarify",
+}
+
+DC_EXTRA_CRIT_MAP = {
+    "dc_os_out2":      "Opening_Spiel_Outbound_Call",
+    "dc_profess":      "Professionalism",
+    "dc_res_etiq":     "Resolution_Etiquette",
+    "dc_comm_quality": "Communication_Quality",
 }
 
 COACHING_VALIDATION_ERRORS_FILE = COACHING_OUTPUT_FILE.parent / "coaching_validation_errors.csv"
@@ -2015,6 +2052,179 @@ def load_ti_data():
     return result
 
 
+def transform_dc_data(source):
+    df = source.copy()
+    rename = {
+        "evaluation_date":      "ts",
+        "Emp Name":             "agent",
+        "QA":                   "coach",
+        "Immediate Supervisor": "supervisor",
+        "evaluation_status":    "status",
+        "overall_score_ai":     "score_ai",
+        "overall_score_human":  "score_human",
+        "QA_ID":                "qa_id",
+        "EMPLOYEE_ID":          "emp_id",
+    }
+    df = df.rename(columns={k: v for k, v in rename.items() if k in df.columns})
+
+    def fmt_ts(v):
+        try:
+            dt = pd.to_datetime(str(v), errors="coerce")
+            if pd.notna(dt):
+                return dt.strftime("%Y-%m-%d %H:%M")
+        except Exception:
+            pass
+        return ""
+
+    if "ts" in df.columns:
+        df["ts"] = df["ts"].apply(fmt_ts)
+
+    if "status" in df.columns:
+        df["status"] = df["status"].apply(
+            lambda v: str(v).strip().lower() if str(v).strip() not in ("", "nan") else "rated"
+        )
+
+    score_ai_s = pd.to_numeric(df.get("score_ai", pd.Series(dtype=float)), errors="coerce").fillna(0)
+    df["score_ai"] = score_ai_s.round(1)
+
+    score_h_s = pd.to_numeric(df.get("score_human", pd.Series(dtype=float)), errors="coerce")
+    df["score_human"] = [round(float(v), 1) if pd.notna(v) else None for v in score_h_s]
+
+    def effective_score(row):
+        if str(row.get("status", "")).lower() == "corrected":
+            v = row.get("score_human")
+            try:
+                if v is not None:
+                    return int(round(float(v)))
+            except Exception:
+                pass
+        v = row.get("score_ai", 0)
+        try:
+            return int(round(float(v)))
+        except Exception:
+            return 0
+
+    df["score"] = df.apply(effective_score, axis=1)
+
+    def get_week_start(ts_val):
+        try:
+            s = str(ts_val).split()[0]
+            dt = pd.to_datetime(s, errors="coerce")
+            if pd.isna(dt):
+                return ""
+            monday = dt - timedelta(days=dt.weekday())
+            return monday.strftime("%Y-%m-%d")
+        except Exception:
+            return ""
+
+    if "ts" in df.columns:
+        df["week_start"] = df["ts"].apply(get_week_start)
+
+    if "emp_id" in df.columns and "ts" in df.columns:
+        df["eval_key"] = (
+            df["emp_id"].astype(str)
+            + "_"
+            + df["ts"].str.replace(r"[-: ]", "", regex=True)
+        )
+
+    DC_MAIN_ATTRS = {"os_out", "adjust", "gen_q", "verif", "resp_eff", "speech"}
+    _zero_s = pd.Series(0, index=df.index, dtype=float)
+    for std_key, dc_base in DC_CRIT_MAP.items():
+        ai_col  = f"{dc_base}_AI"
+        max_col = f"{dc_base}_Max"
+        ai_s  = pd.to_numeric(df[ai_col]  if ai_col  in df.columns else _zero_s, errors="coerce").fillna(0)
+        max_s = pd.to_numeric(df[max_col] if max_col in df.columns else _zero_s, errors="coerce").fillna(0)
+        if std_key == "rude":
+            df[std_key] = [
+                None if mx == 0 else ("No" if ai >= mx else "Yes")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+        elif std_key == "lost_sop":
+            df[std_key] = [
+                "Not Applicable" if mx == 0 else ("Yes" if ai > 0 else "No")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+        elif std_key in DC_MAIN_ATTRS:
+            df[std_key] = [
+                None if mx == 0 else ("Yes" if ai >= mx else "No")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+        else:
+            df[std_key] = [
+                None if mx == 0 else ("Yes" if ai > 0 else "No")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+
+    for dc_key, dc_base in DC_EXTRA_CRIT_MAP.items():
+        ai_col  = f"{dc_base}_AI"
+        max_col = f"{dc_base}_Max"
+        ai_s  = pd.to_numeric(df[ai_col]  if ai_col  in df.columns else _zero_s, errors="coerce").fillna(0)
+        max_s = pd.to_numeric(df[max_col] if max_col in df.columns else _zero_s, errors="coerce").fillna(0)
+        df[dc_key] = [
+            None if mx == 0 else ("Yes" if ai > 0 else "No")
+            for ai, mx in zip(ai_s, max_s)
+        ]
+
+    crit_keys = list(DC_CRIT_MAP.keys()) + list(DC_EXTRA_CRIT_MAP.keys())
+    keep = [
+        "qa_id", "eval_key", "emp_id", "ts", "week_start",
+        "agent", "score", "score_ai", "score_human", "status",
+        "coach", "supervisor",
+    ] + crit_keys
+    for col in ("agent", "supervisor", "coach"):
+        if col in df.columns:
+            df[col] = _apply_name_aliases(df[col])
+    return df[[c for c in keep if c in df.columns]]
+
+
+def refresh_dc_output():
+    if not DC_SCRIPT.exists():
+        return False
+    try:
+        result = subprocess.run(
+            [sys.executable, str(DC_SCRIPT)],
+            cwd=str(DC_DIR),
+            capture_output=True,
+            text=True,
+            timeout=120,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        print(f"Skipping Data Carz pull: {exc}")
+        return False
+    if result.returncode != 0:
+        msg = result.stderr.strip() or result.stdout.strip() or "No details."
+        print(f"Skipping Data Carz pull: {msg}")
+        return False
+    if result.stdout.strip():
+        print(result.stdout.strip())
+    return True
+
+
+def read_dc_workbook():
+    if not DC_OUTPUT_FILE.exists():
+        return pd.DataFrame()
+    try:
+        return clean_columns(pd.read_excel(DC_OUTPUT_FILE))
+    except Exception as exc:
+        print(f"Skipping Data Carz workbook load: {exc}")
+        return pd.DataFrame()
+
+
+def load_dc_data():
+    refresh_dc_output()
+    source = read_dc_workbook()
+    if source.empty:
+        return pd.DataFrame(columns=[
+            "qa_id", "eval_key", "emp_id", "ts", "week_start",
+            "agent", "score", "score_ai", "score_human", "status",
+            "coach", "supervisor",
+        ])
+    result = transform_dc_data(source)
+    print(f"Data Carz QA rows: {len(result)}")
+    return result
+
+
 def load_existing_records_from_html(variable_name):
     output_path = Path(OUTPUT_FILE)
     if not output_path.exists():
@@ -2637,6 +2847,7 @@ def main():
     ch = load_ch_data()
     rc = load_rc_data()
     ti = load_ti_data()
+    dc = load_dc_data()
 
     refresh_time = datetime.now().strftime("%Y-%m-%d %I:%M %p")
 
@@ -3800,6 +4011,7 @@ def main():
     #qualityPanel .qa-b-amber {{ background:#FFFBEB;color:#B45309;border-color:#FDE68A }}
     #qualityPanel .qa-b-skyline {{ background:#F0F9FF;color:#0369A1;border-color:#BAE6FD }}
     #qualityPanel .qa-b-indigo {{ background:#EEF2FF;color:#4338CA;border-color:#C7D2FE }}
+    #qualityPanel .qa-b-orange {{ background:#FFF7ED;color:#C2410C;border-color:#FED7AA }}
     /* KPI cards */
     #qualityPanel .qa-kpi-row {{ display:grid;grid-template-columns:repeat(6,1fr);gap:8px }}
     #qualityPanel .qa-kpi {{ background:#fff;border-radius:8px;padding:10px 14px;border:1px solid #E2E8F0;position:relative;overflow:hidden }}
@@ -3891,6 +4103,8 @@ def main():
     .rc-mode .rc-extra-col{{display:table-cell}}
     .ti-extra-col{{display:none}}
     .ti-mode .ti-extra-col{{display:table-cell}}
+    .dc-extra-col{{display:none}}
+    .dc-mode .dc-extra-col{{display:table-cell}}
     #qualityPanel .qa-av {{ width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;vertical-align:middle;margin-right:4px }}
     #qualityPanel .qa-yn-y {{ color:#0F9B58;font-weight:700;font-size:11px }}
     #qualityPanel .qa-yn-n {{ color:#E85D3F;font-weight:700;font-size:11px }}
@@ -4183,6 +4397,7 @@ def main():
       <option value="ch">C&amp;H</option>
       <option value="rc">Reno Cab</option>
       <option value="ti">Trans Iowa</option>
+      <option value="dc">Data Carz</option>
     </select>
   </div>
   <div class="qa-fg">
@@ -4284,6 +4499,17 @@ def main():
       <div class="qa-sum-card" style="border-top:3px solid #1D4ED8"><div class="qa-sum-lbl">Cust. Verification</div><div class="qa-sum-val" id="qa-rccrit-verif-val" style="color:#1D4ED8">&mdash;</div><div class="qa-sum-sub" id="qa-rccrit-verif-sub">&mdash;</div><div class="qa-sum-score" style="color:#1D4ED8">RC criterion</div></div>
       <div class="qa-sum-card" style="border-top:3px solid #6D28D9"><div class="qa-sum-lbl">Res. Etiquette</div><div class="qa-sum-val" id="qa-rccrit-resol-val" style="color:#6D28D9">&mdash;</div><div class="qa-sum-sub" id="qa-rccrit-resol-sub">&mdash;</div><div class="qa-sum-score" style="color:#6D28D9">RC criterion</div></div>
       <div class="qa-sum-card" style="border-top:3px solid #9D174D"><div class="qa-sum-lbl">Comm. Quality</div><div class="qa-sum-val" id="qa-rccrit-comm-val" style="color:#9D174D">&mdash;</div><div class="qa-sum-sub" id="qa-rccrit-comm-sub">&mdash;</div><div class="qa-sum-score" style="color:#9D174D">RC criterion</div></div>
+    </div>
+  </div>
+  <!-- Data Carz-only key criteria strip (shown when Data Carz account selected) -->
+  <div id="qa-dc-crit" style="display:none;padding:0 20px 8px">
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px">
+      <div class="qa-sum-card" style="border-top:3px solid #C2410C"><div class="qa-sum-lbl">Greetings Script</div><div class="qa-sum-val" id="qa-dccrit-greet-val" style="color:#C2410C">&mdash;</div><div class="qa-sum-sub" id="qa-dccrit-greet-sub">&mdash;</div><div class="qa-sum-score" style="color:#C2410C">DC criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #EA580C"><div class="qa-sum-lbl">Professionalism</div><div class="qa-sum-val" id="qa-dccrit-prof-val" style="color:#EA580C">&mdash;</div><div class="qa-sum-sub" id="qa-dccrit-prof-sub">&mdash;</div><div class="qa-sum-score" style="color:#EA580C">DC criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #0891B2"><div class="qa-sum-lbl">General Questions</div><div class="qa-sum-val" id="qa-dccrit-genq-val" style="color:#0891B2">&mdash;</div><div class="qa-sum-sub" id="qa-dccrit-genq-sub">&mdash;</div><div class="qa-sum-score" style="color:#0891B2">DC criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #1D4ED8"><div class="qa-sum-lbl">Cust. Verification</div><div class="qa-sum-val" id="qa-dccrit-verif-val" style="color:#1D4ED8">&mdash;</div><div class="qa-sum-sub" id="qa-dccrit-verif-sub">&mdash;</div><div class="qa-sum-score" style="color:#1D4ED8">DC criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #9D174D"><div class="qa-sum-lbl">Res. Etiquette</div><div class="qa-sum-val" id="qa-dccrit-resol-val" style="color:#9D174D">&mdash;</div><div class="qa-sum-sub" id="qa-dccrit-resol-sub">&mdash;</div><div class="qa-sum-score" style="color:#9D174D">DC criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #065F46"><div class="qa-sum-lbl">Comm. Quality</div><div class="qa-sum-val" id="qa-dccrit-comm-val" style="color:#065F46">&mdash;</div><div class="qa-sum-sub" id="qa-dccrit-comm-sub">&mdash;</div><div class="qa-sum-score" style="color:#065F46">DC criterion</div></div>
     </div>
   </div>
   <!-- Trans Iowa-only key criteria strip (shown when Trans Iowa account selected) -->
@@ -4464,6 +4690,10 @@ def main():
           <th class="ti-extra-col" style="min-width:70px">Verif. Other</th>
           <th class="ti-extra-col" style="min-width:80px">Res. Etiquette</th>
           <th class="ti-extra-col" style="min-width:80px">Comm. Quality</th>
+          <th class="dc-extra-col" style="min-width:75px">Opening Out 2</th>
+          <th class="dc-extra-col" style="min-width:80px">Professionalism</th>
+          <th class="dc-extra-col" style="min-width:80px">Res. Etiquette</th>
+          <th class="dc-extra-col" style="min-width:80px">Comm. Quality</th>
           <th style="min-width:75px">Investigation</th>
           <th style="min-width:240px">Feedback Summary</th>
         </tr></thead>
@@ -4495,6 +4725,7 @@ const vipRawData = {to_records(vip)};
 const chRawData = {to_records(ch)};
 const rcRawData = {to_records(rc)};
 const tiRawData = {to_records(ti)};
+const dcRawData = {to_records(dc)};
 
 const COLORS = ["#004C97", "#39B54A", "#002B5C", "#7AC943", "#00AEEF", "#94A3B8"];
 const COACHING_CATEGORY_COLORS = {{
@@ -6043,6 +6274,7 @@ vipRawData.forEach(r => r._acct = 'VIP');
 chRawData.forEach(r => r._acct = 'C&H');
 rcRawData.forEach(r => r._acct = 'Reno Cab');
 tiRawData.forEach(r => r._acct = 'Trans Iowa');
+dcRawData.forEach(r => r._acct = 'Data Carz');
 
 // Date range picker state — default: last 30 days
 const _qaToday = new Date(); _qaToday.setHours(0,0,0,0);
@@ -6135,7 +6367,8 @@ function qaGetActiveData() {{
     if (acct === 'ch') return chRawData;
     if (acct === 'rc') return rcRawData;
     if (acct === 'ti') return tiRawData;
-    return [...qaRawData, ...parentisRawData, ...briteliftRawData, ...ridexRawData, ...hamiltonRawData, ...skylineRawData, ...vipRawData, ...chRawData, ...rcRawData, ...tiRawData];
+    if (acct === 'dc') return dcRawData;
+    return [...qaRawData, ...parentisRawData, ...briteliftRawData, ...ridexRawData, ...hamiltonRawData, ...skylineRawData, ...vipRawData, ...chRawData, ...rcRawData, ...tiRawData, ...dcRawData];
 }}
 
 // ─── Date Range Picker ────────────────────────────────────────────────────────
@@ -6346,6 +6579,7 @@ function qaUpdateKPIs(data) {{
         else if(acct==='ch') titleEl.textContent='C&H — Quality Assurance';
         else if(acct==='rc') titleEl.textContent='Reno Cab — Quality Assurance';
         else if(acct==='ti') titleEl.textContent='Trans Iowa — Quality Assurance';
+        else if(acct==='dc') titleEl.textContent='Data Carz — Quality Assurance';
         else titleEl.textContent='All Accounts — Quality Assurance';
     }}
     if(badgeEl) {{
@@ -6359,6 +6593,7 @@ function qaUpdateKPIs(data) {{
         else if(acct==='ch') {{ badgeEl.textContent='C&H'; badgeEl.className='qa-badge qa-b-teal'; }}
         else if(acct==='rc') {{ badgeEl.textContent='Reno Cab'; badgeEl.className='qa-badge qa-b-green'; }}
         else if(acct==='ti') {{ badgeEl.textContent='Trans Iowa'; badgeEl.className='qa-badge qa-b-indigo'; }}
+        else if(acct==='dc') {{ badgeEl.textContent='Data Carz'; badgeEl.className='qa-badge qa-b-orange'; }}
         else {{ badgeEl.textContent='All Accounts'; badgeEl.className='qa-badge qa-b-amber'; }}
     }}
     const tblScroll=document.getElementById('qa-tbl-scroll-main');
@@ -6371,6 +6606,8 @@ function qaUpdateKPIs(data) {{
         else tblScroll.classList.remove('rc-mode');
         if(acct==='ti') tblScroll.classList.add('ti-mode');
         else tblScroll.classList.remove('ti-mode');
+        if(acct==='dc') tblScroll.classList.add('dc-mode');
+        else tblScroll.classList.remove('dc-mode');
     }}
     const scores=data.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
     const n=data.length;
@@ -6513,6 +6750,8 @@ function qaRenderLeaderboard(data) {{
             ?`<span style="background:#F0FDF4;color:#15803D;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Reno Cab</span>`
             :a.acct==='Trans Iowa'
             ?`<span style="background:#EEF2FF;color:#4338CA;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Trans Iowa</span>`
+            :a.acct==='Data Carz'
+            ?`<span style="background:#FFF7ED;color:#C2410C;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Data Carz</span>`
             :`<span style="background:#FFF0F3;color:#9F1239;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Parentis</span>`;
         return`<tr><td style="font-size:11px;color:#94A3B8">${{i+1}}</td><td><div style="display:flex;align-items:center;gap:6px"><span style="width:24px;height:24px;border-radius:50%;background:${{a.av.bg}};color:${{a.av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{a.av.ini}}</span><span style="font-weight:600;font-size:11px">${{qaEscapeHtml(a.words)}}</span></div></td><td style="text-align:center">${{a.n}}</td><td><span class="qa-chip ${{chipCls}}">${{a.avg.toFixed(1)}}%</span></td><td style="text-align:center;font-size:11px">${{a.min.toFixed(1)}}%</td><td style="text-align:center;font-size:11px">${{a.max.toFixed(1)}}%</td><td style="text-align:center;color:${{a.passRate>=85?'#0F9B58':'#E85D3F'}};font-size:11px">${{a.passRate.toFixed(0)}}%</td><td>${{acctPill}}</td></tr>`;
     }}).join('')||`<tr><td colspan="8" style="text-align:center;color:#94A3B8;padding:16px">No data</td></tr>`;
@@ -6600,6 +6839,8 @@ function qaRowHtml(r){{
         ?`<span style="background:#F0FDF4;color:#15803D;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Reno Cab</span>`
         :r._acct==='Trans Iowa'
         ?`<span style="background:#EEF2FF;color:#4338CA;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Trans Iowa</span>`
+        :r._acct==='Data Carz'
+        ?`<span style="background:#FFF7ED;color:#C2410C;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Data Carz</span>`
         :`<span style="background:#FFF0F3;color:#9F1239;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Parentis</span>`;
     const critKeys=['os_in','os_out','closing','approp','no_resp','fillers','ack','hold','ack_hold',
                     'resp_eff','empathy','adjust','mute','active','gen_q','answered','probing','verif',
@@ -6642,8 +6883,15 @@ function qaRowHtml(r){{
         if(v==='Not Applicable')return'<td class="ti-extra-col" style="text-align:center;color:#94A3B8">N/A</td>';
         return`<td class="ti-extra-col" style="text-align:center">${{qaYN(v)}}</td>`;
     }});
+    const dcExtraKeys=['dc_os_out2','dc_profess','dc_res_etiq','dc_comm_quality'];
+    const dcExtraCells=dcExtraKeys.map(k=>{{
+        const v=r[k];
+        if(!v||v===null||v==='')return'<td class="dc-extra-col" style="text-align:center"><span style="color:#94A3B8">&mdash;</span></td>';
+        if(v==='Not Applicable')return'<td class="dc-extra-col" style="text-align:center;color:#94A3B8">N/A</td>';
+        return`<td class="dc-extra-col" style="text-align:center">${{qaYN(v)}}</td>`;
+    }});
     const fbTxt=qaEscapeHtml(r.feedback||'—');
-    return`<tr><td style="white-space:nowrap;font-size:11px">${{qaEscapeHtml((r.ts||'—').slice(0,10))}}</td><td style="max-width:200px;overflow:hidden" title="${{qaEscapeHtml(r.agent||'')}}"><div style="display:flex;align-items:center;gap:5px;overflow:hidden"><span style="width:22px;height:22px;border-radius:50%;background:${{av.bg}};color:${{av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{av.ini}}</span><span style="font-weight:600;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">${{qaEscapeHtml(r.agent||'—')}}</span></div></td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.supervisor||'')}}">${{qaEscapeHtml(r.supervisor||'—')}}</td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.coach||'')}}">${{qaEscapeHtml(r.coach||'—')}}</td><td>${{acctPill}}</td><td><span class="qa-chip ${{chipCls}}">${{disp}}</span></td>${{critCells.join('')}}${{vipExtraCells.join('')}}${{chExtraCells.join('')}}${{rcExtraCells.join('')}}${{tiExtraCells.join('')}}<td style="font-size:10px;color:#475569;white-space:nowrap">${{qaEscapeHtml(r.invest||'—')}}</td><td style="max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;color:#475569" title="${{fbTxt}}">${{fbTxt}}</td></tr>`;
+    return`<tr><td style="white-space:nowrap;font-size:11px">${{qaEscapeHtml((r.ts||'—').slice(0,10))}}</td><td style="max-width:200px;overflow:hidden" title="${{qaEscapeHtml(r.agent||'')}}"><div style="display:flex;align-items:center;gap:5px;overflow:hidden"><span style="width:22px;height:22px;border-radius:50%;background:${{av.bg}};color:${{av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{av.ini}}</span><span style="font-weight:600;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">${{qaEscapeHtml(r.agent||'—')}}</span></div></td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.supervisor||'')}}">${{qaEscapeHtml(r.supervisor||'—')}}</td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.coach||'')}}">${{qaEscapeHtml(r.coach||'—')}}</td><td>${{acctPill}}</td><td><span class="qa-chip ${{chipCls}}">${{disp}}</span></td>${{critCells.join('')}}${{vipExtraCells.join('')}}${{chExtraCells.join('')}}${{rcExtraCells.join('')}}${{tiExtraCells.join('')}}${{dcExtraCells.join('')}}<td style="font-size:10px;color:#475569;white-space:nowrap">${{qaEscapeHtml(r.invest||'—')}}</td><td style="max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;color:#475569" title="${{fbTxt}}">${{fbTxt}}</td></tr>`;
 }}
 
 function qaRenderVisibleRows(){{
@@ -6731,7 +6979,8 @@ function qaUpdateEvalDist(data) {{
         {{key:'VIP',color:'#D97706'}},
         {{key:'C&H',color:'#0891B2'}},
         {{key:'Reno Cab',color:'#16A34A'}},
-        {{key:'Trans Iowa',color:'#7C3AED'}}
+        {{key:'Trans Iowa',color:'#7C3AED'}},
+        {{key:'Data Carz',color:'#EA580C'}}
     ];
     const counts=accts.map(a=>data.filter(r=>r._acct===a.key).length);
     const total=counts.reduce((s,v)=>s+v,0);
@@ -6835,6 +7084,26 @@ function qaUpdateRCCrit(data) {{
         {{key:'verif',        valId:'qa-rccrit-verif-val', subId:'qa-rccrit-verif-sub'}},
         {{key:'rc_res_etiq',  valId:'qa-rccrit-resol-val', subId:'qa-rccrit-resol-sub'}},
         {{key:'rc_comm_quality',valId:'qa-rccrit-comm-val',subId:'qa-rccrit-comm-sub'}},
+    ];
+    crits.forEach(c=>{{
+        const rel=data.filter(r=>r[c.key]!=null&&r[c.key]!=='');
+        const passed=rel.filter(r=>r[c.key]==='Yes').length;
+        const pct=rel.length?(passed/rel.length*100).toFixed(1)+'%':'—';
+        const vEl=document.getElementById(c.valId);
+        const sEl=document.getElementById(c.subId);
+        if(vEl)vEl.textContent=pct;
+        if(sEl)sEl.textContent=rel.length?passed+' of '+rel.length+' passed':'No data';
+    }});
+}}
+
+function qaUpdateDCCrit(data) {{
+    const crits=[
+        {{key:'os_out',         valId:'qa-dccrit-greet-val', subId:'qa-dccrit-greet-sub'}},
+        {{key:'dc_profess',     valId:'qa-dccrit-prof-val',  subId:'qa-dccrit-prof-sub'}},
+        {{key:'gen_q',          valId:'qa-dccrit-genq-val',  subId:'qa-dccrit-genq-sub'}},
+        {{key:'verif',          valId:'qa-dccrit-verif-val', subId:'qa-dccrit-verif-sub'}},
+        {{key:'dc_res_etiq',    valId:'qa-dccrit-resol-val', subId:'qa-dccrit-resol-sub'}},
+        {{key:'dc_comm_quality',valId:'qa-dccrit-comm-val',  subId:'qa-dccrit-comm-sub'}},
     ];
     crits.forEach(c=>{{
         const rel=data.filter(r=>r[c.key]!=null&&r[c.key]!=='');
@@ -6998,7 +7267,7 @@ function qaApplyFilters() {{
     qaToggleDistWidget(!acct);
     if(acct) qaUpdateDonut(filtered); else qaUpdateEvalDist(filtered);
     const aivhCard=document.getElementById('qa-aivh-card');
-    const aivhAccts=['hamilton','skyline','vip','ch','rc','ti'];
+    const aivhAccts=['hamilton','skyline','vip','ch','rc','ti','dc'];
     if(aivhCard)aivhCard.style.display=(aivhAccts.includes(acct))?'':'none';
     if(aivhAccts.includes(acct))qaUpdateAivh(filtered);
     const hCritEl=document.getElementById('qa-hamilton-crit');
@@ -7019,8 +7288,11 @@ function qaApplyFilters() {{
     const tiCritEl=document.getElementById('qa-ti-crit');
     if(tiCritEl)tiCritEl.style.display=(acct==='ti')?'':'none';
     if(acct==='ti')qaUpdateTICrit(filtered);
+    const dcCritEl=document.getElementById('qa-dc-crit');
+    if(dcCritEl)dcCritEl.style.display=(acct==='dc')?'':'none';
+    if(acct==='dc')qaUpdateDCCrit(filtered);
     const sumStripMain=document.getElementById('qa-sum-strip-main');
-    if(sumStripMain)sumStripMain.style.display=(acct==='hamilton'||acct==='skyline'||acct==='vip'||acct==='ch'||acct==='rc'||acct==='ti')?'none':'';
+    if(sumStripMain)sumStripMain.style.display=(acct==='hamilton'||acct==='skyline'||acct==='vip'||acct==='ch'||acct==='rc'||acct==='ti'||acct==='dc')?'none':'';
     const scores=filtered.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
     const agents=new Set(filtered.map(r=>r.agent).filter(Boolean));
     const avg=scores.length?qaAvg(scores):null;
@@ -7132,7 +7404,7 @@ function initQualityCharts() {{
     qaUpdateDRPLabel();
 
     // Info pills
-    const qaAcctsLoaded=[qaRawData,parentisRawData,briteliftRawData,ridexRawData,hamiltonRawData,skylineRawData,vipRawData,chRawData,rcRawData,tiRawData].filter(d=>d.length>0).length;
+    const qaAcctsLoaded=[qaRawData,parentisRawData,briteliftRawData,ridexRawData,hamiltonRawData,skylineRawData,vipRawData,chRawData,rcRawData,tiRawData,dcRawData].filter(d=>d.length>0).length;
     const qaPillAccts=document.getElementById('qa-pill-qa-accounts');
     if(qaPillAccts)qaPillAccts.textContent=qaAcctsLoaded+' QA Account'+(qaAcctsLoaded===1?'':'s')+' Loaded';
     const qaPillTotal=document.getElementById('qa-pill-total-accounts');
@@ -7258,7 +7530,7 @@ function initQualityCharts() {{
         qaEvalDistChart=new Chart(evalDistCtx,{{
             type:'doughnut',
             plugins:[evalDistLabelPlugin],
-            data:{{labels:['M7','Parentis','Britelift','RideX','Hamilton','Skyline','VIP','C&H','Reno Cab','Trans Iowa'],datasets:[{{data:[0,0,0,0,0,0,0,0,0,0],backgroundColor:['#4F81BD','#2C3E8C','#C0392B','#8E44AD','#065F46','#0EA5E9','#D97706','#0891B2','#16A34A','#7C3AED'],borderWidth:2,borderColor:'#fff'}}]}},
+            data:{{labels:['M7','Parentis','Britelift','RideX','Hamilton','Skyline','VIP','C&H','Reno Cab','Trans Iowa','Data Carz'],datasets:[{{data:[0,0,0,0,0,0,0,0,0,0,0],backgroundColor:['#4F81BD','#2C3E8C','#C0392B','#8E44AD','#065F46','#0EA5E9','#D97706','#0891B2','#16A34A','#7C3AED','#EA580C'],borderWidth:2,borderColor:'#fff'}}]}},
             options:{{
                 responsive:true,maintainAspectRatio:false,cutout:'50%',
                 layout:{{padding:{{top:28,bottom:28,left:28,right:28}}}},
