@@ -4038,6 +4038,39 @@ def main():
       <div class="qa-sum-card" style="border-top:3px solid #9D174D"><div class="qa-sum-lbl">Communication Qual.</div><div class="qa-sum-val" id="qa-scrit-comm-val" style="color:#9D174D">&mdash;</div><div class="qa-sum-sub" id="qa-scrit-comm-sub">&mdash;</div><div class="qa-sum-score" style="color:#9D174D">Skyline criterion</div></div>
     </div>
   </div>
+  <!-- VIP-only key criteria strip (shown when VIP account selected) -->
+  <div id="qa-vip-crit" style="display:none;padding:0 20px 8px">
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px">
+      <div class="qa-sum-card" style="border-top:3px solid #B45309"><div class="qa-sum-lbl">Greetings Script</div><div class="qa-sum-val" id="qa-vcrit-greet-val" style="color:#B45309">&mdash;</div><div class="qa-sum-sub" id="qa-vcrit-greet-sub">&mdash;</div><div class="qa-sum-score" style="color:#B45309">VIP criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #D97706"><div class="qa-sum-lbl">Professionalism</div><div class="qa-sum-val" id="qa-vcrit-prof-val" style="color:#D97706">&mdash;</div><div class="qa-sum-sub" id="qa-vcrit-prof-sub">&mdash;</div><div class="qa-sum-score" style="color:#D97706">VIP criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #0891B2"><div class="qa-sum-lbl">General Questions</div><div class="qa-sum-val" id="qa-vcrit-genq-val" style="color:#0891B2">&mdash;</div><div class="qa-sum-sub" id="qa-vcrit-genq-sub">&mdash;</div><div class="qa-sum-score" style="color:#0891B2">VIP criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #1D4ED8"><div class="qa-sum-lbl">Cust. Verification</div><div class="qa-sum-val" id="qa-vcrit-verif-val" style="color:#1D4ED8">&mdash;</div><div class="qa-sum-sub" id="qa-vcrit-verif-sub">&mdash;</div><div class="qa-sum-score" style="color:#1D4ED8">VIP criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #6D28D9"><div class="qa-sum-lbl">Res. Etiquette</div><div class="qa-sum-val" id="qa-vcrit-resol-val" style="color:#6D28D9">&mdash;</div><div class="qa-sum-sub" id="qa-vcrit-resol-sub">&mdash;</div><div class="qa-sum-score" style="color:#6D28D9">VIP criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #9D174D"><div class="qa-sum-lbl">Comm. Quality</div><div class="qa-sum-val" id="qa-vcrit-comm-val" style="color:#9D174D">&mdash;</div><div class="qa-sum-sub" id="qa-vcrit-comm-sub">&mdash;</div><div class="qa-sum-score" style="color:#9D174D">VIP criterion</div></div>
+    </div>
+  </div>
+  <!-- C&H-only key criteria strip (shown when C&H account selected) -->
+  <div id="qa-ch-crit" style="display:none;padding:0 20px 8px">
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px">
+      <div class="qa-sum-card" style="border-top:3px solid #0F766E"><div class="qa-sum-lbl">Greetings Script</div><div class="qa-sum-val" id="qa-chcrit-greet-val" style="color:#0F766E">&mdash;</div><div class="qa-sum-sub" id="qa-chcrit-greet-sub">&mdash;</div><div class="qa-sum-score" style="color:#0F766E">C&amp;H criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #0891B2"><div class="qa-sum-lbl">Professionalism</div><div class="qa-sum-val" id="qa-chcrit-prof-val" style="color:#0891B2">&mdash;</div><div class="qa-sum-sub" id="qa-chcrit-prof-sub">&mdash;</div><div class="qa-sum-score" style="color:#0891B2">C&amp;H criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #0369A1"><div class="qa-sum-lbl">General Questions</div><div class="qa-sum-val" id="qa-chcrit-genq-val" style="color:#0369A1">&mdash;</div><div class="qa-sum-sub" id="qa-chcrit-genq-sub">&mdash;</div><div class="qa-sum-score" style="color:#0369A1">C&amp;H criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #1D4ED8"><div class="qa-sum-lbl">Cust. Verification</div><div class="qa-sum-val" id="qa-chcrit-verif-val" style="color:#1D4ED8">&mdash;</div><div class="qa-sum-sub" id="qa-chcrit-verif-sub">&mdash;</div><div class="qa-sum-score" style="color:#1D4ED8">C&amp;H criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #6D28D9"><div class="qa-sum-lbl">Res. Etiquette</div><div class="qa-sum-val" id="qa-chcrit-resol-val" style="color:#6D28D9">&mdash;</div><div class="qa-sum-sub" id="qa-chcrit-resol-sub">&mdash;</div><div class="qa-sum-score" style="color:#6D28D9">C&amp;H criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #9D174D"><div class="qa-sum-lbl">Comm. Quality</div><div class="qa-sum-val" id="qa-chcrit-comm-val" style="color:#9D174D">&mdash;</div><div class="qa-sum-sub" id="qa-chcrit-comm-sub">&mdash;</div><div class="qa-sum-score" style="color:#9D174D">C&amp;H criterion</div></div>
+    </div>
+  </div>
+  <!-- Reno Cab-only key criteria strip (shown when Reno Cab account selected) -->
+  <div id="qa-rc-crit" style="display:none;padding:0 20px 8px">
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px">
+      <div class="qa-sum-card" style="border-top:3px solid #15803D"><div class="qa-sum-lbl">Greetings Script</div><div class="qa-sum-val" id="qa-rccrit-greet-val" style="color:#15803D">&mdash;</div><div class="qa-sum-sub" id="qa-rccrit-greet-sub">&mdash;</div><div class="qa-sum-score" style="color:#15803D">RC criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #059669"><div class="qa-sum-lbl">Professionalism</div><div class="qa-sum-val" id="qa-rccrit-prof-val" style="color:#059669">&mdash;</div><div class="qa-sum-sub" id="qa-rccrit-prof-sub">&mdash;</div><div class="qa-sum-score" style="color:#059669">RC criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #0891B2"><div class="qa-sum-lbl">General Questions</div><div class="qa-sum-val" id="qa-rccrit-genq-val" style="color:#0891B2">&mdash;</div><div class="qa-sum-sub" id="qa-rccrit-genq-sub">&mdash;</div><div class="qa-sum-score" style="color:#0891B2">RC criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #1D4ED8"><div class="qa-sum-lbl">Cust. Verification</div><div class="qa-sum-val" id="qa-rccrit-verif-val" style="color:#1D4ED8">&mdash;</div><div class="qa-sum-sub" id="qa-rccrit-verif-sub">&mdash;</div><div class="qa-sum-score" style="color:#1D4ED8">RC criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #6D28D9"><div class="qa-sum-lbl">Res. Etiquette</div><div class="qa-sum-val" id="qa-rccrit-resol-val" style="color:#6D28D9">&mdash;</div><div class="qa-sum-sub" id="qa-rccrit-resol-sub">&mdash;</div><div class="qa-sum-score" style="color:#6D28D9">RC criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #9D174D"><div class="qa-sum-lbl">Comm. Quality</div><div class="qa-sum-val" id="qa-rccrit-comm-val" style="color:#9D174D">&mdash;</div><div class="qa-sum-sub" id="qa-rccrit-comm-sub">&mdash;</div><div class="qa-sum-score" style="color:#9D174D">RC criterion</div></div>
+    </div>
+  </div>
   <div class="qa-sum-strip" id="qa-sum-strip-main">
     <div class="qa-sum-card" style="border-top:3px solid #0F9B58"><div class="qa-sum-lbl">Avg QA score</div><div class="qa-sum-val" id="qa-sum-avg" style="color:#0F9B58">&mdash;</div><div class="qa-sum-sub">All evaluations in range</div><div class="qa-sum-score" id="qa-sum-avg-note" style="color:#0F9B58">&mdash;</div></div>
     <div class="qa-sum-card" style="border-top:3px solid #0891B2"><div class="qa-sum-lbl">Compliance Score</div><div class="qa-sum-val" id="qa-sum-pass" style="color:#0891B2">&mdash;</div><div class="qa-sum-sub" id="qa-sum-pass-sub">&mdash;</div><div class="qa-sum-score" style="color:#0F9B58">Pass threshold: 85%</div></div>
@@ -6504,6 +6537,66 @@ function qaUpdateSkylineCrit(data) {{
     }});
 }}
 
+function qaUpdateVipCrit(data) {{
+    const crits=[
+        {{key:'os_out',          valId:'qa-vcrit-greet-val', subId:'qa-vcrit-greet-sub'}},
+        {{key:'vip_profess',     valId:'qa-vcrit-prof-val',  subId:'qa-vcrit-prof-sub'}},
+        {{key:'gen_q',           valId:'qa-vcrit-genq-val',  subId:'qa-vcrit-genq-sub'}},
+        {{key:'verif',           valId:'qa-vcrit-verif-val', subId:'qa-vcrit-verif-sub'}},
+        {{key:'vip_res_etiq',    valId:'qa-vcrit-resol-val', subId:'qa-vcrit-resol-sub'}},
+        {{key:'vip_comm_quality',valId:'qa-vcrit-comm-val',  subId:'qa-vcrit-comm-sub'}},
+    ];
+    crits.forEach(c=>{{
+        const rel=data.filter(r=>r[c.key]!=null&&r[c.key]!=='');
+        const passed=rel.filter(r=>r[c.key]==='Yes').length;
+        const pct=rel.length?(passed/rel.length*100).toFixed(1)+'%':'—';
+        const vEl=document.getElementById(c.valId);
+        const sEl=document.getElementById(c.subId);
+        if(vEl)vEl.textContent=pct;
+        if(sEl)sEl.textContent=rel.length?passed+' of '+rel.length+' passed':'No data';
+    }});
+}}
+
+function qaUpdateCHCrit(data) {{
+    const crits=[
+        {{key:'os_out',        valId:'qa-chcrit-greet-val', subId:'qa-chcrit-greet-sub'}},
+        {{key:'ch_profess',    valId:'qa-chcrit-prof-val',  subId:'qa-chcrit-prof-sub'}},
+        {{key:'gen_q',         valId:'qa-chcrit-genq-val',  subId:'qa-chcrit-genq-sub'}},
+        {{key:'verif',         valId:'qa-chcrit-verif-val', subId:'qa-chcrit-verif-sub'}},
+        {{key:'ch_res_etiq',   valId:'qa-chcrit-resol-val', subId:'qa-chcrit-resol-sub'}},
+        {{key:'ch_comm_quality',valId:'qa-chcrit-comm-val', subId:'qa-chcrit-comm-sub'}},
+    ];
+    crits.forEach(c=>{{
+        const rel=data.filter(r=>r[c.key]!=null&&r[c.key]!=='');
+        const passed=rel.filter(r=>r[c.key]==='Yes').length;
+        const pct=rel.length?(passed/rel.length*100).toFixed(1)+'%':'—';
+        const vEl=document.getElementById(c.valId);
+        const sEl=document.getElementById(c.subId);
+        if(vEl)vEl.textContent=pct;
+        if(sEl)sEl.textContent=rel.length?passed+' of '+rel.length+' passed':'No data';
+    }});
+}}
+
+function qaUpdateRCCrit(data) {{
+    const crits=[
+        {{key:'os_out',       valId:'qa-rccrit-greet-val', subId:'qa-rccrit-greet-sub'}},
+        {{key:'rc_profess',   valId:'qa-rccrit-prof-val',  subId:'qa-rccrit-prof-sub'}},
+        {{key:'gen_q',        valId:'qa-rccrit-genq-val',  subId:'qa-rccrit-genq-sub'}},
+        {{key:'verif',        valId:'qa-rccrit-verif-val', subId:'qa-rccrit-verif-sub'}},
+        {{key:'rc_res_etiq',  valId:'qa-rccrit-resol-val', subId:'qa-rccrit-resol-sub'}},
+        {{key:'rc_comm_quality',valId:'qa-rccrit-comm-val',subId:'qa-rccrit-comm-sub'}},
+    ];
+    crits.forEach(c=>{{
+        const rel=data.filter(r=>r[c.key]!=null&&r[c.key]!=='');
+        const passed=rel.filter(r=>r[c.key]==='Yes').length;
+        const pct=rel.length?(passed/rel.length*100).toFixed(1)+'%':'—';
+        const vEl=document.getElementById(c.valId);
+        const sEl=document.getElementById(c.subId);
+        if(vEl)vEl.textContent=pct;
+        if(sEl)sEl.textContent=rel.length?passed+' of '+rel.length+' passed':'No data';
+    }});
+}}
+
 function qaUpdateAivh(data) {{
     const corrected=data.filter(r=>r.status==='corrected'&&r.score_ai!=null&&r.score_human!=null&&r.score_human!=='');
     const total=data.length;
@@ -6643,8 +6736,17 @@ function qaApplyFilters() {{
     const sCritEl=document.getElementById('qa-skyline-crit');
     if(sCritEl)sCritEl.style.display=(acct==='skyline')?'':'none';
     if(acct==='skyline')qaUpdateSkylineCrit(filtered);
+    const vCritEl=document.getElementById('qa-vip-crit');
+    if(vCritEl)vCritEl.style.display=(acct==='vip')?'':'none';
+    if(acct==='vip')qaUpdateVipCrit(filtered);
+    const chCritEl=document.getElementById('qa-ch-crit');
+    if(chCritEl)chCritEl.style.display=(acct==='ch')?'':'none';
+    if(acct==='ch')qaUpdateCHCrit(filtered);
+    const rcCritEl=document.getElementById('qa-rc-crit');
+    if(rcCritEl)rcCritEl.style.display=(acct==='rc')?'':'none';
+    if(acct==='rc')qaUpdateRCCrit(filtered);
     const sumStripMain=document.getElementById('qa-sum-strip-main');
-    if(sumStripMain)sumStripMain.style.display=(acct==='hamilton'||acct==='skyline')?'none':'';
+    if(sumStripMain)sumStripMain.style.display=(acct==='hamilton'||acct==='skyline'||acct==='vip'||acct==='ch'||acct==='rc')?'none':'';
     const scores=filtered.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
     const agents=new Set(filtered.map(r=>r.agent).filter(Boolean));
     const avg=scores.length?qaAvg(scores):null;
