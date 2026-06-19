@@ -3245,6 +3245,8 @@ def main():
     #qualityPanel .qa-dtbl thead th:nth-child(-n+5){{z-index:3;background:#F8FAFC}}
     #qualityPanel .qa-dtbl tbody td:nth-child(-n+5){{background:#fff}}
     #qualityPanel .qa-dtbl tr:hover td:nth-child(-n+5){{background:#F8FAFC}}
+    .vip-extra-col{{display:none}}
+    .vip-mode .vip-extra-col{{display:table-cell}}
     #qualityPanel .qa-av {{ width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;vertical-align:middle;margin-right:4px }}
     #qualityPanel .qa-yn-y {{ color:#0F9B58;font-weight:700;font-size:11px }}
     #qualityPanel .qa-yn-n {{ color:#E85D3F;font-weight:700;font-size:11px }}
@@ -3747,6 +3749,13 @@ def main():
           <th style="min-width:70px">Cust. Verif.</th><th style="min-width:65px">Clarif.</th>
           <th style="min-width:65px">Lost SOP</th><th style="min-width:65px">Rudeness</th>
           <th style="min-width:75px">Transaction</th><th style="min-width:65px">Speech</th>
+          <th class="vip-extra-col" style="min-width:75px">Opening Out 2</th>
+          <th class="vip-extra-col" style="min-width:80px">Professionalism</th>
+          <th class="vip-extra-col" style="min-width:70px">Verif. Other</th>
+          <th class="vip-extra-col" style="min-width:80px">Comm. Quality</th>
+          <th class="vip-extra-col" style="min-width:80px">CV Other</th>
+          <th class="vip-extra-col" style="min-width:80px">Res. Etiquette</th>
+          <th class="vip-extra-col" style="min-width:65px">VIP SOP</th>
           <th style="min-width:75px">Investigation</th>
           <th style="min-width:240px">Feedback Summary</th>
         </tr></thead>
@@ -5629,6 +5638,11 @@ function qaUpdateKPIs(data) {{
         else if(acct==='vip') {{ badgeEl.textContent='VIP'; badgeEl.className='qa-badge qa-b-amber'; }}
         else {{ badgeEl.textContent='All Accounts'; badgeEl.className='qa-badge qa-b-amber'; }}
     }}
+    const tblScroll=document.getElementById('qa-tbl-scroll-main');
+    if(tblScroll) {{
+        if(acct==='vip') tblScroll.classList.add('vip-mode');
+        else tblScroll.classList.remove('vip-mode');
+    }}
     const scores=data.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
     const n=data.length;
     const agents=new Set(data.map(r=>r.agent).filter(Boolean));
@@ -5859,8 +5873,15 @@ function qaRowHtml(r){{
         if(k==='lost_sop'&&(!v||v==='Not Applicable'))return'<td style="text-align:center;color:#94A3B8">N/A</td>';
         return`<td style="text-align:center">${{qaYN(v)}}</td>`;
     }});
+    const vipExtraKeys=['vip_os_out2','vip_profess','vip_verif_other','vip_comm_quality','vip_cust_verif_oth','vip_res_etiq','vip_sop'];
+    const vipExtraCells=vipExtraKeys.map(k=>{{
+        const v=r[k];
+        if(!v||v===null||v==='')return'<td class="vip-extra-col" style="text-align:center"><span style="color:#94A3B8">&mdash;</span></td>';
+        if(v==='Not Applicable')return'<td class="vip-extra-col" style="text-align:center;color:#94A3B8">N/A</td>';
+        return`<td class="vip-extra-col" style="text-align:center">${{qaYN(v)}}</td>`;
+    }});
     const fbTxt=qaEscapeHtml(r.feedback||'—');
-    return`<tr><td style="white-space:nowrap;font-size:11px">${{qaEscapeHtml((r.ts||'—').slice(0,10))}}</td><td style="max-width:200px;overflow:hidden" title="${{qaEscapeHtml(r.agent||'')}}"><div style="display:flex;align-items:center;gap:5px;overflow:hidden"><span style="width:22px;height:22px;border-radius:50%;background:${{av.bg}};color:${{av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{av.ini}}</span><span style="font-weight:600;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">${{qaEscapeHtml(r.agent||'—')}}</span></div></td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.supervisor||'')}}">${{qaEscapeHtml(r.supervisor||'—')}}</td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.coach||'')}}">${{qaEscapeHtml(r.coach||'—')}}</td><td>${{acctPill}}</td><td><span class="qa-chip ${{chipCls}}">${{disp}}</span></td>${{critCells.join('')}}<td style="font-size:10px;color:#475569;white-space:nowrap">${{qaEscapeHtml(r.invest||'—')}}</td><td style="max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;color:#475569" title="${{fbTxt}}">${{fbTxt}}</td></tr>`;
+    return`<tr><td style="white-space:nowrap;font-size:11px">${{qaEscapeHtml((r.ts||'—').slice(0,10))}}</td><td style="max-width:200px;overflow:hidden" title="${{qaEscapeHtml(r.agent||'')}}"><div style="display:flex;align-items:center;gap:5px;overflow:hidden"><span style="width:22px;height:22px;border-radius:50%;background:${{av.bg}};color:${{av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{av.ini}}</span><span style="font-weight:600;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">${{qaEscapeHtml(r.agent||'—')}}</span></div></td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.supervisor||'')}}">${{qaEscapeHtml(r.supervisor||'—')}}</td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.coach||'')}}">${{qaEscapeHtml(r.coach||'—')}}</td><td>${{acctPill}}</td><td><span class="qa-chip ${{chipCls}}">${{disp}}</span></td>${{critCells.join('')}}${{vipExtraCells.join('')}}<td style="font-size:10px;color:#475569;white-space:nowrap">${{qaEscapeHtml(r.invest||'—')}}</td><td style="max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;color:#475569" title="${{fbTxt}}">${{fbTxt}}</td></tr>`;
 }}
 
 function qaRenderVisibleRows(){{
