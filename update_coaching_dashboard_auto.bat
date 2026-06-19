@@ -11,6 +11,7 @@ set "SKYLINE_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Skyline"
 set "VIP_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\VIP"
 set "CH_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\C&H"
 set "RC_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Reno Cab"
+set "TI_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Trans Iowa"
 set "MASTERLIST_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Masterlist"
 
 echo.
@@ -111,6 +112,16 @@ cd /d "%RC_DIR%"
 if errorlevel 1 goto :fail
 
 py -3 rc_pull.py
+if errorlevel 1 goto :fail
+
+echo.
+echo ========================================
+echo Updating Trans Iowa QA data from Google Sheets
+echo ========================================
+cd /d "%TI_DIR%"
+if errorlevel 1 goto :fail
+
+py -3 ti_pull.py
 if errorlevel 1 goto :fail
 
 echo.
