@@ -193,6 +193,10 @@ SKYLINE_DIR = Path(os.getenv("SKYLINE_DIR", r"C:\Users\Mike Woo Cerna\Documents\
 SKYLINE_SCRIPT = SKYLINE_DIR / "Skyline_pull.py"
 SKYLINE_OUTPUT_FILE = SKYLINE_DIR / "SKYLINE_RAW.xlsx"
 
+VIP_DIR = Path(os.getenv("VIP_DIR", r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\VIP"))
+VIP_SCRIPT = VIP_DIR / "vip_pull.py"
+VIP_OUTPUT_FILE = VIP_DIR / "VIP_RAW.xlsx"
+
 # Maps standard detail-table criterion keys → Hamilton base column name (without _AI/_Max suffix)
 HAMILTON_CRIT_MAP = {
     "os_in":    "Opening_Spiel_Inbound_Call",
@@ -261,6 +265,44 @@ SKYLINE_EXTRA_CRIT_MAP = {
     "sl_pronunc":    "Pronunciation",
     "sl_tone":       "Tone_of_Voice",
     "sl_prolong":    "Prolonging_the_Call",
+}
+
+# Maps standard detail-table criterion keys → VIP base column name (without _AI/_Max suffix)
+VIP_CRIT_MAP = {
+    "os_in":    "Opening_Spiel_Inbound_Call",
+    "os_out":   "Greetings_Call_Script",
+    "closing":  "Closing_Spiel",
+    "approp":   "Appropriate_Response",
+    "no_resp":  "No_response",
+    "fillers":  "Fillers_Slang_Words",
+    "ack":      "Acknowledgement_Ownership",
+    "hold":     "Proper_Handling_of_Pauses_or_Hold_Requests",
+    "ack_hold": "Acknowledges_and_Thank_the_Customer_for_Waiting",
+    "resp_eff": "Response_Efficiency",
+    "empathy":  "Empathy_Sympathy",
+    "adjust":   "Adjusts_to_Customer_s_Level",
+    "mute":     "Mute_Button_Usage",
+    "active":   "Active_listening",
+    "gen_q":    "General_Questions",
+    "answered": "Answered_Customer_s_Questions",
+    "probing":  "Probing_Questions",
+    "verif":    "Customer_Verification",
+    "clarif":   "Clarification_When_Information_is_Missed",
+    "lost_sop": "Lost_Item_SOP",
+    "rude":     "Rudeness",
+    "trans":    "Transaction_Completion",
+    "speech":   "Speech_Clarify",
+}
+
+# VIP-unique criteria not in the standard QA_CRIT_META
+VIP_EXTRA_CRIT_MAP = {
+    "vip_os_out2":        "Opening_Spiel_Outbound_Call",
+    "vip_profess":        "Professionalism",
+    "vip_verif_other":    "Verification_Other_Measures",
+    "vip_comm_quality":   "Communication_Quality",
+    "vip_cust_verif_oth": "Customer_Verification_Other_Measures",
+    "vip_res_etiq":       "Resolution_Etiquette",
+    "vip_sop":            "VIP_Standard_Operating_Procedure",
 }
 
 COACHING_VALIDATION_ERRORS_FILE = COACHING_OUTPUT_FILE.parent / "coaching_validation_errors.csv"
@@ -1161,6 +1203,184 @@ def load_skyline_data():
     return result
 
 
+def transform_vip_data(source):
+    df = source.copy()
+    rename = {
+        "evaluation_date":      "ts",
+        "Emp Name":             "agent",
+        "QA":                   "coach",
+        "Immediate Supervisor": "supervisor",
+        "evaluation_status":    "status",
+        "overall_score_ai":     "score_ai",
+        "overall_score_human":  "score_human",
+        "QA_ID":                "qa_id",
+        "EMPLOYEE_ID":          "emp_id",
+    }
+    df = df.rename(columns={k: v for k, v in rename.items() if k in df.columns})
+
+    def fmt_ts(v):
+        try:
+            dt = pd.to_datetime(str(v), errors="coerce")
+            if pd.notna(dt):
+                return dt.strftime("%Y-%m-%d %H:%M")
+        except Exception:
+            pass
+        return ""
+
+    if "ts" in df.columns:
+        df["ts"] = df["ts"].apply(fmt_ts)
+
+    if "status" in df.columns:
+        df["status"] = df["status"].apply(
+            lambda v: str(v).strip().lower() if str(v).strip() not in ("", "nan") else "rated"
+        )
+
+    score_ai_s = pd.to_numeric(df.get("score_ai", pd.Series(dtype=float)), errors="coerce").fillna(0)
+    df["score_ai"] = score_ai_s.round(1)
+
+    score_h_s = pd.to_numeric(df.get("score_human", pd.Series(dtype=float)), errors="coerce")
+    df["score_human"] = [round(float(v), 1) if pd.notna(v) else None for v in score_h_s]
+
+    def effective_score(row):
+        if str(row.get("status", "")).lower() == "corrected":
+            v = row.get("score_human")
+            try:
+                if v is not None:
+                    return int(round(float(v)))
+            except Exception:
+                pass
+        v = row.get("score_ai", 0)
+        try:
+            return int(round(float(v)))
+        except Exception:
+            return 0
+
+    df["score"] = df.apply(effective_score, axis=1)
+
+    def get_week_start(ts_val):
+        try:
+            s = str(ts_val).split()[0]
+            dt = pd.to_datetime(s, errors="coerce")
+            if pd.isna(dt):
+                return ""
+            monday = dt - timedelta(days=dt.weekday())
+            return monday.strftime("%Y-%m-%d")
+        except Exception:
+            return ""
+
+    if "ts" in df.columns:
+        df["week_start"] = df["ts"].apply(get_week_start)
+
+    if "emp_id" in df.columns and "ts" in df.columns:
+        df["eval_key"] = (
+            df["emp_id"].astype(str)
+            + "_"
+            + df["ts"].str.replace(r"[-: ]", "", regex=True)
+        )
+
+    VIP_MAIN_ATTRS = {"os_out", "adjust", "gen_q", "verif", "resp_eff", "speech"}
+    for std_key, vip_base in VIP_CRIT_MAP.items():
+        ai_col  = f"{vip_base}_AI"
+        max_col = f"{vip_base}_Max"
+        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        if std_key == "rude":
+            df[std_key] = [
+                None if mx == 0 else ("No" if ai >= mx else "Yes")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+        elif std_key == "lost_sop":
+            df[std_key] = [
+                "Not Applicable" if mx == 0 else ("Yes" if ai > 0 else "No")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+        elif std_key in VIP_MAIN_ATTRS:
+            df[std_key] = [
+                None if mx == 0 else ("Yes" if ai >= mx else "No")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+        else:
+            df[std_key] = [
+                None if mx == 0 else ("Yes" if ai > 0 else "No")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+
+    for vip_key, vip_base in VIP_EXTRA_CRIT_MAP.items():
+        ai_col  = f"{vip_base}_AI"
+        max_col = f"{vip_base}_Max"
+        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        if vip_key == "vip_sop":
+            df[vip_key] = [
+                "Not Applicable" if mx == 0 else ("Yes" if ai > 0 else "No")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+        else:
+            df[vip_key] = [
+                None if mx == 0 else ("Yes" if ai > 0 else "No")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+
+    crit_keys = list(VIP_CRIT_MAP.keys()) + list(VIP_EXTRA_CRIT_MAP.keys())
+    keep = [
+        "qa_id", "eval_key", "emp_id", "ts", "week_start",
+        "agent", "score", "score_ai", "score_human", "status",
+        "coach", "supervisor",
+    ] + crit_keys
+    for col in ("agent", "supervisor", "coach"):
+        if col in df.columns:
+            df[col] = _apply_name_aliases(df[col])
+    return df[[c for c in keep if c in df.columns]]
+
+
+def refresh_vip_output():
+    if not VIP_SCRIPT.exists():
+        return False
+    try:
+        result = subprocess.run(
+            [sys.executable, str(VIP_SCRIPT)],
+            cwd=str(VIP_DIR),
+            capture_output=True,
+            text=True,
+            timeout=120,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        print(f"Skipping VIP pull: {exc}")
+        return False
+    if result.returncode != 0:
+        msg = result.stderr.strip() or result.stdout.strip() or "No details."
+        print(f"Skipping VIP pull: {msg}")
+        return False
+    if result.stdout.strip():
+        print(result.stdout.strip())
+    return True
+
+
+def read_vip_workbook():
+    if not VIP_OUTPUT_FILE.exists():
+        return pd.DataFrame()
+    try:
+        return clean_columns(pd.read_excel(VIP_OUTPUT_FILE))
+    except Exception as exc:
+        print(f"Skipping VIP workbook load: {exc}")
+        return pd.DataFrame()
+
+
+def load_vip_data():
+    refresh_vip_output()
+    source = read_vip_workbook()
+    if source.empty:
+        return pd.DataFrame(columns=[
+            "qa_id", "eval_key", "emp_id", "ts", "week_start",
+            "agent", "score", "score_ai", "score_human", "status",
+            "coach", "supervisor",
+        ])
+    result = transform_vip_data(source)
+    print(f"VIP QA rows: {len(result)}")
+    return result
+
+
 def load_existing_records_from_html(variable_name):
     output_path = Path(OUTPUT_FILE)
     if not output_path.exists():
@@ -1779,6 +1999,7 @@ def main():
     ridex = load_ridex_data()
     hamilton = load_hamilton_data()
     skyline = load_skyline_data()
+    vip = load_vip_data()
 
     refresh_time = datetime.now().strftime("%Y-%m-%d %I:%M %p")
 
@@ -3312,6 +3533,7 @@ def main():
       <option value="ridex">RideX</option>
       <option value="hamilton">Hamilton</option>
       <option value="skyline">Skyline</option>
+      <option value="vip">VIP</option>
     </select>
   </div>
   <div class="qa-fg">
@@ -3552,6 +3774,7 @@ const briteliftRawData = {to_records(britelift)};
 const ridexRawData = {to_records(ridex)};
 const hamiltonRawData = {to_records(hamilton)};
 const skylineRawData = {to_records(skyline)};
+const vipRawData = {to_records(vip)};
 
 const COLORS = ["#004C97", "#39B54A", "#002B5C", "#7AC943", "#00AEEF", "#94A3B8"];
 const COACHING_CATEGORY_COLORS = {{
@@ -5096,6 +5319,7 @@ briteliftRawData.forEach(r => r._acct = 'Britelift');
 ridexRawData.forEach(r => r._acct = 'RideX');
 hamiltonRawData.forEach(r => r._acct = 'Hamilton');
 skylineRawData.forEach(r => r._acct = 'Skyline');
+vipRawData.forEach(r => r._acct = 'VIP');
 
 // Date range picker state — default: last 30 days
 const _qaToday = new Date(); _qaToday.setHours(0,0,0,0);
@@ -5184,7 +5408,8 @@ function qaGetActiveData() {{
     if (acct === 'ridex') return ridexRawData;
     if (acct === 'hamilton') return hamiltonRawData;
     if (acct === 'skyline') return skylineRawData;
-    return [...qaRawData, ...parentisRawData, ...briteliftRawData, ...ridexRawData, ...hamiltonRawData, ...skylineRawData];
+    if (acct === 'vip') return vipRawData;
+    return [...qaRawData, ...parentisRawData, ...briteliftRawData, ...ridexRawData, ...hamiltonRawData, ...skylineRawData, ...vipRawData];
 }}
 
 // ─── Date Range Picker ────────────────────────────────────────────────────────
@@ -5713,7 +5938,8 @@ function qaUpdateEvalDist(data) {{
         {{key:'Britelift',color:'#C0392B'}},
         {{key:'RideX',color:'#8E44AD'}},
         {{key:'Hamilton',color:'#065F46'}},
-        {{key:'Skyline',color:'#0EA5E9'}}
+        {{key:'Skyline',color:'#0EA5E9'}},
+        {{key:'VIP',color:'#D97706'}}
     ];
     const counts=accts.map(a=>data.filter(r=>r._acct===a.key).length);
     const total=counts.reduce((s,v)=>s+v,0);
@@ -6147,7 +6373,7 @@ function initQualityCharts() {{
         qaEvalDistChart=new Chart(evalDistCtx,{{
             type:'doughnut',
             plugins:[evalDistLabelPlugin],
-            data:{{labels:['M7','Parentis','Britelift','RideX','Hamilton','Skyline'],datasets:[{{data:[0,0,0,0,0,0],backgroundColor:['#4F81BD','#2C3E8C','#C0392B','#8E44AD','#065F46','#0EA5E9'],borderWidth:2,borderColor:'#fff'}}]}},
+            data:{{labels:['M7','Parentis','Britelift','RideX','Hamilton','Skyline','VIP'],datasets:[{{data:[0,0,0,0,0,0,0],backgroundColor:['#4F81BD','#2C3E8C','#C0392B','#8E44AD','#065F46','#0EA5E9','#D97706'],borderWidth:2,borderColor:'#fff'}}]}},
             options:{{
                 responsive:true,maintainAspectRatio:false,cutout:'50%',
                 layout:{{padding:{{top:28,bottom:28,left:28,right:28}}}},
