@@ -5,6 +5,7 @@ set "COACHING_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Coaching"
 set "M7_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\M7"
 set "PARENTIS_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Parentis Health"
 set "BRITELIFT_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Britelift"
+set "BLC_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Britelift Chat"
 set "RIDEX_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\RideX"
 set "HAMILTON_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Hamilton"
 set "SKYLINE_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Skyline"
@@ -58,6 +59,16 @@ echo ========================================
 echo Updating Britelift QA data from Google Sheets
 echo ========================================
 cd /d "%BRITELIFT_DIR%"
+if errorlevel 1 goto :fail
+
+py -3 britelift_pull.py
+if errorlevel 1 goto :fail
+
+echo.
+echo ========================================
+echo Updating Britelift Chat QA data from Google Sheets
+echo ========================================
+cd /d "%BLC_DIR%"
 if errorlevel 1 goto :fail
 
 py -3 britelift_pull.py

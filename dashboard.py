@@ -109,6 +109,10 @@ BRITELIFT_DIR = Path(os.getenv("BRITELIFT_DIR", r"C:\Users\Mike Woo Cerna\Docume
 BRITELIFT_SCRIPT = BRITELIFT_DIR / "britelift_pull.py"
 BRITELIFT_OUTPUT_FILE = BRITELIFT_DIR / "BRITELIFT_RAW.xlsx"
 
+BLC_DIR = Path(os.getenv("BLC_DIR", r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\Britelift Chat"))
+BLC_SCRIPT = BLC_DIR / "britelift_pull.py"
+BLC_OUTPUT_FILE = BLC_DIR / "BLC_RAW.xlsx"
+
 BRITELIFT_COLUMN_MAP = {
     "Timestamp":                                              "ts",
     "Call Date":                                             "date",
@@ -143,6 +147,27 @@ BRITELIFT_COLUMN_MAP = {
     "Speech Clarify - 5pts":                                 "speech",
     "QA_ID":                                                 "qa_id",
     "EMPLOYEE_ID":                                           "emp_id",
+}
+
+BLC_COLUMN_MAP = {
+    "QA_ID":                                                                                                               "qa_id",
+    "EMPLOYEE_ID":                                                                                                         "emp_id",
+    "Timestamp":                                                                                                           "ts",
+    "Chat Date":                                                                                                           "date",
+    "Emp Name":                                                                                                            "agent",
+    "Score":                                                                                                               "score",
+    "Evaluation Type":                                                                                                     "type",
+    "QA":                                                                                                                  "coach",
+    "Immediate Supervisor":                                                                                                "supervisor",
+    "Feedback Summary ":                                                                                                   "feedback",
+    "Did the agent follow greeting and any other chat scripts?  (10%)":                                                     "os_in",
+    "Did the agent maintain professionalism?  (10%)":                                                                       "approp",
+    "Did the agent follow in providing customer basic information such as ETA and fixed rate?  (15%)":                      "answered",
+    "Did the agent ask for the customer's name, phone number, address and email address?  (5%)":                           "verif",
+    "Did the agent respond to the customer promptly?  (5%)":                                                               "resp_eff",
+    "Proper usage of Grammar & Punctuation Marks.  (15%)":                                                                 "speech",
+    "Rudeness  (20%)":                                                                                                     "rude",
+    "Successfully processed customer's request / was able to address the customer's concern and handle the live chat conversation properly.  (20%)": "trans",
 }
 
 RIDEX_DIR = Path(os.getenv("RIDEX_DIR", r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\RideX"))
@@ -1281,6 +1306,56 @@ def load_britelift_data():
                                      "invest", "feedback"])
     result = transform_britelift_data(source)
     print(f"Britelift QA rows: {len(result)}")
+    return result
+
+
+def transform_blc_data(source):
+    return _transform_qa_source(source, BLC_COLUMN_MAP)
+
+
+def refresh_blc_output():
+    if not BLC_SCRIPT.exists():
+        return False
+    try:
+        result = subprocess.run(
+            [sys.executable, str(BLC_SCRIPT)],
+            cwd=str(BLC_DIR),
+            capture_output=True,
+            text=True,
+            timeout=120,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        print(f"Skipping Britelift Chat pull: {exc}")
+        return False
+    if result.returncode != 0:
+        msg = result.stderr.strip() or result.stdout.strip() or "No details."
+        print(f"Skipping Britelift Chat pull: {msg}")
+        return False
+    if result.stdout.strip():
+        print(result.stdout.strip())
+    return True
+
+
+def read_blc_workbook():
+    if not BLC_OUTPUT_FILE.exists():
+        return pd.DataFrame()
+    try:
+        return clean_columns(pd.read_excel(BLC_OUTPUT_FILE))
+    except Exception as exc:
+        print(f"Skipping Britelift Chat workbook load: {exc}")
+        return pd.DataFrame()
+
+
+def load_blc_data():
+    refresh_blc_output()
+    source = read_blc_workbook()
+    if source.empty:
+        return pd.DataFrame(columns=["qa_id", "eval_key", "emp_id", "ts", "date",
+                                     "agent", "score", "type", "coach", "supervisor",
+                                     "invest", "feedback"])
+    result = transform_blc_data(source)
+    print(f"Britelift Chat QA rows: {len(result)}")
     return result
 
 
@@ -4558,6 +4633,7 @@ def main():
     m7 = load_m7_data()
     parentis = load_parentis_data()
     britelift = load_britelift_data()
+    blc = load_blc_data()
     ridex = load_ridex_data()
     hamilton = load_hamilton_data()
     skyline = load_skyline_data()
@@ -5505,6 +5581,16 @@ def main():
     body.qa-dist-focus-mode #qa-eval-dist-legend .qa-dist-total td {{ font-weight: 900; color: #fff; background: var(--green); border-bottom: 0; border-top: 1px solid #D8E1EC; }}
     #qa-eval-dist-other-note {{ display: none; }}
     body.qa-dist-focus-mode #qa-eval-dist-other-note {{ display: block; position: absolute; left: 10px; right: 10px; bottom: 4px; text-align: center; font-size: 11px; line-height: 1.25; font-style: italic; color: #64748B; }}
+    #qa-eval-dist-legend.qa-legend-compact {{ display: block !important; max-height: 82px; overflow-y: auto; border: 1px solid #D8E1EC; border-radius: 7px; background: #fff; box-shadow: inset 0 1px 0 rgba(255,255,255,0.65); }}
+    #qa-eval-dist-legend .qa-legend-head,
+    #qa-eval-dist-legend .qa-legend-row {{ display: grid; grid-template-columns: minmax(0,1fr) 46px; align-items: center; column-gap: 8px; }}
+    #qa-eval-dist-legend .qa-legend-head {{ position: sticky; top: 0; z-index: 1; padding: 4px 7px; background: var(--green); border-bottom: 1px solid rgba(15,23,42,.12); color: #fff; font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }}
+    #qa-eval-dist-legend .qa-legend-row {{ padding: 4px 7px; border-bottom: 1px solid #EEF2F7; font-size: 9px; color: #334155; }}
+    #qa-eval-dist-legend .qa-legend-row:last-child {{ border-bottom: 0; }}
+    #qa-eval-dist-legend .qa-legend-account {{ display: flex; align-items: center; gap: 5px; min-width: 0; }}
+    #qa-eval-dist-legend .qa-legend-dot {{ width: 7px; height: 7px; border-radius: 50%; flex: 0 0 auto; box-shadow: inset 0 0 0 1px rgba(15,23,42,.08); }}
+    #qa-eval-dist-legend .qa-legend-name {{ overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }}
+    #qa-eval-dist-legend .qa-legend-pct {{ text-align: right; font-weight: 800; font-variant-numeric: tabular-nums; }}
     body.qa-aiqe-focus-mode #qa-aiqe-focus-toggle .qa-focus-icon::before {{ top: 2px; right: 2px; border-width: 0 0 2px 2px; }}
     body.qa-aiqe-focus-mode #qa-aiqe-focus-toggle .qa-focus-icon::after  {{ left: 2px; bottom: 2px; border-width: 2px 2px 0 0; }}
     body.qa-aiqe-focus-mode #qualityPanel .qa-kpi-strip,
@@ -6188,6 +6274,7 @@ def main():
       <option value="ac">Associated Cab</option>
       <option value="bl">Blueline</option>
       <option value="britelift">Britelift</option>
+      <option value="blc">Britelift Chat</option>
       <option value="ch">C&amp;H</option>
       <option value="ct">Circle Taxi</option>
       <option value="dc">Data Carz</option>
@@ -6452,7 +6539,7 @@ def main():
     </div>
     <div class="qa-card" id="qa-aiqe-card">
       <div class="qa-ch">
-        <div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-7"/></svg>AI x QE QA Score Trend</div><div class="qa-cs" id="qa-aiqe-trend-sub">Date range &amp; account only</div></div>
+        <div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-7"/></svg>AI x QE Score Trend</div><div class="qa-cs" id="qa-aiqe-trend-sub">Date range &amp; account only</div></div>
         <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
           <span class="qa-cb qa-cbb" id="qa-aiqe-trend-badge">&mdash;</span>
           <button id="qa-aiqe-focus-toggle" type="button" title="Expand AI x QE trend" aria-label="Expand AI x QE trend" style="width:28px;height:28px;border:1px solid #CBD5E1;border-radius:5px;background:#fff;color:#475569;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">
@@ -6685,6 +6772,7 @@ const coachingData = {to_records(coaching)};
 const qaRawData = {to_records(m7)};
 const parentisRawData = {to_records(parentis)};
 const briteliftRawData = {to_records(britelift)};
+const blcRawData = {to_records(blc)};
 const ridexRawData = {to_records(ridex)};
 const hamiltonRawData = {to_records(hamilton)};
 const skylineRawData = {to_records(skyline)};
@@ -8253,6 +8341,7 @@ let qaCurrentFiltered = [];
 qaRawData.forEach(r => r._acct = 'M7');
 parentisRawData.forEach(r => r._acct = 'Parentis');
 briteliftRawData.forEach(r => r._acct = 'Britelift');
+blcRawData.forEach(r => r._acct = 'Britelift Chat');
 ridexRawData.forEach(r => r._acct = 'RideX');
 hamiltonRawData.forEach(r => r._acct = 'Hamilton');
 skylineRawData.forEach(r => r._acct = 'Skyline');
@@ -8354,6 +8443,7 @@ function qaGetActiveData() {{
     if (acct === 'm7') return qaRawData;
     if (acct === 'parentis') return parentisRawData;
     if (acct === 'britelift') return briteliftRawData;
+    if (acct === 'blc') return blcRawData;
     if (acct === 'ridex') return ridexRawData;
     if (acct === 'hamilton') return hamiltonRawData;
     if (acct === 'skyline') return skylineRawData;
@@ -8370,7 +8460,7 @@ function qaGetActiveData() {{
     if (acct === 'vt') return vtRawData;
     if (acct === 'ycdc') return ycdcRawData;
     if (acct === 'bl') return blRawData;
-    return [...qaRawData, ...parentisRawData, ...briteliftRawData, ...ridexRawData, ...hamiltonRawData, ...skylineRawData, ...vipRawData, ...chRawData, ...rcRawData, ...tiRawData, ...dcRawData, ...acRawData, ...olRawData, ...ctRawData, ...ycovRawData, ...kelRawData, ...vtRawData, ...ycdcRawData, ...blRawData];
+    return [...qaRawData, ...parentisRawData, ...briteliftRawData, ...blcRawData, ...ridexRawData, ...hamiltonRawData, ...skylineRawData, ...vipRawData, ...chRawData, ...rcRawData, ...tiRawData, ...dcRawData, ...acRawData, ...olRawData, ...ctRawData, ...ycovRawData, ...kelRawData, ...vtRawData, ...ycdcRawData, ...blRawData];
 }}
 
 // ─── Date Range Picker ────────────────────────────────────────────────────────
@@ -8574,6 +8664,7 @@ function qaUpdateKPIs(data) {{
         if(acct==='m7') titleEl.textContent='M7 — Quality Assurance';
         else if(acct==='parentis') titleEl.textContent='Parentis Health — Quality Assurance';
         else if(acct==='britelift') titleEl.textContent='Britelift — Quality Assurance';
+        else if(acct==='blc') titleEl.textContent='Britelift Chat — Quality Assurance';
         else if(acct==='ridex') titleEl.textContent='RideX — Quality Assurance';
         else if(acct==='hamilton') titleEl.textContent='Hamilton — Quality Assurance';
         else if(acct==='skyline') titleEl.textContent='Skyline — Quality Assurance';
@@ -8596,6 +8687,7 @@ function qaUpdateKPIs(data) {{
         if(acct==='m7') {{ badgeEl.textContent='M7 Account'; badgeEl.className='qa-badge qa-b-blue'; }}
         else if(acct==='parentis') {{ badgeEl.textContent='Parentis Health'; badgeEl.className='qa-badge qa-b-teal'; }}
         else if(acct==='britelift') {{ badgeEl.textContent='Britelift'; badgeEl.className='qa-badge qa-b-amber'; }}
+        else if(acct==='blc') {{ badgeEl.textContent='Britelift Chat'; badgeEl.className='qa-badge qa-b-amber'; }}
         else if(acct==='ridex') {{ badgeEl.textContent='RideX'; badgeEl.className='qa-badge qa-b-purple'; }}
         else if(acct==='hamilton') {{ badgeEl.textContent='Hamilton'; badgeEl.className='qa-badge qa-b-teal'; }}
         else if(acct==='skyline') {{ badgeEl.textContent='Skyline'; badgeEl.className='qa-badge qa-b-skyline'; }}
@@ -8796,6 +8888,8 @@ function qaRenderLeaderboard(data) {{
             ?`<span style="background:#EFF6FF;color:#1D4ED8;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">M7</span>`
             :a.acct==='Britelift'
             ?`<span style="background:#FFF7ED;color:#C2410C;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Britelift</span>`
+            :a.acct==='Britelift Chat'
+            ?`<span style="background:#FFF7ED;color:#9A3412;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Britelift Chat</span>`
             :a.acct==='RideX'
             ?`<span style="background:#F5F3FF;color:#6D28D9;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">RideX</span>`
             :a.acct==='Hamilton'
@@ -8901,6 +8995,8 @@ function qaRowHtml(r){{
         ?`<span style="background:#EFF6FF;color:#1D4ED8;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">M7</span>`
         :r._acct==='Britelift'
         ?`<span style="background:#FFF7ED;color:#C2410C;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Britelift</span>`
+        :r._acct==='Britelift Chat'
+        ?`<span style="background:#FFF7ED;color:#9A3412;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Britelift Chat</span>`
         :r._acct==='RideX'
         ?`<span style="background:#F5F3FF;color:#6D28D9;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">RideX</span>`
         :r._acct==='Hamilton'
@@ -9120,12 +9216,16 @@ function qaRenderEvalDistLegend(accts, counts, total) {{
     if(!legEl)return;
     const isFocus=document.body.classList.contains('qa-dist-focus-mode');
     if(!isFocus){{
-        legEl.innerHTML=accts.map((a,i)=>{{
-            const pct=total?(counts[i]/total*100).toFixed(1)+'%':'0%';
-            return`<div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#475569"><span style="width:8px;height:8px;border-radius:50%;background:${{a.color}};flex-shrink:0"></span><span>${{qaEscapeHtml(a.key)}}</span><span style="margin-left:auto;font-weight:700;color:${{a.color}}">${{pct}}</span></div>`;
+        legEl.className='qa-legend-compact';
+        const rows=accts.map((a,i)=>({{...a,count:counts[i],pct:total?counts[i]/total*100:0}}))
+            .sort((a,b)=>b.count-a.count||a.key.localeCompare(b.key));
+        legEl.innerHTML=`<div class="qa-legend-head"><span>Account</span><span style="text-align:right">%</span></div>`+rows.map(r=>{{
+            const pct=r.pct.toFixed(1)+'%';
+            return`<div class="qa-legend-row"><span class="qa-legend-account"><span class="qa-legend-dot" style="background:${{r.color}}"></span><span class="qa-legend-name">${{qaEscapeHtml(r.key)}}</span></span><span class="qa-legend-pct" style="color:${{r.color}}">${{pct}}</span></div>`;
         }}).join('');
         return;
     }}
+    legEl.className='';
     const rawRows=accts.map((a,i)=>({{...a,count:counts[i],pct:total?counts[i]/total*100:0}}))
         .filter(r=>r.count>0)
         .sort((a,b)=>b.count-a.count||a.key.localeCompare(b.key));
@@ -9151,6 +9251,7 @@ function qaUpdateEvalDist(data) {{
         {{key:'M7',color:'#4F81BD'}},
         {{key:'Parentis',color:'#2C3E8C'}},
         {{key:'Britelift',color:'#C0392B'}},
+        {{key:'Britelift Chat',color:'#9A3412'}},
         {{key:'RideX',color:'#8E44AD'}},
         {{key:'Hamilton',color:'#065F46'}},
         {{key:'Skyline',color:'#0EA5E9'}},
@@ -9783,6 +9884,194 @@ function initQualityCharts() {{
             ctx2.restore();
         }}
     }};
+    const qaTrendHoverPlugin={{
+        id:'qaTrendHoverFocus',
+        afterEvent(chart,args){{
+            if(!['qa-trend-chart','qa-aiqe-trend-chart'].includes(chart.canvas?.id))return;
+            const e=args.event;
+            if(!e)return;
+            const area=chart.chartArea;
+            const clear=()=>{{
+                if(chart.$qaHoverIndex!=null){{
+                    chart.$qaHoverIndex=null;
+                    args.changed=true;
+                }}
+            }};
+            if(e.type==='mouseout'){{
+                clear();
+                return;
+            }}
+            if(!['mousemove','click','touchstart','touchmove'].includes(e.type))return;
+            if(e.x<area.left||e.x>area.right||e.y<area.top||e.y>area.bottom){{
+                if(e.type==='click')clear();
+                return;
+            }}
+            const points=chart.getElementsAtEventForMode(e.native||e,'index',{{intersect:false}},false);
+            let idx=points?.[0]?.index;
+            if(idx==null){{
+                const meta=chart.getDatasetMeta(0);
+                let best=null,bestDx=Infinity;
+                meta.data.forEach((pt,i)=>{{
+                    const dx=Math.abs(pt.x-e.x);
+                    if(dx<bestDx){{bestDx=dx;best=i;}}
+                }});
+                idx=best;
+            }}
+            if(idx==null)return;
+            chart.$qaHoverIndex=idx;
+            chart.$qaHoverDataset=points?.[0]?.datasetIndex??0;
+            args.changed=true;
+        }},
+        afterDatasetsDraw(chart){{
+            if(!['qa-trend-chart','qa-aiqe-trend-chart'].includes(chart.canvas?.id))return;
+            const idx=chart.$qaHoverIndex;
+            if(idx==null)return;
+            const ctx2=chart.ctx,area=chart.chartArea;
+            const firstMeta=chart.getDatasetMeta(0);
+            const anchor=firstMeta?.data?.[idx];
+            if(!anchor)return;
+            const x=anchor.x;
+            const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+            const roundedRect=(x,y,w,h,r)=>{{
+                ctx2.beginPath();
+                if(ctx2.roundRect)ctx2.roundRect(x,y,w,h,r);
+                else ctx2.rect(x,y,w,h);
+            }};
+            const asPct=v=>v==null||Number.isNaN(Number(v))?'—':Number(v).toFixed(1)+'%';
+            const asNum=v=>v==null||Number.isNaN(Number(v))?'—':Number(v).toLocaleString();
+            const drawPoint=(pt,color,r)=>{{
+                if(!pt)return;
+                ctx2.save();
+                ctx2.shadowColor=color;
+                ctx2.shadowBlur=8;
+                ctx2.fillStyle=color;
+                ctx2.strokeStyle='#fff';
+                ctx2.lineWidth=2;
+                ctx2.beginPath();
+                ctx2.arc(pt.x,pt.y,r,0,Math.PI*2);
+                ctx2.fill();
+                ctx2.shadowBlur=0;
+                ctx2.stroke();
+                ctx2.restore();
+            }};
+            const drawBar=(bar,ds)=>{{
+                if(!bar||bar.width==null||bar.base==null)return;
+                const left=bar.x-bar.width/2;
+                const top=Math.min(bar.y,bar.base);
+                const h=Math.abs(bar.base-bar.y);
+                ctx2.save();
+                ctx2.fillStyle=ds.backgroundColor||'rgba(15,23,42,.25)';
+                ctx2.strokeStyle=ds.borderColor||'#0F172A';
+                ctx2.lineWidth=1.5;
+                ctx2.fillRect(left,top,bar.width,h);
+                ctx2.strokeRect(left,top,bar.width,h);
+                ctx2.restore();
+            }};
+            const drawLineSegment=(meta,ds,color)=>{{
+                const pts=[idx-1,idx,idx+1].map(i=>meta.data[i]).filter(Boolean);
+                if(pts.length<2)return;
+                ctx2.save();
+                ctx2.strokeStyle=color;
+                ctx2.lineWidth=(ds.borderWidth||1.5)+0.6;
+                ctx2.lineJoin='round';
+                ctx2.lineCap='round';
+                ctx2.beginPath();
+                pts.forEach((pt,i)=>{{if(i===0)ctx2.moveTo(pt.x,pt.y);else ctx2.lineTo(pt.x,pt.y);}});
+                ctx2.stroke();
+                ctx2.restore();
+            }};
+            ctx2.save();
+            ctx2.fillStyle='rgba(255,255,255,0.68)';
+            ctx2.fillRect(area.left,area.top,area.right-area.left,area.bottom-area.top);
+            ctx2.strokeStyle='rgba(13,59,110,0.38)';
+            ctx2.lineWidth=1;
+            ctx2.setLineDash([4,4]);
+            ctx2.beginPath();
+            ctx2.moveTo(x,area.top);
+            ctx2.lineTo(x,area.bottom);
+            ctx2.stroke();
+            ctx2.setLineDash([]);
+
+            if(chart.canvas.id==='qa-trend-chart'){{
+                const avgDs=chart.data.datasets[0], barDs=chart.data.datasets[2];
+                const avgMeta=chart.getDatasetMeta(0), barMeta=chart.getDatasetMeta(2);
+                drawLineSegment(avgMeta,avgDs,'#0D3B6E');
+                drawBar(barMeta.data[idx],barDs);
+                drawPoint(avgMeta.data[idx],'#0D3B6E',6);
+                const avg=avgDs.data[idx];
+                const prev=idx>0?avgDs.data[idx-1]:null;
+                const wow=prev==null||avg==null||Number.isNaN(Number(prev))||Number.isNaN(Number(avg))?'—':((avg-prev)>=0?'+':'')+(avg-prev).toFixed(1)+' pts';
+                const lines=[
+                    {{label:chart.data.labels[idx]||'—',value:'',strong:true}},
+                    {{label:'Overall QA Score',value:asPct(avg)}},
+                    {{label:'Entry Count',value:asNum(barDs.data[idx])}},
+                    {{label:'Week-over-Week Change',value:wow}},
+                ];
+                drawTooltip(lines);
+            }} else {{
+                const aiDs=chart.data.datasets[0],qeDs=chart.data.datasets[1],aiBarDs=chart.data.datasets[3],qeBarDs=chart.data.datasets[4];
+                const aiMeta=chart.getDatasetMeta(0),qeMeta=chart.getDatasetMeta(1),aiBarMeta=chart.getDatasetMeta(3),qeBarMeta=chart.getDatasetMeta(4);
+                drawLineSegment(aiMeta,aiDs,'#004C97');
+                drawLineSegment(qeMeta,qeDs,'#39B54A');
+                drawBar(aiBarMeta.data[idx],aiBarDs);
+                drawBar(qeBarMeta.data[idx],qeBarDs);
+                drawPoint(aiMeta.data[idx],'#004C97',5.5);
+                drawPoint(qeMeta.data[idx],'#39B54A',5.5);
+                const ai=aiDs.data[idx],qe=qeDs.data[idx];
+                const gap=ai==null||qe==null||Number.isNaN(Number(ai))||Number.isNaN(Number(qe))?'—':(qe-ai).toFixed(1)+' pts';
+                const lines=[
+                    {{label:chart.data.labels[idx]||'—',value:'',strong:true}},
+                    {{label:'AI Avg (%)',value:asPct(ai)}},
+                    {{label:'QE Avg (%)',value:asPct(qe)}},
+                    {{label:'Gap (pts)',value:gap}},
+                    {{label:'AI Entries',value:asNum(aiBarDs.data[idx])}},
+                    {{label:'QE Entries',value:asNum(qeBarDs.data[idx])}},
+                ];
+                drawTooltip(lines);
+            }}
+            ctx2.restore();
+
+            function drawTooltip(lines){{
+                const pad=9,rowH=16,titleH=18;
+                ctx2.save();
+                ctx2.font='700 11px sans-serif';
+                const labelW=Math.max(...lines.map(l=>ctx2.measureText(l.label).width));
+                ctx2.font='800 11px sans-serif';
+                const valueW=Math.max(...lines.map(l=>ctx2.measureText(l.value||'').width));
+                const w=Math.max(190,labelW+valueW+pad*2+18);
+                const h=pad*2+titleH+(lines.length-1)*rowH;
+                let tx=clamp(x+14,area.left+4,area.right-w-4);
+                if(x>area.right-w-24)tx=clamp(x-w-14,area.left+4,area.right-w-4);
+                const ty=area.top+8;
+                ctx2.shadowColor='rgba(15,23,42,0.18)';
+                ctx2.shadowBlur=12;
+                ctx2.fillStyle='rgba(15,23,42,0.94)';
+                roundedRect(tx,ty,w,h,8);
+                ctx2.fill();
+                ctx2.shadowBlur=0;
+                ctx2.strokeStyle='rgba(255,255,255,0.16)';
+                ctx2.stroke();
+                let cy=ty+pad+9;
+                ctx2.fillStyle='#F8FAFC';
+                ctx2.font='800 12px sans-serif';
+                ctx2.textAlign='left';
+                ctx2.textBaseline='middle';
+                ctx2.fillText(lines[0].label,tx+pad,cy);
+                cy+=titleH;
+                ctx2.font='600 11px sans-serif';
+                lines.slice(1).forEach(l=>{{
+                    ctx2.fillStyle='rgba(226,232,240,0.86)';
+                    ctx2.textAlign='left';
+                    ctx2.fillText(l.label,tx+pad,cy);
+                    ctx2.fillStyle='#fff';
+                    ctx2.textAlign='right';
+                    ctx2.fillText(l.value,tx+w-pad,cy);
+                    cy+=rowH;
+                }});
+                ctx2.restore();
+            }}
+        }}
+    }};
     const aiQeTrendLabelPlugin={{
         id:'qaAiQeTrendLabels',
         afterDatasetsDraw(chart){{
@@ -9865,7 +10154,7 @@ function initQualityCharts() {{
                 const text='Gap Trend: '+(narrowing?'Narrowing ↓':'Widening ↑');
                 ctx2.font=`700 ${{trendFont}}px sans-serif`;
                 const pad=6, w=ctx2.measureText(text).width+pad*2, h=19;
-                const x=area.right-w-4, y=Math.max(2,area.top-26);
+                const x=area.right-w-4, y=Math.max(2,area.top-40);
                 ctx2.fillStyle='rgba(255,247,237,0.94)';
                 ctx2.strokeStyle='rgba(194,65,12,0.35)';
                 ctx2.lineWidth=1;
@@ -9907,7 +10196,7 @@ function initQualityCharts() {{
     qaUpdateDRPLabel();
 
     // Info pills
-    const qaAcctsLoaded=[qaRawData,parentisRawData,briteliftRawData,ridexRawData,hamiltonRawData,skylineRawData,vipRawData,chRawData,rcRawData,tiRawData,dcRawData,acRawData,olRawData,ctRawData,ycovRawData,kelRawData,vtRawData,ycdcRawData,blRawData].filter(d=>d.length>0).length;
+    const qaAcctsLoaded=[qaRawData,parentisRawData,briteliftRawData,blcRawData,ridexRawData,hamiltonRawData,skylineRawData,vipRawData,chRawData,rcRawData,tiRawData,dcRawData,acRawData,olRawData,ctRawData,ycovRawData,kelRawData,vtRawData,ycdcRawData,blRawData].filter(d=>d.length>0).length;
     const qaPillAccts=document.getElementById('qa-pill-qa-accounts');
     if(qaPillAccts)qaPillAccts.textContent=qaAcctsLoaded+' QA Account'+(qaAcctsLoaded===1?'':'s')+' Loaded';
     const qaPillTotal=document.getElementById('qa-pill-total-accounts');
@@ -9922,7 +10211,7 @@ function initQualityCharts() {{
     if(trendCtx){{
         qaTrendChart=new Chart(trendCtx,{{
             type:'line',
-            plugins:[trendLabelPlugin,barLabelPlugin],
+            plugins:[trendLabelPlugin,barLabelPlugin,qaTrendHoverPlugin],
             data:{{labels:[],datasets:[
                 {{label:'Avg QA Score',data:[],borderColor:'#0D3B6E',backgroundColor:'rgba(13,59,110,0.08)',tension:0.3,fill:true,pointRadius:4,pointHoverRadius:6,pointBackgroundColor:'#0D3B6E',yAxisID:'y',order:0}},
                 {{label:'Target (85%)',data:[],borderColor:'#E85D3F',borderDash:[5,4],borderWidth:1.5,pointRadius:0,fill:false,yAxisID:'y',order:0}},
@@ -9930,8 +10219,10 @@ function initQualityCharts() {{
             ]}},
             options:{{
                 responsive:true,maintainAspectRatio:false,
+                interaction:{{mode:'index',intersect:false}},
+                animation:{{duration:200,easing:'easeOutQuart'}},
                 layout:{{padding:{{top:24,bottom:0}}}},
-                plugins:{{legend:{{display:true,position:'bottom',labels:{{font:{{size:10}},boxWidth:12}}}},tooltip:{{callbacks:{{label:ctx=>ctx.datasetIndex===2?ctx.parsed.y+' evals':ctx.parsed.y.toFixed(1)+'%'}}}}}},
+                plugins:{{legend:{{display:true,position:'bottom',labels:{{font:{{size:10}},boxWidth:12}}}},tooltip:{{enabled:false,callbacks:{{label:ctx=>ctx.datasetIndex===2?ctx.parsed.y+' evals':ctx.parsed.y.toFixed(1)+'%'}}}}}},
                 scales:{{
                     y:{{min:80,max:100,ticks:{{display:false}},border:{{display:false}},grid:{{color:'#F1F5F9'}}}},
                     y1:{{display:false,position:'right',beginAtZero:true,grid:{{display:false}}}},
@@ -9944,7 +10235,7 @@ function initQualityCharts() {{
     if(aiQeTrendCtx){{
         qaAiQeTrendChart=new Chart(aiQeTrendCtx,{{
             type:'line',
-            plugins:[aiQeTrendLabelPlugin],
+            plugins:[aiQeTrendLabelPlugin,qaTrendHoverPlugin],
             data:{{labels:[],datasets:[
                 {{label:'AI avg',data:[],borderColor:'#004C97',borderWidth:1.5,backgroundColor:'rgba(0,76,151,0.08)',tension:0.3,fill:false,pointRadius:3,pointHoverRadius:5,pointBackgroundColor:'#004C97',yAxisID:'y',order:0}},
                 {{label:'QE avg',data:[],borderColor:'#39B54A',borderWidth:1.5,backgroundColor:'rgba(57,181,74,0.08)',tension:0.3,fill:false,pointRadius:3,pointHoverRadius:5,pointBackgroundColor:'#39B54A',yAxisID:'y',order:0}},
@@ -9954,8 +10245,10 @@ function initQualityCharts() {{
             ]}},
             options:{{
                 responsive:true,maintainAspectRatio:false,
+                interaction:{{mode:'index',intersect:false}},
+                animation:{{duration:200,easing:'easeOutQuart'}},
                 layout:{{padding:{{top:44,bottom:0}}}},
-                plugins:{{legend:{{display:true,position:'bottom',labels:{{font:{{size:9}},boxWidth:10}}}},tooltip:{{callbacks:{{label:ctx=>{{
+                plugins:{{legend:{{display:true,position:'bottom',labels:{{font:{{size:9}},boxWidth:10}}}},tooltip:{{enabled:false,callbacks:{{label:ctx=>{{
                     if(ctx.dataset.label==='Gap Area'){{
                         const ai=ctx.chart.data.datasets[0].data[ctx.dataIndex], qe=ctx.chart.data.datasets[1].data[ctx.dataIndex];
                         return ai==null||qe==null?'Gap Area: No data':'Gap Area: '+(qe-ai).toFixed(1)+' pts';
@@ -9969,6 +10262,18 @@ function initQualityCharts() {{
                 }}
             }}
         }});
+    }}
+    if(!window.qaTrendHoverDismissBound){{
+        window.qaTrendHoverDismissBound=true;
+        document.addEventListener('click',ev=>{{
+            if(ev.target?.closest?.('#qa-trend-chart,#qa-aiqe-trend-chart'))return;
+            [qaTrendChart,qaAiQeTrendChart].forEach(ch=>{{
+                if(ch&&ch.$qaHoverIndex!=null){{
+                    ch.$qaHoverIndex=null;
+                    ch.update('none');
+                }}
+            }});
+        }},{{passive:true}});
     }}
     const donutCtx=document.getElementById('qa-donut-chart');
     if(donutCtx){{
@@ -10079,7 +10384,7 @@ function initQualityCharts() {{
         qaEvalDistChart=new Chart(evalDistCtx,{{
             type:'doughnut',
             plugins:[evalDistLabelPlugin],
-            data:{{labels:['M7','Parentis','Britelift','RideX','Hamilton','Skyline','VIP','C&H','Reno Cab','Trans Iowa','Data Carz','Associated Cab','Ollies','Circle Taxi','YCOV','Kelowna','Vermont','YCDC','Blueline'],datasets:[{{data:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],backgroundColor:['#4F81BD','#2C3E8C','#C0392B','#8E44AD','#065F46','#0EA5E9','#D97706','#0891B2','#16A34A','#7C3AED','#EA580C','#0E7490','#BE123C','#0E7490','#047857','#166534','#0F766E','#155E75','#1D4ED8'],borderWidth:2,borderColor:'#fff'}}]}},
+            data:{{labels:['M7','Parentis','Britelift','Britelift Chat','RideX','Hamilton','Skyline','VIP','C&H','Reno Cab','Trans Iowa','Data Carz','Associated Cab','Ollies','Circle Taxi','YCOV','Kelowna','Vermont','YCDC','Blueline'],datasets:[{{data:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],backgroundColor:['#4F81BD','#2C3E8C','#C0392B','#9A3412','#8E44AD','#065F46','#0EA5E9','#D97706','#0891B2','#16A34A','#7C3AED','#EA580C','#0E7490','#BE123C','#0E7490','#047857','#166534','#0F766E','#155E75','#1D4ED8'],borderWidth:2,borderColor:'#fff'}}]}},
             options:{{
                 responsive:true,maintainAspectRatio:false,cutout:'50%',
                 layout:{{padding:{{top:28,bottom:28,left:28,right:28}}}},
