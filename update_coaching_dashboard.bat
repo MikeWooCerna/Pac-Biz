@@ -20,6 +20,7 @@ set "YCOV_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\YCOV"
 set "KEL_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Kelowna"
 set "VT_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Vermont"
 set "YCDC_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\YCDC"
+set "BL_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Blueline"
 set "MASTERLIST_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Masterlist"
 
 echo.
@@ -210,6 +211,16 @@ cd /d "%YCDC_DIR%"
 if errorlevel 1 goto :fail
 
 py -3 ycdc_pull.py
+if errorlevel 1 goto :fail
+
+echo.
+echo ========================================
+echo Updating Blueline QA data from Google Sheets
+echo ========================================
+cd /d "%BL_DIR%"
+if errorlevel 1 goto :fail
+
+py -3 bl_pull.py
 if errorlevel 1 goto :fail
 
 echo.

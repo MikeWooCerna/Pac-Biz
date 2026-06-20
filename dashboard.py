@@ -241,6 +241,10 @@ YCDC_DIR = Path(os.getenv("YCDC_DIR", r"C:\Users\Mike Woo Cerna\Documents\PB\Qua
 YCDC_SCRIPT = YCDC_DIR / "ycdc_pull.py"
 YCDC_OUTPUT_FILE = YCDC_DIR / "YCDC_RAW.xlsx"
 
+BL_DIR = Path(os.getenv("BL_DIR", r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\Blueline"))
+BL_SCRIPT = BL_DIR / "bl_pull.py"
+BL_OUTPUT_FILE = BL_DIR / "BL_RAW.xlsx"
+
 # Maps standard detail-table criterion keys → Hamilton base column name (without _AI/_Max suffix)
 HAMILTON_CRIT_MAP = {
     "os_in":    "Opening_Spiel_Inbound_Call",
@@ -740,6 +744,40 @@ YCDC_EXTRA_CRIT_MAP = {
     "ycdc_verif_other":  "Verification_Other_Measures",
     "ycdc_comm_quality": "Communication_Quality",
     "ycdc_res_etiq":     "Resolution_Etiquette",
+}
+
+BL_CRIT_MAP = {
+    "os_in":    "Opening_Spiel_Inbound_Call",
+    "os_out":   "Greetings_Call_Script",
+    "closing":  "Closing_Spiel",
+    "approp":   "Appropriate_Response",
+    "no_resp":  "No_response",
+    "fillers":  "Fillers_Slang_Words",
+    "ack":      "Acknowledgement_Ownership",
+    "hold":     "Proper_Handling_of_Pauses_or_Hold_Requests",
+    "ack_hold": "Acknowledges_and_Thank_the_Customer_for_Waiting",
+    "resp_eff": "Response_Efficiency",
+    "empathy":  "Empathy_Sympathy",
+    "adjust":   "Adjusts_to_Customer_s_Level",
+    "mute":     "Mute_Button_Usage",
+    "active":   "Active_listening",
+    "gen_q":    "General_Questions",
+    "answered": "Answered_Customer_s_Questions",
+    "probing":  "Probing_Questions",
+    "verif":    "Customer_Verification_Other_Measures",
+    "clarif":   "Clarification_When_Information_is_Missed",
+    "lost_sop": "Lost_Item_SOP",
+    "rude":     "Rudeness",
+    "trans":    "Transaction_Completion",
+    "speech":   "Speech_Clarify",
+}
+
+BL_EXTRA_CRIT_MAP = {
+    "bl_os_out2":      "Opening_Spiel_Outbound_Call",
+    "bl_profess":      "Professionalism",
+    "bl_verif_other":  "Verification_Other_Measures",
+    "bl_comm_quality": "Communication_Quality",
+    "bl_res_etiq":     "Resolution_Etiquette",
 }
 
 COACHING_VALIDATION_ERRORS_FILE = COACHING_OUTPUT_FILE.parent / "coaching_validation_errors.csv"
@@ -3728,6 +3766,183 @@ def load_ycdc_data():
     return result
 
 
+def transform_bl_data(df):
+    df = clean_columns(df.copy())
+
+    rename_map = {
+        "QA_ID": "qa_id",
+        "EMPLOYEE_ID": "emp_id",
+        "Emp Name": "agent",
+        "agent_name": "agent",
+        "QA": "coach",
+        "quality_evaluator": "coach",
+        "Immediate Supervisor": "supervisor",
+        "recorded_date": "ts",
+        "evaluation_date": "date",
+        "evaluation_status": "status",
+        "overall_score_percentage": "score",
+        "overall_score_ai": "score_ai",
+        "overall_score_human": "score_human",
+    }
+    df = df.rename(columns={k: v for k, v in rename_map.items() if k in df.columns})
+    df = df.loc[:, ~df.columns.duplicated()]
+    for col in ("qa_id", "emp_id", "agent", "coach", "supervisor", "ts", "status", "score"):
+        if col not in df.columns:
+            df[col] = ""
+
+    def fmt_ts(v):
+        try:
+            dt = pd.to_datetime(str(v), errors="coerce")
+            if pd.notna(dt):
+                return dt.strftime("%Y-%m-%d %H:%M")
+        except Exception:
+            pass
+        return ""
+
+    df["ts"] = df["ts"].apply(fmt_ts)
+    df["status"] = df["status"].apply(
+        lambda v: str(v).strip().lower() if str(v).strip() not in ("", "nan") else "rated"
+    )
+
+    for col in ("score", "score_ai", "score_human"):
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    if "score_ai" not in df.columns:
+        df["score_ai"] = None
+    if "score_human" not in df.columns:
+        df["score_human"] = None
+
+    def effective_score(row):
+        human = row.get("score_human")
+        ai = row.get("score_ai")
+        score = row.get("score")
+        if pd.notna(human):
+            return human
+        if pd.notna(ai):
+            return ai
+        return score
+
+    df["score"] = df.apply(effective_score, axis=1)
+
+    def get_week_start(ts_val):
+        try:
+            s = str(ts_val).split()[0]
+            dt = pd.to_datetime(s, errors="coerce")
+            if pd.isna(dt):
+                return ""
+            monday = dt - timedelta(days=dt.weekday())
+            return monday.strftime("%Y-%m-%d")
+        except Exception:
+            return ""
+
+    if "ts" in df.columns:
+        df["week_start"] = df["ts"].apply(get_week_start)
+
+    if "emp_id" in df.columns and "ts" in df.columns:
+        df["eval_key"] = (
+            df["emp_id"].astype(str)
+            + "_"
+            + df["ts"].str.replace(r"[-: ]", "", regex=True)
+        )
+
+    BL_MAIN_ATTRS = {"os_out", "adjust", "gen_q", "verif", "resp_eff", "speech"}
+    for std_key, bl_base in BL_CRIT_MAP.items():
+        ai_col = f"{bl_base}_AI"
+        max_col = f"{bl_base}_Max"
+        ai_s = pd.to_numeric(df.get(ai_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        if std_key == "rude":
+            df[std_key] = [
+                None if mx == 0 else ("No" if ai >= mx else "Yes")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+        elif std_key == "lost_sop":
+            df[std_key] = [
+                "Not Applicable" if mx == 0 else ("Yes" if ai > 0 else "No")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+        elif std_key in BL_MAIN_ATTRS:
+            df[std_key] = [
+                None if mx == 0 else ("Yes" if ai >= mx else "No")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+        else:
+            df[std_key] = [
+                None if mx == 0 else ("Yes" if ai > 0 else "No")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+
+    for bl_key, bl_base in BL_EXTRA_CRIT_MAP.items():
+        ai_col = f"{bl_base}_AI"
+        max_col = f"{bl_base}_Max"
+        ai_s = pd.to_numeric(df.get(ai_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        df[bl_key] = [
+            None if mx == 0 else ("Yes" if ai > 0 else "No")
+            for ai, mx in zip(ai_s, max_s)
+        ]
+
+    crit_keys = list(BL_CRIT_MAP.keys()) + list(BL_EXTRA_CRIT_MAP.keys())
+    keep = [
+        "qa_id", "eval_key", "emp_id", "ts", "week_start",
+        "agent", "score", "score_ai", "score_human", "status",
+        "coach", "supervisor",
+    ] + crit_keys
+    for col in ("agent", "supervisor", "coach"):
+        if col in df.columns:
+            df[col] = _apply_name_aliases(df[col])
+    return df[[c for c in keep if c in df.columns]]
+
+
+def refresh_bl_output():
+    if not BL_SCRIPT.exists():
+        return False
+    try:
+        result = subprocess.run(
+            [sys.executable, str(BL_SCRIPT)],
+            cwd=str(BL_DIR),
+            capture_output=True,
+            text=True,
+            timeout=120,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        print(f"Skipping Blueline pull: {exc}")
+        return False
+    if result.returncode != 0:
+        msg = result.stderr.strip() or result.stdout.strip() or "No details."
+        print(f"Skipping Blueline pull: {msg}")
+        return False
+    if result.stdout.strip():
+        print(result.stdout.strip())
+    return True
+
+
+def read_bl_workbook():
+    if not BL_OUTPUT_FILE.exists():
+        return pd.DataFrame()
+    try:
+        return clean_columns(pd.read_excel(BL_OUTPUT_FILE))
+    except Exception as exc:
+        print(f"Skipping Blueline workbook load: {exc}")
+        return pd.DataFrame()
+
+
+def load_bl_data():
+    refresh_bl_output()
+    source = read_bl_workbook()
+    if source.empty:
+        return pd.DataFrame(columns=[
+            "qa_id", "eval_key", "emp_id", "ts", "week_start",
+            "agent", "score", "score_ai", "score_human", "status",
+            "coach", "supervisor",
+        ])
+    result = transform_bl_data(source)
+    print(f"Blueline QA rows: {len(result)}")
+    return result
+
+
 def load_existing_records_from_html(variable_name):
     output_path = Path(OUTPUT_FILE)
     if not output_path.exists():
@@ -4358,6 +4573,7 @@ def main():
     kel = load_kel_data()
     vt = load_vt_data()
     ycdc = load_ycdc_data()
+    bl = load_bl_data()
 
     refresh_time = datetime.now().strftime("%Y-%m-%d %I:%M %p")
 
@@ -5634,6 +5850,8 @@ def main():
     .vt-mode .vt-extra-col{{display:table-cell}}
     .ycdc-extra-col{{display:none}}
     .ycdc-mode .ycdc-extra-col{{display:table-cell}}
+    .bl-extra-col{{display:none}}
+    .bl-mode .bl-extra-col{{display:table-cell}}
     #qualityPanel .qa-av {{ width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;vertical-align:middle;margin-right:4px }}
     #qualityPanel .qa-yn-y {{ color:#0F9B58;font-weight:700;font-size:11px }}
     #qualityPanel .qa-yn-n {{ color:#E85D3F;font-weight:700;font-size:11px }}
@@ -5934,6 +6152,7 @@ def main():
       <option value="kel">Kelowna</option>
       <option value="vt">Vermont</option>
       <option value="ycdc">YCDC</option>
+      <option value="bl">Blueline</option>
     </select>
   </div>
   <div class="qa-fg">
@@ -6134,6 +6353,17 @@ def main():
       <div class="qa-sum-card" style="border-top:3px solid #1D4ED8"><div class="qa-sum-lbl">Cust. Verification</div><div class="qa-sum-val" id="qa-ycdccrit-verif-val" style="color:#1D4ED8">&mdash;</div><div class="qa-sum-sub" id="qa-ycdccrit-verif-sub">&mdash;</div><div class="qa-sum-score" style="color:#1D4ED8">YCDC criterion</div></div>
       <div class="qa-sum-card" style="border-top:3px solid #6D28D9"><div class="qa-sum-lbl">Res. Etiquette</div><div class="qa-sum-val" id="qa-ycdccrit-resol-val" style="color:#6D28D9">&mdash;</div><div class="qa-sum-sub" id="qa-ycdccrit-resol-sub">&mdash;</div><div class="qa-sum-score" style="color:#6D28D9">YCDC criterion</div></div>
       <div class="qa-sum-card" style="border-top:3px solid #9D174D"><div class="qa-sum-lbl">Comm. Quality</div><div class="qa-sum-val" id="qa-ycdccrit-comm-val" style="color:#9D174D">&mdash;</div><div class="qa-sum-sub" id="qa-ycdccrit-comm-sub">&mdash;</div><div class="qa-sum-score" style="color:#9D174D">YCDC criterion</div></div>
+    </div>
+  </div>
+  <!-- Blueline-only key criteria strip (shown when Blueline account selected) -->
+  <div id="qa-bl-crit" style="display:none;padding:0 20px 8px">
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px">
+      <div class="qa-sum-card" style="border-top:3px solid #1D4ED8"><div class="qa-sum-lbl">Greetings Script</div><div class="qa-sum-val" id="qa-blcrit-greet-val" style="color:#1D4ED8">&mdash;</div><div class="qa-sum-sub" id="qa-blcrit-greet-sub">&mdash;</div><div class="qa-sum-score" style="color:#1D4ED8">Blueline criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #2563EB"><div class="qa-sum-lbl">Professionalism</div><div class="qa-sum-val" id="qa-blcrit-prof-val" style="color:#2563EB">&mdash;</div><div class="qa-sum-sub" id="qa-blcrit-prof-sub">&mdash;</div><div class="qa-sum-score" style="color:#2563EB">Blueline criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #0891B2"><div class="qa-sum-lbl">General Questions</div><div class="qa-sum-val" id="qa-blcrit-genq-val" style="color:#0891B2">&mdash;</div><div class="qa-sum-sub" id="qa-blcrit-genq-sub">&mdash;</div><div class="qa-sum-score" style="color:#0891B2">Blueline criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #0F766E"><div class="qa-sum-lbl">Cust. Verification</div><div class="qa-sum-val" id="qa-blcrit-verif-val" style="color:#0F766E">&mdash;</div><div class="qa-sum-sub" id="qa-blcrit-verif-sub">&mdash;</div><div class="qa-sum-score" style="color:#0F766E">Blueline criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #6D28D9"><div class="qa-sum-lbl">Res. Etiquette</div><div class="qa-sum-val" id="qa-blcrit-resol-val" style="color:#6D28D9">&mdash;</div><div class="qa-sum-sub" id="qa-blcrit-resol-sub">&mdash;</div><div class="qa-sum-score" style="color:#6D28D9">Blueline criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #9D174D"><div class="qa-sum-lbl">Comm. Quality</div><div class="qa-sum-val" id="qa-blcrit-comm-val" style="color:#9D174D">&mdash;</div><div class="qa-sum-sub" id="qa-blcrit-comm-sub">&mdash;</div><div class="qa-sum-score" style="color:#9D174D">Blueline criterion</div></div>
     </div>
   </div>
   <div class="qa-sum-strip" id="qa-sum-strip-main">
@@ -6353,6 +6583,11 @@ def main():
           <th class="ycdc-extra-col" style="min-width:70px">Verif. Other</th>
           <th class="ycdc-extra-col" style="min-width:80px">Comm. Quality</th>
           <th class="ycdc-extra-col" style="min-width:80px">Res. Etiquette</th>
+          <th class="bl-extra-col" style="min-width:75px">Opening Out 2</th>
+          <th class="bl-extra-col" style="min-width:80px">Professionalism</th>
+          <th class="bl-extra-col" style="min-width:70px">Verif. Other</th>
+          <th class="bl-extra-col" style="min-width:80px">Comm. Quality</th>
+          <th class="bl-extra-col" style="min-width:80px">Res. Etiquette</th>
           <th style="min-width:75px">Investigation</th>
           <th style="min-width:240px">Feedback Summary</th>
         </tr></thead>
@@ -6392,6 +6627,7 @@ const ycovRawData = {to_records(ycov)};
 const kelRawData = {to_records(kel)};
 const vtRawData = {to_records(vt)};
 const ycdcRawData = {to_records(ycdc)};
+const blRawData = {to_records(bl)};
 
 const COLORS = ["#004C97", "#39B54A", "#002B5C", "#7AC943", "#00AEEF", "#94A3B8"];
 const COACHING_CATEGORY_COLORS = {{
@@ -7948,6 +8184,7 @@ ycovRawData.forEach(r => r._acct = 'YCOV');
 kelRawData.forEach(r => r._acct = 'Kelowna');
 vtRawData.forEach(r => r._acct = 'Vermont');
 ycdcRawData.forEach(r => r._acct = 'YCDC');
+blRawData.forEach(r => r._acct = 'Blueline');
 
 // Date range picker state — default: last 30 days
 const _qaToday = new Date(); _qaToday.setHours(0,0,0,0);
@@ -8048,7 +8285,8 @@ function qaGetActiveData() {{
     if (acct === 'kel') return kelRawData;
     if (acct === 'vt') return vtRawData;
     if (acct === 'ycdc') return ycdcRawData;
-    return [...qaRawData, ...parentisRawData, ...briteliftRawData, ...ridexRawData, ...hamiltonRawData, ...skylineRawData, ...vipRawData, ...chRawData, ...rcRawData, ...tiRawData, ...dcRawData, ...acRawData, ...olRawData, ...ctRawData, ...ycovRawData, ...kelRawData, ...vtRawData, ...ycdcRawData];
+    if (acct === 'bl') return blRawData;
+    return [...qaRawData, ...parentisRawData, ...briteliftRawData, ...ridexRawData, ...hamiltonRawData, ...skylineRawData, ...vipRawData, ...chRawData, ...rcRawData, ...tiRawData, ...dcRawData, ...acRawData, ...olRawData, ...ctRawData, ...ycovRawData, ...kelRawData, ...vtRawData, ...ycdcRawData, ...blRawData];
 }}
 
 // ─── Date Range Picker ────────────────────────────────────────────────────────
@@ -8267,6 +8505,7 @@ function qaUpdateKPIs(data) {{
         else if(acct==='kel') titleEl.textContent='Kelowna — Quality Assurance';
         else if(acct==='vt') titleEl.textContent='Vermont — Quality Assurance';
         else if(acct==='ycdc') titleEl.textContent='YCDC — Quality Assurance';
+        else if(acct==='bl') titleEl.textContent='Blueline — Quality Assurance';
         else titleEl.textContent='All Accounts — Quality Assurance';
     }}
     if(badgeEl) {{
@@ -8288,6 +8527,7 @@ function qaUpdateKPIs(data) {{
         else if(acct==='kel') {{ badgeEl.textContent='Kelowna'; badgeEl.className='qa-badge qa-b-green'; }}
         else if(acct==='vt') {{ badgeEl.textContent='Vermont'; badgeEl.className='qa-badge qa-b-teal'; }}
         else if(acct==='ycdc') {{ badgeEl.textContent='YCDC'; badgeEl.className='qa-badge qa-b-cyan'; }}
+        else if(acct==='bl') {{ badgeEl.textContent='Blueline'; badgeEl.className='qa-badge qa-b-blue'; }}
         else {{ badgeEl.textContent='All Accounts'; badgeEl.className='qa-badge qa-b-amber'; }}
     }}
     const tblScroll=document.getElementById('qa-tbl-scroll-main');
@@ -8316,6 +8556,8 @@ function qaUpdateKPIs(data) {{
         else tblScroll.classList.remove('vt-mode');
         if(acct==='ycdc') tblScroll.classList.add('ycdc-mode');
         else tblScroll.classList.remove('ycdc-mode');
+        if(acct==='bl') tblScroll.classList.add('bl-mode');
+        else tblScroll.classList.remove('bl-mode');
     }}
     const scores=data.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
     const n=data.length;
@@ -8474,6 +8716,8 @@ function qaRenderLeaderboard(data) {{
             ?`<span style="background:#F0FDFA;color:#0F766E;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Vermont</span>`
             :a.acct==='YCDC'
             ?`<span style="background:#ECFEFF;color:#155E75;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">YCDC</span>`
+            :a.acct==='Blueline'
+            ?`<span style="background:#EFF6FF;color:#1D4ED8;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Blueline</span>`
             :`<span style="background:#FFF0F3;color:#9F1239;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Parentis</span>`;
         return`<tr><td style="font-size:11px;color:#94A3B8">${{i+1}}</td><td><div style="display:flex;align-items:center;gap:6px"><span style="width:24px;height:24px;border-radius:50%;background:${{a.av.bg}};color:${{a.av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{a.av.ini}}</span><span style="font-weight:600;font-size:11px">${{qaEscapeHtml(a.words)}}</span></div></td><td style="text-align:center">${{a.n}}</td><td><span class="qa-chip ${{chipCls}}">${{a.avg.toFixed(1)}}%</span></td><td style="text-align:center;font-size:11px">${{a.min.toFixed(1)}}%</td><td style="text-align:center;font-size:11px">${{a.max.toFixed(1)}}%</td><td style="text-align:center;color:${{a.passRate>=85?'#0F9B58':'#E85D3F'}};font-size:11px">${{a.passRate.toFixed(0)}}%</td><td>${{acctPill}}</td></tr>`;
     }}).join('')||`<tr><td colspan="8" style="text-align:center;color:#94A3B8;padding:16px">No data</td></tr>`;
@@ -8577,6 +8821,8 @@ function qaRowHtml(r){{
         ?`<span style="background:#F0FDFA;color:#0F766E;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Vermont</span>`
         :r._acct==='YCDC'
         ?`<span style="background:#ECFEFF;color:#155E75;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">YCDC</span>`
+        :r._acct==='Blueline'
+        ?`<span style="background:#EFF6FF;color:#1D4ED8;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Blueline</span>`
         :`<span style="background:#FFF0F3;color:#9F1239;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Parentis</span>`;
     const critKeys=['os_in','os_out','closing','approp','no_resp','fillers','ack','hold','ack_hold',
                     'resp_eff','empathy','adjust','mute','active','gen_q','answered','probing','verif',
@@ -8675,8 +8921,15 @@ function qaRowHtml(r){{
         if(v==='Not Applicable')return'<td class="ycdc-extra-col" style="text-align:center;color:#94A3B8">N/A</td>';
         return`<td class="ycdc-extra-col" style="text-align:center">${{qaYN(v)}}</td>`;
     }});
+    const blExtraKeys=['bl_os_out2','bl_profess','bl_verif_other','bl_comm_quality','bl_res_etiq'];
+    const blExtraCells=blExtraKeys.map(k=>{{
+        const v=r[k];
+        if(!v||v===null||v==='')return'<td class="bl-extra-col" style="text-align:center"><span style="color:#94A3B8">&mdash;</span></td>';
+        if(v==='Not Applicable')return'<td class="bl-extra-col" style="text-align:center;color:#94A3B8">N/A</td>';
+        return`<td class="bl-extra-col" style="text-align:center">${{qaYN(v)}}</td>`;
+    }});
     const fbTxt=qaEscapeHtml(r.feedback||'—');
-    return`<tr><td style="white-space:nowrap;font-size:11px">${{qaEscapeHtml((r.ts||'—').slice(0,10))}}</td><td style="max-width:200px;overflow:hidden" title="${{qaEscapeHtml(r.agent||'')}}"><div style="display:flex;align-items:center;gap:5px;overflow:hidden"><span style="width:22px;height:22px;border-radius:50%;background:${{av.bg}};color:${{av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{av.ini}}</span><span style="font-weight:600;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">${{qaEscapeHtml(r.agent||'—')}}</span></div></td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.supervisor||'')}}">${{qaEscapeHtml(r.supervisor||'—')}}</td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.coach||'')}}">${{qaEscapeHtml(r.coach||'—')}}</td><td>${{acctPill}}</td><td><span class="qa-chip ${{chipCls}}">${{disp}}</span></td>${{critCells.join('')}}${{vipExtraCells.join('')}}${{chExtraCells.join('')}}${{rcExtraCells.join('')}}${{tiExtraCells.join('')}}${{dcExtraCells.join('')}}${{acExtraCells.join('')}}${{olExtraCells.join('')}}${{ctExtraCells.join('')}}${{ycovExtraCells.join('')}}${{kelExtraCells.join('')}}${{vtExtraCells.join('')}}${{ycdcExtraCells.join('')}}<td style="font-size:10px;color:#475569;white-space:nowrap">${{qaEscapeHtml(r.invest||'—')}}</td><td style="max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;color:#475569" title="${{fbTxt}}">${{fbTxt}}</td></tr>`;
+    return`<tr><td style="white-space:nowrap;font-size:11px">${{qaEscapeHtml((r.ts||'—').slice(0,10))}}</td><td style="max-width:200px;overflow:hidden" title="${{qaEscapeHtml(r.agent||'')}}"><div style="display:flex;align-items:center;gap:5px;overflow:hidden"><span style="width:22px;height:22px;border-radius:50%;background:${{av.bg}};color:${{av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{av.ini}}</span><span style="font-weight:600;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">${{qaEscapeHtml(r.agent||'—')}}</span></div></td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.supervisor||'')}}">${{qaEscapeHtml(r.supervisor||'—')}}</td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.coach||'')}}">${{qaEscapeHtml(r.coach||'—')}}</td><td>${{acctPill}}</td><td><span class="qa-chip ${{chipCls}}">${{disp}}</span></td>${{critCells.join('')}}${{vipExtraCells.join('')}}${{chExtraCells.join('')}}${{rcExtraCells.join('')}}${{tiExtraCells.join('')}}${{dcExtraCells.join('')}}${{acExtraCells.join('')}}${{olExtraCells.join('')}}${{ctExtraCells.join('')}}${{ycovExtraCells.join('')}}${{kelExtraCells.join('')}}${{vtExtraCells.join('')}}${{ycdcExtraCells.join('')}}${{blExtraCells.join('')}}<td style="font-size:10px;color:#475569;white-space:nowrap">${{qaEscapeHtml(r.invest||'—')}}</td><td style="max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;color:#475569" title="${{fbTxt}}">${{fbTxt}}</td></tr>`;
 }}
 
 function qaRenderVisibleRows(){{
@@ -8772,7 +9025,8 @@ function qaUpdateEvalDist(data) {{
         {{key:'YCOV',color:'#047857'}},
         {{key:'Kelowna',color:'#166534'}},
         {{key:'Vermont',color:'#0F766E'}},
-        {{key:'YCDC',color:'#155E75'}}
+        {{key:'YCDC',color:'#155E75'}},
+        {{key:'Blueline',color:'#1D4ED8'}}
     ];
     const counts=accts.map(a=>data.filter(r=>r._acct===a.key).length);
     const total=counts.reduce((s,v)=>s+v,0);
@@ -9068,6 +9322,26 @@ function qaUpdateYCDCCrit(data) {{
     }});
 }}
 
+function qaUpdateBLCrit(data) {{
+    const crits=[
+        {{key:'os_out',          valId:'qa-blcrit-greet-val', subId:'qa-blcrit-greet-sub'}},
+        {{key:'bl_profess',      valId:'qa-blcrit-prof-val',  subId:'qa-blcrit-prof-sub'}},
+        {{key:'gen_q',           valId:'qa-blcrit-genq-val',  subId:'qa-blcrit-genq-sub'}},
+        {{key:'verif',           valId:'qa-blcrit-verif-val', subId:'qa-blcrit-verif-sub'}},
+        {{key:'bl_res_etiq',     valId:'qa-blcrit-resol-val', subId:'qa-blcrit-resol-sub'}},
+        {{key:'bl_comm_quality', valId:'qa-blcrit-comm-val',  subId:'qa-blcrit-comm-sub'}},
+    ];
+    crits.forEach(c=>{{
+        const rel=data.filter(r=>r[c.key]!=null&&r[c.key]!=='');
+        const passed=rel.filter(r=>r[c.key]==='Yes').length;
+        const pct=rel.length?(passed/rel.length*100).toFixed(1)+'%':'—';
+        const vEl=document.getElementById(c.valId);
+        const sEl=document.getElementById(c.subId);
+        if(vEl)vEl.textContent=pct;
+        if(sEl)sEl.textContent=rel.length?passed+' of '+rel.length+' passed':'No data';
+    }});
+}}
+
 function qaUpdateAivh(data) {{
     const corrected=data.filter(r=>r.status==='corrected'&&r.score_ai!=null&&r.score_human!=null&&r.score_human!=='');
     const total=data.length;
@@ -9199,7 +9473,7 @@ function qaApplyFilters() {{
     qaToggleDistWidget(!acct);
     if(acct) qaUpdateDonut(filtered); else qaUpdateEvalDist(filtered);
     const aivhCard=document.getElementById('qa-aivh-card');
-    const aivhAccts=['hamilton','skyline','vip','ch','rc','ti','dc','ac','ol','ct','ycov','kel','vt','ycdc'];
+    const aivhAccts=['hamilton','skyline','vip','ch','rc','ti','dc','ac','ol','ct','ycov','kel','vt','ycdc','bl'];
     if(aivhCard)aivhCard.style.display=(aivhAccts.includes(acct))?'':'none';
     if(aivhAccts.includes(acct))qaUpdateAivh(filtered);
     const hCritEl=document.getElementById('qa-hamilton-crit');
@@ -9244,8 +9518,11 @@ function qaApplyFilters() {{
     const ycdcCritEl=document.getElementById('qa-ycdc-crit');
     if(ycdcCritEl)ycdcCritEl.style.display=(acct==='ycdc')?'':'none';
     if(acct==='ycdc')qaUpdateYCDCCrit(filtered);
+    const blCritEl=document.getElementById('qa-bl-crit');
+    if(blCritEl)blCritEl.style.display=(acct==='bl')?'':'none';
+    if(acct==='bl')qaUpdateBLCrit(filtered);
     const sumStripMain=document.getElementById('qa-sum-strip-main');
-    if(sumStripMain)sumStripMain.style.display=(acct==='hamilton'||acct==='skyline'||acct==='vip'||acct==='ch'||acct==='rc'||acct==='ti'||acct==='dc'||acct==='ac'||acct==='ol'||acct==='ct'||acct==='ycov'||acct==='kel'||acct==='vt'||acct==='ycdc')?'none':'';
+    if(sumStripMain)sumStripMain.style.display=(acct==='hamilton'||acct==='skyline'||acct==='vip'||acct==='ch'||acct==='rc'||acct==='ti'||acct==='dc'||acct==='ac'||acct==='ol'||acct==='ct'||acct==='ycov'||acct==='kel'||acct==='vt'||acct==='ycdc'||acct==='bl')?'none':'';
     const scores=filtered.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
     const agents=new Set(filtered.map(r=>r.agent).filter(Boolean));
     const avg=scores.length?qaAvg(scores):null;
@@ -9357,7 +9634,7 @@ function initQualityCharts() {{
     qaUpdateDRPLabel();
 
     // Info pills
-    const qaAcctsLoaded=[qaRawData,parentisRawData,briteliftRawData,ridexRawData,hamiltonRawData,skylineRawData,vipRawData,chRawData,rcRawData,tiRawData,dcRawData,acRawData,olRawData,ctRawData,ycovRawData,kelRawData,vtRawData,ycdcRawData].filter(d=>d.length>0).length;
+    const qaAcctsLoaded=[qaRawData,parentisRawData,briteliftRawData,ridexRawData,hamiltonRawData,skylineRawData,vipRawData,chRawData,rcRawData,tiRawData,dcRawData,acRawData,olRawData,ctRawData,ycovRawData,kelRawData,vtRawData,ycdcRawData,blRawData].filter(d=>d.length>0).length;
     const qaPillAccts=document.getElementById('qa-pill-qa-accounts');
     if(qaPillAccts)qaPillAccts.textContent=qaAcctsLoaded+' QA Account'+(qaAcctsLoaded===1?'':'s')+' Loaded';
     const qaPillTotal=document.getElementById('qa-pill-total-accounts');
@@ -9483,7 +9760,7 @@ function initQualityCharts() {{
         qaEvalDistChart=new Chart(evalDistCtx,{{
             type:'doughnut',
             plugins:[evalDistLabelPlugin],
-            data:{{labels:['M7','Parentis','Britelift','RideX','Hamilton','Skyline','VIP','C&H','Reno Cab','Trans Iowa','Data Carz','Associated Cab','Ollies','Circle Taxi','YCOV','Kelowna','Vermont','YCDC'],datasets:[{{data:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],backgroundColor:['#4F81BD','#2C3E8C','#C0392B','#8E44AD','#065F46','#0EA5E9','#D97706','#0891B2','#16A34A','#7C3AED','#EA580C','#0E7490','#BE123C','#0E7490','#047857','#166534','#0F766E','#155E75'],borderWidth:2,borderColor:'#fff'}}]}},
+            data:{{labels:['M7','Parentis','Britelift','RideX','Hamilton','Skyline','VIP','C&H','Reno Cab','Trans Iowa','Data Carz','Associated Cab','Ollies','Circle Taxi','YCOV','Kelowna','Vermont','YCDC','Blueline'],datasets:[{{data:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],backgroundColor:['#4F81BD','#2C3E8C','#C0392B','#8E44AD','#065F46','#0EA5E9','#D97706','#0891B2','#16A34A','#7C3AED','#EA580C','#0E7490','#BE123C','#0E7490','#047857','#166534','#0F766E','#155E75','#1D4ED8'],borderWidth:2,borderColor:'#fff'}}]}},
             options:{{
                 responsive:true,maintainAspectRatio:false,cutout:'50%',
                 layout:{{padding:{{top:28,bottom:28,left:28,right:28}}}},
