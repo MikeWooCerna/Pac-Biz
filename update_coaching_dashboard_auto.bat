@@ -13,6 +13,8 @@ set "CH_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\C&H"
 set "RC_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Reno Cab"
 set "TI_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Trans Iowa"
 set "DC_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Data Carz"
+set "AC_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Associated Cab"
+set "OL_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Ollies"
 set "MASTERLIST_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Masterlist"
 
 echo.
@@ -137,6 +139,26 @@ if errorlevel 1 goto :fail
 
 echo.
 echo ========================================
+echo Updating Associated Cab QA data from Google Sheets
+echo ========================================
+cd /d "%AC_DIR%"
+if errorlevel 1 goto :fail
+
+py -3 ac_pull.py
+if errorlevel 1 goto :fail
+
+echo.
+echo ========================================
+echo Updating Ollies QA data from Google Sheets
+echo ========================================
+cd /d "%OL_DIR%"
+if errorlevel 1 goto :fail
+
+py -3 ol_pull.py
+if errorlevel 1 goto :fail
+
+echo.
+echo ========================================
 echo Rebuilding dashboard
 echo ========================================
 cd /d "%MASTERLIST_DIR%"
@@ -153,7 +175,7 @@ echo.
 echo ========================================
 echo Publishing to GitHub
 echo ========================================
-git add dashboard.py masterlist_dashboard.html
+git add dashboard.py masterlist_dashboard.html update_coaching_dashboard.bat update_coaching_dashboard_auto.bat
 if errorlevel 1 goto :fail
 
 git diff --cached --quiet
