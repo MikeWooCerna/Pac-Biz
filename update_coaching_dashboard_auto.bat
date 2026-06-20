@@ -15,6 +15,7 @@ set "TI_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Trans Iowa"
 set "DC_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Data Carz"
 set "AC_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Associated Cab"
 set "OL_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Ollies"
+set "CT_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Circle Taxi"
 set "MASTERLIST_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Masterlist"
 
 echo.
@@ -155,6 +156,16 @@ cd /d "%OL_DIR%"
 if errorlevel 1 goto :fail
 
 py -3 ol_pull.py
+if errorlevel 1 goto :fail
+
+echo.
+echo ========================================
+echo Updating Circle Taxi QA data from Google Sheets
+echo ========================================
+cd /d "%CT_DIR%"
+if errorlevel 1 goto :fail
+
+py -3 ct_pull.py
 if errorlevel 1 goto :fail
 
 echo.
