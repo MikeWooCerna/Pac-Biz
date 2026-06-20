@@ -18,6 +18,7 @@ set "OL_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Ollies"
 set "CT_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Circle Taxi"
 set "YCOV_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\YCOV"
 set "KEL_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Kelowna"
+set "VT_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Vermont"
 set "MASTERLIST_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Masterlist"
 
 echo.
@@ -188,6 +189,16 @@ cd /d "%KEL_DIR%"
 if errorlevel 1 goto :fail
 
 py -3 kel_pull.py
+if errorlevel 1 goto :fail
+
+echo.
+echo ========================================
+echo Updating Vermont QA data from Google Sheets
+echo ========================================
+cd /d "%VT_DIR%"
+if errorlevel 1 goto :fail
+
+py -3 vt_pull.py
 if errorlevel 1 goto :fail
 
 echo.
