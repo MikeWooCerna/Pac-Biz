@@ -5478,14 +5478,14 @@ def main():
     body.qa-dist-focus-mode #qualityPanel .qa-g2,
     body.qa-dist-focus-mode #qa-aivh-card,
     body.qa-dist-focus-mode #qa-detail-card {{ display: none; }}
-    body.qa-dist-focus-mode #qualityPanel .qa-g3 {{ grid-template-columns: 1fr; }}
+    body.qa-dist-focus-mode #qualityPanel .qa-g3 {{ display: flex; justify-content: center; align-items: flex-start; grid-template-columns: 1fr; }}
     body.qa-dist-focus-mode #qualityPanel .qa-g3 > .qa-card:not(#qa-dist-card) {{ display: none; }}
-    body.qa-dist-focus-mode #qa-dist-card {{ min-height: 0; height: calc(100vh - 190px); }}
+    body.qa-dist-focus-mode #qa-dist-card {{ min-height: 0; width: 95vw; max-width: 1900px; height: 75vh; max-height: 900px; }}
     body.qa-dist-focus-mode #qa-dist-card .qa-cbody {{ height: calc(100% - 56px); padding: 14px 18px !important; }}
     body.qa-dist-focus-mode #qa-score-dist-wrap,
     body.qa-dist-focus-mode #qa-eval-dist-wrap {{ height: 100%; }}
     body.qa-dist-focus-mode #qa-score-chart-host,
-    body.qa-dist-focus-mode #qa-eval-chart-host {{ height: min(62vh, 560px) !important; }}
+    body.qa-dist-focus-mode #qa-eval-chart-host {{ height: min(64vh, 780px) !important; }}
     body.qa-dist-focus-mode #qa-donut-legend,
     body.qa-dist-focus-mode #qa-eval-dist-legend {{ grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 8px !important; margin-top: 12px !important; }}
     body.qa-aiqe-focus-mode #qa-aiqe-focus-toggle .qa-focus-icon::before {{ top: 2px; right: 2px; border-width: 0 0 2px 2px; }}
@@ -5496,12 +5496,12 @@ def main():
     body.qa-aiqe-focus-mode #qualityPanel .qa-g2,
     body.qa-aiqe-focus-mode #qa-aivh-card,
     body.qa-aiqe-focus-mode #qa-detail-card {{ display: none; }}
-    body.qa-aiqe-focus-mode #qualityPanel .qa-g3 {{ display: block; }}
+    body.qa-aiqe-focus-mode #qualityPanel .qa-g3 {{ display: flex; justify-content: center; align-items: flex-start; }}
     body.qa-aiqe-focus-mode #qualityPanel .qa-g3 > .qa-card {{ display: none; }}
     body.qa-aiqe-focus-mode #qualityPanel .qa-g3 > #qa-aiqe-card {{ display: flex; }}
-    body.qa-aiqe-focus-mode #qa-aiqe-card {{ min-height: 0; height: calc(100vh - 190px); width: 100%; }}
+    body.qa-aiqe-focus-mode #qa-aiqe-card {{ min-height: 0; width: 95vw; max-width: 1900px; height: 75vh; max-height: 900px; }}
     body.qa-aiqe-focus-mode #qa-aiqe-card .qa-cbody {{ height: calc(100% - 56px); padding: 14px 18px !important; }}
-    body.qa-aiqe-focus-mode #qa-aiqe-chart-host {{ height: min(68vh, 620px); }}
+    body.qa-aiqe-focus-mode #qa-aiqe-chart-host {{ height: min(64vh, 780px); }}
 
     .nowrap {{
         white-space: nowrap;
@@ -10105,11 +10105,17 @@ function toggleQADistFocusMode() {{
 
 function qaResetAiQeFocusCards() {{
     const grid=document.querySelector('#qualityPanel .qa-g3');
-    if(grid) grid.style.display='';
+    if(grid){{
+        grid.style.display='';
+        grid.style.justifyContent='';
+        grid.style.alignItems='';
+    }}
     document.querySelectorAll('#qualityPanel .qa-g3 > .qa-card').forEach(card=>{{
         card.style.display='';
         card.style.height='';
+        card.style.maxHeight='';
         card.style.width='';
+        card.style.maxWidth='';
         card.style.minHeight='';
     }});
     const host=document.getElementById('qa-aiqe-chart-host');
@@ -10130,14 +10136,18 @@ function qaApplyAiQeFocusCards(active) {{
     const aiqeCard=document.getElementById('qa-aiqe-card');
     const host=document.getElementById('qa-aiqe-chart-host');
     if(!grid || !aiqeCard) return;
-    grid.style.display='block';
+    grid.style.display='flex';
+    grid.style.justifyContent='center';
+    grid.style.alignItems='flex-start';
     document.querySelectorAll('#qualityPanel .qa-g3 > .qa-card').forEach(card=>{{
         card.style.display=(card===aiqeCard)?'flex':'none';
     }});
-    aiqeCard.style.height='calc(100vh - 190px)';
-    aiqeCard.style.width='100%';
+    aiqeCard.style.height='75vh';
+    aiqeCard.style.maxHeight='900px';
+    aiqeCard.style.width='95vw';
+    aiqeCard.style.maxWidth='1900px';
     aiqeCard.style.minHeight='0';
-    if(host) host.style.height='min(68vh, 620px)';
+    if(host) host.style.height='min(64vh, 780px)';
 }}
 
 function setQAAiQeFocusMode(active) {{
