@@ -5797,9 +5797,11 @@ def main():
     #qualityPanel .qa-sum-sub {{ font-size:10px;color:#64748B;margin-top:3px }}
     #qualityPanel .qa-sum-score {{ font-size:11px;font-weight:700;margin-top:3px }}
     /* Grids & cards */
-    #qualityPanel .qa-g3 {{ display:grid;grid-template-columns:1.12fr 1.12fr 0.92fr 0.92fr 0.82fr;gap:10px }}
+    #qualityPanel .qa-g3 {{ display:grid;grid-template-columns:1.12fr 1.12fr 0.92fr 0.92fr 0.82fr;gap:10px;grid-auto-rows:300px;align-items:stretch }}
     #qualityPanel .qa-g2 {{ display:grid;grid-template-columns:repeat(3,1fr);gap:12px;grid-auto-rows:300px;align-items:stretch }}
     #qualityPanel .qa-card {{ background:#fff;border-radius:10px;border:1px solid #E2E8F0;overflow:hidden;display:flex;flex-direction:column }}
+    #qualityPanel .qa-g3 .qa-card {{ height:100%;min-height:0 }}
+    #qualityPanel .qa-g3 .qa-card .qa-cbody {{ min-height:0 }}
     #qualityPanel .qa-ch {{ padding:7px 10px;border-bottom:1px solid #F1F5F9;display:flex;align-items:center;justify-content:space-between;gap:8px }}
     #qualityPanel .qa-ct {{ font-size:11px;font-weight:700;color:#1E293B;display:flex;align-items:center;gap:5px }}
     #qualityPanel .qa-ct svg {{ width:13px;height:13px;color:#94A3B8 }}
@@ -6445,19 +6447,19 @@ def main():
     </div>
     <div class="qa-card">
       <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>Criteria pass rates</div><div class="qa-cs" id="qa-crit-sub">All 22 criteria &middot; sorted by pass rate</div></div><span class="qa-cb qa-cba">Score breakdown</span></div>
-      <div style="padding:0 14px;flex:1;display:flex;flex-direction:column;justify-content:center">
-        <div style="max-height:120px;overflow-y:auto;padding:4px 0;border-bottom:1px solid #E2E8F0" id="qa-criteria-bars"></div>
+      <div style="padding:6px 10px;flex:1;display:flex;flex-direction:column;min-height:0">
+        <div style="overflow-y:auto;flex:1 1 auto;min-height:0;padding-right:2px;border-bottom:1px solid #E2E8F0" id="qa-criteria-bars"></div>
         <div style="padding:3px 0 4px;font-size:10px;color:#CBD5E1">&#9679; Scroll to see all 22 criteria</div>
       </div>
     </div>
     <div class="qa-card">
       <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg>Coaching opportunities</div><div class="qa-cs">Criteria below 95% pass rate</div></div><span class="qa-cb qa-cbr" id="qa-coaching-count">&mdash;</span></div>
       <div class="qa-cbody" style="padding:6px 10px;display:flex;flex-direction:column;min-height:0">
-        <div id="qa-coaching-bars" style="max-height:110px;overflow-y:auto;flex:0 1 auto"></div>
+        <div id="qa-coaching-bars" style="overflow-y:auto;flex:1 1 auto;min-height:0;padding-right:2px"></div>
         <div style="margin-top:auto;padding-top:6px">
           <div style="height:1px;background:#F1F5F9;margin:0 0 6px"></div>
           <div style="font-size:10px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px">QA coach breakdown</div>
-          <div style="display:flex;gap:8px" id="qa-coach-breakdown"></div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(62px,1fr));gap:8px;align-items:stretch" id="qa-coach-breakdown"></div>
         </div>
       </div>
     </div>
@@ -8739,13 +8741,13 @@ function qaRenderCoaching(data) {{
     if(cntEl)cntEl.textContent=stats.length?stats.length+' criteria':'All clear';
     barsEl.innerHTML=stats.length?stats.map(c=>{{
         const color=c.pct>=85?'#F59E0B':'#E85D3F';
-        return`<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:11px;color:#1E293B;margin-bottom:3px"><span>${{qaEscapeHtml(c.name)}}</span><span style="font-weight:700;color:${{color}}">${{c.pct}}%</span></div><div style="height:6px;background:#F1F5F9;border-radius:3px;overflow:hidden"><div style="height:100%;width:${{c.pct}}%;background:${{color}};border-radius:3px"></div></div></div>`;
+        return`<div style="margin-bottom:7px"><div style="display:flex;justify-content:space-between;font-size:10px;color:#475569;margin-bottom:2px"><span>${{qaEscapeHtml(c.name)}}</span><span style="font-weight:700;color:${{color}}">${{c.pct}}%</span></div><div style="height:5px;background:#F1F5F9;border-radius:3px;overflow:hidden"><div style="height:100%;width:${{c.pct}}%;background:${{color}};border-radius:3px;transition:width .4s"></div></div></div>`;
     }}).join(''):`<div style="text-align:center;padding:16px;color:#0F9B58;font-size:12px">✓ All criteria above 95% — great job!</div>`;
     if(bdEl){{
         const byCoach={{}};
         data.forEach(r=>{{if(!r.coach)return;if(!byCoach[r.coach])byCoach[r.coach]={{n:0}};byCoach[r.coach].n++;}});
         bdEl.innerHTML=Object.entries(byCoach).sort((a,b)=>b[1].n-a[1].n).map(([name,d])=>
-            `<div style="flex:1;background:#F8FAFC;border-radius:8px;padding:8px;text-align:center"><div style="font-size:10px;color:#64748B;margin-bottom:2px">${{qaEscapeHtml(name)}}</div><div style="font-size:16px;font-weight:800;color:#0D3B6E">${{d.n}}</div><div style="font-size:9px;color:#94A3B8">${{d.n}} eval${{d.n===1?'':'s'}}</div></div>`
+            `<div style="background:#F8FAFC;border-radius:8px;padding:5px 6px;text-align:center;min-height:58px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start"><div title="${{qaEscapeHtml(name)}}" style="font-size:10px;line-height:1.08;color:#64748B;height:22px;width:100%;display:flex;align-items:flex-start;justify-content:center;overflow:hidden;text-wrap:balance">${{qaEscapeHtml(name)}}</div><div style="font-size:16px;line-height:1;font-weight:800;color:#0D3B6E;margin-top:2px">${{d.n}}</div><div style="font-size:9px;line-height:1.1;color:#94A3B8;margin-top:2px">${{d.n}} eval${{d.n===1?'':'s'}}</div></div>`
         ).join('')||`<div style="color:#94A3B8;font-size:11px">No data</div>`;
     }}
 }}
@@ -9743,21 +9745,20 @@ function initQualityCharts() {{
             if(chart.canvas?.id!=='qa-aiqe-trend-chart')return;
             const ctx2=chart.ctx;
             ctx2.save();
-            [
-                {{idx:0,color:'#004C97',dy:12,base:'top'}},
-                {{idx:1,color:'#39B54A',dy:-8,base:'bottom'}},
-            ].forEach(cfg=>{{
-                const ds=chart.data.datasets[cfg.idx],meta=chart.getDatasetMeta(cfg.idx);
-                if(!ds||!meta)return;
+            const area=chart.chartArea;
+            const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+            const drawSoftLabel=(text,x,y,color,align='center')=>{{
+                ctx2.save();
                 ctx2.font='700 9px sans-serif';
-                ctx2.fillStyle=cfg.color;
-                ctx2.textAlign='center';
-                ctx2.textBaseline=cfg.base;
-                meta.data.forEach((pt,i)=>{{
-                    const v=ds.data[i];if(v==null||Number.isNaN(v))return;
-                    ctx2.fillText(v.toFixed(1)+'%',pt.x,pt.y+cfg.dy);
-                }});
-            }});
+                ctx2.textAlign=align;
+                ctx2.textBaseline='middle';
+                ctx2.lineWidth=3;
+                ctx2.strokeStyle='rgba(255,255,255,0.92)';
+                ctx2.strokeText(text,x,y);
+                ctx2.fillStyle=color;
+                ctx2.fillText(text,x,y);
+                ctx2.restore();
+            }};
             [
                 {{idx:3,color:'#004C97',inside:true}},
                 {{idx:4,color:'#39B54A',inside:false}},
@@ -9776,26 +9777,45 @@ function initQualityCharts() {{
             }});
             const aiDs=chart.data.datasets[0], qeDs=chart.data.datasets[1];
             const aiMeta=chart.getDatasetMeta(0), qeMeta=chart.getDatasetMeta(1);
-            ctx2.font='700 9px sans-serif';
-            ctx2.fillStyle='#C2410C';
-            ctx2.textAlign='center';
-            ctx2.textBaseline='middle';
             const gaps=[];
             aiMeta.data.forEach((aiPt,i)=>{{
                 const qePt=qeMeta.data[i], ai=aiDs?.data[i], qe=qeDs?.data[i];
                 if(!aiPt||!qePt||ai==null||qe==null||Number.isNaN(ai)||Number.isNaN(qe))return;
                 const gap=qe-ai;
                 gaps.push(gap);
-                const y=(aiPt.y+qePt.y)/2;
-                const x=aiPt.x;
-                ctx2.fillText(gap.toFixed(1)+' pts',x,y);
+                const close=Math.abs(aiPt.y-qePt.y)<24;
+                let aiY=aiPt.y+12, qeY=qePt.y-9;
+                if(close){{
+                    if(aiPt.y<=qePt.y){{
+                        aiY=aiPt.y-10;
+                        qeY=qePt.y+12;
+                    }} else {{
+                        aiY=aiPt.y+12;
+                        qeY=qePt.y-10;
+                    }}
+                }}
+                aiY=clamp(aiY,area.top+8,area.bottom-8);
+                qeY=clamp(qeY,area.top+8,area.bottom-8);
+                if(Math.abs(aiY-qeY)<12){{
+                    const mid=(aiY+qeY)/2;
+                    aiY=clamp(mid+7,area.top+8,area.bottom-8);
+                    qeY=clamp(mid-7,area.top+8,area.bottom-8);
+                }}
+                drawSoftLabel(ai.toFixed(1)+'%',aiPt.x,aiY,'#004C97');
+                drawSoftLabel(qe.toFixed(1)+'%',qePt.x,qeY,'#39B54A');
+
+                let gapX=aiPt.x, gapY=(aiPt.y+qePt.y)/2;
+                if(close){{
+                    gapX=clamp(aiPt.x+18,area.left+18,area.right-18);
+                    gapY=clamp((aiY+qeY)/2,area.top+10,area.bottom-10);
+                }}
+                drawSoftLabel(gap.toFixed(1)+' pts',gapX,gapY,'#C2410C',close?'left':'center');
             }});
             const validGaps=gaps.filter(g=>g!=null&&!Number.isNaN(g));
             if(validGaps.length>=2){{
                 const prev=Math.abs(validGaps[validGaps.length-2]), last=Math.abs(validGaps[validGaps.length-1]);
                 const narrowing=last<=prev;
                 const text='Gap Trend: '+(narrowing?'Narrowing ↓':'Widening ↑');
-                const area=chart.chartArea;
                 ctx2.font='700 10px sans-serif';
                 const pad=6, w=ctx2.measureText(text).width+pad*2, h=19;
                 const x=area.right-w-4, y=Math.max(2,area.top-26);
