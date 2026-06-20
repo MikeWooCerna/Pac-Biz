@@ -5481,13 +5481,18 @@ def main():
     body.qa-dist-focus-mode #qualityPanel .qa-g3 {{ display: flex; justify-content: center; align-items: flex-start; grid-template-columns: 1fr; }}
     body.qa-dist-focus-mode #qualityPanel .qa-g3 > .qa-card:not(#qa-dist-card) {{ display: none; }}
     body.qa-dist-focus-mode #qa-dist-card {{ min-height: 0; width: 95vw; max-width: 1900px; height: 75vh; max-height: 900px; }}
+    body.qa-dist-focus-mode #qa-dist-card .qa-ch {{ position: relative; z-index: 3; }}
+    body.qa-dist-focus-mode #qa-dist-focus-toggle {{ position: relative; z-index: 4; }}
     body.qa-dist-focus-mode #qa-dist-card .qa-cbody {{ height: calc(100% - 56px); padding: 14px 18px !important; }}
     body.qa-dist-focus-mode #qa-score-dist-wrap,
     body.qa-dist-focus-mode #qa-eval-dist-wrap {{ height: 100%; }}
+    body.qa-dist-focus-mode #qa-eval-dist-wrap {{ display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 360px); align-items: center; gap: 18px; min-height: 0; }}
     body.qa-dist-focus-mode #qa-score-chart-host,
     body.qa-dist-focus-mode #qa-eval-chart-host {{ height: min(64vh, 780px) !important; }}
+    body.qa-dist-focus-mode #qa-eval-chart-host {{ height: 100% !important; min-height: 0; }}
     body.qa-dist-focus-mode #qa-donut-legend,
     body.qa-dist-focus-mode #qa-eval-dist-legend {{ grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 8px !important; margin-top: 12px !important; }}
+    body.qa-dist-focus-mode #qa-eval-dist-legend {{ grid-template-columns: 1fr !important; align-content: center; max-height: 100%; overflow-y: auto; margin-top: 0 !important; }}
     body.qa-aiqe-focus-mode #qa-aiqe-focus-toggle .qa-focus-icon::before {{ top: 2px; right: 2px; border-width: 0 0 2px 2px; }}
     body.qa-aiqe-focus-mode #qa-aiqe-focus-toggle .qa-focus-icon::after  {{ left: 2px; bottom: 2px; border-width: 2px 2px 0 0; }}
     body.qa-aiqe-focus-mode #qualityPanel .qa-kpi-strip,
