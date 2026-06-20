@@ -225,6 +225,10 @@ CT_DIR = Path(os.getenv("CT_DIR", r"C:\Users\Mike Woo Cerna\Documents\PB\Quality
 CT_SCRIPT = CT_DIR / "ct_pull.py"
 CT_OUTPUT_FILE = CT_DIR / "CT_RAW.xlsx"
 
+YCOV_DIR = Path(os.getenv("YCOV_DIR", r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\YCOV"))
+YCOV_SCRIPT = YCOV_DIR / "ycov_pull.py"
+YCOV_OUTPUT_FILE = YCOV_DIR / "YCOV_RAW.xlsx"
+
 # Maps standard detail-table criterion keys → Hamilton base column name (without _AI/_Max suffix)
 HAMILTON_CRIT_MAP = {
     "os_in":    "Opening_Spiel_Inbound_Call",
@@ -585,6 +589,42 @@ CT_EXTRA_CRIT_MAP = {
     "ct_cust_verif_meas": "Customer_Verification_Measures",
     "ct_res_etiq":        "Resolution_Etiquette",
     "ct_subjective":      "Subjective",
+}
+
+YCOV_CRIT_MAP = {
+    "os_in":    "Opening_Spiel_Inbound_Call",
+    "os_out":   "Greetings_Call_Script",
+    "closing":  "Closing_Spiel",
+    "approp":   "Appropriate_Response",
+    "no_resp":  "No_response",
+    "fillers":  "Fillers_Slang_Words",
+    "ack":      "Acknowledgement_Ownership",
+    "hold":     "Proper_Handling_of_Pauses_or_Hold_Requests",
+    "ack_hold": "Acknowledges_and_Thank_the_Customer_for_Waiting",
+    "resp_eff": "Response_Efficiency",
+    "empathy":  "Empathy_Sympathy",
+    "adjust":   "Adjusts_to_Customer_s_Level",
+    "mute":     "Mute_Button_Usage",
+    "active":   "Active_listening",
+    "gen_q":    "General_Questions",
+    "answered": "Answered_Customer_s_Questions",
+    "probing":  "Probing_Questions",
+    "verif":    "Customer_Verification",
+    "clarif":   "Clarification_When_Information_is_Missed",
+    "lost_sop": "Lost_Item_SOP",
+    "rude":     "Rudeness",
+    "trans":    "Transaction_Completion",
+    "speech":   "Speech_Clarify",
+}
+
+YCOV_EXTRA_CRIT_MAP = {
+    "ycov_os_out2":         "Opening_Spiel_Outbound_Call",
+    "ycov_profess":         "Professionalism",
+    "ycov_verif_other":     "Verification_Other_Measures",
+    "ycov_comm_quality":    "Communication_Quality",
+    "ycov_cust_verif_meas": "Customer_Verification_Measures",
+    "ycov_res_etiq":        "Resolution_Etiquette",
+    "ycov_subjective":      "Subjective",
 }
 
 COACHING_VALIDATION_ERRORS_FILE = COACHING_OUTPUT_FILE.parent / "coaching_validation_errors.csv"
@@ -2875,6 +2915,178 @@ def load_ct_data():
     return result
 
 
+def transform_ycov_data(source):
+    df = source.copy()
+    rename = {
+        "evaluation_date":      "ts",
+        "Emp Name":             "agent",
+        "QA":                   "coach",
+        "Immediate Supervisor": "supervisor",
+        "evaluation_status":    "status",
+        "overall_score_ai":     "score_ai",
+        "overall_score_human":  "score_human",
+        "QA_ID":                "qa_id",
+        "EMPLOYEE_ID":          "emp_id",
+    }
+    df = df.rename(columns={k: v for k, v in rename.items() if k in df.columns})
+
+    def fmt_ts(v):
+        try:
+            dt = pd.to_datetime(str(v), errors="coerce")
+            if pd.notna(dt):
+                return dt.strftime("%Y-%m-%d %H:%M")
+        except Exception:
+            pass
+        return ""
+
+    if "ts" in df.columns:
+        df["ts"] = df["ts"].apply(fmt_ts)
+
+    if "status" in df.columns:
+        df["status"] = df["status"].apply(
+            lambda v: str(v).strip().lower() if str(v).strip() not in ("", "nan") else "rated"
+        )
+
+    score_ai_s = pd.to_numeric(df.get("score_ai", pd.Series(dtype=float)), errors="coerce").fillna(0)
+    df["score_ai"] = score_ai_s.round(1)
+
+    score_h_s = pd.to_numeric(df.get("score_human", pd.Series(dtype=float)), errors="coerce")
+    df["score_human"] = [round(float(v), 1) if pd.notna(v) else None for v in score_h_s]
+
+    def effective_score(row):
+        if str(row.get("status", "")).lower() == "corrected":
+            v = row.get("score_human")
+            try:
+                if v is not None:
+                    return int(round(float(v)))
+            except Exception:
+                pass
+        v = row.get("score_ai", 0)
+        try:
+            return int(round(float(v)))
+        except Exception:
+            return 0
+
+    df["score"] = df.apply(effective_score, axis=1)
+
+    def get_week_start(ts_val):
+        try:
+            s = str(ts_val).split()[0]
+            dt = pd.to_datetime(s, errors="coerce")
+            if pd.isna(dt):
+                return ""
+            monday = dt - timedelta(days=dt.weekday())
+            return monday.strftime("%Y-%m-%d")
+        except Exception:
+            return ""
+
+    if "ts" in df.columns:
+        df["week_start"] = df["ts"].apply(get_week_start)
+
+    if "emp_id" in df.columns and "ts" in df.columns:
+        df["eval_key"] = (
+            df["emp_id"].astype(str)
+            + "_"
+            + df["ts"].str.replace(r"[-: ]", "", regex=True)
+        )
+
+    YCOV_MAIN_ATTRS = {"os_out", "adjust", "gen_q", "verif", "resp_eff", "speech"}
+    for std_key, ycov_base in YCOV_CRIT_MAP.items():
+        ai_col  = f"{ycov_base}_AI"
+        max_col = f"{ycov_base}_Max"
+        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        if std_key == "rude":
+            df[std_key] = [
+                None if mx == 0 else ("No" if ai >= mx else "Yes")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+        elif std_key == "lost_sop":
+            df[std_key] = [
+                "Not Applicable" if mx == 0 else ("Yes" if ai > 0 else "No")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+        elif std_key in YCOV_MAIN_ATTRS:
+            df[std_key] = [
+                None if mx == 0 else ("Yes" if ai >= mx else "No")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+        else:
+            df[std_key] = [
+                None if mx == 0 else ("Yes" if ai > 0 else "No")
+                for ai, mx in zip(ai_s, max_s)
+            ]
+
+    for ycov_key, ycov_base in YCOV_EXTRA_CRIT_MAP.items():
+        ai_col  = f"{ycov_base}_AI"
+        max_col = f"{ycov_base}_Max"
+        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        df[ycov_key] = [
+            None if mx == 0 else ("Yes" if ai > 0 else "No")
+            for ai, mx in zip(ai_s, max_s)
+        ]
+
+    crit_keys = list(YCOV_CRIT_MAP.keys()) + list(YCOV_EXTRA_CRIT_MAP.keys())
+    keep = [
+        "qa_id", "eval_key", "emp_id", "ts", "week_start",
+        "agent", "score", "score_ai", "score_human", "status",
+        "coach", "supervisor",
+    ] + crit_keys
+    for col in ("agent", "supervisor", "coach"):
+        if col in df.columns:
+            df[col] = _apply_name_aliases(df[col])
+    return df[[c for c in keep if c in df.columns]]
+
+
+def refresh_ycov_output():
+    if not YCOV_SCRIPT.exists():
+        return False
+    try:
+        result = subprocess.run(
+            [sys.executable, str(YCOV_SCRIPT)],
+            cwd=str(YCOV_DIR),
+            capture_output=True,
+            text=True,
+            timeout=120,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        print(f"Skipping YCOV pull: {exc}")
+        return False
+    if result.returncode != 0:
+        msg = result.stderr.strip() or result.stdout.strip() or "No details."
+        print(f"Skipping YCOV pull: {msg}")
+        return False
+    if result.stdout.strip():
+        print(result.stdout.strip())
+    return True
+
+
+def read_ycov_workbook():
+    if not YCOV_OUTPUT_FILE.exists():
+        return pd.DataFrame()
+    try:
+        return clean_columns(pd.read_excel(YCOV_OUTPUT_FILE))
+    except Exception as exc:
+        print(f"Skipping YCOV workbook load: {exc}")
+        return pd.DataFrame()
+
+
+def load_ycov_data():
+    refresh_ycov_output()
+    source = read_ycov_workbook()
+    if source.empty:
+        return pd.DataFrame(columns=[
+            "qa_id", "eval_key", "emp_id", "ts", "week_start",
+            "agent", "score", "score_ai", "score_human", "status",
+            "coach", "supervisor",
+        ])
+    result = transform_ycov_data(source)
+    print(f"YCOV QA rows: {len(result)}")
+    return result
+
+
 def load_existing_records_from_html(variable_name):
     output_path = Path(OUTPUT_FILE)
     if not output_path.exists():
@@ -3501,6 +3713,7 @@ def main():
     ac = load_ac_data()
     ol = load_ol_data()
     ct = load_ct_data()
+    ycov = load_ycov_data()
 
     refresh_time = datetime.now().strftime("%Y-%m-%d %I:%M %p")
 
@@ -4769,6 +4982,8 @@ def main():
     .ol-mode .ol-extra-col{{display:table-cell}}
     .ct-extra-col{{display:none}}
     .ct-mode .ct-extra-col{{display:table-cell}}
+    .ycov-extra-col{{display:none}}
+    .ycov-mode .ycov-extra-col{{display:table-cell}}
     #qualityPanel .qa-av {{ width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;vertical-align:middle;margin-right:4px }}
     #qualityPanel .qa-yn-y {{ color:#0F9B58;font-weight:700;font-size:11px }}
     #qualityPanel .qa-yn-n {{ color:#E85D3F;font-weight:700;font-size:11px }}
@@ -5065,6 +5280,7 @@ def main():
       <option value="ac">Associated Cab</option>
       <option value="ol">Ollies</option>
       <option value="ct">Circle Taxi</option>
+      <option value="ycov">YCOV</option>
     </select>
   </div>
   <div class="qa-fg">
@@ -5221,6 +5437,17 @@ def main():
       <div class="qa-sum-card" style="border-top:3px solid #1D4ED8"><div class="qa-sum-lbl">Cust. Verification</div><div class="qa-sum-val" id="qa-ctcrit-verif-val" style="color:#1D4ED8">&mdash;</div><div class="qa-sum-sub" id="qa-ctcrit-verif-sub">&mdash;</div><div class="qa-sum-score" style="color:#1D4ED8">CT criterion</div></div>
       <div class="qa-sum-card" style="border-top:3px solid #6D28D9"><div class="qa-sum-lbl">Res. Etiquette</div><div class="qa-sum-val" id="qa-ctcrit-resol-val" style="color:#6D28D9">&mdash;</div><div class="qa-sum-sub" id="qa-ctcrit-resol-sub">&mdash;</div><div class="qa-sum-score" style="color:#6D28D9">CT criterion</div></div>
       <div class="qa-sum-card" style="border-top:3px solid #9D174D"><div class="qa-sum-lbl">Comm. Quality</div><div class="qa-sum-val" id="qa-ctcrit-comm-val" style="color:#9D174D">&mdash;</div><div class="qa-sum-sub" id="qa-ctcrit-comm-sub">&mdash;</div><div class="qa-sum-score" style="color:#9D174D">CT criterion</div></div>
+    </div>
+  </div>
+  <!-- YCOV-only key criteria strip (shown when YCOV account selected) -->
+  <div id="qa-ycov-crit" style="display:none;padding:0 20px 8px">
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:8px">
+      <div class="qa-sum-card" style="border-top:3px solid #047857"><div class="qa-sum-lbl">Greetings Script</div><div class="qa-sum-val" id="qa-ycovcrit-greet-val" style="color:#047857">&mdash;</div><div class="qa-sum-sub" id="qa-ycovcrit-greet-sub">&mdash;</div><div class="qa-sum-score" style="color:#047857">YCOV criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #0F766E"><div class="qa-sum-lbl">Professionalism</div><div class="qa-sum-val" id="qa-ycovcrit-prof-val" style="color:#0F766E">&mdash;</div><div class="qa-sum-sub" id="qa-ycovcrit-prof-sub">&mdash;</div><div class="qa-sum-score" style="color:#0F766E">YCOV criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #0891B2"><div class="qa-sum-lbl">General Questions</div><div class="qa-sum-val" id="qa-ycovcrit-genq-val" style="color:#0891B2">&mdash;</div><div class="qa-sum-sub" id="qa-ycovcrit-genq-sub">&mdash;</div><div class="qa-sum-score" style="color:#0891B2">YCOV criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #1D4ED8"><div class="qa-sum-lbl">Cust. Verification</div><div class="qa-sum-val" id="qa-ycovcrit-verif-val" style="color:#1D4ED8">&mdash;</div><div class="qa-sum-sub" id="qa-ycovcrit-verif-sub">&mdash;</div><div class="qa-sum-score" style="color:#1D4ED8">YCOV criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #6D28D9"><div class="qa-sum-lbl">Res. Etiquette</div><div class="qa-sum-val" id="qa-ycovcrit-resol-val" style="color:#6D28D9">&mdash;</div><div class="qa-sum-sub" id="qa-ycovcrit-resol-sub">&mdash;</div><div class="qa-sum-score" style="color:#6D28D9">YCOV criterion</div></div>
+      <div class="qa-sum-card" style="border-top:3px solid #9D174D"><div class="qa-sum-lbl">Comm. Quality</div><div class="qa-sum-val" id="qa-ycovcrit-comm-val" style="color:#9D174D">&mdash;</div><div class="qa-sum-sub" id="qa-ycovcrit-comm-sub">&mdash;</div><div class="qa-sum-score" style="color:#9D174D">YCOV criterion</div></div>
     </div>
   </div>
   <div class="qa-sum-strip" id="qa-sum-strip-main">
@@ -5417,6 +5644,13 @@ def main():
           <th class="ct-extra-col" style="min-width:90px">CV Measures</th>
           <th class="ct-extra-col" style="min-width:80px">Res. Etiquette</th>
           <th class="ct-extra-col" style="min-width:75px">Subjective</th>
+          <th class="ycov-extra-col" style="min-width:75px">Opening Out 2</th>
+          <th class="ycov-extra-col" style="min-width:80px">Professionalism</th>
+          <th class="ycov-extra-col" style="min-width:70px">Verif. Other</th>
+          <th class="ycov-extra-col" style="min-width:80px">Comm. Quality</th>
+          <th class="ycov-extra-col" style="min-width:90px">CV Measures</th>
+          <th class="ycov-extra-col" style="min-width:80px">Res. Etiquette</th>
+          <th class="ycov-extra-col" style="min-width:75px">Subjective</th>
           <th style="min-width:75px">Investigation</th>
           <th style="min-width:240px">Feedback Summary</th>
         </tr></thead>
@@ -5452,6 +5686,7 @@ const dcRawData = {to_records(dc)};
 const acRawData = {to_records(ac)};
 const olRawData = {to_records(ol)};
 const ctRawData = {to_records(ct)};
+const ycovRawData = {to_records(ycov)};
 
 const COLORS = ["#004C97", "#39B54A", "#002B5C", "#7AC943", "#00AEEF", "#94A3B8"];
 const COACHING_CATEGORY_COLORS = {{
@@ -7004,6 +7239,7 @@ dcRawData.forEach(r => r._acct = 'Data Carz');
 acRawData.forEach(r => r._acct = 'Associated Cab');
 olRawData.forEach(r => r._acct = 'Ollies');
 ctRawData.forEach(r => r._acct = 'Circle Taxi');
+ycovRawData.forEach(r => r._acct = 'YCOV');
 
 // Date range picker state — default: last 30 days
 const _qaToday = new Date(); _qaToday.setHours(0,0,0,0);
@@ -7100,7 +7336,8 @@ function qaGetActiveData() {{
     if (acct === 'ac') return acRawData;
     if (acct === 'ol') return olRawData;
     if (acct === 'ct') return ctRawData;
-    return [...qaRawData, ...parentisRawData, ...briteliftRawData, ...ridexRawData, ...hamiltonRawData, ...skylineRawData, ...vipRawData, ...chRawData, ...rcRawData, ...tiRawData, ...dcRawData, ...acRawData, ...olRawData, ...ctRawData];
+    if (acct === 'ycov') return ycovRawData;
+    return [...qaRawData, ...parentisRawData, ...briteliftRawData, ...ridexRawData, ...hamiltonRawData, ...skylineRawData, ...vipRawData, ...chRawData, ...rcRawData, ...tiRawData, ...dcRawData, ...acRawData, ...olRawData, ...ctRawData, ...ycovRawData];
 }}
 
 // ─── Date Range Picker ────────────────────────────────────────────────────────
@@ -7315,6 +7552,7 @@ function qaUpdateKPIs(data) {{
         else if(acct==='ac') titleEl.textContent='Associated Cab — Quality Assurance';
         else if(acct==='ol') titleEl.textContent='Ollies — Quality Assurance';
         else if(acct==='ct') titleEl.textContent='Circle Taxi — Quality Assurance';
+        else if(acct==='ycov') titleEl.textContent='YCOV — Quality Assurance';
         else titleEl.textContent='All Accounts — Quality Assurance';
     }}
     if(badgeEl) {{
@@ -7332,6 +7570,7 @@ function qaUpdateKPIs(data) {{
         else if(acct==='ac') {{ badgeEl.textContent='Associated Cab'; badgeEl.className='qa-badge qa-b-teal'; }}
         else if(acct==='ol') {{ badgeEl.textContent='Ollies'; badgeEl.className='qa-badge qa-b-rose'; }}
         else if(acct==='ct') {{ badgeEl.textContent='Circle Taxi'; badgeEl.className='qa-badge qa-b-cyan'; }}
+        else if(acct==='ycov') {{ badgeEl.textContent='YCOV'; badgeEl.className='qa-badge qa-b-green'; }}
         else {{ badgeEl.textContent='All Accounts'; badgeEl.className='qa-badge qa-b-amber'; }}
     }}
     const tblScroll=document.getElementById('qa-tbl-scroll-main');
@@ -7352,6 +7591,8 @@ function qaUpdateKPIs(data) {{
         else tblScroll.classList.remove('ol-mode');
         if(acct==='ct') tblScroll.classList.add('ct-mode');
         else tblScroll.classList.remove('ct-mode');
+        if(acct==='ycov') tblScroll.classList.add('ycov-mode');
+        else tblScroll.classList.remove('ycov-mode');
     }}
     const scores=data.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
     const n=data.length;
@@ -7502,6 +7743,8 @@ function qaRenderLeaderboard(data) {{
             ?`<span style="background:#FFF1F2;color:#BE123C;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Ollies</span>`
             :a.acct==='Circle Taxi'
             ?`<span style="background:#ECFEFF;color:#0E7490;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Circle Taxi</span>`
+            :a.acct==='YCOV'
+            ?`<span style="background:#F0FDF4;color:#047857;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">YCOV</span>`
             :`<span style="background:#FFF0F3;color:#9F1239;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Parentis</span>`;
         return`<tr><td style="font-size:11px;color:#94A3B8">${{i+1}}</td><td><div style="display:flex;align-items:center;gap:6px"><span style="width:24px;height:24px;border-radius:50%;background:${{a.av.bg}};color:${{a.av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{a.av.ini}}</span><span style="font-weight:600;font-size:11px">${{qaEscapeHtml(a.words)}}</span></div></td><td style="text-align:center">${{a.n}}</td><td><span class="qa-chip ${{chipCls}}">${{a.avg.toFixed(1)}}%</span></td><td style="text-align:center;font-size:11px">${{a.min.toFixed(1)}}%</td><td style="text-align:center;font-size:11px">${{a.max.toFixed(1)}}%</td><td style="text-align:center;color:${{a.passRate>=85?'#0F9B58':'#E85D3F'}};font-size:11px">${{a.passRate.toFixed(0)}}%</td><td>${{acctPill}}</td></tr>`;
     }}).join('')||`<tr><td colspan="8" style="text-align:center;color:#94A3B8;padding:16px">No data</td></tr>`;
@@ -7597,6 +7840,8 @@ function qaRowHtml(r){{
         ?`<span style="background:#FFF1F2;color:#BE123C;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Ollies</span>`
         :r._acct==='Circle Taxi'
         ?`<span style="background:#ECFEFF;color:#0E7490;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Circle Taxi</span>`
+        :r._acct==='YCOV'
+        ?`<span style="background:#F0FDF4;color:#047857;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">YCOV</span>`
         :`<span style="background:#FFF0F3;color:#9F1239;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Parentis</span>`;
     const critKeys=['os_in','os_out','closing','approp','no_resp','fillers','ack','hold','ack_hold',
                     'resp_eff','empathy','adjust','mute','active','gen_q','answered','probing','verif',
@@ -7667,8 +7912,15 @@ function qaRowHtml(r){{
         if(v==='Not Applicable')return'<td class="ct-extra-col" style="text-align:center;color:#94A3B8">N/A</td>';
         return`<td class="ct-extra-col" style="text-align:center">${{qaYN(v)}}</td>`;
     }});
+    const ycovExtraKeys=['ycov_os_out2','ycov_profess','ycov_verif_other','ycov_comm_quality','ycov_cust_verif_meas','ycov_res_etiq','ycov_subjective'];
+    const ycovExtraCells=ycovExtraKeys.map(k=>{{
+        const v=r[k];
+        if(!v||v===null||v==='')return'<td class="ycov-extra-col" style="text-align:center"><span style="color:#94A3B8">&mdash;</span></td>';
+        if(v==='Not Applicable')return'<td class="ycov-extra-col" style="text-align:center;color:#94A3B8">N/A</td>';
+        return`<td class="ycov-extra-col" style="text-align:center">${{qaYN(v)}}</td>`;
+    }});
     const fbTxt=qaEscapeHtml(r.feedback||'—');
-    return`<tr><td style="white-space:nowrap;font-size:11px">${{qaEscapeHtml((r.ts||'—').slice(0,10))}}</td><td style="max-width:200px;overflow:hidden" title="${{qaEscapeHtml(r.agent||'')}}"><div style="display:flex;align-items:center;gap:5px;overflow:hidden"><span style="width:22px;height:22px;border-radius:50%;background:${{av.bg}};color:${{av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{av.ini}}</span><span style="font-weight:600;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">${{qaEscapeHtml(r.agent||'—')}}</span></div></td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.supervisor||'')}}">${{qaEscapeHtml(r.supervisor||'—')}}</td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.coach||'')}}">${{qaEscapeHtml(r.coach||'—')}}</td><td>${{acctPill}}</td><td><span class="qa-chip ${{chipCls}}">${{disp}}</span></td>${{critCells.join('')}}${{vipExtraCells.join('')}}${{chExtraCells.join('')}}${{rcExtraCells.join('')}}${{tiExtraCells.join('')}}${{dcExtraCells.join('')}}${{acExtraCells.join('')}}${{olExtraCells.join('')}}${{ctExtraCells.join('')}}<td style="font-size:10px;color:#475569;white-space:nowrap">${{qaEscapeHtml(r.invest||'—')}}</td><td style="max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;color:#475569" title="${{fbTxt}}">${{fbTxt}}</td></tr>`;
+    return`<tr><td style="white-space:nowrap;font-size:11px">${{qaEscapeHtml((r.ts||'—').slice(0,10))}}</td><td style="max-width:200px;overflow:hidden" title="${{qaEscapeHtml(r.agent||'')}}"><div style="display:flex;align-items:center;gap:5px;overflow:hidden"><span style="width:22px;height:22px;border-radius:50%;background:${{av.bg}};color:${{av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{av.ini}}</span><span style="font-weight:600;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">${{qaEscapeHtml(r.agent||'—')}}</span></div></td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.supervisor||'')}}">${{qaEscapeHtml(r.supervisor||'—')}}</td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.coach||'')}}">${{qaEscapeHtml(r.coach||'—')}}</td><td>${{acctPill}}</td><td><span class="qa-chip ${{chipCls}}">${{disp}}</span></td>${{critCells.join('')}}${{vipExtraCells.join('')}}${{chExtraCells.join('')}}${{rcExtraCells.join('')}}${{tiExtraCells.join('')}}${{dcExtraCells.join('')}}${{acExtraCells.join('')}}${{olExtraCells.join('')}}${{ctExtraCells.join('')}}${{ycovExtraCells.join('')}}<td style="font-size:10px;color:#475569;white-space:nowrap">${{qaEscapeHtml(r.invest||'—')}}</td><td style="max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;color:#475569" title="${{fbTxt}}">${{fbTxt}}</td></tr>`;
 }}
 
 function qaRenderVisibleRows(){{
@@ -7760,7 +8012,8 @@ function qaUpdateEvalDist(data) {{
         {{key:'Data Carz',color:'#EA580C'}},
         {{key:'Associated Cab',color:'#0E7490'}},
         {{key:'Ollies',color:'#BE123C'}},
-        {{key:'Circle Taxi',color:'#0E7490'}}
+        {{key:'Circle Taxi',color:'#0E7490'}},
+        {{key:'YCOV',color:'#047857'}}
     ];
     const counts=accts.map(a=>data.filter(r=>r._acct===a.key).length);
     const total=counts.reduce((s,v)=>s+v,0);
@@ -7976,6 +8229,26 @@ function qaUpdateCTCrit(data) {{
     }});
 }}
 
+function qaUpdateYCOVCrit(data) {{
+    const crits=[
+        {{key:'os_out',            valId:'qa-ycovcrit-greet-val', subId:'qa-ycovcrit-greet-sub'}},
+        {{key:'ycov_profess',      valId:'qa-ycovcrit-prof-val',  subId:'qa-ycovcrit-prof-sub'}},
+        {{key:'gen_q',             valId:'qa-ycovcrit-genq-val',  subId:'qa-ycovcrit-genq-sub'}},
+        {{key:'verif',             valId:'qa-ycovcrit-verif-val', subId:'qa-ycovcrit-verif-sub'}},
+        {{key:'ycov_res_etiq',     valId:'qa-ycovcrit-resol-val', subId:'qa-ycovcrit-resol-sub'}},
+        {{key:'ycov_comm_quality', valId:'qa-ycovcrit-comm-val',  subId:'qa-ycovcrit-comm-sub'}},
+    ];
+    crits.forEach(c=>{{
+        const rel=data.filter(r=>r[c.key]!=null&&r[c.key]!=='');
+        const passed=rel.filter(r=>r[c.key]==='Yes').length;
+        const pct=rel.length?(passed/rel.length*100).toFixed(1)+'%':'—';
+        const vEl=document.getElementById(c.valId);
+        const sEl=document.getElementById(c.subId);
+        if(vEl)vEl.textContent=pct;
+        if(sEl)sEl.textContent=rel.length?passed+' of '+rel.length+' passed':'No data';
+    }});
+}}
+
 function qaUpdateAivh(data) {{
     const corrected=data.filter(r=>r.status==='corrected'&&r.score_ai!=null&&r.score_human!=null&&r.score_human!=='');
     const total=data.length;
@@ -8107,7 +8380,7 @@ function qaApplyFilters() {{
     qaToggleDistWidget(!acct);
     if(acct) qaUpdateDonut(filtered); else qaUpdateEvalDist(filtered);
     const aivhCard=document.getElementById('qa-aivh-card');
-    const aivhAccts=['hamilton','skyline','vip','ch','rc','ti','dc','ac','ol','ct'];
+    const aivhAccts=['hamilton','skyline','vip','ch','rc','ti','dc','ac','ol','ct','ycov'];
     if(aivhCard)aivhCard.style.display=(aivhAccts.includes(acct))?'':'none';
     if(aivhAccts.includes(acct))qaUpdateAivh(filtered);
     const hCritEl=document.getElementById('qa-hamilton-crit');
@@ -8140,8 +8413,11 @@ function qaApplyFilters() {{
     const ctCritEl=document.getElementById('qa-ct-crit');
     if(ctCritEl)ctCritEl.style.display=(acct==='ct')?'':'none';
     if(acct==='ct')qaUpdateCTCrit(filtered);
+    const ycovCritEl=document.getElementById('qa-ycov-crit');
+    if(ycovCritEl)ycovCritEl.style.display=(acct==='ycov')?'':'none';
+    if(acct==='ycov')qaUpdateYCOVCrit(filtered);
     const sumStripMain=document.getElementById('qa-sum-strip-main');
-    if(sumStripMain)sumStripMain.style.display=(acct==='hamilton'||acct==='skyline'||acct==='vip'||acct==='ch'||acct==='rc'||acct==='ti'||acct==='dc'||acct==='ac'||acct==='ol'||acct==='ct')?'none':'';
+    if(sumStripMain)sumStripMain.style.display=(acct==='hamilton'||acct==='skyline'||acct==='vip'||acct==='ch'||acct==='rc'||acct==='ti'||acct==='dc'||acct==='ac'||acct==='ol'||acct==='ct'||acct==='ycov')?'none':'';
     const scores=filtered.map(r=>Number(r.score)).filter(v=>!isNaN(v)&&v>0);
     const agents=new Set(filtered.map(r=>r.agent).filter(Boolean));
     const avg=scores.length?qaAvg(scores):null;
@@ -8253,7 +8529,7 @@ function initQualityCharts() {{
     qaUpdateDRPLabel();
 
     // Info pills
-    const qaAcctsLoaded=[qaRawData,parentisRawData,briteliftRawData,ridexRawData,hamiltonRawData,skylineRawData,vipRawData,chRawData,rcRawData,tiRawData,dcRawData,acRawData,olRawData,ctRawData].filter(d=>d.length>0).length;
+    const qaAcctsLoaded=[qaRawData,parentisRawData,briteliftRawData,ridexRawData,hamiltonRawData,skylineRawData,vipRawData,chRawData,rcRawData,tiRawData,dcRawData,acRawData,olRawData,ctRawData,ycovRawData].filter(d=>d.length>0).length;
     const qaPillAccts=document.getElementById('qa-pill-qa-accounts');
     if(qaPillAccts)qaPillAccts.textContent=qaAcctsLoaded+' QA Account'+(qaAcctsLoaded===1?'':'s')+' Loaded';
     const qaPillTotal=document.getElementById('qa-pill-total-accounts');
@@ -8379,7 +8655,7 @@ function initQualityCharts() {{
         qaEvalDistChart=new Chart(evalDistCtx,{{
             type:'doughnut',
             plugins:[evalDistLabelPlugin],
-            data:{{labels:['M7','Parentis','Britelift','RideX','Hamilton','Skyline','VIP','C&H','Reno Cab','Trans Iowa','Data Carz','Associated Cab','Ollies','Circle Taxi'],datasets:[{{data:[0,0,0,0,0,0,0,0,0,0,0,0,0,0],backgroundColor:['#4F81BD','#2C3E8C','#C0392B','#8E44AD','#065F46','#0EA5E9','#D97706','#0891B2','#16A34A','#7C3AED','#EA580C','#0E7490','#BE123C','#0E7490'],borderWidth:2,borderColor:'#fff'}}]}},
+            data:{{labels:['M7','Parentis','Britelift','RideX','Hamilton','Skyline','VIP','C&H','Reno Cab','Trans Iowa','Data Carz','Associated Cab','Ollies','Circle Taxi','YCOV'],datasets:[{{data:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],backgroundColor:['#4F81BD','#2C3E8C','#C0392B','#8E44AD','#065F46','#0EA5E9','#D97706','#0891B2','#16A34A','#7C3AED','#EA580C','#0E7490','#BE123C','#0E7490','#047857'],borderWidth:2,borderColor:'#fff'}}]}},
             options:{{
                 responsive:true,maintainAspectRatio:false,cutout:'50%',
                 layout:{{padding:{{top:28,bottom:28,left:28,right:28}}}},
