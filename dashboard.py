@@ -5486,13 +5486,25 @@ def main():
     body.qa-dist-focus-mode #qa-dist-card .qa-cbody {{ height: calc(100% - 56px); padding: 14px 18px !important; }}
     body.qa-dist-focus-mode #qa-score-dist-wrap,
     body.qa-dist-focus-mode #qa-eval-dist-wrap {{ height: 100%; }}
-    body.qa-dist-focus-mode #qa-eval-dist-wrap {{ display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 360px); align-items: center; gap: 18px; min-height: 0; }}
+    body.qa-dist-focus-mode #qa-eval-dist-wrap {{ display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.85fr); align-items: center; gap: 28px; min-height: 0; }}
     body.qa-dist-focus-mode #qa-score-chart-host,
     body.qa-dist-focus-mode #qa-eval-chart-host {{ height: min(64vh, 780px) !important; }}
     body.qa-dist-focus-mode #qa-eval-chart-host {{ height: 100% !important; min-height: 0; }}
     body.qa-dist-focus-mode #qa-donut-legend,
     body.qa-dist-focus-mode #qa-eval-dist-legend {{ grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 8px !important; margin-top: 12px !important; }}
-    body.qa-dist-focus-mode #qa-eval-dist-legend {{ grid-template-columns: 1fr !important; align-content: center; max-height: 100%; overflow-y: auto; margin-top: 0 !important; }}
+    body.qa-dist-focus-mode #qa-eval-dist-legend {{ display: block !important; align-self: center; max-height: 100%; overflow-y: auto; margin-top: 0 !important; background: #fff; border: 1px solid #D8E1EC; border-radius: 8px; box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08); }}
+    body.qa-dist-focus-mode #qa-eval-dist-legend .qa-dist-table {{ width: 100%; border-collapse: collapse; font-size: 13px; color: #0F172A; }}
+    body.qa-dist-focus-mode #qa-eval-dist-legend .qa-dist-table th {{ padding: 10px 12px; text-align: left; font-weight: 800; color: #fff; background: var(--blue); border-bottom: 1px solid #D8E1EC; }}
+    body.qa-dist-focus-mode #qa-eval-dist-legend .qa-dist-table th:nth-child(2),
+    body.qa-dist-focus-mode #qa-eval-dist-legend .qa-dist-table th:nth-child(3) {{ text-align: right; }}
+    body.qa-dist-focus-mode #qa-eval-dist-legend .qa-dist-table td {{ padding: 7px 12px; border-bottom: 1px solid #E5EAF1; vertical-align: middle; }}
+    body.qa-dist-focus-mode #qa-eval-dist-legend .qa-dist-table td:nth-child(2),
+    body.qa-dist-focus-mode #qa-eval-dist-legend .qa-dist-table td:nth-child(3) {{ text-align: right; font-variant-numeric: tabular-nums; }}
+    body.qa-dist-focus-mode #qa-eval-dist-legend .qa-dist-account {{ display: flex; align-items: center; gap: 8px; min-width: 0; }}
+    body.qa-dist-focus-mode #qa-eval-dist-legend .qa-dist-dot {{ width: 12px; height: 12px; border-radius: 50%; flex: 0 0 auto; box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.08); }}
+    body.qa-dist-focus-mode #qa-eval-dist-legend .qa-dist-total td {{ font-weight: 900; color: #fff; background: var(--green); border-bottom: 0; border-top: 1px solid #D8E1EC; }}
+    #qa-eval-dist-other-note {{ display: none; }}
+    body.qa-dist-focus-mode #qa-eval-dist-other-note {{ display: block; position: absolute; left: 10px; right: 10px; bottom: 4px; text-align: center; font-size: 11px; line-height: 1.25; font-style: italic; color: #64748B; }}
     body.qa-aiqe-focus-mode #qa-aiqe-focus-toggle .qa-focus-icon::before {{ top: 2px; right: 2px; border-width: 0 0 2px 2px; }}
     body.qa-aiqe-focus-mode #qa-aiqe-focus-toggle .qa-focus-icon::after  {{ left: 2px; bottom: 2px; border-width: 2px 2px 0 0; }}
     body.qa-aiqe-focus-mode #qualityPanel .qa-kpi-strip,
@@ -6481,7 +6493,10 @@ def main():
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:5px" id="qa-donut-legend"></div>
         </div>
         <div id="qa-eval-dist-wrap" style="display:none">
-          <div id="qa-eval-chart-host" style="position:relative;height:150px;flex-shrink:0"><canvas id="qa-eval-dist-chart"></canvas></div>
+          <div id="qa-eval-chart-host" style="position:relative;height:150px;flex-shrink:0">
+            <canvas id="qa-eval-dist-chart"></canvas>
+            <div id="qa-eval-dist-other-note">Disclaimer: Accounts contributing less than 1% of total evaluations are grouped under Other for readability.</div>
+          </div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:5px" id="qa-eval-dist-legend"></div>
         </div>
       </div>
@@ -9100,6 +9115,36 @@ function qaUpdateDonut(data) {{
     }}
 }}
 
+function qaRenderEvalDistLegend(accts, counts, total) {{
+    const legEl=document.getElementById('qa-eval-dist-legend');
+    if(!legEl)return;
+    const isFocus=document.body.classList.contains('qa-dist-focus-mode');
+    if(!isFocus){{
+        legEl.innerHTML=accts.map((a,i)=>{{
+            const pct=total?(counts[i]/total*100).toFixed(1)+'%':'0%';
+            return`<div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#475569"><span style="width:8px;height:8px;border-radius:50%;background:${{a.color}};flex-shrink:0"></span><span>${{qaEscapeHtml(a.key)}}</span><span style="margin-left:auto;font-weight:700;color:${{a.color}}">${{pct}}</span></div>`;
+        }}).join('');
+        return;
+    }}
+    const rawRows=accts.map((a,i)=>({{...a,count:counts[i],pct:total?counts[i]/total*100:0}}))
+        .filter(r=>r.count>0)
+        .sort((a,b)=>b.count-a.count||a.key.localeCompare(b.key));
+    const rows=rawRows.filter(r=>r.pct>=1);
+    const otherCount=rawRows.filter(r=>r.pct<1).reduce((s,r)=>s+r.count,0);
+    if(otherCount)rows.push({{key:'Other',color:'#94A3B8',count:otherCount,pct:total?otherCount/total*100:0}});
+    legEl.innerHTML=`<table class="qa-dist-table">
+        <thead><tr><th>Account</th><th>Evaluations</th><th>%</th></tr></thead>
+        <tbody>
+            ${{rows.map(r=>`<tr>
+                <td><span class="qa-dist-account"><span class="qa-dist-dot" style="background:${{r.color}}"></span><span>${{qaEscapeHtml(r.key)}}</span></span></td>
+                <td>${{r.count.toLocaleString()}}</td>
+                <td>${{r.pct.toFixed(1)}}%</td>
+            </tr>`).join('')}}
+            <tr class="qa-dist-total"><td>Total</td><td>${{total.toLocaleString()}}</td><td>${{total?'100.0':'0.0'}}%</td></tr>
+        </tbody>
+    </table>`;
+}}
+
 function qaUpdateEvalDist(data) {{
     if(!qaEvalDistChart) return;
     const accts=[
@@ -9129,13 +9174,7 @@ function qaUpdateEvalDist(data) {{
     qaEvalDistChart.update();
     const sub=document.getElementById('qa-donut-sub');
     if(sub) sub.textContent=total+' evaluation'+(total===1?'':'s')+' across all accounts';
-    const legEl=document.getElementById('qa-eval-dist-legend');
-    if(legEl){{
-        legEl.innerHTML=accts.map((a,i)=>{{
-            const pct=total?(counts[i]/total*100).toFixed(1)+'%':'0%';
-            return`<div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#475569"><span style="width:8px;height:8px;border-radius:50%;background:${{a.color}};flex-shrink:0"></span><span>${{a.key}}</span><span style="margin-left:auto;font-weight:700;color:${{a.color}}">${{pct}}</span></div>`;
-        }}).join('');
-    }}
+    qaRenderEvalDistLegend(accts, counts, total);
 }}
 
 function qaUpdateHamiltonCrit(data) {{
@@ -9750,11 +9789,14 @@ function initQualityCharts() {{
             if(chart.canvas?.id!=='qa-aiqe-trend-chart')return;
             const ctx2=chart.ctx;
             ctx2.save();
+            const isFocus=document.body.classList.contains('qa-aiqe-focus-mode');
+            const pointFont=isFocus?13:9;
+            const trendFont=isFocus?14:10;
             const area=chart.chartArea;
             const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
             const drawSoftLabel=(text,x,y,color,align='center')=>{{
                 ctx2.save();
-                ctx2.font='700 9px sans-serif';
+                ctx2.font=`700 ${{pointFont}}px sans-serif`;
                 ctx2.textAlign=align;
                 ctx2.textBaseline='middle';
                 ctx2.lineWidth=3;
@@ -9770,7 +9812,7 @@ function initQualityCharts() {{
             ].forEach(cfg=>{{
                 const ds=chart.data.datasets[cfg.idx],meta=chart.getDatasetMeta(cfg.idx);
                 if(!ds||!meta)return;
-                ctx2.font='700 9px sans-serif';
+                ctx2.font=`700 ${{pointFont}}px sans-serif`;
                 ctx2.fillStyle=cfg.color;
                 ctx2.textAlign='center';
                 ctx2.textBaseline=cfg.inside?'top':'bottom';
@@ -9821,7 +9863,7 @@ function initQualityCharts() {{
                 const prev=Math.abs(validGaps[validGaps.length-2]), last=Math.abs(validGaps[validGaps.length-1]);
                 const narrowing=last<=prev;
                 const text='Gap Trend: '+(narrowing?'Narrowing ↓':'Widening ↑');
-                ctx2.font='700 10px sans-serif';
+                ctx2.font=`700 ${{trendFont}}px sans-serif`;
                 const pad=6, w=ctx2.measureText(text).width+pad*2, h=19;
                 const x=area.right-w-4, y=Math.max(2,area.top-26);
                 ctx2.fillStyle='rgba(255,247,237,0.94)';
@@ -9949,9 +9991,23 @@ function initQualityCharts() {{
             if(!total)return;
             const validArcs=meta.data.filter(a=>a.outerRadius>0);
             if(!validArcs.length)return;
+            const isFocus=document.body.classList.contains('qa-dist-focus-mode');
+            const donutLabelFont=isFocus?15:10;
+            const donutValueFont=isFocus?16:11;
             const CX=validArcs[0].x, CY=validArcs[0].y, OR=validArcs[0].outerRadius;
             const area=chart.chartArea;
             ctx2.save();
+
+            if(isFocus){{
+                ctx2.textAlign='center';
+                ctx2.textBaseline='middle';
+                ctx2.fillStyle='#0F172A';
+                ctx2.font='900 32px sans-serif';
+                ctx2.fillText(total.toLocaleString(),CX,CY-8);
+                ctx2.fillStyle='#334155';
+                ctx2.font='600 17px sans-serif';
+                ctx2.fillText('Evaluations',CX,CY+22);
+            }}
 
             // Pass 1 — count inside arc (skip arcs too thin to read)
             meta.data.forEach((arc,i)=>{{
@@ -9959,7 +10015,7 @@ function initQualityCharts() {{
                 if(arc.endAngle-arc.startAngle<0.3)return;
                 const mid=(arc.startAngle+arc.endAngle)/2;
                 const r=(arc.innerRadius+arc.outerRadius)/2;
-                ctx2.font='bold 13px sans-serif';ctx2.fillStyle='#fff';
+                ctx2.font=`bold ${{donutValueFont}}px sans-serif`;ctx2.fillStyle='#fff';
                 ctx2.textAlign='center';ctx2.textBaseline='middle';
                 ctx2.fillText(v,CX+Math.cos(mid)*r,CY+Math.sin(mid)*r);
             }});
@@ -9970,18 +10026,19 @@ function initQualityCharts() {{
                 const v=ds.data[i];if(!v||v/total<0.02)return;
                 const mid=(arc.startAngle+arc.endAngle)/2;
                 const cm=Math.cos(mid),sm=Math.sin(mid);
+                const pct=total?(v/total*100).toFixed(1)+'%':'0.0%';
                 lbs.push({{i,v,mid,cm,sm,
-                    label:chart.data.labels[i],color:ds.backgroundColor[i],
-                    right:cm>=0,y:CY+sm*(OR+18)}});
+                    label:chart.data.labels[i],pct,color:ds.backgroundColor[i],
+                    right:cm>=0,y:CY+sm*(OR+(isFocus?28:18))}});
             }});
 
             // Fixed columns — always clear of the arc ring
-            const COL_OFF=24, TICK=9;
+            const COL_OFF=isFocus?40:24, TICK=isFocus?14:9;
             const rColX=CX+OR+COL_OFF, lColX=CX-OR-COL_OFF;
 
             // Pass 3 — deterministic spread: centre labels around their idealY centroid,
             // evenly spaced by MIN_GAP, then clamp the whole group inside the chart area.
-            const MIN_GAP=17;
+            const MIN_GAP=isFocus?28:17;
             for(const isRight of [true,false]){{
                 const grp=lbs.filter(l=>l.right===isRight).sort((a,b)=>a.y-b.y);
                 if(!grp.length)continue;
@@ -9989,7 +10046,8 @@ function initQualityCharts() {{
                 const span=(n-1)*MIN_GAP;
                 const centY=grp.reduce((s,l)=>s+l.y,0)/n;
                 let startY=centY-span/2;
-                startY=Math.max(area.top+6,Math.min(area.bottom-6-span,startY));
+                const pad=isFocus?18:6;
+                startY=Math.max(area.top+pad,Math.min(area.bottom-pad-span,startY));
                 grp.forEach((lb,i)=>{{lb.y=startY+i*MIN_GAP;}});
             }}
 
@@ -9999,18 +10057,18 @@ function initQualityCharts() {{
                 const colX=lb.right?rColX:lColX;
                 const tickEndX=colX+dir*TICK;
                 const ax=CX+lb.cm*OR, ay=CY+lb.sm*OR;   // arc surface
-                const sx=CX+lb.cm*(OR+5), sy=CY+lb.sm*(OR+5); // 5 px radial stub
+                const sx=CX+lb.cm*(OR+(isFocus?8:5)), sy=CY+lb.sm*(OR+(isFocus?8:5)); // radial stub
 
                 ctx2.beginPath();
                 ctx2.moveTo(ax,ay);
                 ctx2.lineTo(sx,sy);         // radial stub
                 ctx2.lineTo(colX,lb.y);     // diagonal to column at resolved y
                 ctx2.lineTo(tickEndX,lb.y); // horizontal tick
-                ctx2.strokeStyle=lb.color;ctx2.lineWidth=1.5;ctx2.stroke();
+                ctx2.strokeStyle=lb.color;ctx2.lineWidth=isFocus?1.8:1.5;ctx2.stroke();
 
-                ctx2.font='bold 10px sans-serif';ctx2.fillStyle=lb.color;
+                ctx2.font=`bold ${{donutLabelFont}}px sans-serif`;ctx2.fillStyle=lb.color;
                 ctx2.textAlign=lb.right?'left':'right';ctx2.textBaseline='middle';
-                ctx2.fillText(lb.label,tickEndX+dir*3,lb.y);
+                ctx2.fillText(isFocus?`${{lb.label}}   ${{lb.pct}}`:lb.label,tickEndX+dir*(isFocus?8:3),lb.y);
             }});
 
             ctx2.restore();
@@ -10101,6 +10159,12 @@ function setQADistFocusMode(active) {{
         btn.setAttribute('aria-label', active?'Collapse distribution':'Expand distribution');
         btn.setAttribute('title', active?'Collapse distribution':'Expand distribution');
     }}
+    if(qaEvalDistChart){{
+        qaEvalDistChart.options.cutout=active?'42%':'50%';
+        qaEvalDistChart.options.layout.padding=active?{{top:34,bottom:34,left:118,right:118}}:{{top:28,bottom:28,left:28,right:28}};
+        qaEvalDistChart.update();
+    }}
+    if((document.getElementById('qa-sel-account')?.value||'')==='') qaUpdateEvalDist(qaCurrentFiltered);
     resizeQADistributionCharts();
 }}
 
