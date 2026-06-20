@@ -5488,6 +5488,20 @@ def main():
     body.qa-dist-focus-mode #qa-eval-chart-host {{ height: min(62vh, 560px) !important; }}
     body.qa-dist-focus-mode #qa-donut-legend,
     body.qa-dist-focus-mode #qa-eval-dist-legend {{ grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 8px !important; margin-top: 12px !important; }}
+    body.qa-aiqe-focus-mode #qa-aiqe-focus-toggle .qa-focus-icon::before {{ top: 2px; right: 2px; border-width: 0 0 2px 2px; }}
+    body.qa-aiqe-focus-mode #qa-aiqe-focus-toggle .qa-focus-icon::after  {{ left: 2px; bottom: 2px; border-width: 2px 2px 0 0; }}
+    body.qa-aiqe-focus-mode #qualityPanel .qa-kpi-strip,
+    body.qa-aiqe-focus-mode #qualityPanel .qa-kpi-row,
+    body.qa-aiqe-focus-mode #qualityPanel .qa-sum-strip,
+    body.qa-aiqe-focus-mode #qualityPanel .qa-g2,
+    body.qa-aiqe-focus-mode #qa-aivh-card,
+    body.qa-aiqe-focus-mode #qa-detail-card {{ display: none; }}
+    body.qa-aiqe-focus-mode #qualityPanel .qa-g3 {{ display: block; }}
+    body.qa-aiqe-focus-mode #qualityPanel .qa-g3 > .qa-card {{ display: none; }}
+    body.qa-aiqe-focus-mode #qualityPanel .qa-g3 > #qa-aiqe-card {{ display: flex; }}
+    body.qa-aiqe-focus-mode #qa-aiqe-card {{ min-height: 0; height: calc(100vh - 190px); width: 100%; }}
+    body.qa-aiqe-focus-mode #qa-aiqe-card .qa-cbody {{ height: calc(100% - 56px); padding: 14px 18px !important; }}
+    body.qa-aiqe-focus-mode #qa-aiqe-chart-host {{ height: min(68vh, 620px); }}
 
     .nowrap {{
         white-space: nowrap;
@@ -6122,7 +6136,7 @@ def main():
 <!-- Filter bar -->
 <div class="qa-filter-bar">
   <div class="qa-fg">
-    <label>Date range</label>
+    <label>Evaluation Date Range</label>
     <div class="qa-date-range-wrap" id="qa-drp-wrap">
       <button class="qa-date-range-btn" id="qa-drp-trigger" onclick="qaToggleDRP(event)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -6152,25 +6166,25 @@ def main():
     <label>Account</label>
     <select class="qa-fsel" id="qa-sel-account" onchange="qaOnAccountChange()">
       <option value="">All Accounts</option>
-      <option value="m7">M7 &ndash; Ride-hailing support</option>
-      <option value="parentis">Parentis Health</option>
-      <option value="britelift">Britelift</option>
-      <option value="ridex">RideX</option>
-      <option value="hamilton">Hamilton</option>
-      <option value="skyline">Skyline</option>
-      <option value="vip">VIP</option>
-      <option value="ch">C&amp;H</option>
-      <option value="rc">Reno Cab</option>
-      <option value="ti">Trans Iowa</option>
-      <option value="dc">Data Carz</option>
       <option value="ac">Associated Cab</option>
-      <option value="ol">Ollies</option>
-      <option value="ct">Circle Taxi</option>
-      <option value="ycov">YCOV</option>
-      <option value="kel">Kelowna</option>
-      <option value="vt">Vermont</option>
-      <option value="ycdc">YCDC</option>
       <option value="bl">Blueline</option>
+      <option value="britelift">Britelift</option>
+      <option value="ch">C&amp;H</option>
+      <option value="ct">Circle Taxi</option>
+      <option value="dc">Data Carz</option>
+      <option value="hamilton">Hamilton</option>
+      <option value="kel">Kelowna</option>
+      <option value="m7">M7 &ndash; Ride-hailing support</option>
+      <option value="ol">Ollies</option>
+      <option value="parentis">Parentis Health</option>
+      <option value="rc">Reno Cab</option>
+      <option value="ridex">RideX</option>
+      <option value="skyline">Skyline</option>
+      <option value="ti">Trans Iowa</option>
+      <option value="vt">Vermont</option>
+      <option value="vip">VIP</option>
+      <option value="ycdc">YCDC</option>
+      <option value="ycov">YCOV</option>
     </select>
   </div>
   <div class="qa-fg">
@@ -6417,9 +6431,17 @@ def main():
       <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>Overall QA Score Trend</div><div class="qa-cs" id="qa-trend-sub">Weekly avg (Mon&ndash;Sun) &middot; Target: 85%</div></div><span class="qa-cb qa-cbg" id="qa-trend-badge">&mdash;</span></div>
       <div class="qa-cbody" style="padding:6px 10px;display:flex;flex-direction:column"><div style="position:relative;flex:1;min-height:90px"><canvas id="qa-trend-chart"></canvas></div></div>
     </div>
-    <div class="qa-card">
-      <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-7"/></svg>AI x QE QA Score Trend</div><div class="qa-cs" id="qa-aiqe-trend-sub">Date range &amp; account only</div></div><span class="qa-cb qa-cbb" id="qa-aiqe-trend-badge">&mdash;</span></div>
-      <div class="qa-cbody" style="padding:6px 10px;display:flex;flex-direction:column"><div style="position:relative;flex:1;min-height:90px"><canvas id="qa-aiqe-trend-chart"></canvas></div></div>
+    <div class="qa-card" id="qa-aiqe-card">
+      <div class="qa-ch">
+        <div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-7"/></svg>AI x QE QA Score Trend</div><div class="qa-cs" id="qa-aiqe-trend-sub">Date range &amp; account only</div></div>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+          <span class="qa-cb qa-cbb" id="qa-aiqe-trend-badge">&mdash;</span>
+          <button id="qa-aiqe-focus-toggle" type="button" title="Expand AI x QE trend" aria-label="Expand AI x QE trend" style="width:28px;height:28px;border:1px solid #CBD5E1;border-radius:5px;background:#fff;color:#475569;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <span class="qa-focus-icon" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+      <div class="qa-cbody" style="padding:6px 10px;display:flex;flex-direction:column"><div id="qa-aiqe-chart-host" style="position:relative;flex:1;min-height:90px"><canvas id="qa-aiqe-trend-chart"></canvas></div></div>
     </div>
     <div class="qa-card">
       <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>Criteria pass rates</div><div class="qa-cs" id="qa-crit-sub">All 22 criteria &middot; sorted by pass rate</div></div><span class="qa-cb qa-cba">Score breakdown</span></div>
@@ -6430,11 +6452,13 @@ def main():
     </div>
     <div class="qa-card">
       <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4z"/></svg>Coaching opportunities</div><div class="qa-cs">Criteria below 95% pass rate</div></div><span class="qa-cb qa-cbr" id="qa-coaching-count">&mdash;</span></div>
-      <div class="qa-cbody" style="padding:6px 10px">
-        <div id="qa-coaching-bars" style="max-height:110px;overflow-y:auto"></div>
-        <div style="height:1px;background:#F1F5F9;margin:6px 0"></div>
-        <div style="font-size:10px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px">QA coach breakdown</div>
-        <div style="display:flex;gap:8px" id="qa-coach-breakdown"></div>
+      <div class="qa-cbody" style="padding:6px 10px;display:flex;flex-direction:column;min-height:0">
+        <div id="qa-coaching-bars" style="max-height:110px;overflow-y:auto;flex:0 1 auto"></div>
+        <div style="margin-top:auto;padding-top:6px">
+          <div style="height:1px;background:#F1F5F9;margin:0 0 6px"></div>
+          <div style="font-size:10px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px">QA coach breakdown</div>
+          <div style="display:flex;gap:8px" id="qa-coach-breakdown"></div>
+        </div>
       </div>
     </div>
     <div class="qa-card" id="qa-dist-card">
@@ -6656,6 +6680,16 @@ const vtRawData = {to_records(vt)};
 const ycdcRawData = {to_records(ycdc)};
 const blRawData = {to_records(bl)};
 
+document.addEventListener("click", (event) => {{
+    const btn = event.target?.closest?.("#qa-aiqe-focus-toggle");
+    if (!btn) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (typeof setQAAiQeFocusMode === "function") {{
+        setQAAiQeFocusMode(!document.body.classList.contains("qa-aiqe-focus-mode"));
+    }}
+}}, true);
+
 const COLORS = ["#004C97", "#39B54A", "#002B5C", "#7AC943", "#00AEEF", "#94A3B8"];
 const COACHING_CATEGORY_COLORS = {{
     "Attendance & Adherence": "#0057B8",
@@ -6744,7 +6778,7 @@ const MASTERLIST_FILTERS = {{
     employmentStatus: new Set(),
 }};
 const APPROVED_ACCOUNTS = new Set([
-    "Alpha Tax", "Associate", "Associated Cab", "Blueline", "Brite Lift", "Buffalo", "C&H",
+    "Alpha Tax", "Associate", "Associated Cab", "Brite Lift", "Buffalo", "C&H",
     "Circle Taxi", "Data Carz", "DMG", "Hamilton", "Kaizen", "Kelowna", "Vermont", "YCDC",
     "Keys Please", "M7 Ride", "Mediroute", "Monsoon", "Ollies", "Parentis Health",
     "R4H", "Reno Nevada", "Skyline", "Trans IOWA", "Victoria YC", "VIP", "VRN", "YCDC",
@@ -8666,8 +8700,9 @@ function qaUpdateAiQeTrend(data) {{
     qaAiQeTrendChart.data.labels=labels;
     qaAiQeTrendChart.data.datasets[0].data=aiAvgs;
     qaAiQeTrendChart.data.datasets[1].data=qeAvgs;
-    qaAiQeTrendChart.data.datasets[2].data=aiCounts;
-    qaAiQeTrendChart.data.datasets[3].data=qeCounts;
+    qaAiQeTrendChart.data.datasets[2].data=qeAvgs;
+    qaAiQeTrendChart.data.datasets[3].data=aiCounts;
+    qaAiQeTrendChart.data.datasets[4].data=qeCounts;
     qaAiQeTrendChart.options.scales.y1.max=Math.ceil(Math.max(...aiCounts,...qeCounts,1)/0.4);
     qaAiQeTrendChart.update();
     const totalAi=aiCounts.reduce((s,v)=>s+v,0);
@@ -8675,7 +8710,9 @@ function qaUpdateAiQeTrend(data) {{
     const sub=document.getElementById('qa-aiqe-trend-sub');
     if(sub)sub.textContent=`Date range & account only · AI ${{totalAi}} · QE ${{totalQe}}`;
     const badge=document.getElementById('qa-aiqe-trend-badge');
-    if(badge)badge.textContent=totalAi||totalQe?`AI ${{totalAi}} / QE ${{totalQe}}`:'—';
+    if(badge)badge.innerHTML=totalAi||totalQe
+        ?`<span style="color:#004C97">AI ${{totalAi}}</span> <span style="color:#94A3B8">/</span> <span style="color:#39B54A">QE ${{totalQe}}</span>`
+        :'—';
 }}
 
 function qaRenderCriteria(data) {{
@@ -9700,6 +9737,87 @@ function initQualityCharts() {{
             ctx2.restore();
         }}
     }};
+    const aiQeTrendLabelPlugin={{
+        id:'qaAiQeTrendLabels',
+        afterDatasetsDraw(chart){{
+            if(chart.canvas?.id!=='qa-aiqe-trend-chart')return;
+            const ctx2=chart.ctx;
+            ctx2.save();
+            [
+                {{idx:0,color:'#004C97',dy:12,base:'top'}},
+                {{idx:1,color:'#39B54A',dy:-8,base:'bottom'}},
+            ].forEach(cfg=>{{
+                const ds=chart.data.datasets[cfg.idx],meta=chart.getDatasetMeta(cfg.idx);
+                if(!ds||!meta)return;
+                ctx2.font='700 9px sans-serif';
+                ctx2.fillStyle=cfg.color;
+                ctx2.textAlign='center';
+                ctx2.textBaseline=cfg.base;
+                meta.data.forEach((pt,i)=>{{
+                    const v=ds.data[i];if(v==null||Number.isNaN(v))return;
+                    ctx2.fillText(v.toFixed(1)+'%',pt.x,pt.y+cfg.dy);
+                }});
+            }});
+            [
+                {{idx:3,color:'#004C97',inside:true}},
+                {{idx:4,color:'#39B54A',inside:false}},
+            ].forEach(cfg=>{{
+                const ds=chart.data.datasets[cfg.idx],meta=chart.getDatasetMeta(cfg.idx);
+                if(!ds||!meta)return;
+                ctx2.font='700 9px sans-serif';
+                ctx2.fillStyle=cfg.color;
+                ctx2.textAlign='center';
+                ctx2.textBaseline=cfg.inside?'top':'bottom';
+                meta.data.forEach((bar,i)=>{{
+                    const v=ds.data[i];if(!v)return;
+                    const y=cfg.inside?bar.y+4:bar.y-4;
+                    ctx2.fillText(v,bar.x,y);
+                }});
+            }});
+            const aiDs=chart.data.datasets[0], qeDs=chart.data.datasets[1];
+            const aiMeta=chart.getDatasetMeta(0), qeMeta=chart.getDatasetMeta(1);
+            ctx2.font='700 9px sans-serif';
+            ctx2.fillStyle='#C2410C';
+            ctx2.textAlign='center';
+            ctx2.textBaseline='middle';
+            const gaps=[];
+            aiMeta.data.forEach((aiPt,i)=>{{
+                const qePt=qeMeta.data[i], ai=aiDs?.data[i], qe=qeDs?.data[i];
+                if(!aiPt||!qePt||ai==null||qe==null||Number.isNaN(ai)||Number.isNaN(qe))return;
+                const gap=qe-ai;
+                gaps.push(gap);
+                const y=(aiPt.y+qePt.y)/2;
+                const x=aiPt.x;
+                ctx2.fillText(gap.toFixed(1)+' pts',x,y);
+            }});
+            const validGaps=gaps.filter(g=>g!=null&&!Number.isNaN(g));
+            if(validGaps.length>=2){{
+                const prev=Math.abs(validGaps[validGaps.length-2]), last=Math.abs(validGaps[validGaps.length-1]);
+                const narrowing=last<=prev;
+                const text='Gap Trend: '+(narrowing?'Narrowing ↓':'Widening ↑');
+                const area=chart.chartArea;
+                ctx2.font='700 10px sans-serif';
+                const pad=6, w=ctx2.measureText(text).width+pad*2, h=19;
+                const x=area.right-w-4, y=Math.max(2,area.top-26);
+                ctx2.fillStyle='rgba(255,247,237,0.94)';
+                ctx2.strokeStyle='rgba(194,65,12,0.35)';
+                ctx2.lineWidth=1;
+                ctx2.beginPath();
+                if(ctx2.roundRect){{
+                    ctx2.roundRect(x,y,w,h,6);
+                }} else {{
+                    ctx2.rect(x,y,w,h);
+                }}
+                ctx2.fill();
+                ctx2.stroke();
+                ctx2.fillStyle='#C2410C';
+                ctx2.textAlign='left';
+                ctx2.textBaseline='middle';
+                ctx2.fillText(text,x+pad,y+h/2);
+            }}
+            ctx2.restore();
+        }}
+    }};
     const donutLabelPlugin={{
         id:'qaDonutLabels',
         afterDatasetsDraw(chart){{
@@ -9759,18 +9877,26 @@ function initQualityCharts() {{
     if(aiQeTrendCtx){{
         qaAiQeTrendChart=new Chart(aiQeTrendCtx,{{
             type:'line',
+            plugins:[aiQeTrendLabelPlugin],
             data:{{labels:[],datasets:[
-                {{label:'AI avg',data:[],borderColor:'#004C97',backgroundColor:'rgba(0,76,151,0.08)',tension:0.3,fill:false,pointRadius:3,pointHoverRadius:5,pointBackgroundColor:'#004C97',yAxisID:'y',order:0}},
-                {{label:'QE avg',data:[],borderColor:'#39B54A',backgroundColor:'rgba(57,181,74,0.08)',tension:0.3,fill:false,pointRadius:3,pointHoverRadius:5,pointBackgroundColor:'#39B54A',yAxisID:'y',order:0}},
-                {{type:'bar',label:'AI entries',data:[],backgroundColor:'rgba(0,76,151,0.32)',borderColor:'#004C97',borderWidth:1,yAxisID:'y1',barPercentage:0.5,categoryPercentage:0.7,order:1}},
-                {{type:'bar',label:'QE entries',data:[],backgroundColor:'rgba(57,181,74,0.38)',borderColor:'#39B54A',borderWidth:1,yAxisID:'y1',barPercentage:0.5,categoryPercentage:0.7,order:1}},
+                {{label:'AI avg',data:[],borderColor:'#004C97',borderWidth:1.5,backgroundColor:'rgba(0,76,151,0.08)',tension:0.3,fill:false,pointRadius:3,pointHoverRadius:5,pointBackgroundColor:'#004C97',yAxisID:'y',order:0}},
+                {{label:'QE avg',data:[],borderColor:'#39B54A',borderWidth:1.5,backgroundColor:'rgba(57,181,74,0.08)',tension:0.3,fill:false,pointRadius:3,pointHoverRadius:5,pointBackgroundColor:'#39B54A',yAxisID:'y',order:0}},
+                {{label:'Gap Area',data:[],borderColor:'rgba(249,115,22,0)',backgroundColor:'rgba(249,115,22,0.20)',tension:0.3,fill:{{target:0}},pointRadius:0,pointHoverRadius:0,yAxisID:'y',order:1}},
+                {{type:'bar',label:'AI entries',data:[],backgroundColor:'rgba(0,76,151,0.32)',borderColor:'#004C97',borderWidth:1,yAxisID:'y1',barPercentage:1.0,categoryPercentage:0.72,order:2,minBarLength:10}},
+                {{type:'bar',label:'QE entries',data:[],backgroundColor:'rgba(57,181,74,0.38)',borderColor:'#39B54A',borderWidth:1,yAxisID:'y1',barPercentage:1.0,categoryPercentage:0.72,order:2,minBarLength:12}},
             ]}},
             options:{{
                 responsive:true,maintainAspectRatio:false,
-                layout:{{padding:{{top:12,bottom:0}}}},
-                plugins:{{legend:{{display:true,position:'bottom',labels:{{font:{{size:9}},boxWidth:10}}}},tooltip:{{callbacks:{{label:ctx=>ctx.dataset.yAxisID==='y1'?ctx.dataset.label+': '+ctx.parsed.y+' entries':ctx.dataset.label+': '+(ctx.parsed.y==null?'No data':ctx.parsed.y.toFixed(1)+'%')}}}}}},
+                layout:{{padding:{{top:44,bottom:0}}}},
+                plugins:{{legend:{{display:true,position:'bottom',labels:{{font:{{size:9}},boxWidth:10}}}},tooltip:{{callbacks:{{label:ctx=>{{
+                    if(ctx.dataset.label==='Gap Area'){{
+                        const ai=ctx.chart.data.datasets[0].data[ctx.dataIndex], qe=ctx.chart.data.datasets[1].data[ctx.dataIndex];
+                        return ai==null||qe==null?'Gap Area: No data':'Gap Area: '+(qe-ai).toFixed(1)+' pts';
+                    }}
+                    return ctx.dataset.yAxisID==='y1'?ctx.dataset.label+': '+ctx.parsed.y+' entries':ctx.dataset.label+': '+(ctx.parsed.y==null?'No data':ctx.parsed.y.toFixed(1)+'%');
+                }}}}}}}},
                 scales:{{
-                    y:{{min:80,max:100,ticks:{{display:false}},border:{{display:false}},grid:{{color:'#F1F5F9'}}}},
+                    y:{{min:75,max:100,ticks:{{display:false}},border:{{display:false}},grid:{{color:'#F1F5F9'}}}},
                     y1:{{display:false,position:'right',beginAtZero:true,grid:{{display:false}}}},
                     x:{{ticks:{{font:{{size:9}},maxRotation:30}},grid:{{display:false}}}}
                 }}
@@ -9913,6 +10039,7 @@ function initQualityCharts() {{
 
 function setQAFocusMode(active) {{
     if(active) setQADistFocusMode(false);
+    if(active) setQAAiQeFocusMode(false);
     document.body.classList.toggle('qa-focus-mode',active);
     const btn=document.getElementById('qa-focus-toggle');
     if(btn){{
@@ -9935,6 +10062,7 @@ function resizeQADistributionCharts() {{
 
 function setQADistFocusMode(active) {{
     if(active) document.body.classList.remove('qa-focus-mode');
+    if(active) setQAAiQeFocusMode(false);
     if(active){{
         const tableBtn=document.getElementById('qa-focus-toggle');
         if(tableBtn){{
@@ -9953,6 +10081,72 @@ function setQADistFocusMode(active) {{
 
 function toggleQADistFocusMode() {{
     setQADistFocusMode(!document.body.classList.contains('qa-dist-focus-mode'));
+}}
+
+function qaResetAiQeFocusCards() {{
+    const grid=document.querySelector('#qualityPanel .qa-g3');
+    if(grid) grid.style.display='';
+    document.querySelectorAll('#qualityPanel .qa-g3 > .qa-card').forEach(card=>{{
+        card.style.display='';
+        card.style.height='';
+        card.style.width='';
+        card.style.minHeight='';
+    }});
+    const host=document.getElementById('qa-aiqe-chart-host');
+    if(host) host.style.height='';
+    const canvas=document.getElementById('qa-aiqe-trend-chart');
+    if(canvas){{
+        canvas.style.width='';
+        canvas.style.height='';
+        canvas.removeAttribute('width');
+        canvas.removeAttribute('height');
+    }}
+}}
+
+function qaApplyAiQeFocusCards(active) {{
+    qaResetAiQeFocusCards();
+    if(!active) return;
+    const grid=document.querySelector('#qualityPanel .qa-g3');
+    const aiqeCard=document.getElementById('qa-aiqe-card');
+    const host=document.getElementById('qa-aiqe-chart-host');
+    if(!grid || !aiqeCard) return;
+    grid.style.display='block';
+    document.querySelectorAll('#qualityPanel .qa-g3 > .qa-card').forEach(card=>{{
+        card.style.display=(card===aiqeCard)?'flex':'none';
+    }});
+    aiqeCard.style.height='calc(100vh - 190px)';
+    aiqeCard.style.width='100%';
+    aiqeCard.style.minHeight='0';
+    if(host) host.style.height='min(68vh, 620px)';
+}}
+
+function setQAAiQeFocusMode(active) {{
+    if(active) {{
+        document.body.classList.remove('qa-focus-mode');
+        document.body.classList.remove('qa-dist-focus-mode');
+        const tableBtn=document.getElementById('qa-focus-toggle');
+        if(tableBtn){{
+            tableBtn.setAttribute('aria-label','Expand table');
+            tableBtn.setAttribute('title','Expand table');
+        }}
+        const distBtn=document.getElementById('qa-dist-focus-toggle');
+        if(distBtn){{
+            distBtn.setAttribute('aria-label','Expand distribution');
+            distBtn.setAttribute('title','Expand distribution');
+        }}
+    }}
+    document.body.classList.toggle('qa-aiqe-focus-mode',active);
+    qaApplyAiQeFocusCards(active);
+    const btn=document.getElementById('qa-aiqe-focus-toggle');
+    if(btn){{
+        btn.setAttribute('aria-label',active?'Collapse AI x QE trend':'Expand AI x QE trend');
+        btn.setAttribute('title',active?'Collapse AI x QE trend':'Expand AI x QE trend');
+    }}
+    setTimeout(()=>{{ if(qaAiQeTrendChart) qaAiQeTrendChart.resize(); }},80);
+}}
+
+function toggleQAAiQeFocusMode() {{
+    setQAAiQeFocusMode(!document.body.classList.contains('qa-aiqe-focus-mode'));
 }}
 
 function downloadQAExcel() {{
