@@ -10826,7 +10826,7 @@ render();
                     + '</span>';
             }} else {{
                 el.innerHTML = '<span style="display:inline-flex;align-items:center;gap:5px">'
-                    + '<span style="width:8px;height:8px;border-radius:50%;background:#D97706;display:inline-block"></span>'
+                    + '<span style="width:8px;height:8px;border-radius:50%;background:#D97706;display:inline-block;animation:qa-pulse 2s ease-in-out infinite"></span>'
                     + '<span style="color:#B45309">Stale Data</span>'
                     + '<span style="color:#94A3B8;font-weight:400">&nbsp;&mdash;&nbsp;' + ageStr + '</span>'
                     + '</span>';
