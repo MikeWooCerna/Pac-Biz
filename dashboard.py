@@ -4652,6 +4652,7 @@ def main():
     bl = load_bl_data()
 
     refresh_time = datetime.now().strftime("%Y-%m-%d %I:%M %p")
+    refresh_iso  = datetime.now().strftime("%Y-%m-%dT%H:%M:00")
 
     latest_snapshot = ""
     if "Date Generated" in history.columns:
@@ -6016,6 +6017,7 @@ def main():
         <div class="title">
             <h1>Pac-Biz Dashboard</h1>
             <p>Refresh Time: {refresh_time} &nbsp;|&nbsp; Latest Snapshot: {latest_snapshot}</p>
+            <p style="margin:2px 0 0 0"><span id="pb-data-freshness" style="font-size:11px;font-weight:600"></span></p>
         </div>
     </div>
 </div>
@@ -6803,6 +6805,7 @@ document.addEventListener("click", (event) => {{
     }}
 }}, true);
 
+const PB_BUILD_TS = new Date("{refresh_iso}");
 const COLORS = ["#004C97", "#39B54A", "#002B5C", "#7AC943", "#00AEEF", "#94A3B8"];
 const COACHING_CATEGORY_COLORS = {{
     "Attendance & Adherence": "#0057B8",
@@ -10638,6 +10641,55 @@ render();
 
 <script>
 (function() {{
+    // --- Data freshness indicator ---
+    (function() {{
+        var schedTimes = ['03:30','06:30','11:30','15:30','19:30','22:30'];
+        var el = document.getElementById('pb-data-freshness');
+        if (!el) return;
+
+        var now = new Date();
+
+        // Find the most recent scheduled refresh time that has already passed
+        var lastSched = null;
+        schedTimes.forEach(function(t) {{
+            var parts = t.split(':');
+            var d = new Date(now);
+            d.setHours(parseInt(parts[0]), parseInt(parts[1]), 0, 0);
+            if (d <= now) {{
+                if (!lastSched || d > lastSched) lastSched = d;
+            }}
+        }});
+        // If none today have passed yet, use last one from yesterday
+        if (!lastSched) {{
+            var parts = schedTimes[schedTimes.length - 1].split(':');
+            lastSched = new Date(now);
+            lastSched.setDate(lastSched.getDate() - 1);
+            lastSched.setHours(parseInt(parts[0]), parseInt(parts[1]), 0, 0);
+        }}
+
+        var buildTs = PB_BUILD_TS;
+        var isLive = buildTs >= lastSched;
+        var minsAgo = Math.round((now - buildTs) / 60000);
+        var hoursAgo = Math.floor(minsAgo / 60);
+        var ageStr = hoursAgo > 0
+            ? hoursAgo + 'h ' + (minsAgo % 60) + 'm ago'
+            : minsAgo + 'm ago';
+
+        if (isLive) {{
+            el.innerHTML = '<span style="display:inline-flex;align-items:center;gap:5px">'
+                + '<span style="width:8px;height:8px;border-radius:50%;background:#16A34A;display:inline-block"></span>'
+                + '<span style="color:#15803D">Live Data</span>'
+                + '<span style="color:#94A3B8;font-weight:400">&nbsp;&mdash;&nbsp;' + ageStr + '</span>'
+                + '</span>';
+        }} else {{
+            el.innerHTML = '<span style="display:inline-flex;align-items:center;gap:5px">'
+                + '<span style="width:8px;height:8px;border-radius:50%;background:#D97706;display:inline-block"></span>'
+                + '<span style="color:#B45309">Stale Data</span>'
+                + '<span style="color:#94A3B8;font-weight:400">&nbsp;&mdash;&nbsp;' + ageStr + '</span>'
+                + '</span>';
+        }}
+    }})();
+
     // Auto-reload at scheduled fresh-build times (30 min after Task Scheduler runs)
     // Task Scheduler: 3AM, 6AM, 11AM, 3PM, 7PM, 10PM → fresh builds ready at:
     var refreshTimes = ['03:30','06:30','11:30','15:30','19:30','22:30'];
