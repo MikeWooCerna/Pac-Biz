@@ -10672,12 +10672,12 @@ render();
         var minsAgo = Math.round((now - buildTs) / 60000);
         var hoursAgo = Math.floor(minsAgo / 60);
         var ageStr = hoursAgo > 0
-            ? hoursAgo + 'h ' + (minsAgo % 60) + 'm ago'
-            : minsAgo + 'm ago';
+            ? hoursAgo + 'h ' + (minsAgo % 60) + 'm'
+            : minsAgo + 'm';
 
         if (isLive) {{
             el.innerHTML = '<span style="display:inline-flex;align-items:center;gap:5px">'
-                + '<span style="width:8px;height:8px;border-radius:50%;background:#16A34A;display:inline-block"></span>'
+                + '<span style="width:8px;height:8px;border-radius:50%;background:#16A34A;display:inline-block;animation:qa-pulse 2s ease-in-out infinite"></span>'
                 + '<span style="color:#15803D">Live Data</span>'
                 + '<span style="color:#94A3B8;font-weight:400">&nbsp;&mdash;&nbsp;' + ageStr + '</span>'
                 + '</span>';
