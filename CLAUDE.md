@@ -81,8 +81,10 @@ If any step returns a non-zero exit code the entire pipeline aborts (`goto :fail
   custom criterion strip instead.
 - **Cache-busting meta tags** added to `<head>` — do not remove them.
 - **Auto-reload JS** added before `</body>` — fires at scheduled build times.
-- **Refresh schedule (auto-reload + freshness indicator):**
-  `03:30, 06:30, 11:30, 15:30, 19:30, 22:30` (Task Scheduler runs 30 min earlier)
+- **Refresh schedule (auto-reload):**
+  `03:30, 06:30, 11:30, 15:30, 19:30, 22:30` — page reloads at these times (Task Scheduler fires 30 min earlier)
+- **Freshness indicator schedule:** uses Task Scheduler fire times `03:00, 06:00, 11:00, 15:00, 19:00, 22:00`
+  so a build that finishes at e.g. 3:11 PM is correctly flagged Live (build > 15:00 slot), not Stale.
 - **Data freshness indicator** in the top header beneath "Refresh Time:" —
   green blinking dot = Live Data, yellow dot = Stale Data.
   Reuses the `qa-pulse` CSS animation already defined in the QA panel CSS.
