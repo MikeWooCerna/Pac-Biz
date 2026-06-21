@@ -10785,7 +10785,7 @@ render();
 (function() {{
     // --- Data freshness indicator (updates every 60s without page refresh) ---
     (function() {{
-        var schedTimes = ['03:30','06:30','11:30','15:30','19:30','22:30'];
+        var schedTimes = ['03:00','06:00','11:00','15:00','19:00','22:00'];
         var el = document.getElementById('pb-data-freshness');
         if (!el) return;
 
