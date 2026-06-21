@@ -1183,7 +1183,7 @@ def _transform_qa_source(source, column_map):
         df["week_start"] = df["ts"].apply(get_week_start)
 
     keep = [
-        "qa_id", "eval_key", "emp_id", "ts", "week_start", "date",
+        "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start", "date",
         "agent", "score", "type", "coach", "supervisor", "invest", "feedback",
         "os_in", "os_out", "closing", "approp", "no_resp", "fillers",
         "ack", "hold", "ack_hold", "resp_eff", "empathy", "adjust",
@@ -1205,7 +1205,7 @@ def load_m7_data():
     refresh_m7_output()
     source = read_m7_workbook()
     if source.empty:
-        return pd.DataFrame(columns=["qa_id", "eval_key", "emp_id", "ts", "date",
+        return pd.DataFrame(columns=["qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "date",
                                      "agent", "score", "type", "coach", "supervisor",
                                      "invest", "feedback"])
     result = transform_m7_data(source)
@@ -1251,7 +1251,7 @@ def load_parentis_data():
     refresh_parentis_output()
     source = read_parentis_workbook()
     if source.empty:
-        return pd.DataFrame(columns=["qa_id", "eval_key", "emp_id", "ts", "date",
+        return pd.DataFrame(columns=["qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "date",
                                      "agent", "score", "type", "coach", "supervisor",
                                      "invest", "feedback"])
     result = transform_parentis_data(source)
@@ -1301,7 +1301,7 @@ def load_britelift_data():
     refresh_britelift_output()
     source = read_britelift_workbook()
     if source.empty:
-        return pd.DataFrame(columns=["qa_id", "eval_key", "emp_id", "ts", "date",
+        return pd.DataFrame(columns=["qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "date",
                                      "agent", "score", "type", "coach", "supervisor",
                                      "invest", "feedback"])
     result = transform_britelift_data(source)
@@ -1351,7 +1351,7 @@ def load_blc_data():
     refresh_blc_output()
     source = read_blc_workbook()
     if source.empty:
-        return pd.DataFrame(columns=["qa_id", "eval_key", "emp_id", "ts", "date",
+        return pd.DataFrame(columns=["qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "date",
                                      "agent", "score", "type", "coach", "supervisor",
                                      "invest", "feedback"])
     result = transform_blc_data(source)
@@ -1401,7 +1401,7 @@ def load_ridex_data():
     refresh_ridex_output()
     source = read_ridex_workbook()
     if source.empty:
-        return pd.DataFrame(columns=["qa_id", "eval_key", "emp_id", "ts", "date",
+        return pd.DataFrame(columns=["qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "date",
                                      "agent", "score", "type", "coach", "supervisor",
                                      "invest", "feedback"])
     result = transform_ridex_data(source)
@@ -1514,7 +1514,7 @@ def transform_hamilton_data(source):
 
     crit_keys = list(HAMILTON_CRIT_MAP.keys())
     keep = [
-        "qa_id", "eval_key", "emp_id", "ts", "week_start",
+        "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
         "agent", "score", "score_ai", "score_human", "status",
         "coach", "supervisor",
     ] + crit_keys
@@ -1563,7 +1563,7 @@ def load_hamilton_data():
     source = read_hamilton_workbook()
     if source.empty:
         return pd.DataFrame(columns=[
-            "qa_id", "eval_key", "emp_id", "ts", "week_start",
+            "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
             "agent", "score", "score_ai", "score_human", "status",
             "coach", "supervisor",
         ])
@@ -1695,7 +1695,7 @@ def transform_skyline_data(source):
 
     crit_keys = list(SKYLINE_CRIT_MAP.keys()) + list(SKYLINE_EXTRA_CRIT_MAP.keys())
     keep = [
-        "qa_id", "eval_key", "emp_id", "ts", "week_start",
+        "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
         "agent", "score", "score_ai", "score_human", "status",
         "coach", "supervisor",
     ] + crit_keys
@@ -1744,7 +1744,7 @@ def load_skyline_data():
     source = read_skyline_workbook()
     if source.empty:
         return pd.DataFrame(columns=[
-            "qa_id", "eval_key", "emp_id", "ts", "week_start",
+            "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
             "agent", "score", "score_ai", "score_human", "status",
             "coach", "supervisor",
         ])
@@ -1873,7 +1873,7 @@ def transform_vip_data(source):
 
     crit_keys = list(VIP_CRIT_MAP.keys()) + list(VIP_EXTRA_CRIT_MAP.keys())
     keep = [
-        "qa_id", "eval_key", "emp_id", "ts", "week_start",
+        "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
         "agent", "score", "score_ai", "score_human", "status",
         "coach", "supervisor",
     ] + crit_keys
@@ -1922,7 +1922,7 @@ def load_vip_data():
     source = read_vip_workbook()
     if source.empty:
         return pd.DataFrame(columns=[
-            "qa_id", "eval_key", "emp_id", "ts", "week_start",
+            "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
             "agent", "score", "score_ai", "score_human", "status",
             "coach", "supervisor",
         ])
@@ -2045,7 +2045,7 @@ def transform_ch_data(source):
 
     crit_keys = list(CH_CRIT_MAP.keys()) + list(CH_EXTRA_CRIT_MAP.keys())
     keep = [
-        "qa_id", "eval_key", "emp_id", "ts", "week_start",
+        "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
         "agent", "score", "score_ai", "score_human", "status",
         "coach", "supervisor",
     ] + crit_keys
@@ -2094,7 +2094,7 @@ def load_ch_data():
     source = read_ch_workbook()
     if source.empty:
         return pd.DataFrame(columns=[
-            "qa_id", "eval_key", "emp_id", "ts", "week_start",
+            "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
             "agent", "score", "score_ai", "score_human", "status",
             "coach", "supervisor",
         ])
@@ -2217,7 +2217,7 @@ def transform_rc_data(source):
 
     crit_keys = list(RC_CRIT_MAP.keys()) + list(RC_EXTRA_CRIT_MAP.keys())
     keep = [
-        "qa_id", "eval_key", "emp_id", "ts", "week_start",
+        "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
         "agent", "score", "score_ai", "score_human", "status",
         "coach", "supervisor",
     ] + crit_keys
@@ -2266,7 +2266,7 @@ def load_rc_data():
     source = read_rc_workbook()
     if source.empty:
         return pd.DataFrame(columns=[
-            "qa_id", "eval_key", "emp_id", "ts", "week_start",
+            "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
             "agent", "score", "score_ai", "score_human", "status",
             "coach", "supervisor",
         ])
@@ -2389,7 +2389,7 @@ def transform_ti_data(source):
 
     crit_keys = list(TI_CRIT_MAP.keys()) + list(TI_EXTRA_CRIT_MAP.keys())
     keep = [
-        "qa_id", "eval_key", "emp_id", "ts", "week_start",
+        "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
         "agent", "score", "score_ai", "score_human", "status",
         "coach", "supervisor",
     ] + crit_keys
@@ -2438,7 +2438,7 @@ def load_ti_data():
     source = read_ti_workbook()
     if source.empty:
         return pd.DataFrame(columns=[
-            "qa_id", "eval_key", "emp_id", "ts", "week_start",
+            "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
             "agent", "score", "score_ai", "score_human", "status",
             "coach", "supervisor",
         ])
@@ -2562,7 +2562,7 @@ def transform_dc_data(source):
 
     crit_keys = list(DC_CRIT_MAP.keys()) + list(DC_EXTRA_CRIT_MAP.keys())
     keep = [
-        "qa_id", "eval_key", "emp_id", "ts", "week_start",
+        "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
         "agent", "score", "score_ai", "score_human", "status",
         "coach", "supervisor",
     ] + crit_keys
@@ -2611,7 +2611,7 @@ def load_dc_data():
     source = read_dc_workbook()
     if source.empty:
         return pd.DataFrame(columns=[
-            "qa_id", "eval_key", "emp_id", "ts", "week_start",
+            "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
             "agent", "score", "score_ai", "score_human", "status",
             "coach", "supervisor",
         ])
@@ -2734,7 +2734,7 @@ def transform_ac_data(source):
 
     crit_keys = list(AC_CRIT_MAP.keys()) + list(AC_EXTRA_CRIT_MAP.keys())
     keep = [
-        "qa_id", "eval_key", "emp_id", "ts", "week_start",
+        "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
         "agent", "score", "score_ai", "score_human", "status",
         "coach", "supervisor",
     ] + crit_keys
@@ -2783,7 +2783,7 @@ def load_ac_data():
     source = read_ac_workbook()
     if source.empty:
         return pd.DataFrame(columns=[
-            "qa_id", "eval_key", "emp_id", "ts", "week_start",
+            "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
             "agent", "score", "score_ai", "score_human", "status",
             "coach", "supervisor",
         ])
@@ -2913,7 +2913,7 @@ def transform_ol_data(source):
 
     crit_keys = list(OL_CRIT_MAP.keys()) + list(OL_EXTRA_CRIT_MAP.keys())
     keep = [
-        "qa_id", "eval_key", "emp_id", "ts", "week_start",
+        "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
         "agent", "score", "score_ai", "score_human", "status",
         "coach", "supervisor",
     ] + crit_keys
@@ -2962,7 +2962,7 @@ def load_ol_data():
     source = read_ol_workbook()
     if source.empty:
         return pd.DataFrame(columns=[
-            "qa_id", "eval_key", "emp_id", "ts", "week_start",
+            "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
             "agent", "score", "score_ai", "score_human", "status",
             "coach", "supervisor",
         ])
@@ -3085,7 +3085,7 @@ def transform_ct_data(source):
 
     crit_keys = list(CT_CRIT_MAP.keys()) + list(CT_EXTRA_CRIT_MAP.keys())
     keep = [
-        "qa_id", "eval_key", "emp_id", "ts", "week_start",
+        "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
         "agent", "score", "score_ai", "score_human", "status",
         "coach", "supervisor",
     ] + crit_keys
@@ -3134,7 +3134,7 @@ def load_ct_data():
     source = read_ct_workbook()
     if source.empty:
         return pd.DataFrame(columns=[
-            "qa_id", "eval_key", "emp_id", "ts", "week_start",
+            "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
             "agent", "score", "score_ai", "score_human", "status",
             "coach", "supervisor",
         ])
@@ -3257,7 +3257,7 @@ def transform_ycov_data(source):
 
     crit_keys = list(YCOV_CRIT_MAP.keys()) + list(YCOV_EXTRA_CRIT_MAP.keys())
     keep = [
-        "qa_id", "eval_key", "emp_id", "ts", "week_start",
+        "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
         "agent", "score", "score_ai", "score_human", "status",
         "coach", "supervisor",
     ] + crit_keys
@@ -3306,7 +3306,7 @@ def load_ycov_data():
     source = read_ycov_workbook()
     if source.empty:
         return pd.DataFrame(columns=[
-            "qa_id", "eval_key", "emp_id", "ts", "week_start",
+            "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
             "agent", "score", "score_ai", "score_human", "status",
             "coach", "supervisor",
         ])
@@ -3326,6 +3326,7 @@ def transform_kel_data(source):
         "overall_score_ai":     "score_ai",
         "overall_score_human":  "score_human",
         "QA_ID":                "qa_id",
+        "evaluation_id":        "evaluation_id",
         "EMPLOYEE_ID":          "emp_id",
     }
     df = df.rename(columns={k: v for k, v in rename.items() if k in df.columns})
@@ -3429,7 +3430,7 @@ def transform_kel_data(source):
 
     crit_keys = list(KEL_CRIT_MAP.keys()) + list(KEL_EXTRA_CRIT_MAP.keys())
     keep = [
-        "qa_id", "eval_key", "emp_id", "ts", "week_start",
+        "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
         "agent", "score", "score_ai", "score_human", "status",
         "coach", "supervisor",
     ] + crit_keys
@@ -3478,7 +3479,7 @@ def load_kel_data():
     source = read_kel_workbook()
     if source.empty:
         return pd.DataFrame(columns=[
-            "qa_id", "eval_key", "emp_id", "ts", "week_start",
+            "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
             "agent", "score", "score_ai", "score_human", "status",
             "coach", "supervisor",
         ])
@@ -3606,7 +3607,7 @@ def transform_vt_data(df):
 
     crit_keys = list(VT_CRIT_MAP.keys()) + list(VT_EXTRA_CRIT_MAP.keys())
     keep = [
-        "qa_id", "eval_key", "emp_id", "ts", "week_start",
+        "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
         "agent", "score", "score_ai", "score_human", "status",
         "coach", "supervisor",
     ] + crit_keys
@@ -3655,7 +3656,7 @@ def load_vt_data():
     source = read_vt_workbook()
     if source.empty:
         return pd.DataFrame(columns=[
-            "qa_id", "eval_key", "emp_id", "ts", "week_start",
+            "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
             "agent", "score", "score_ai", "score_human", "status",
             "coach", "supervisor",
         ])
@@ -3783,7 +3784,7 @@ def transform_ycdc_data(df):
 
     crit_keys = list(YCDC_CRIT_MAP.keys()) + list(YCDC_EXTRA_CRIT_MAP.keys())
     keep = [
-        "qa_id", "eval_key", "emp_id", "ts", "week_start",
+        "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
         "agent", "score", "score_ai", "score_human", "status",
         "coach", "supervisor",
     ] + crit_keys
@@ -3832,7 +3833,7 @@ def load_ycdc_data():
     source = read_ycdc_workbook()
     if source.empty:
         return pd.DataFrame(columns=[
-            "qa_id", "eval_key", "emp_id", "ts", "week_start",
+            "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
             "agent", "score", "score_ai", "score_human", "status",
             "coach", "supervisor",
         ])
@@ -3960,7 +3961,7 @@ def transform_bl_data(df):
 
     crit_keys = list(BL_CRIT_MAP.keys()) + list(BL_EXTRA_CRIT_MAP.keys())
     keep = [
-        "qa_id", "eval_key", "emp_id", "ts", "week_start",
+        "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
         "agent", "score", "score_ai", "score_human", "status",
         "coach", "supervisor",
     ] + crit_keys
@@ -4009,7 +4010,7 @@ def load_bl_data():
     source = read_bl_workbook()
     if source.empty:
         return pd.DataFrame(columns=[
-            "qa_id", "eval_key", "emp_id", "ts", "week_start",
+            "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
             "agent", "score", "score_ai", "score_human", "status",
             "coach", "supervisor",
         ])
@@ -5950,8 +5951,21 @@ def main():
     #qualityPanel .qa-cch-ct {{ font-size:11px;font-weight:700;min-width:60px;text-align:right }}
     /* Detail table */
     #qualityPanel .qa-tbl-scroll {{ overflow-x:auto;max-height:420px;overflow-y:auto }}
-    #qualityPanel .qa-dtbl {{ width:100%;border-collapse:collapse;font-size:11px }}
-    #qualityPanel .qa-dtbl th {{ padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #E2E8F0;background:#F8FAFC;white-space:nowrap;position:sticky;top:0;z-index:1 }}
+    #qualityPanel .qa-dtbl {{ width:max-content;min-width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed }}
+    #qualityPanel .qa-dtbl th {{ padding:7px 10px;text-align:left;font-size:9px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.05em;border-right:1px solid #D1D5DB;border-bottom:1px solid #E2E8F0;background:#F8FAFC;white-space:nowrap;position:sticky;top:0;z-index:1;overflow:hidden;text-overflow:ellipsis }}
+    #qualityPanel .qa-dtbl th:last-child {{ border-right:none }}
+    #qualityPanel .qa-dtbl th.qa-resizable {{ padding-right:16px }}
+    #qualityPanel .qa-col-resizer {{ position:absolute;top:0;right:-4px;width:8px;height:100%;cursor:col-resize;z-index:7;opacity:1 }}
+    #qualityPanel .qa-col-resizer::after {{ content:"";position:absolute;top:0;bottom:0;right:3px;width:1px;background:#9CA3AF;border-radius:1px }}
+    #qualityPanel .qa-col-resizer::before {{ content:"⋮";position:absolute;top:50%;right:0;transform:translateY(-50%);font-size:9px;line-height:1;color:#94A3B8;opacity:.7;pointer-events:none }}
+    #qualityPanel .qa-dtbl th:hover,
+    body.qa-col-resizing #qualityPanel .qa-dtbl th {{ border-right-color:#94A3B8 }}
+    #qualityPanel .qa-col-resizer:hover::after,
+    body.qa-col-resizing #qualityPanel .qa-col-resizer::after {{ width:2px;background:#64748B }}
+    #qualityPanel .qa-col-resizer:hover::before,
+    body.qa-col-resizing #qualityPanel .qa-col-resizer::before {{ color:#64748B;opacity:1 }}
+    body.qa-col-resizing {{ cursor:col-resize;user-select:none }}
+    body.qa-col-resizing * {{ cursor:col-resize!important }}
     #qualityPanel .qa-dtbl td {{ padding:6px 10px;border-bottom:1px solid #F8FAFC;vertical-align:middle }}
     #qualityPanel .qa-dtbl tbody tr {{ height:34px;box-sizing:border-box }}
     #qualityPanel .qa-dtbl tr:hover td {{ background:#F8FAFC }}
@@ -8994,6 +9008,127 @@ let qaVsRows=[];
 const QA_VS_ROW_H=34;   // px — must match CSS tbody tr height
 const QA_VS_BUFFER=12;  // extra rows rendered above/below viewport
 let qaVsRaf=null;
+const QA_AI_ACCOUNTS=new Set(['Hamilton','Skyline','VIP','C&H','Reno Cab','Trans Iowa','Data Carz','Associated Cab','Ollies','Circle Taxi','YCOV','Kelowna','Vermont','YCDC','Blueline']);
+const QA_COL_WIDTH_KEY='pacbiz.qa.detail.columnWidths.v1';
+const QA_COL_MIN_WIDTH=80;
+let qaDetailColumnWidths=null;
+
+function qaDetailTable(){{
+    return document.querySelector('#qa-tbl-scroll-main .qa-dtbl');
+}}
+
+function qaLoadColumnWidths(){{
+    if(qaDetailColumnWidths) return qaDetailColumnWidths;
+    try{{
+        const saved=JSON.parse(localStorage.getItem(QA_COL_WIDTH_KEY)||'[]');
+        qaDetailColumnWidths=Array.isArray(saved)?saved.map(v=>Math.max(QA_COL_MIN_WIDTH,Number(v)||0)):[];
+    }}catch(e){{
+        qaDetailColumnWidths=[];
+    }}
+    return qaDetailColumnWidths;
+}}
+
+function qaSaveColumnWidths(){{
+    if(!qaDetailColumnWidths) return;
+    try{{localStorage.setItem(QA_COL_WIDTH_KEY,JSON.stringify(qaDetailColumnWidths));}}catch(e){{}}
+}}
+
+function qaBaseColumnWidth(th){{
+    const min=parseFloat((th.getAttribute('style')||'').match(/min-width:\\s*([0-9.]+)px/i)?.[1]||'0');
+    return Math.max(QA_COL_MIN_WIDTH,min,Math.ceil(th.getBoundingClientRect().width)||0);
+}}
+
+function qaEnsureColGroup(table,ths){{
+    let cg=table.querySelector('colgroup.qa-resize-cols');
+    if(!cg){{
+        cg=document.createElement('colgroup');
+        cg.className='qa-resize-cols';
+        table.insertBefore(cg,table.firstChild);
+    }}
+    while(cg.children.length<ths.length) cg.appendChild(document.createElement('col'));
+    while(cg.children.length>ths.length) cg.removeChild(cg.lastElementChild);
+    return cg;
+}}
+
+function qaApplyDetailColumnWidths(){{
+    const table=qaDetailTable();
+    if(!table) return;
+    const ths=[...table.querySelectorAll('thead th')];
+    if(!ths.length) return;
+    const widths=qaLoadColumnWidths();
+    const cg=qaEnsureColGroup(table,ths);
+    let total=0;
+    ths.forEach((th,i)=>{{
+        if(!widths[i]) widths[i]=qaBaseColumnWidth(th);
+        const w=Math.max(QA_COL_MIN_WIDTH,Math.round(widths[i]));
+        widths[i]=w;
+        const px=w+'px';
+        cg.children[i].style.width=px;
+        th.style.width=px;
+        th.style.minWidth=px;
+        th.style.maxWidth=px;
+        total+=w;
+    }});
+    table.style.minWidth=Math.max(total,table.parentElement?.clientWidth||0)+'px';
+    qaUpdateDetailStickyOffsets();
+}}
+
+function qaUpdateDetailStickyOffsets(){{
+    const table=qaDetailTable();
+    if(!table) return;
+    const ths=[...table.querySelectorAll('thead th')];
+    if(ths.length<5) return;
+    const widths=qaLoadColumnWidths();
+    let left=0;
+    for(let i=0;i<5;i++){{
+        const px=left+'px';
+        table.querySelectorAll(`tr > *:nth-child(${{i+1}})`).forEach(cell=>{{cell.style.left=px;}});
+        left+=Math.max(QA_COL_MIN_WIDTH,widths[i]||ths[i].offsetWidth||QA_COL_MIN_WIDTH);
+    }}
+}}
+
+function qaInitResizableColumns(){{
+    const table=qaDetailTable();
+    if(!table) return;
+    const ths=[...table.querySelectorAll('thead th')];
+    if(!ths.length) return;
+    qaApplyDetailColumnWidths();
+    ths.forEach((th,i)=>{{
+        if(th.querySelector('.qa-col-resizer')) return;
+        th.classList.add('qa-resizable');
+        const handle=document.createElement('span');
+        handle.className='qa-col-resizer';
+        handle.setAttribute('aria-hidden','true');
+        handle.addEventListener('click',e=>{{e.preventDefault();e.stopPropagation();}});
+        handle.addEventListener('pointerdown',e=>{{
+            e.preventDefault();
+            e.stopPropagation();
+            const widths=qaLoadColumnWidths();
+            widths[i]=widths[i]||qaBaseColumnWidth(th);
+            const startX=e.clientX;
+            const startW=widths[i];
+            document.body.classList.add('qa-col-resizing');
+            const move=ev=>{{
+                ev.preventDefault();
+                widths[i]=Math.max(QA_COL_MIN_WIDTH,Math.round(startW+ev.clientX-startX));
+                qaApplyDetailColumnWidths();
+                qaRenderVisibleRows();
+                qaSaveColumnWidths();
+            }};
+            const up=()=>{{
+                document.body.classList.remove('qa-col-resizing');
+                document.removeEventListener('pointermove',move);
+                document.removeEventListener('pointerup',up);
+                document.removeEventListener('pointercancel',up);
+                qaSaveColumnWidths();
+            }};
+            document.addEventListener('pointermove',move,{{passive:false}});
+            document.addEventListener('pointerup',up);
+            document.addEventListener('pointercancel',up);
+        }});
+        th.appendChild(handle);
+    }});
+}}
 
 function qaRowHtml(r){{
     const score=Number(r.score),sc=!isNaN(score)&&score>0?score:null;
@@ -9143,7 +9278,8 @@ function qaRowHtml(r){{
         return`<td class="bl-extra-col" style="text-align:center">${{qaYN(v)}}</td>`;
     }});
     const fbTxt=qaEscapeHtml(r.feedback||'—');
-    const evalId=qaEscapeHtml(r.qa_id||r.evaluation_id||'—');
+    const rawEvalId=QA_AI_ACCOUNTS.has(r._acct)?(r.evaluation_id||r.qa_id):(r.qa_id||r.evaluation_id);
+    const evalId=qaEscapeHtml(rawEvalId||'—');
     return`<tr><td style="white-space:nowrap;font-size:10px;color:#475569;max-width:140px;overflow:hidden;text-overflow:ellipsis" title="${{evalId}}">${{evalId}}</td><td style="white-space:nowrap;font-size:11px">${{qaEscapeHtml((r.ts||'—').slice(0,10))}}</td><td style="max-width:200px;overflow:hidden" title="${{qaEscapeHtml(r.agent||'')}}"><div style="display:flex;align-items:center;gap:5px;overflow:hidden"><span style="width:22px;height:22px;border-radius:50%;background:${{av.bg}};color:${{av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{av.ini}}</span><span style="font-weight:600;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">${{qaEscapeHtml(r.agent||'—')}}</span></div></td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.supervisor||'')}}">${{qaEscapeHtml(r.supervisor||'—')}}</td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.coach||'')}}">${{qaEscapeHtml(r.coach||'—')}}</td><td>${{acctPill}}</td><td><span class="qa-chip ${{chipCls}}">${{disp}}</span></td>${{critCells.join('')}}${{vipExtraCells.join('')}}${{chExtraCells.join('')}}${{rcExtraCells.join('')}}${{tiExtraCells.join('')}}${{dcExtraCells.join('')}}${{acExtraCells.join('')}}${{olExtraCells.join('')}}${{ctExtraCells.join('')}}${{ycovExtraCells.join('')}}${{kelExtraCells.join('')}}${{vtExtraCells.join('')}}${{ycdcExtraCells.join('')}}${{blExtraCells.join('')}}<td style="font-size:10px;color:#475569;white-space:nowrap">${{qaEscapeHtml(r.invest||'—')}}</td><td style="max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;color:#475569" title="${{fbTxt}}">${{fbTxt}}</td></tr>`;
 }}
 
@@ -9167,6 +9303,7 @@ function qaRenderVisibleRows(){{
     html+=qaVsRows.slice(startIdx,endIdx).map(qaRowHtml).join('');
     if(botH>0) html+=`<tr style="height:${{botH}}px;pointer-events:none"><td colspan="31" style="padding:0;border:none"></td></tr>`;
     el.innerHTML=html;
+    qaUpdateDetailStickyOffsets();
 }}
 
 function qaRenderTable(data) {{
@@ -9183,6 +9320,7 @@ function qaRenderTable(data) {{
     if(count)count.textContent=qaVsRows.length+' records';
     const total=qaGetActiveData().length;
     if(foot)foot.textContent='Showing '+qaVsRows.length+' of '+total+' evaluations';
+    qaApplyDetailColumnWidths();
     const thead=el.closest('table')?.querySelector('thead');
     if(thead){{
         thead.querySelectorAll('th[data-qa-sort]').forEach(th=>{{
@@ -9865,6 +10003,7 @@ function initQualityCharts() {{
 
     const qaTblScroller=document.getElementById('qa-tbl-scroll-main');
     if(qaTblScroller){{
+        qaInitResizableColumns();
         qaTblScroller.addEventListener('scroll',()=>{{
             if(qaVsRaf) cancelAnimationFrame(qaVsRaf);
             qaVsRaf=requestAnimationFrame(qaRenderVisibleRows);

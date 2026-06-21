@@ -77,6 +77,12 @@ If any step returns a non-zero exit code the entire pipeline aborts (`goto :fail
 - **aivhAccts array** controls which accounts show the AI vs Human comparison card:
   `['hamilton','skyline','vip','ch','rc','ti','dc','ac','ol','ct','ycov','kel','vt','ycdc','bl']`
   M7, Parentis, Britelift, Britelift Chat, and RideX are NOT in this list.
+- **Evaluation ID rules in the QA detail table:** AI accounts must display the
+  raw `evaluation_id` value from the AI workbook. Non-AI accounts must display
+  `QA_ID`/`qa_id`. Do not prefer generated `QA_ID` values for AI accounts
+  (example bad Kelowna value: `KEL-...`; expected AI value format: `VABaKQC-...`).
+  The JS helper set `QA_AI_ACCOUNTS` and every AI transform output must preserve
+  the `evaluation_id` column.
 - **sumStripMain** is hidden for all 15 accounts in `aivhAccts` — they use a
   custom criterion strip instead.
 - **Cache-busting meta tags** added to `<head>` — do not remove them.
@@ -143,6 +149,10 @@ If any step returns a non-zero exit code the entire pipeline aborts (`goto :fail
   in `transform_coaching_logs()` or `refresh_coaching_output()`.
 - **QA scorecard frame** — layout locked; only data and account-specific
   mappings should change. Do not restructure `qaRowHtml()`.
+- **QA detail table column resizing** — the evaluation table uses a generated
+  `colgroup`, always-visible header dividers, drag handles, and localStorage key
+  `pacbiz.qa.detail.columnWidths.v1`. Preserve sorting click behavior by keeping
+  resize-handle events stopped from propagating.
 - **Auto-reload schedule array** — do not change the times in the JS
   `refreshTimes` array without also updating the data freshness
   `schedTimes` array and confirming the Task Scheduler entries match.
