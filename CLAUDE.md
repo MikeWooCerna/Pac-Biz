@@ -1,4 +1,6 @@
 # PB Dashboard — project context
+# This file is read by Claude Code (auto) and Codex (manual).
+# Last updated: 2026-06-21
 
 ## What this is
 
