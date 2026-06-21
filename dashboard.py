@@ -4669,6 +4669,9 @@ def main():
 <html>
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Pac-Biz Dashboard</title>
 {"<link rel='icon' type='image/png' href='" + favicon_uri + "'>" if favicon_uri else ""}
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
@@ -10631,6 +10634,33 @@ document.getElementById("logsFocusToggle")?.addEventListener("click", toggleLogs
 document.getElementById("masterlistFocusToggle")?.addEventListener("click", toggleMasterlistFocusMode);
 renderCoaching();
 render();
+</script>
+
+<script>
+(function() {{
+    // Auto-reload at scheduled fresh-build times (30 min after Task Scheduler runs)
+    // Task Scheduler: 3AM, 6AM, 11AM, 3PM, 7PM, 10PM → fresh builds ready at:
+    var refreshTimes = ['03:30','06:30','11:30','15:30','19:30','22:30'];
+
+    function getNextRefreshMs() {{
+        var now = new Date();
+        var candidates = refreshTimes.map(function(t) {{
+            var parts = t.split(':');
+            var d = new Date(now);
+            d.setHours(parseInt(parts[0]), parseInt(parts[1]), 0, 0);
+            if (d <= now) d.setDate(d.getDate() + 1);
+            return d;
+        }});
+        return Math.min.apply(null, candidates.map(function(d) {{ return d - now; }}));
+    }}
+
+    function scheduleNextReload() {{
+        var ms = getNextRefreshMs();
+        setTimeout(function() {{ location.reload(); }}, ms);
+    }}
+
+    scheduleNextReload();
+}})();
 </script>
 
 </body>
