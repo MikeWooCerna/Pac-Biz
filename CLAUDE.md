@@ -85,6 +85,7 @@ If any step returns a non-zero exit code the entire pipeline aborts (`goto :fail
   `03:30, 06:30, 11:30, 15:30, 19:30, 22:30` — page reloads at these times (Task Scheduler fires 30 min earlier)
 - **Freshness indicator schedule:** uses Task Scheduler fire times `03:00, 06:00, 11:00, 15:00, 19:00, 22:00`
   so a build that finishes at e.g. 3:11 PM is correctly flagged Live (build > 15:00 slot), not Stale.
+  Stale only appears if a scheduled run was missed, failed, or the machine was off — never during normal operation.
 - **Data freshness indicator** in the top header beneath "Refresh Time:" —
   green blinking dot = Live Data, yellow dot = Stale Data.
   Reuses the `qa-pulse` CSS animation already defined in the QA panel CSS.
