@@ -4596,6 +4596,7 @@ def _qa_block_html(aid, display_name, live_banner_name, badge_label, badge_cls, 
         <div class="qa-tbl-scroll">
           <table class="qa-dtbl">
             <thead><tr>
+              <th style="min-width:120px">Evaluation ID</th>
               <th style="min-width:130px">Evaluation Date</th>
               <th style="min-width:155px">Emp Name</th>
               <th style="min-width:110px">Immediate Head</th>
@@ -6657,6 +6658,7 @@ def main():
     <div class="qa-tbl-scroll" id="qa-tbl-scroll-main">
       <table class="qa-dtbl">
         <thead><tr>
+          <th style="min-width:120px">Evaluation ID</th>
           <th style="min-width:130px;cursor:pointer;user-select:none" data-qa-sort="ts" onclick="qaSortTable('ts')">Evaluation Date <span class="sort-indicator">▼</span></th>
           <th style="min-width:200px;cursor:pointer;user-select:none" data-qa-sort="agent" onclick="qaSortTable('agent')">Emp Name <span class="sort-indicator"></span></th>
           <th style="min-width:160px;cursor:pointer;user-select:none" data-qa-sort="supervisor" onclick="qaSortTable('supervisor')">Immediate Head <span class="sort-indicator"></span></th>
@@ -9141,7 +9143,8 @@ function qaRowHtml(r){{
         return`<td class="bl-extra-col" style="text-align:center">${{qaYN(v)}}</td>`;
     }});
     const fbTxt=qaEscapeHtml(r.feedback||'—');
-    return`<tr><td style="white-space:nowrap;font-size:11px">${{qaEscapeHtml((r.ts||'—').slice(0,10))}}</td><td style="max-width:200px;overflow:hidden" title="${{qaEscapeHtml(r.agent||'')}}"><div style="display:flex;align-items:center;gap:5px;overflow:hidden"><span style="width:22px;height:22px;border-radius:50%;background:${{av.bg}};color:${{av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{av.ini}}</span><span style="font-weight:600;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">${{qaEscapeHtml(r.agent||'—')}}</span></div></td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.supervisor||'')}}">${{qaEscapeHtml(r.supervisor||'—')}}</td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.coach||'')}}">${{qaEscapeHtml(r.coach||'—')}}</td><td>${{acctPill}}</td><td><span class="qa-chip ${{chipCls}}">${{disp}}</span></td>${{critCells.join('')}}${{vipExtraCells.join('')}}${{chExtraCells.join('')}}${{rcExtraCells.join('')}}${{tiExtraCells.join('')}}${{dcExtraCells.join('')}}${{acExtraCells.join('')}}${{olExtraCells.join('')}}${{ctExtraCells.join('')}}${{ycovExtraCells.join('')}}${{kelExtraCells.join('')}}${{vtExtraCells.join('')}}${{ycdcExtraCells.join('')}}${{blExtraCells.join('')}}<td style="font-size:10px;color:#475569;white-space:nowrap">${{qaEscapeHtml(r.invest||'—')}}</td><td style="max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;color:#475569" title="${{fbTxt}}">${{fbTxt}}</td></tr>`;
+    const evalId=qaEscapeHtml(r.qa_id||r.evaluation_id||'—');
+    return`<tr><td style="white-space:nowrap;font-size:10px;color:#475569;max-width:140px;overflow:hidden;text-overflow:ellipsis" title="${{evalId}}">${{evalId}}</td><td style="white-space:nowrap;font-size:11px">${{qaEscapeHtml((r.ts||'—').slice(0,10))}}</td><td style="max-width:200px;overflow:hidden" title="${{qaEscapeHtml(r.agent||'')}}"><div style="display:flex;align-items:center;gap:5px;overflow:hidden"><span style="width:22px;height:22px;border-radius:50%;background:${{av.bg}};color:${{av.tc}};font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${{av.ini}}</span><span style="font-weight:600;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">${{qaEscapeHtml(r.agent||'—')}}</span></div></td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.supervisor||'')}}">${{qaEscapeHtml(r.supervisor||'—')}}</td><td style="font-size:11px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${{qaEscapeHtml(r.coach||'')}}">${{qaEscapeHtml(r.coach||'—')}}</td><td>${{acctPill}}</td><td><span class="qa-chip ${{chipCls}}">${{disp}}</span></td>${{critCells.join('')}}${{vipExtraCells.join('')}}${{chExtraCells.join('')}}${{rcExtraCells.join('')}}${{tiExtraCells.join('')}}${{dcExtraCells.join('')}}${{acExtraCells.join('')}}${{olExtraCells.join('')}}${{ctExtraCells.join('')}}${{ycovExtraCells.join('')}}${{kelExtraCells.join('')}}${{vtExtraCells.join('')}}${{ycdcExtraCells.join('')}}${{blExtraCells.join('')}}<td style="font-size:10px;color:#475569;white-space:nowrap">${{qaEscapeHtml(r.invest||'—')}}</td><td style="max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;color:#475569" title="${{fbTxt}}">${{fbTxt}}</td></tr>`;
 }}
 
 function qaRenderVisibleRows(){{
@@ -9149,7 +9152,7 @@ function qaRenderVisibleRows(){{
     const scroller=document.getElementById('qa-tbl-scroll-main');
     if(!el||!scroller) return;
     if(!qaVsRows.length){{
-        el.innerHTML=`<tr><td colspan="30" style="text-align:center;color:#94A3B8;padding:20px">No data</td></tr>`;
+        el.innerHTML=`<tr><td colspan="31" style="text-align:center;color:#94A3B8;padding:20px">No data</td></tr>`;
         return;
     }}
     const scrollTop=scroller.scrollTop;
@@ -9160,9 +9163,9 @@ function qaRenderVisibleRows(){{
     const topH=startIdx*QA_VS_ROW_H;
     const botH=(total-endIdx)*QA_VS_ROW_H;
     let html='';
-    if(topH>0) html+=`<tr style="height:${{topH}}px;pointer-events:none"><td colspan="30" style="padding:0;border:none"></td></tr>`;
+    if(topH>0) html+=`<tr style="height:${{topH}}px;pointer-events:none"><td colspan="31" style="padding:0;border:none"></td></tr>`;
     html+=qaVsRows.slice(startIdx,endIdx).map(qaRowHtml).join('');
-    if(botH>0) html+=`<tr style="height:${{botH}}px;pointer-events:none"><td colspan="30" style="padding:0;border:none"></td></tr>`;
+    if(botH>0) html+=`<tr style="height:${{botH}}px;pointer-events:none"><td colspan="31" style="padding:0;border:none"></td></tr>`;
     el.innerHTML=html;
 }}
 
