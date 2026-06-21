@@ -93,8 +93,9 @@ If any step returns a non-zero exit code the entire pipeline aborts (`goto :fail
   so a build that finishes at e.g. 3:11 PM is correctly flagged Live (build > 15:00 slot), not Stale.
   Stale only appears if a scheduled run was missed, failed, or the machine was off — never during normal operation.
 - **Data freshness indicator** in the top header beneath "Refresh Time:" —
-  green blinking dot = Live Data, yellow dot = Stale Data.
-  Reuses the `qa-pulse` CSS animation already defined in the QA panel CSS.
+  green blinking dot = Live Data, yellow blinking dot = Stale Data.
+  Both dots use `animation:qa-pulse 2s ease-in-out infinite` (reuses existing QA panel animation).
+  Dot colors: Live = `#16A34A`, Stale = `#D97706`. Text colors: Live = `#15803D`, Stale = `#B45309`.
 - **subprocess.run()** with `capture_output=True, timeout=120` for all subprocesses.
 - All `{` and `}` inside JS/CSS strings in Python f-strings must be escaped as `{{` and `}}`.
 - **Data freshness age ticks live:** the `updateFreshness()` function runs on page load then
@@ -167,6 +168,8 @@ If any step returns a non-zero exit code the entire pipeline aborts (`goto :fail
 - Do not add `df.get(col, pd.Series(dtype=float))` — use the safe missing-column pattern.
 - Do not push to Git unless the user explicitly asks.
 - Do not commit `.env` files, credential JSON files, or API tokens.
+- Do not add `dashboard.py` back to the `git add` line in either bat file — it was intentionally
+  removed so scheduled runs cannot overwrite manual fixes to `dashboard.py`.
 
 ---
 
