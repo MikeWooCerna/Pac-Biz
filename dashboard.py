@@ -10641,53 +10641,58 @@ render();
 
 <script>
 (function() {{
-    // --- Data freshness indicator ---
+    // --- Data freshness indicator (updates every 60s without page refresh) ---
     (function() {{
         var schedTimes = ['03:30','06:30','11:30','15:30','19:30','22:30'];
         var el = document.getElementById('pb-data-freshness');
         if (!el) return;
 
-        var now = new Date();
+        function updateFreshness() {{
+            var now = new Date();
 
-        // Find the most recent scheduled refresh time that has already passed
-        var lastSched = null;
-        schedTimes.forEach(function(t) {{
-            var parts = t.split(':');
-            var d = new Date(now);
-            d.setHours(parseInt(parts[0]), parseInt(parts[1]), 0, 0);
-            if (d <= now) {{
-                if (!lastSched || d > lastSched) lastSched = d;
+            // Find the most recent scheduled refresh time that has already passed
+            var lastSched = null;
+            schedTimes.forEach(function(t) {{
+                var parts = t.split(':');
+                var d = new Date(now);
+                d.setHours(parseInt(parts[0]), parseInt(parts[1]), 0, 0);
+                if (d <= now) {{
+                    if (!lastSched || d > lastSched) lastSched = d;
+                }}
+            }});
+            // If none today have passed yet, use last one from yesterday
+            if (!lastSched) {{
+                var parts = schedTimes[schedTimes.length - 1].split(':');
+                lastSched = new Date(now);
+                lastSched.setDate(lastSched.getDate() - 1);
+                lastSched.setHours(parseInt(parts[0]), parseInt(parts[1]), 0, 0);
             }}
-        }});
-        // If none today have passed yet, use last one from yesterday
-        if (!lastSched) {{
-            var parts = schedTimes[schedTimes.length - 1].split(':');
-            lastSched = new Date(now);
-            lastSched.setDate(lastSched.getDate() - 1);
-            lastSched.setHours(parseInt(parts[0]), parseInt(parts[1]), 0, 0);
+
+            var buildTs = PB_BUILD_TS;
+            var isLive = buildTs >= lastSched;
+            var minsAgo = Math.round((now - buildTs) / 60000);
+            var hoursAgo = Math.floor(minsAgo / 60);
+            var ageStr = hoursAgo > 0
+                ? hoursAgo + 'h ' + (minsAgo % 60) + 'm'
+                : minsAgo + 'm';
+
+            if (isLive) {{
+                el.innerHTML = '<span style="display:inline-flex;align-items:center;gap:5px">'
+                    + '<span style="width:8px;height:8px;border-radius:50%;background:#16A34A;display:inline-block;animation:qa-pulse 2s ease-in-out infinite"></span>'
+                    + '<span style="color:#15803D">Live Data</span>'
+                    + '<span style="color:#94A3B8;font-weight:400">&nbsp;&mdash;&nbsp;' + ageStr + '</span>'
+                    + '</span>';
+            }} else {{
+                el.innerHTML = '<span style="display:inline-flex;align-items:center;gap:5px">'
+                    + '<span style="width:8px;height:8px;border-radius:50%;background:#D97706;display:inline-block"></span>'
+                    + '<span style="color:#B45309">Stale Data</span>'
+                    + '<span style="color:#94A3B8;font-weight:400">&nbsp;&mdash;&nbsp;' + ageStr + '</span>'
+                    + '</span>';
+            }}
         }}
 
-        var buildTs = PB_BUILD_TS;
-        var isLive = buildTs >= lastSched;
-        var minsAgo = Math.round((now - buildTs) / 60000);
-        var hoursAgo = Math.floor(minsAgo / 60);
-        var ageStr = hoursAgo > 0
-            ? hoursAgo + 'h ' + (minsAgo % 60) + 'm'
-            : minsAgo + 'm';
-
-        if (isLive) {{
-            el.innerHTML = '<span style="display:inline-flex;align-items:center;gap:5px">'
-                + '<span style="width:8px;height:8px;border-radius:50%;background:#16A34A;display:inline-block;animation:qa-pulse 2s ease-in-out infinite"></span>'
-                + '<span style="color:#15803D">Live Data</span>'
-                + '<span style="color:#94A3B8;font-weight:400">&nbsp;&mdash;&nbsp;' + ageStr + '</span>'
-                + '</span>';
-        }} else {{
-            el.innerHTML = '<span style="display:inline-flex;align-items:center;gap:5px">'
-                + '<span style="width:8px;height:8px;border-radius:50%;background:#D97706;display:inline-block"></span>'
-                + '<span style="color:#B45309">Stale Data</span>'
-                + '<span style="color:#94A3B8;font-weight:400">&nbsp;&mdash;&nbsp;' + ageStr + '</span>'
-                + '</span>';
-        }}
+        updateFreshness();
+        setInterval(updateFreshness, 60000);
     }})();
 
     // Auto-reload at scheduled fresh-build times (30 min after Task Scheduler runs)
