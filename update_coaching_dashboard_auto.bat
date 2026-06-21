@@ -252,7 +252,7 @@ echo.
 echo ========================================
 echo Publishing to GitHub
 echo ========================================
-git add dashboard.py masterlist_dashboard.html update_coaching_dashboard.bat update_coaching_dashboard_auto.bat
+git add masterlist_dashboard.html update_coaching_dashboard.bat update_coaching_dashboard_auto.bat
 if errorlevel 1 goto :fail
 
 git diff --cached --quiet
