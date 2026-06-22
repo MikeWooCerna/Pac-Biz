@@ -359,7 +359,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
   <div class="stat-cards">
     <div class="stat-card"><div class="sc-val" style="color:#00e87a;">{passed}</div><div class="sc-lbl">Passed</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">{failed_ct}</div><div class="sc-lbl">Failed</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#4a3d7a;">{blocked_ct}</div><div class="sc-lbl">Not Reached</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#E84500;">{blocked_ct}</div><div class="sc-lbl">Not Reached</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">{total_rows:,}</div><div class="sc-lbl">Rows Pulled</div></div>
     <div class="stat-card"><div class="sc-val" style="color:{run_color};">{run_icon}</div><div class="sc-lbl">{run_status}</div></div>
   </div>
