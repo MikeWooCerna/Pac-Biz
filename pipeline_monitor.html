@@ -103,29 +103,10 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 .lp-f{background:rgba(255,61,61,0.1);color:#ff8080;border:1px solid rgba(255,61,61,0.22);}
 .lp-n{background:rgba(232,69,0,0.1);color:#E84500;border:1px solid rgba(232,69,0,0.28);}
 .log-empty{text-align:center;color:#4a3d7a;font-size:12px;padding:14px;background:rgba(40,10,90,0.25);border-radius:8px;border:1px solid rgba(80,0,180,0.18);}
-.rc-section{margin-top:14px;position:relative;z-index:1;}
-.rc-hdr{font-size:11px;color:#5000b4;letter-spacing:0.07em;text-transform:uppercase;margin-bottom:7px;}
-.rc-wrap{border-radius:8px;border:1px solid rgba(80,0,180,0.22);overflow:hidden;}
-.rc-scroll{max-height:380px;overflow-y:auto;overflow-x:auto;}
-.rc-scroll::-webkit-scrollbar{width:6px;height:6px;}
-.rc-scroll::-webkit-scrollbar-track{background:rgba(80,0,180,0.08);}
-.rc-scroll::-webkit-scrollbar-thumb{background:rgba(80,0,180,0.35);border-radius:3px;}
-.rc-table{width:100%;border-collapse:collapse;font-size:11px;}
-.rc-table thead tr{background:rgba(40,10,90,0.85);}
-.rc-table thead{position:sticky;top:0;z-index:2;}
-.rc-table th{text-align:left;color:#7060a0;font-weight:600;padding:6px 10px;border-bottom:1px solid rgba(80,0,180,0.25);white-space:nowrap;}
-.rc-table td{padding:5px 10px;border-bottom:1px solid rgba(80,0,180,0.1);vertical-align:middle;}
-.rc-table tr:last-child td{border-bottom:none;}
-.rc-table tbody tr:hover td{background:rgba(80,0,180,0.07);}
-.rc-td-d{color:#5a4d7a;white-space:nowrap;font-size:10px;}
-.rc-td-a{color:#c0a0ff;font-weight:500;}
-.rc-td-c{color:#c0a0ff;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;padding-right:18px;}
-.rc-td-delta{text-align:right;white-space:nowrap;}
-.rc-delta{font-size:10px;padding:1px 8px;border-radius:99px;display:inline-block;}
-.rc-neg{background:rgba(255,61,61,0.12);color:#ff8080;border:1px solid rgba(255,61,61,0.22);}
-.rc-pos{background:rgba(0,232,122,0.08);color:#30b860;border:1px solid rgba(0,232,122,0.18);}
-.rc-zero{color:#3a2d5a;}
-.rc-empty{text-align:center;color:#4a3d7a;font-size:12px;padding:14px;background:rgba(40,10,90,0.25);border-radius:8px;border:1px solid rgba(80,0,180,0.18);}
+.drop-strip{background:rgba(50,30,0,0.35);border:1px solid rgba(255,170,0,0.32);border-radius:7px;padding:7px 12px;font-size:13px;color:#ffcc55;display:flex;align-items:flex-start;gap:6px;margin-top:7px;flex-wrap:wrap;position:relative;z-index:1;}
+.lp-d{background:rgba(255,170,0,0.1);color:#ffaa00;border:1px solid rgba(255,170,0,0.28);}
+.cnt-drop{background:rgba(232,69,0,0.15);color:#ff7040;border:1px solid rgba(232,69,0,0.38);font-weight:600;}
+.cnt-ok{background:rgba(0,232,122,0.06);color:#20a060;border:1px solid rgba(0,232,122,0.18);}
 @media(prefers-reduced-motion:reduce){
   .blink-g,.blink-r,.blink-a{animation:none;}
   canvas{display:none;}
@@ -146,7 +127,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     </div>
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run 2026-06-22T22:54</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Built: Jun 22, 2026 11:00 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Built: Jun 22, 2026 11:18 PM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -160,7 +141,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">0</div><div class="sc-lbl">Failed</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#E84500;">0</div><div class="sc-lbl">Not Reached</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">26,514</div><div class="sc-lbl">Rows Pulled</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#7060a0;">&mdash;</div><div class="sc-lbl">running</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">&#10007;</div><div class="sc-lbl">failed</div></div>
   </div>
 
   <div class="divider"></div>
@@ -182,6 +163,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">201 rows</span>
     <span class="meta-pill g">PASS</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -191,6 +173,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">41 rows</span>
     <span class="meta-pill g">PASS</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -200,6 +183,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">29 rows</span>
     <span class="meta-pill g">PASS</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -209,6 +193,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">8 rows</span>
     <span class="meta-pill g">PASS</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -218,6 +203,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">65 rows</span>
     <span class="meta-pill g">PASS</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -227,6 +213,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">263 rows</span>
     <span class="meta-pill g">PASS</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -236,6 +223,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">73 rows</span>
     <span class="meta-pill g">PASS</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -245,6 +233,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">3,283 rows</span>
     <span class="meta-pill g">PASS</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -254,6 +243,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">4,621 rows</span>
     <span class="meta-pill g">PASS</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -263,6 +253,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">1,000 rows</span>
     <span class="meta-pill g">PASS</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -272,6 +263,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">373 rows</span>
     <span class="meta-pill g">PASS</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
     </div>
@@ -282,7 +274,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       </div>
       <div class="radar-label">
         <div class="radar-lbl-main">Pipeline / Container Monitoring</div>
-        <div class="radar-lbl-status"><div class="blink-a"></div><span style="color:#ffaa00;font-size:12px;">running</span></div>
+        <div class="radar-lbl-status"><div class="blink-r"></div><span style="color:#ff3d3d;font-size:12px;">stopped</span></div>
       </div>
 
       <div class="connector"></div>
@@ -299,7 +291,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
             <div class="agg-lbl">sources ok</div>
           </div>
           <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">10:54 PM</div><div class="agg-lbl">started</div></div>
-          <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">&mdash;</div><div class="agg-lbl">finished</div></div>
+          <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">11:03 PM</div><div class="agg-lbl">finished</div></div>
           <div class="agg-item" style="grid-column:span 2;"><div class="agg-val" style="color:#ffaa00;font-size:12px;">3:30 AM +1d</div><div class="agg-lbl">next schedule</div></div>
         </div>
       </div>
@@ -314,8 +306,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
         </div>
         <div class="dash-body">
           <div class="stage-title">Dashboard</div>
-          <div class="stage-status"><div class="blink-n"></div></div>
-          <div class="stage-detail">not reached</div>
+          <div class="stage-status"><div class="blink-r"></div></div>
+          <div class="stage-detail">fail</div>
         </div>
       </a>
 
@@ -323,8 +315,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 
       <div class="stage-node">
         <div class="stage-title">Git Repository</div>
-        <div class="stage-status"><div class="blink-a"></div></div>
-        <div class="stage-detail">queued…</div>
+        <div class="stage-status"><div class="blink-n"></div></div>
+        <div class="stage-detail">not reached</div>
       </div>
     </div>
 
@@ -337,6 +329,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">2,453 rows</span>
     <span class="meta-pill g">PASS</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -346,6 +339,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">51 rows</span>
     <span class="meta-pill g">PASS</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -355,6 +349,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">2,719 rows</span>
     <span class="meta-pill g">PASS</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -364,6 +359,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">2,191 rows</span>
     <span class="meta-pill g">PASS</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -373,6 +369,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">1,821 rows</span>
     <span class="meta-pill g">PASS</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -382,6 +379,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">1,255 rows</span>
     <span class="meta-pill g">PASS</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -391,6 +389,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">807 rows</span>
     <span class="meta-pill g">PASS</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -400,6 +399,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">2,261 rows</span>
     <span class="meta-pill g">PASS</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -409,6 +409,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">539 rows</span>
     <span class="meta-pill g">PASS</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -418,6 +419,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">2,381 rows</span>
     <span class="meta-pill g">PASS</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -427,11 +429,13 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">79 rows</span>
     <span class="meta-pill g">PASS</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
     </div>
   </div>
 
+  <div class="warn-strip">&#9888; Pipeline stopped at <b>Build</b> &middot; Exit code 1 &middot; 0 steps not reached</div>
   
 
   <div class="divider" style="margin-top:12px;"></div>
@@ -442,19 +446,6 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
         <thead><tr><th>Date</th><th>Dataset</th><th>Status</th></tr></thead>
         <tbody><div class="log-empty">No incidents recorded &mdash; all pipeline runs have been successful.</div></tbody>
       </table>
-    </div>
-  </div>
-
-  <div class="divider" style="margin-top:12px;"></div>
-  <div class="rc-section">
-    <div class="rc-hdr">Row Count History</div>
-    <div class="rc-wrap">
-      <div class="rc-scroll">
-        <table class="rc-table">
-          <thead><tr><th>Date / Time</th><th>Account</th><th>Count</th><th>Change</th></tr></thead>
-          <tbody><div class="rc-empty">No row count history recorded yet &mdash; run the pipeline to populate.</div></tbody>
-        </table>
-      </div>
     </div>
   </div>
 
