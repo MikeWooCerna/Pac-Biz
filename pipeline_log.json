@@ -6,5 +6,27 @@
     "script": "dashboard.py",
     "status": "fail",
     "error": "ValueError: Length of values (0) does not match length of index (1000) \u2014 VIP transform missing column (df.get footgun). Fixed in commit 478a497."
+  },
+  {
+    "run_id": "2026-06-23T03:00:03",
+    "date": "Jun 23, 2026 03:00 AM",
+    "account": "Skyline",
+    "script": "Skyline_pull.py",
+    "status": "count_drop",
+    "drop": 144,
+    "prev_count": 4621,
+    "new_count": 4477,
+    "error": "Dropped 144 rows (4,621 \u2192 4,477)"
+  },
+  {
+    "run_id": "2026-06-23T03:00:03",
+    "date": "Jun 23, 2026 03:00 AM",
+    "account": "Data Carz",
+    "script": "dc_pull.py",
+    "status": "count_drop",
+    "drop": 424,
+    "prev_count": 2719,
+    "new_count": 2295,
+    "error": "Dropped 424 rows (2,719 \u2192 2,295)"
   }
 ]
