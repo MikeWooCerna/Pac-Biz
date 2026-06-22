@@ -283,6 +283,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 .warn-strip{{background:rgba(80,0,0,0.3);border:1px solid rgba(255,61,61,0.27);border-radius:7px;padding:7px 11px;font-size:13px;color:#ff9090;display:flex;align-items:flex-start;gap:6px;margin-top:7px;position:relative;z-index:1;}}
 .section-hdr{{font-size:11px;color:#5000b4;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:3px;}}
 .divider{{border:none;border-top:1px solid rgba(80,0,180,0.2);margin:7px 0;position:relative;z-index:1;}}
+.sig{{text-align:center;font-size:12px;font-weight:600;letter-spacing:0.08em;background:linear-gradient(90deg,#9050ff,#c090ff 35%,#00e87a 70%,#80ffcc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;padding:6px 0 2px;position:relative;z-index:1;}}
 @media(prefers-reduced-motion:reduce){{
   .blink-g,.blink-r,.blink-a{{animation:none;}}
   canvas{{display:none;}}
@@ -385,6 +386,8 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
   </div>
 
   {warn_html}
+  <div class="divider" style="margin-top:12px;"></div>
+  <div class="sig">Developed for Pac-Biz Reporting &nbsp;&middot;&nbsp; MCerna &nbsp;&middot;&nbsp; v26.06.22</div>
 </div>
 
 <script>
