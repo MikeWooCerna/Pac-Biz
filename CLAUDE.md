@@ -113,11 +113,19 @@ If any step returns a non-zero exit code the entire pipeline aborts (`goto :fail
 
 Pipeline monitoring system is fully live as of 2026-06-22. See `PIPELINE_MONITOR.md` for full technical reference.
 
+### Changes made 2026-06-23
+- **Row count drop alerts** — `pipeline_rowcount_baseline.json` stores last known count per account. After each run, any account that pulled fewer rows than the baseline triggers: (1) an amber warning strip on the monitor, (2) a `↓ N` red badge on the account card, (3) a `COUNT DROP` entry in the incident log. Baseline auto-updates each run.
+- **Account card badges** — every passing account card now shows a small `✓` green badge (no drop) or `↓ N` red badge (count dropped).
+- **Build and Git Push failures in incident log** — previously only data-source account failures were logged. Now `dashboard.py` failures and `git push` failures also appear as `FAILED` rows in the incident log table.
+- **Radar sweep turns red on failure** — sweep arm, trail, tip glow, and center dot switch from purple to red whenever any step fails (account, Build, or Git Push).
+- **VIP transform crash fixed** — see Known issues below.
+
 ### Pending / future work
-- **Row count trend tracking** — log a warning in the incident log when an account's row count drops >X% from the previous run. Not yet implemented; parked for a future session.
-- No other open work items.
+- No open work items.
 
 ## Known issues / open questions
+
+- **VIP transform crash — fixed 2026-06-23 (commit `478a497`)** — `transform_vip_data` used `df.get(col, pd.Series(dtype=float))` in both the `VIP_CRIT_MAP` and `VIP_EXTRA_CRIT_MAP` loops. When VIP pulled a sheet missing a criterion column, the footgun returned a 0-length Series, causing a `ValueError: Length of values (0) does not match length of index (1000)` crash at Build time. Fixed by replacing with the safe pattern in both loops.
 
 - **Britelift Chat uses `britelift_pull.py`** — same script filename as Britelift.
   This is intentional: the bat file `cd`s into the BLC directory first,

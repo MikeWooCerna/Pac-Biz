@@ -1,7 +1,7 @@
 # Pipeline Monitor — Technical Reference
 
 **Live URL:** https://mikewoocerna.github.io/Pac-Biz/pipeline_monitor.html  
-**Last updated:** 2026-06-22  
+**Last updated:** 2026-06-23  
 **Version signature:** `v26.06.22`
 
 ---
@@ -20,7 +20,8 @@ A fully self-contained HTML dashboard that shows the real-time status of every s
 | `log_step.py` | Called by bat files with `init` / `step` / `finish` commands. Writes to `pipeline_status.json`. After each `step`, calls `generate_monitor.py` and pushes to GitHub (live heartbeat). |
 | `masterlist_fetch.py` | Fetches the 3 Masterlist Google Sheets CSVs and caches them locally as `masterlist_cache.csv`, `history_cache.csv`, `movement_cache.csv`. First step in both bat files. |
 | `pipeline_status.json` | Runtime state written by `log_step.py`. Contains `run_id`, `started_at`, `finished_at`, `status`, `failed_at`, `steps[]`. Committed to git after every step. |
-| `pipeline_log.json` | Persistent incident history. Appended to by `generate_monitor.py` when a run finishes with failures or not-reached accounts. Survives across runs. Capped at 300 entries. |
+| `pipeline_log.json` | Persistent incident history. Appended to by `generate_monitor.py` when a run finishes. Survives across runs. Capped at 300 entries. |
+| `pipeline_rowcount_baseline.json` | Last known row count per account (dict). Updated after every finished run. Used to detect drops between runs. |
 | `pipeline_monitor.html` | Generated output. Self-contained, no external deps. Committed to git and served via GitHub Pages. Auto-reloads every 60s. |
 | `masterlist_cache.csv` | Cached Masterlist sheet. Read by `dashboard.py` instead of fetching live. Falls back to live URL if file missing. Not committed to git. |
 | `history_cache.csv` | Cached History sheet. Same pattern. Not committed to git. |
@@ -51,10 +52,12 @@ bat file runs
 
   └─ generate_monitor.py
        ├─ reads pipeline_status.json + all Excel/CSV files
-       ├─ appends incidents to pipeline_log.json (if run finished with failures)
+       ├─ compares row counts to pipeline_rowcount_baseline.json (drop detection)
+       ├─ appends incidents to pipeline_log.json (failures, not-reached, count drops)
+       ├─ updates pipeline_rowcount_baseline.json with current counts
        └─ writes pipeline_monitor.html
 
-  └─ git add pipeline_status.json pipeline_monitor.html pipeline_log.json
+  └─ git add pipeline_status.json pipeline_monitor.html pipeline_log.json pipeline_rowcount_baseline.json
   └─ git commit + push
 ```
 
@@ -109,18 +112,33 @@ Both `blocked` and `pending` display as **"NOT REACHED"** in the UI. Internally 
 
 ### Special center-column nodes
 
-- **Pipeline / Container Monitoring** (radar) — reflects overall run status: complete / running / stopped
+- **Pipeline / Container Monitoring** (radar) — reflects overall run status: complete / running / stopped. **Sweep arm turns red** if any step failed (account, Build, or Git Push).
 - **Data Engine / Processing** (agg node) — shows total rows, sources ok (blinking green/red), started, finished, next scheduled refresh
 - **Dashboard** (browser card) — shows Live Data / Stale Data using same `schedTimes` logic as main dashboard
 - **Git Repository** — `queued…` (amber) during run, `pushed` (green) on success, `not reached` (orange) if pipeline failed before git step
 
 ---
 
-## Radar blips
+## Account card badges
 
-22 blips evenly spaced around the radar. Alternating inner ring (`r=0.44`) and outer ring (`r=0.63`). Masterlist is at -90° (12 o'clock). Colors match status states above. Labels pulse for fail/running/not-reached.
+Each account node card shows a small badge in the meta-pill row:
 
-Sweep animation: `ang += 0.012` per frame (~8.7s per rotation at 60fps). Trail arc = 1.35π.
+| Badge | Color | Meaning |
+|-------|-------|---------|
+| `✓` | Green | Account passed; row count same or higher than last run |
+| `↓ N` | Red/orange | Account passed but row count dropped by N rows vs last run |
+| *(none)* | — | Account failed or not reached (state already visible) |
+
+---
+
+## Radar sweep behavior
+
+The radar sweep arm, trail, tip glow, and center dot change color based on run state:
+
+| State | Color |
+|-------|-------|
+| Success / Running | Purple / violet (`rgba(200,130,255,...)`) |
+| Any failure (account fail, Build fail, Git fail, pipeline failed) | Red (`rgba(255,70,70,...)`) |
 
 ---
 
@@ -128,9 +146,37 @@ Sweep animation: `ang += 0.012` per frame (~8.7s per rotation at 60fps). Trail a
 
 - Appended only when `run_status` is `"success"` or `"failed"` — never mid-run
 - Deduped by `run_id` — regenerating the monitor never double-logs
-- Each entry: `{ run_id, date, account, script, status ("fail"|"not_reached"), error }`
+- Each entry: `{ run_id, date, account, script, status, error }`
 - Capped at 300 entries; HTML table shows most recent 80, newest first
 - Committed to git with every pipeline finish push so history persists
+
+### Status types in the incident log
+
+| Status value | Pill label | Color | Trigger |
+|---|---|---|---|
+| `fail` | FAILED | Red | Account, Build, or Git Push exited non-zero |
+| `not_reached` | NOT REACHED | Orange | Step was blocked by an upstream failure |
+| `count_drop` | COUNT DROP | Amber | Account passed but pulled fewer rows than the previous run |
+
+Build (`dashboard.py`) and Git Push failures are logged to the incident table just like account failures.
+
+---
+
+## Row count drop detection
+
+`pipeline_rowcount_baseline.json` stores the last known row count per account as a flat dict:
+```json
+{"Kelowna": 2261, "Associated Cab": 2191, ...}
+```
+
+After each finished run, `generate_monitor.py`:
+1. Loads the baseline
+2. For every account that passed (has a row count), compares current vs baseline
+3. If current < baseline → appends a `count_drop` entry to the incident log and adds a `↓ N` badge to the account card
+4. Shows an amber **Row count drop detected** warning strip listing all affected accounts with before → after numbers
+5. Updates the baseline with the new counts
+
+The baseline is committed to git so it survives machine restarts and re-clones.
 
 ---
 
@@ -146,12 +192,6 @@ Sweep animation: `ang += 0.012` per frame (~8.7s per rotation at 60fps). Trail a
 All wrapped in try/except — **never aborts the pipeline** if the monitor push fails. Adds ~5–15s per step overhead.
 
 The page has a 60s auto-reload so viewers see updates approximately every 60s during a run.
-
----
-
-## Row counts
-
-Row counts are read from the actual Excel/CSV files on disk immediately after each pull script completes. They reflect what was pulled from the source system for that run. Numbers change between runs — this is expected. No historical trending is stored (parked as future work).
 
 ---
 
@@ -172,6 +212,7 @@ Row counts are read from the actual Excel/CSV files on disk immediately after ea
 | Fail red | `#ff3d3d` | Fail status |
 | Running amber | `#ffaa00` | Running / in-queue status |
 | Not reached orange | `#E84500` `rgb(232,69,0)` | Blocked / pending status |
+| Count drop amber | `#ffaa00` | COUNT DROP pill in incident log |
 | Brand purple | `#5000b4` / `#9050ff` | Section headers, gradients |
 | Card text | `#c0a0ff` | Node titles, agg values |
 | Muted | `#7060a0` | Labels, secondary text |
@@ -179,9 +220,36 @@ Row counts are read from the actual Excel/CSV files on disk immediately after ea
 
 ---
 
+## Known incidents
+
+### 2026-06-22 — VIP transform crash (Build failure)
+
+**Error:**
+```
+File "dashboard.py", line 1864, in transform_vip_data
+    df[vip_key] = [... for ai, mx in zip(ai_s, max_s)]
+ValueError: Length of values (0) does not match length of index (1000)
+```
+
+**Root cause:** The VIP pull returned a sheet missing one of the criterion columns expected by `transform_vip_data`. Both the `VIP_CRIT_MAP` loop (line 1835) and `VIP_EXTRA_CRIT_MAP` loop (line 1861) used `df.get(col, pd.Series(dtype=float))` — the known footgun that returns a 0-length Series when the column is absent, causing the list comprehension to produce 0 items against a 1,000-row DataFrame.
+
+**Fix (commit `478a497`):** Replaced both instances with the safe missing-column pattern:
+```python
+# Before (footgun):
+ai_s = pd.to_numeric(df.get(ai_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+
+# After (safe):
+ai_s = pd.to_numeric(df[ai_col] if ai_col in df.columns else pd.Series(0, index=df.index, dtype=float), errors="coerce").fillna(0)
+```
+
+**Impact:** Pipeline Build step failed; dashboard was not auto-rebuilt. Manually fixed, rebuilt, and pushed. All 22 data source pulls completed successfully before the crash.
+
+---
+
 ## Known limitations
 
 - **Live push adds time** — ~5–15s per step for git operations. 22 steps = up to ~5min extra total pipeline time.
-- **GitHub Pages delay** — ~1 min after each push before the page reflects changes. The 60s reload timer is tuned for this.
-- **Row counts are snapshots** — no trend history. A drop in rows between runs is expected and not flagged automatically (future work).
+- **GitHub Pages delay** — ~1 min after each push before the page reflects changes. The 60s reload timer is tuned for this. Large HTML files (26MB) can take 3–5 min.
+- **Row counts are snapshots** — baseline only stores last run. No full history trend. A drop is flagged once and then the baseline updates.
 - **Mid-run Git Repository node** shows "queued…" because the Git Push step hasn't been logged yet. This resolves to "pushed" once the pipeline finishes.
+- **Incident log dedup is per run_id** — if `generate_monitor.py` is re-run mid-session after manually patching `pipeline_status.json`, the log entry for that run won't be re-written. Add entries manually to `pipeline_log.json` if needed.
