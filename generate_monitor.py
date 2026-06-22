@@ -243,7 +243,10 @@ def generate():
     build_step_data = steps_map.get("Build")
     git_step        = steps_map.get("Git Push")
     build_st  = build_step_data["status"] if build_step_data else ("blocked" if run_status in ("failed", "unknown") else "pending")
-    git_st    = git_step["status"]        if git_step         else ("blocked" if run_status != "success"            else "pass")
+    git_st    = (git_step["status"] if git_step
+                 else ("pass"    if run_status == "success"
+                       else "running" if run_status == "running"
+                       else "blocked"))
 
     if   run_status == "success": hub_st, hub_lbl, hub_color = "pass",    "complete", "#00e87a"
     elif run_status == "failed":  hub_st, hub_lbl, hub_color = "fail",    "stopped",  "#ff3d3d"
@@ -291,7 +294,8 @@ def generate():
     next_sched  = calc_next_schedule()
     run_icon  = "&#10003;" if run_status == "success" else ("&#10007;" if run_status == "failed" else "&mdash;")
     run_color = "#00e87a" if run_status == "success" else ("#ff3d3d" if run_status == "failed" else "#7060a0")
-    git_detail = "pushed" if git_st == "pass" else ("failed" if git_st == "fail" else "not reached")
+    git_detail = {"pass": "pushed", "fail": "failed", "running": "queued…",
+                  "blocked": "not reached", "pending": "not reached"}.get(git_st, git_st)
 
     # Dashboard node inner content
     if build_st == "pass" and build_finish_iso:
