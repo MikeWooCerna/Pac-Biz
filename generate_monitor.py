@@ -273,6 +273,17 @@ def generate():
                                             "prev_count": prev, "new_count": a["rows"],
                                             "error": f"Dropped {drop:,} rows ({prev:,} → {a['rows']:,})"})
                     new_baseline[a["name"]] = a["rows"]
+            # Build and Git Push step failures
+            build_s = steps_map.get("Build")
+            if build_s and build_s.get("status") == "fail":
+                log_entries.append({"run_id": run_id_full, "date": run_date,
+                                    "account": "Build", "script": "dashboard.py",
+                                    "status": "fail", "error": build_s.get("error")})
+            git_s = steps_map.get("Git Push")
+            if git_s and git_s.get("status") == "fail":
+                log_entries.append({"run_id": run_id_full, "date": run_date,
+                                    "account": "Git Push", "script": "git push",
+                                    "status": "fail", "error": git_s.get("error")})
             save_log(log_entries)
             save_baseline(new_baseline)
 
