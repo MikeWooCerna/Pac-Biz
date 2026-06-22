@@ -5,6 +5,7 @@ from pathlib import Path
 
 BASE         = Path(__file__).parent
 STATUS_FILE  = BASE / "pipeline_status.json"
+LOG_FILE     = BASE / "pipeline_log.json"
 OUTPUT_FILE  = BASE / "pipeline_monitor.html"
 LOGO_FILE    = BASE / "pacbiz_logo.png"
 FAVICON_FILE = BASE / "pacbiz_favicon.png"
@@ -73,6 +74,47 @@ def fmt_time(iso_str):
         return dt.strftime("%I:%M %p")
     except Exception:
         return str(iso_str)[:16]
+
+def load_log():
+    try:
+        if LOG_FILE.exists():
+            return json.loads(LOG_FILE.read_text(encoding="utf-8"))
+    except Exception:
+        pass
+    return []
+
+def save_log(entries):
+    try:
+        LOG_FILE.write_text(json.dumps(entries[-300:], indent=2, default=str), encoding="utf-8")
+    except Exception:
+        pass
+
+def fmt_log_date(iso_str):
+    if not iso_str:
+        return "&mdash;"
+    try:
+        dt = datetime.fromisoformat(iso_str)
+        return dt.strftime("%b %d, %Y %I:%M %p").lstrip("0")
+    except Exception:
+        return str(iso_str)[:16]
+
+def render_log_table(log_entries):
+    if not log_entries:
+        return '<div class="log-empty">No incidents recorded &mdash; all pipeline runs have been successful.</div>'
+    rows = []
+    for e in reversed(log_entries[-80:]):
+        st  = e.get("status", "")
+        pill = ('<span class="lp lp-f">FAILED</span>' if st == "fail"
+                else '<span class="lp lp-n">NOT REACHED</span>')
+        err  = (e.get("error") or "").strip()
+        err_html = f'<div class="log-err">{err[:120]}</div>' if err else ""
+        rows.append(
+            f'<tr><td class="log-td-d">{e.get("date","&mdash;")}</td>'
+            f'<td class="log-td-ds"><b>{e.get("account","")}</b>'
+            f' <span class="log-sc">&middot; {e.get("script","")}</span>{err_html}</td>'
+            f'<td class="log-td-st">{pill}</td></tr>'
+        )
+    return "\n".join(rows)
 
 def calc_next_schedule():
     from datetime import timedelta
@@ -178,6 +220,25 @@ def generate():
     failed_ct  = sum(1 for a in account_states if a["status"] == "fail")
     blocked_ct = sum(1 for a in account_states if a["status"] in ("blocked", "pending"))
     total_rows = sum(a["rows"] for a in account_states if a["rows"] is not None)
+
+    # Append finished-run incidents to persistent log
+    log_entries = load_log()
+    if run_status in ("success", "failed") and raw:
+        run_id_full = raw.get("run_id", "")
+        if run_id_full and not any(e.get("run_id") == run_id_full for e in log_entries):
+            run_date = fmt_log_date(raw.get("started_at", ""))
+            for a in account_states:
+                if a["status"] == "fail":
+                    log_entries.append({"run_id": run_id_full, "date": run_date,
+                                        "account": a["name"], "script": a["script"],
+                                        "status": "fail", "error": a.get("error")})
+                elif a["status"] in ("blocked", "pending"):
+                    log_entries.append({"run_id": run_id_full, "date": run_date,
+                                        "account": a["name"], "script": a["script"],
+                                        "status": "not_reached", "error": None})
+            save_log(log_entries)
+
+    log_table_rows = render_log_table(log_entries)
 
     build_step_data = steps_map.get("Build")
     git_step        = steps_map.get("Git Push")
@@ -327,6 +388,25 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 .section-hdr{{font-size:11px;color:#5000b4;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:3px;}}
 .divider{{border:none;border-top:1px solid rgba(80,0,180,0.2);margin:7px 0;position:relative;z-index:1;}}
 .sig{{text-align:center;font-size:12px;font-weight:600;letter-spacing:0.08em;background:linear-gradient(90deg,#9050ff,#c090ff 35%,#00e87a 70%,#80ffcc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;padding:6px 0 2px;position:relative;z-index:1;}}
+.log-section{{margin-top:14px;position:relative;z-index:1;}}
+.log-hdr{{font-size:11px;color:#5000b4;letter-spacing:0.07em;text-transform:uppercase;margin-bottom:7px;}}
+.log-wrap{{overflow-x:auto;border-radius:8px;border:1px solid rgba(80,0,180,0.22);}}
+.log-table{{width:100%;border-collapse:collapse;font-size:11px;}}
+.log-table thead tr{{background:rgba(40,10,90,0.6);}}
+.log-table th{{text-align:left;color:#7060a0;font-weight:600;padding:6px 10px;border-bottom:1px solid rgba(80,0,180,0.25);white-space:nowrap;}}
+.log-table td{{padding:5px 10px;border-bottom:1px solid rgba(80,0,180,0.1);vertical-align:top;}}
+.log-table tr:last-child td{{border-bottom:none;}}
+.log-table tbody tr:hover td{{background:rgba(80,0,180,0.07);}}
+.log-td-d{{color:#7060a0;white-space:nowrap;}}
+.log-td-ds{{color:#c0a0ff;}}
+.log-td-ds b{{font-weight:500;}}
+.log-sc{{color:#5000b4;}}
+.log-err{{font-size:10px;color:#ff9090;font-family:monospace;margin-top:2px;white-space:pre-wrap;word-break:break-word;}}
+.log-td-st{{white-space:nowrap;}}
+.lp{{font-size:10px;padding:1px 8px;border-radius:99px;white-space:nowrap;}}
+.lp-f{{background:rgba(255,61,61,0.1);color:#ff8080;border:1px solid rgba(255,61,61,0.22);}}
+.lp-n{{background:rgba(232,69,0,0.1);color:#E84500;border:1px solid rgba(232,69,0,0.28);}}
+.log-empty{{text-align:center;color:#4a3d7a;font-size:12px;padding:14px;background:rgba(40,10,90,0.25);border-radius:8px;border:1px solid rgba(80,0,180,0.18);}}
 @media(prefers-reduced-motion:reduce){{
   .blink-g,.blink-r,.blink-a{{animation:none;}}
   canvas{{display:none;}}
@@ -436,6 +516,18 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
   </div>
 
   {warn_html}
+
+  <div class="divider" style="margin-top:12px;"></div>
+  <div class="log-section">
+    <div class="log-hdr">Incident Log</div>
+    <div class="log-wrap">
+      <table class="log-table">
+        <thead><tr><th>Date</th><th>Dataset</th><th>Status</th></tr></thead>
+        <tbody>{log_table_rows}</tbody>
+      </table>
+    </div>
+  </div>
+
   <div class="divider" style="margin-top:12px;"></div>
   <div class="sig">Developed for Pac-Biz Reporting &nbsp;&middot;&nbsp; MCerna &nbsp;&middot;&nbsp; v26.06.22</div>
 </div>

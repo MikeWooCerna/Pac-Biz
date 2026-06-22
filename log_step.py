@@ -1,7 +1,28 @@
 """Pipeline step logger — called by update_coaching_dashboard_auto.bat after each pull step."""
-import sys, json
+import sys, json, subprocess
 from datetime import datetime
 from pathlib import Path
+
+def push_live(label):
+    """Regenerate monitor HTML and push to GitHub Pages — best effort, never aborts pipeline."""
+    base = Path(__file__).parent
+    try:
+        subprocess.run([sys.executable, str(base / "generate_monitor.py")],
+                       cwd=str(base), capture_output=True, timeout=60)
+        subprocess.run(["git", "add", "pipeline_status.json", "pipeline_monitor.html"],
+                       cwd=str(base), capture_output=True, timeout=30)
+        r = subprocess.run(["git", "diff", "--cached", "--quiet"],
+                           cwd=str(base), capture_output=True, timeout=30)
+        if r.returncode != 0:
+            subprocess.run(["git", "commit", "-m", f"[live] {label}"],
+                           cwd=str(base), capture_output=True, timeout=30)
+            subprocess.run(["git", "pull", "--rebase", "--autostash"],
+                           cwd=str(base), capture_output=True, timeout=60)
+            subprocess.run(["git", "push"],
+                           cwd=str(base), capture_output=True, timeout=60)
+        print(f"  [monitor] live push ok: {label}")
+    except Exception as e:
+        print(f"  [monitor] live push skipped: {e}")
 
 STATUS_FILE = Path(__file__).parent / "pipeline_status.json"
 ERR_TMP     = Path(__file__).parent / "step_err.tmp"
@@ -78,6 +99,7 @@ elif cmd == "step":
     print(f"Logged: {account} ({script}) -> {'PASS' if exit_code == 0 else 'FAIL'}")
     if error_msg:
         print(f"  Error: {error_msg[:120]}")
+    push_live(account)
 
 elif cmd == "finish":
     outcome = sys.argv[2] if len(sys.argv) > 2 else "success"
