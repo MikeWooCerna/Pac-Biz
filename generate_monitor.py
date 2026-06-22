@@ -97,7 +97,8 @@ def node_cls(status):
     return {"pass": "n-pass", "fail": "n-fail", "running": "n-warn"}.get(status, "n-blocked")
 
 def title_color(status):
-    return {"pass": "#00e87a", "fail": "#ff6060", "running": "#ffaa00"}.get(status, "#4a3d7a")
+    return {"pass": "#00e87a", "fail": "#ff6060", "running": "#ffaa00",
+            "blocked": "#E84500", "pending": "#E84500"}.get(status, "#4a3d7a")
 
 def dot_cls(status):
     return {"pass": "b-g", "fail": "b-r"}.get(status, "b-n")
@@ -106,7 +107,7 @@ STATUS_LABELS = {"pass": "PASS", "fail": "FAIL", "running": "RUNNING",
                  "blocked": "NOT REACHED", "pending": "NOT REACHED"}
 
 def render_node(name, script, status, ts, rows, error=None):
-    pill_cls = {"pass": "g", "fail": "r"}.get(status, "")
+    pill_cls = {"pass": "g", "fail": "r", "blocked": "o", "pending": "o"}.get(status, "")
     rows_str = f"{rows:,}" if rows is not None else "&mdash;"
     status_lbl = STATUS_LABELS.get(status, status.upper())
     if status == "fail":
@@ -271,11 +272,12 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 .leg-item{{display:flex;align-items:center;gap:5px;font-size:13px;color:#9080c0;}}
 .blink-g{{width:7px;height:7px;border-radius:50%;background:#00e87a;animation:blinkG 1.6s ease-in-out infinite;flex-shrink:0;}}
 .blink-r{{width:7px;height:7px;border-radius:50%;background:#ff3d3d;animation:blinkR 0.9s ease-in-out infinite;flex-shrink:0;}}
-.blink-n{{width:7px;height:7px;border-radius:50%;background:#4a3d7a;flex-shrink:0;}}
+.blink-n{{width:7px;height:7px;border-radius:50%;background:#E84500;animation:blinkO 1.4s ease-in-out infinite;flex-shrink:0;}}
 .blink-a{{width:7px;height:7px;border-radius:50%;background:#ffaa00;animation:blinkA 1.2s ease-in-out infinite;flex-shrink:0;}}
 @keyframes blinkG{{0%,100%{{opacity:1;box-shadow:0 0 5px #00e87a;}}50%{{opacity:0.3;box-shadow:none;}}}}
 @keyframes blinkR{{0%,100%{{opacity:1;box-shadow:0 0 7px #ff3d3d;}}50%{{opacity:0.2;box-shadow:none;}}}}
 @keyframes blinkA{{0%,100%{{opacity:1;box-shadow:0 0 5px #ffaa00;}}50%{{opacity:0.3;box-shadow:none;}}}}
+@keyframes blinkO{{0%,100%{{opacity:1;box-shadow:0 0 6px #E84500;}}50%{{opacity:0.25;box-shadow:none;}}}}
 .main-layout{{display:grid;grid-template-columns:1fr 348px 1fr;gap:7px;align-items:start;position:relative;z-index:1;}}
 .side-col{{display:flex;flex-direction:column;gap:3px;}}
 .center-col{{display:flex;flex-direction:column;align-items:center;gap:4px;}}
@@ -291,10 +293,11 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 .meta-pill{{font-size:10px;padding:1px 6px;border-radius:99px;background:rgba(80,0,180,0.2);color:#7060a0;border:1px solid rgba(80,0,180,0.18);white-space:nowrap;}}
 .meta-pill.g{{background:rgba(0,232,122,0.07);color:#30b860;border-color:rgba(0,232,122,0.18);}}
 .meta-pill.r{{background:rgba(255,61,61,0.1);color:#ff8080;border-color:rgba(255,61,61,0.2);}}
-.b-g{{background:#00e87a;}}.b-r{{background:#ff3d3d;}}.b-n{{background:#4a3d7a;}}
+.meta-pill.o{{background:rgba(232,69,0,0.1);color:#E84500;border-color:rgba(232,69,0,0.3);}}
+.b-g{{background:#00e87a;}}.b-r{{background:#ff3d3d;}}.b-n{{background:#E84500;}}
 .n-pass{{background:rgba(0,50,25,0.2);border-color:rgba(0,232,122,0.18);}}
 .n-fail{{background:rgba(70,0,0,0.35);border-color:rgba(255,61,61,0.38);}}
-.n-blocked,.n-pending{{background:rgba(25,10,55,0.4);border-color:rgba(60,45,110,0.3);}}
+.n-blocked,.n-pending{{background:rgba(60,18,0,0.18);border-color:rgba(232,69,0,0.4);}}
 .n-warn{{background:rgba(70,40,0,0.3);border-color:rgba(255,170,0,0.3);}}
 /* --- Center column --- */
 .radar-wrap{{position:relative;width:324px;height:324px;flex-shrink:0;}}
