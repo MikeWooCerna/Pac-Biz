@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "run_id": "2026-06-22T22:54:46",
+    "date": "Jun 22, 2026 10:54 PM",
+    "account": "Build",
+    "script": "dashboard.py",
+    "status": "fail",
+    "error": "ValueError: Length of values (0) does not match length of index (1000) \u2014 VIP transform missing column (df.get footgun). Fixed in commit 478a497."
+  }
+]
