@@ -102,9 +102,13 @@ def title_color(status):
 def dot_cls(status):
     return {"pass": "b-g", "fail": "b-r"}.get(status, "b-n")
 
+STATUS_LABELS = {"pass": "PASS", "fail": "FAIL", "running": "RUNNING",
+                 "blocked": "NOT REACHED", "pending": "NOT REACHED"}
+
 def render_node(name, script, status, ts, rows, error=None):
     pill_cls = {"pass": "g", "fail": "r"}.get(status, "")
     rows_str = f"{rows:,}" if rows is not None else "&mdash;"
+    status_lbl = STATUS_LABELS.get(status, status.upper())
     if status == "fail":
         if error:
             safe_err = error.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
@@ -119,7 +123,7 @@ def render_node(name, script, status, ts, rows, error=None):
   {err_html}
   <div class="node-meta">
     <span class="meta-pill {pill_cls}">{rows_str} rows</span>
-    <span class="meta-pill {pill_cls}">{status.upper()}</span>
+    <span class="meta-pill {pill_cls}">{status_lbl}</span>
   </div>
 </div>"""
 
