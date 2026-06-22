@@ -148,9 +148,9 @@ def generate():
         warn_html = f"""<div class="warn-strip">&#9888; Pipeline stopped at <b>{failed_at}</b> &middot; Exit code 1 &middot; {blocked_ct} trigger{'s' if blocked_ct != 1 else ''} + dashboard.py + Git Repository not reached</div>"""
 
     logo = logo_b64()
-    logo_img = (f'<img src="data:image/png;base64,{logo}" style="width:38px;height:38px;border-radius:6px;object-fit:contain;background:#fff;padding:2px;" alt="PacBiz">'
+    logo_img = (f'<img src="data:image/png;base64,{logo}" style="width:44px;height:44px;border-radius:6px;object-fit:contain;background:#fff;padding:2px;" alt="PacBiz">'
                 if logo else
-                '<div style="width:38px;height:38px;border-radius:6px;background:linear-gradient(135deg,#1a0050,#5000b4);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#c0a0ff;flex-shrink:0;">PB</div>')
+                '<div style="width:44px;height:44px;border-radius:6px;background:linear-gradient(135deg,#1a0050,#5000b4);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#c0a0ff;flex-shrink:0;">PB</div>')
 
     ok_color   = "#00e87a" if failed_ct == 0 else "#ff9090"
     run_icon   = "&#10003;" if run_status == "success" else ("&#10007;" if run_status == "failed" else "&mdash;")
@@ -168,14 +168,14 @@ def generate():
 <style>
 *{{box-sizing:border-box;margin:0;padding:0;}}
 body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sans-serif;padding:20px;}}
-.eco{{background:#05001a;border-radius:12px;padding:1.5rem 1rem;color:#fff;position:relative;overflow:hidden;max-width:980px;margin:0 auto;}}
+.eco{{background:#05001a;border-radius:12px;padding:1.5rem 1rem;color:#fff;position:relative;overflow:hidden;max-width:1120px;margin:0 auto;}}
 .grid-bg{{position:absolute;inset:0;background-image:linear-gradient(rgba(80,0,180,0.08) 1px,transparent 1px),linear-gradient(90deg,rgba(80,0,180,0.08) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;}}
 .top-bar{{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.25rem;position:relative;z-index:1;}}
 .logo-box{{display:flex;align-items:center;gap:8px;}}
-.brand-name{{font-size:15px;font-weight:500;color:#c0a0ff;letter-spacing:0.04em;}}
-.brand-tag{{font-size:9px;color:#7060a0;margin-top:1px;}}
+.brand-name{{font-size:17px;font-weight:500;color:#c0a0ff;letter-spacing:0.04em;}}
+.brand-tag{{font-size:11px;color:#7060a0;margin-top:1px;}}
 .legend{{display:flex;justify-content:center;gap:14px;margin-bottom:1rem;}}
-.leg-item{{display:flex;align-items:center;gap:5px;font-size:10px;color:#9080c0;}}
+.leg-item{{display:flex;align-items:center;gap:5px;font-size:12px;color:#9080c0;}}
 .blink-g{{width:7px;height:7px;border-radius:50%;background:#00e87a;animation:blinkG 1.6s ease-in-out infinite;flex-shrink:0;}}
 .blink-r{{width:7px;height:7px;border-radius:50%;background:#ff3d3d;animation:blinkR 0.9s ease-in-out infinite;flex-shrink:0;}}
 .blink-n{{width:7px;height:7px;border-radius:50%;background:#4a3d7a;flex-shrink:0;}}
@@ -183,17 +183,17 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 @keyframes blinkG{{0%,100%{{opacity:1;box-shadow:0 0 5px #00e87a;}}50%{{opacity:0.3;box-shadow:none;}}}}
 @keyframes blinkR{{0%,100%{{opacity:1;box-shadow:0 0 7px #ff3d3d;}}50%{{opacity:0.2;box-shadow:none;}}}}
 @keyframes blinkA{{0%,100%{{opacity:1;box-shadow:0 0 5px #ffaa00;}}50%{{opacity:0.3;box-shadow:none;}}}}
-.main-layout{{display:grid;grid-template-columns:1fr 134px 1fr;gap:8px;align-items:start;position:relative;z-index:1;}}
+.main-layout{{display:grid;grid-template-columns:1fr 164px 1fr;gap:8px;align-items:start;position:relative;z-index:1;}}
 .side-col{{display:flex;flex-direction:column;gap:5px;}}
 .center-col{{display:flex;flex-direction:column;align-items:center;gap:4px;}}
-.node{{border-radius:8px;border:1px solid;padding:7px 9px;}}
-.node-title{{font-size:10px;font-weight:500;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;gap:4px;}}
+.node{{border-radius:8px;border:1px solid;padding:8px 10px;}}
+.node-title{{font-size:12px;font-weight:500;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;gap:4px;}}
 .node-title span{{flex:1;}}
 .node-rows{{display:flex;flex-direction:column;gap:2px;}}
-.node-row{{display:flex;align-items:center;gap:4px;font-size:9px;color:#b0a0d0;}}
-.node-row b{{width:5px;height:5px;border-radius:50%;flex-shrink:0;}}
-.node-meta{{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap;}}
-.meta-pill{{font-size:8px;padding:1px 6px;border-radius:99px;background:rgba(80,0,180,0.2);color:#9080c0;border:1px solid rgba(80,0,180,0.2);white-space:nowrap;}}
+.node-row{{display:flex;align-items:center;gap:4px;font-size:11px;color:#b0a0d0;}}
+.node-row b{{width:6px;height:6px;border-radius:50%;flex-shrink:0;}}
+.node-meta{{display:flex;gap:4px;margin-top:5px;flex-wrap:wrap;}}
+.meta-pill{{font-size:10px;padding:2px 7px;border-radius:99px;background:rgba(80,0,180,0.2);color:#9080c0;border:1px solid rgba(80,0,180,0.2);white-space:nowrap;}}
 .meta-pill.g{{background:rgba(0,232,122,0.08);color:#40c870;border-color:rgba(0,232,122,0.2);}}
 .meta-pill.r{{background:rgba(255,61,61,0.1);color:#ff9090;border-color:rgba(255,61,61,0.2);}}
 .b-g{{background:#00e87a;}}.b-r{{background:#ff3d3d;}}.b-n{{background:#4a3d7a;}}
@@ -201,30 +201,30 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 .n-fail{{background:rgba(80,0,0,0.35);border-color:rgba(255,61,61,0.4);}}
 .n-blocked,.n-pending{{background:rgba(30,15,60,0.4);border-color:rgba(74,61,122,0.33);}}
 .n-warn{{background:rgba(80,50,0,0.3);border-color:rgba(255,170,0,0.3);}}
-.center-hub{{width:94px;height:94px;border-radius:50%;border:2px solid #5000b4;background:radial-gradient(circle,#1a0050 60%,#0d0028);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;}}
-.hub-ring{{position:absolute;inset:-7px;border-radius:50%;border:1px solid rgba(80,0,180,0.33);animation:spin 8s linear infinite;}}
-.hub-ring2{{position:absolute;inset:-14px;border-radius:50%;border:1px solid rgba(80,0,180,0.13);animation:spin 14s linear infinite reverse;}}
+.center-hub{{width:112px;height:112px;border-radius:50%;border:2px solid #5000b4;background:radial-gradient(circle,#1a0050 60%,#0d0028);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;}}
+.hub-ring{{position:absolute;inset:-8px;border-radius:50%;border:1px solid rgba(80,0,180,0.33);animation:spin 8s linear infinite;}}
+.hub-ring2{{position:absolute;inset:-16px;border-radius:50%;border:1px solid rgba(80,0,180,0.13);animation:spin 14s linear infinite reverse;}}
 @keyframes spin{{from{{transform:rotate(0deg);}}to{{transform:rotate(360deg);}}}}
-.hub-label{{font-size:10px;font-weight:500;color:#c0a0ff;letter-spacing:0.02em;line-height:1.2;}}
-.hub-status{{font-size:8px;margin-top:3px;display:flex;align-items:center;gap:2px;}}
+.hub-label{{font-size:12px;font-weight:500;color:#c0a0ff;letter-spacing:0.02em;line-height:1.2;}}
+.hub-status{{font-size:10px;margin-top:3px;display:flex;align-items:center;gap:2px;}}
 .connector{{width:2px;height:14px;background:linear-gradient(rgba(80,0,180,0.33),rgba(80,0,180,0.13));margin:0 auto;}}
-.stage-node{{border-radius:8px;border:1px solid rgba(80,0,180,0.4);background:rgba(40,10,90,0.4);padding:7px 8px;width:100%;text-align:center;}}
-.stage-title{{font-size:9px;font-weight:500;color:#c0a0ff;margin-bottom:3px;}}
+.stage-node{{border-radius:8px;border:1px solid rgba(80,0,180,0.4);background:rgba(40,10,90,0.4);padding:8px 10px;width:100%;text-align:center;}}
+.stage-title{{font-size:11px;font-weight:500;color:#c0a0ff;margin-bottom:3px;}}
 .stage-status{{display:flex;justify-content:center;margin:2px 0;}}
-.stage-detail{{font-size:8px;color:#4a3d7a;}}
-.agg-node{{border-radius:10px;border:1px solid rgba(80,0,180,0.47);background:rgba(40,10,90,0.5);padding:8px 10px;width:100%;margin:2px 0;}}
-.agg-title{{font-size:9px;font-weight:500;color:#c0a0ff;text-align:center;margin-bottom:6px;}}
+.stage-detail{{font-size:10px;color:#4a3d7a;}}
+.agg-node{{border-radius:10px;border:1px solid rgba(80,0,180,0.47);background:rgba(40,10,90,0.5);padding:9px 11px;width:100%;margin:2px 0;}}
+.agg-title{{font-size:11px;font-weight:500;color:#c0a0ff;text-align:center;margin-bottom:6px;}}
 .agg-grid{{display:grid;grid-template-columns:1fr 1fr;gap:4px;}}
-.agg-item{{text-align:center;background:rgba(80,0,180,0.15);border-radius:5px;padding:4px;}}
-.agg-val{{font-size:11px;font-weight:500;}}
-.agg-lbl{{font-size:8px;color:#7060a0;margin-top:1px;}}
-.warn-strip{{background:rgba(80,0,0,0.3);border:1px solid rgba(255,61,61,0.27);border-radius:7px;padding:6px 9px;font-size:9px;color:#ff9090;display:flex;align-items:flex-start;gap:5px;margin-top:8px;position:relative;z-index:1;}}
+.agg-item{{text-align:center;background:rgba(80,0,180,0.15);border-radius:5px;padding:5px;}}
+.agg-val{{font-size:13px;font-weight:500;}}
+.agg-lbl{{font-size:10px;color:#7060a0;margin-top:1px;}}
+.warn-strip{{background:rgba(80,0,0,0.3);border:1px solid rgba(255,61,61,0.27);border-radius:7px;padding:7px 10px;font-size:11px;color:#ff9090;display:flex;align-items:flex-start;gap:5px;margin-top:8px;position:relative;z-index:1;}}
 .stat-bar{{display:flex;justify-content:center;gap:10px;padding:8px 0 0;flex-wrap:wrap;position:relative;z-index:1;}}
 .stat{{text-align:center;}}
-.stat-n{{font-size:16px;font-weight:500;}}
-.stat-l{{font-size:9px;color:#7060a0;margin-top:1px;}}
-.divline{{width:1px;height:30px;background:#2a1a4a;align-self:center;}}
-.section-hdr{{font-size:8px;color:#5000b4;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:3px;}}
+.stat-n{{font-size:18px;font-weight:500;}}
+.stat-l{{font-size:11px;color:#7060a0;margin-top:1px;}}
+.divline{{width:1px;height:32px;background:#2a1a4a;align-self:center;}}
+.section-hdr{{font-size:10px;color:#5000b4;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:3px;}}
 .divider{{border:none;border-top:1px solid rgba(80,0,180,0.2);margin:8px 0;position:relative;z-index:1;}}
 .meta-row{{display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1;}}
 @media(prefers-reduced-motion:reduce){{
@@ -245,9 +245,9 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
       </div>
     </div>
     <div style="text-align:right;">
-      <div style="font-size:9px;color:#7060a0;">Live Pipeline Status &middot; Run {run_id}</div>
-      <div style="font-size:8px;color:#4a3d7a;margin-top:1px;">Page built: {now_str}</div>
-      <div style="font-size:8px;color:#4a3d7a;margin-top:1px;" id="cd">Auto-refresh in 60s</div>
+      <div style="font-size:11px;color:#7060a0;">Live Pipeline Status &middot; Run {run_id}</div>
+      <div style="font-size:10px;color:#4a3d7a;margin-top:1px;">Page built: {now_str}</div>
+      <div style="font-size:10px;color:#4a3d7a;margin-top:1px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
 
@@ -272,7 +272,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
         <div class="hub-ring"></div>
         <div class="hub-ring2"></div>
         <div class="hub-label">Pipeline<br>Trigger</div>
-        <div class="hub-status">{dot(hub_st)}<span style="color:{hub_color};font-size:8px;">{hub_lbl}</span></div>
+        <div class="hub-status">{dot(hub_st)}<span style="color:{hub_color};font-size:10px;">{hub_lbl}</span></div>
       </div>
 
       <div class="connector"></div>
@@ -282,8 +282,8 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
         <div class="agg-grid">
           <div class="agg-item"><div class="agg-val" style="color:#00e87a;">{total_rows:,}</div><div class="agg-lbl">total rows</div></div>
           <div class="agg-item"><div class="agg-val" style="color:{ok_color};">{passed}/{passed+failed_ct+blocked_ct}</div><div class="agg-lbl">sources ok</div></div>
-          <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:9px;">{started_at}</div><div class="agg-lbl">started</div></div>
-          <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:9px;">{finished_at}</div><div class="agg-lbl">finished</div></div>
+          <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:11px;">{started_at}</div><div class="agg-lbl">started</div></div>
+          <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:11px;">{finished_at}</div><div class="agg-lbl">finished</div></div>
         </div>
       </div>
 
