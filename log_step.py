@@ -4,6 +4,7 @@ from datetime import datetime
 from pathlib import Path
 
 STATUS_FILE = Path(__file__).parent / "pipeline_status.json"
+ERR_TMP     = Path(__file__).parent / "step_err.tmp"
 
 def load():
     if STATUS_FILE.exists():
@@ -16,19 +17,35 @@ def load():
 def save(data):
     STATUS_FILE.write_text(json.dumps(data, indent=2, default=str), encoding="utf-8")
 
+def read_error():
+    try:
+        if ERR_TMP.exists():
+            text = ERR_TMP.read_text(encoding="utf-8", errors="replace").strip()
+            if text:
+                lines = [l for l in text.splitlines() if l.strip()]
+                return "\n".join(lines[-4:]) if lines else None
+    except Exception:
+        pass
+    return None
+
 cmd = sys.argv[1] if len(sys.argv) > 1 else ""
 
 if cmd == "init":
     now = datetime.now()
     data = {
-        "run_id":     now.strftime("%Y-%m-%dT%H:%M:%S"),
-        "started_at": now.isoformat(),
+        "run_id":      now.strftime("%Y-%m-%dT%H:%M:%S"),
+        "started_at":  now.isoformat(),
         "finished_at": None,
-        "status":     "running",
-        "failed_at":  None,
-        "steps":      []
+        "status":      "running",
+        "failed_at":   None,
+        "steps":       []
     }
     save(data)
+    # Clear leftover error from previous run
+    try:
+        ERR_TMP.write_text("", encoding="utf-8")
+    except Exception:
+        pass
     print(f"Pipeline log initialized: {data['run_id']}")
 
 elif cmd == "step":
@@ -42,12 +59,15 @@ elif cmd == "step":
         data = {"run_id": now.strftime("%Y-%m-%dT%H:%M:%S"), "started_at": now.isoformat(),
                 "finished_at": None, "status": "running", "failed_at": None, "steps": []}
 
+    error_msg = read_error() if exit_code != 0 else None
+
     data["steps"].append({
         "account":   account,
         "script":    script,
         "exit_code": exit_code,
         "status":    "pass" if exit_code == 0 else "fail",
-        "timestamp": datetime.now().isoformat()
+        "timestamp": datetime.now().isoformat(),
+        "error":     error_msg
     })
 
     if exit_code != 0 and data.get("status") != "failed":
@@ -56,6 +76,8 @@ elif cmd == "step":
 
     save(data)
     print(f"Logged: {account} ({script}) -> {'PASS' if exit_code == 0 else 'FAIL'}")
+    if error_msg:
+        print(f"  Error: {error_msg[:120]}")
 
 elif cmd == "finish":
     outcome = sys.argv[2] if len(sys.argv) > 2 else "success"
