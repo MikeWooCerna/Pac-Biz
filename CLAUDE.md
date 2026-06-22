@@ -111,7 +111,11 @@ If any step returns a non-zero exit code the entire pipeline aborts (`goto :fail
 
 ## Active work / next steps
 
-- [UPDATE THIS before switching away from this project]
+Pipeline monitoring system is fully live as of 2026-06-22. See `PIPELINE_MONITOR.md` for full technical reference.
+
+### Pending / future work
+- **Row count trend tracking** — log a warning in the incident log when an account's row count drops >X% from the previous run. Not yet implemented; parked for a future session.
+- No other open work items.
 
 ## Known issues / open questions
 
