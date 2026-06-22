@@ -172,11 +172,21 @@ def generate():
         warn_html = f"""<div class="warn-strip">&#9888; Pipeline stopped at <b>{failed_at}</b> &middot; Exit code 1 &middot; {blocked_ct} step{'s' if blocked_ct != 1 else ''} not reached</div>"""
 
     # Build radar blips JS array
+    SHORT_NAMES = {
+        "Coaching": "Coaching", "M7": "M7", "Parentis Health": "Parentis",
+        "Britelift": "Britelift", "Britelift Chat": "BLC", "RideX": "RideX",
+        "Hamilton": "Hamilton", "Skyline": "Skyline", "VIP": "VIP", "C&H": "C&H",
+        "Reno Cab": "Reno Cab", "Trans Iowa": "Trans Iowa", "Data Carz": "Data Carz",
+        "Associated Cab": "Assoc.Cab", "Ollies": "Ollies", "Circle Taxi": "Cir.Taxi",
+        "YCOV": "YCOV", "Kelowna": "Kelowna", "Vermont": "Vermont",
+        "YCDC": "YCDC", "Blueline": "Blueline",
+    }
     blips_js_items = []
     for i, a in enumerate(account_states):
         angle = -90 + (i / len(account_states)) * 360
         r_frac = 0.63 if i % 2 == 0 else 0.44
-        blips_js_items.append(f'{{ang:{angle:.2f},r:{r_frac},st:"{a["status"]}"}},')
+        nm = SHORT_NAMES.get(a["name"], a["name"])
+        blips_js_items.append(f'{{ang:{angle:.2f},r:{r_frac},st:"{a["status"]}",nm:"{nm}"}},')
     blips_js = "[\n    " + "\n    ".join(blips_js_items) + "\n  ]"
 
     logo = logo_b64()
@@ -213,7 +223,7 @@ def generate():
 <style>
 *{{box-sizing:border-box;margin:0;padding:0;}}
 body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sans-serif;padding:20px;}}
-.eco{{background:#05001a;border-radius:12px;padding:1.25rem 1.25rem 1rem;color:#fff;position:relative;overflow:hidden;max-width:1180px;margin:0 auto;}}
+.eco{{background:#05001a;border-radius:12px;padding:1.25rem 1.25rem 1rem;color:#fff;position:relative;overflow:hidden;max-width:1340px;margin:0 auto;}}
 .grid-bg{{position:absolute;inset:0;background-image:linear-gradient(rgba(80,0,180,0.07) 1px,transparent 1px),linear-gradient(90deg,rgba(80,0,180,0.07) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;}}
 .top-bar{{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.3rem;position:relative;z-index:1;}}
 .logo-box{{display:flex;align-items:center;gap:10px;}}
@@ -236,7 +246,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 @keyframes blinkG{{0%,100%{{opacity:1;box-shadow:0 0 5px #00e87a;}}50%{{opacity:0.3;box-shadow:none;}}}}
 @keyframes blinkR{{0%,100%{{opacity:1;box-shadow:0 0 7px #ff3d3d;}}50%{{opacity:0.2;box-shadow:none;}}}}
 @keyframes blinkA{{0%,100%{{opacity:1;box-shadow:0 0 5px #ffaa00;}}50%{{opacity:0.3;box-shadow:none;}}}}
-.main-layout{{display:grid;grid-template-columns:1fr 210px 1fr;gap:7px;align-items:start;position:relative;z-index:1;}}
+.main-layout{{display:grid;grid-template-columns:1fr 310px 1fr;gap:7px;align-items:start;position:relative;z-index:1;}}
 .side-col{{display:flex;flex-direction:column;gap:3px;}}
 .center-col{{display:flex;flex-direction:column;align-items:center;gap:4px;}}
 /* --- Compact account nodes --- */
@@ -257,7 +267,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 .n-blocked,.n-pending{{background:rgba(25,10,55,0.4);border-color:rgba(60,45,110,0.3);}}
 .n-warn{{background:rgba(70,40,0,0.3);border-color:rgba(255,170,0,0.3);}}
 /* --- Center column --- */
-.radar-wrap{{position:relative;width:144px;height:144px;flex-shrink:0;}}
+.radar-wrap{{position:relative;width:288px;height:288px;flex-shrink:0;}}
 .radar-label{{text-align:center;margin-top:4px;}}
 .radar-lbl-main{{font-size:13px;font-weight:500;color:#c0a0ff;}}
 .radar-lbl-status{{font-size:12px;margin-top:2px;display:flex;align-items:center;justify-content:center;gap:4px;}}
@@ -338,7 +348,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 
     <div class="center-col">
       <div class="radar-wrap">
-        <canvas id="pb-radar" width="144" height="144"></canvas>
+        <canvas id="pb-radar" width="288" height="288" style="width:288px;height:288px;"></canvas>
       </div>
       <div class="radar-label">
         <div class="radar-lbl-main">Pipeline Trigger</div>
@@ -475,6 +485,25 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
       }}
       ctx.beginPath(); ctx.arc(bx,by,sz,0,Math.PI*2);
       ctx.fillStyle='rgba('+col+','+(0.45+pulse*0.55)+')'; ctx.fill();
+
+      // label
+      var isDim = b.st==='blocked'||b.st==='pending';
+      var isFail = b.st==='fail', isRun = b.st==='running';
+      var fontSize = (isFail||isRun) ? 8 : 7;
+      var labelAlpha = isDim ? 0.2 : (isFail ? (0.7+pulse*0.3) : 0.55);
+      ctx.font = 'bold '+fontSize+'px system-ui,sans-serif';
+      ctx.fillStyle = 'rgba('+col+','+labelAlpha+')';
+      var labelOffset = R * b.r + 14;
+      var lx = cx + Math.cos(ba) * labelOffset;
+      var ly = cy + Math.sin(ba) * labelOffset;
+      var cosA = Math.cos(ba);
+      ctx.textAlign = cosA > 0.2 ? 'left' : (cosA < -0.2 ? 'right' : 'center');
+      ctx.textBaseline = 'middle';
+      if (isFail || isRun) {{
+        ctx.shadowBlur = 6; ctx.shadowColor = 'rgba('+col+',0.7)';
+      }}
+      ctx.fillText(b.nm, lx, ly);
+      ctx.shadowBlur = 0;
     }});
 
     // sweep arm glow tip

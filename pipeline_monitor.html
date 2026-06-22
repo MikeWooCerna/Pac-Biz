@@ -11,7 +11,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sans-serif;padding:20px;}
-.eco{background:#05001a;border-radius:12px;padding:1.25rem 1.25rem 1rem;color:#fff;position:relative;overflow:hidden;max-width:1180px;margin:0 auto;}
+.eco{background:#05001a;border-radius:12px;padding:1.25rem 1.25rem 1rem;color:#fff;position:relative;overflow:hidden;max-width:1340px;margin:0 auto;}
 .grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(80,0,180,0.07) 1px,transparent 1px),linear-gradient(90deg,rgba(80,0,180,0.07) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;}
 .top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.3rem;position:relative;z-index:1;}
 .logo-box{display:flex;align-items:center;gap:10px;}
@@ -34,7 +34,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 @keyframes blinkG{0%,100%{opacity:1;box-shadow:0 0 5px #00e87a;}50%{opacity:0.3;box-shadow:none;}}
 @keyframes blinkR{0%,100%{opacity:1;box-shadow:0 0 7px #ff3d3d;}50%{opacity:0.2;box-shadow:none;}}
 @keyframes blinkA{0%,100%{opacity:1;box-shadow:0 0 5px #ffaa00;}50%{opacity:0.3;box-shadow:none;}}
-.main-layout{display:grid;grid-template-columns:1fr 210px 1fr;gap:7px;align-items:start;position:relative;z-index:1;}
+.main-layout{display:grid;grid-template-columns:1fr 310px 1fr;gap:7px;align-items:start;position:relative;z-index:1;}
 .side-col{display:flex;flex-direction:column;gap:3px;}
 .center-col{display:flex;flex-direction:column;align-items:center;gap:4px;}
 /* --- Compact account nodes --- */
@@ -55,7 +55,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 .n-blocked,.n-pending{background:rgba(25,10,55,0.4);border-color:rgba(60,45,110,0.3);}
 .n-warn{background:rgba(70,40,0,0.3);border-color:rgba(255,170,0,0.3);}
 /* --- Center column --- */
-.radar-wrap{position:relative;width:144px;height:144px;flex-shrink:0;}
+.radar-wrap{position:relative;width:288px;height:288px;flex-shrink:0;}
 .radar-label{text-align:center;margin-top:4px;}
 .radar-lbl-main{font-size:13px;font-weight:500;color:#c0a0ff;}
 .radar-lbl-status{font-size:12px;margin-top:2px;display:flex;align-items:center;justify-content:center;gap:4px;}
@@ -102,7 +102,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     </div>
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run 2026-06-22T19:00</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Built: Jun 22, 2026 08:18 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Built: Jun 22, 2026 08:49 PM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -234,7 +234,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 
     <div class="center-col">
       <div class="radar-wrap">
-        <canvas id="pb-radar" width="144" height="144"></canvas>
+        <canvas id="pb-radar" width="288" height="288" style="width:288px;height:288px;"></canvas>
       </div>
       <div class="radar-label">
         <div class="radar-lbl-main">Pipeline Trigger</div>
@@ -389,27 +389,27 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   var time = 0;
 
   var blips = [
-    {ang:-90.00,r:0.63,st:"pass"},
-    {ang:-72.86,r:0.44,st:"pass"},
-    {ang:-55.71,r:0.63,st:"pass"},
-    {ang:-38.57,r:0.44,st:"pass"},
-    {ang:-21.43,r:0.63,st:"pass"},
-    {ang:-4.29,r:0.44,st:"pass"},
-    {ang:12.86,r:0.63,st:"pass"},
-    {ang:30.00,r:0.44,st:"pass"},
-    {ang:47.14,r:0.63,st:"pass"},
-    {ang:64.29,r:0.44,st:"pass"},
-    {ang:81.43,r:0.63,st:"pass"},
-    {ang:98.57,r:0.44,st:"pass"},
-    {ang:115.71,r:0.63,st:"pass"},
-    {ang:132.86,r:0.44,st:"pass"},
-    {ang:150.00,r:0.63,st:"pass"},
-    {ang:167.14,r:0.44,st:"pass"},
-    {ang:184.29,r:0.63,st:"pass"},
-    {ang:201.43,r:0.44,st:"pass"},
-    {ang:218.57,r:0.63,st:"pass"},
-    {ang:235.71,r:0.44,st:"pass"},
-    {ang:252.86,r:0.63,st:"pass"},
+    {ang:-90.00,r:0.63,st:"pass",nm:"Coaching"},
+    {ang:-72.86,r:0.44,st:"pass",nm:"M7"},
+    {ang:-55.71,r:0.63,st:"pass",nm:"Parentis"},
+    {ang:-38.57,r:0.44,st:"pass",nm:"Britelift"},
+    {ang:-21.43,r:0.63,st:"pass",nm:"BLC"},
+    {ang:-4.29,r:0.44,st:"pass",nm:"RideX"},
+    {ang:12.86,r:0.63,st:"pass",nm:"Hamilton"},
+    {ang:30.00,r:0.44,st:"pass",nm:"Skyline"},
+    {ang:47.14,r:0.63,st:"pass",nm:"VIP"},
+    {ang:64.29,r:0.44,st:"pass",nm:"C&H"},
+    {ang:81.43,r:0.63,st:"pass",nm:"Reno Cab"},
+    {ang:98.57,r:0.44,st:"pass",nm:"Trans Iowa"},
+    {ang:115.71,r:0.63,st:"pass",nm:"Data Carz"},
+    {ang:132.86,r:0.44,st:"pass",nm:"Assoc.Cab"},
+    {ang:150.00,r:0.63,st:"pass",nm:"Ollies"},
+    {ang:167.14,r:0.44,st:"pass",nm:"Cir.Taxi"},
+    {ang:184.29,r:0.63,st:"pass",nm:"YCOV"},
+    {ang:201.43,r:0.44,st:"pass",nm:"Kelowna"},
+    {ang:218.57,r:0.63,st:"pass",nm:"Vermont"},
+    {ang:235.71,r:0.44,st:"pass",nm:"YCDC"},
+    {ang:252.86,r:0.63,st:"pass",nm:"Blueline"},
   ];
 
   function draw() {
@@ -483,6 +483,25 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       }
       ctx.beginPath(); ctx.arc(bx,by,sz,0,Math.PI*2);
       ctx.fillStyle='rgba('+col+','+(0.45+pulse*0.55)+')'; ctx.fill();
+
+      // label
+      var isDim = b.st==='blocked'||b.st==='pending';
+      var isFail = b.st==='fail', isRun = b.st==='running';
+      var fontSize = (isFail||isRun) ? 8 : 7;
+      var labelAlpha = isDim ? 0.2 : (isFail ? (0.7+pulse*0.3) : 0.55);
+      ctx.font = 'bold '+fontSize+'px system-ui,sans-serif';
+      ctx.fillStyle = 'rgba('+col+','+labelAlpha+')';
+      var labelOffset = R * b.r + 14;
+      var lx = cx + Math.cos(ba) * labelOffset;
+      var ly = cy + Math.sin(ba) * labelOffset;
+      var cosA = Math.cos(ba);
+      ctx.textAlign = cosA > 0.2 ? 'left' : (cosA < -0.2 ? 'right' : 'center');
+      ctx.textBaseline = 'middle';
+      if (isFail || isRun) {
+        ctx.shadowBlur = 6; ctx.shadowColor = 'rgba('+col+',0.7)';
+      }
+      ctx.fillText(b.nm, lx, ly);
+      ctx.shadowBlur = 0;
     });
 
     // sweep arm glow tip
