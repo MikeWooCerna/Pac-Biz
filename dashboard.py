@@ -4628,9 +4628,12 @@ def _qa_block_html(aid, display_name, live_banner_name, badge_label, badge_cls, 
 
 
 def main():
-    masterlist = clean_columns(pd.read_csv(MASTERLIST_CSV))
-    history = clean_columns(pd.read_csv(HISTORY_CSV))
-    movement = clean_columns(pd.read_csv(MOVEMENT_CSV))
+    _ml_cache   = Path("masterlist_cache.csv")
+    _hist_cache = Path("history_cache.csv")
+    _move_cache = Path("movement_cache.csv")
+    masterlist = clean_columns(pd.read_csv(_ml_cache   if _ml_cache.exists()   else MASTERLIST_CSV))
+    history    = clean_columns(pd.read_csv(_hist_cache if _hist_cache.exists() else HISTORY_CSV))
+    movement   = clean_columns(pd.read_csv(_move_cache if _move_cache.exists() else MOVEMENT_CSV))
     coaching = load_coaching_data(masterlist)
     m7 = load_m7_data()
     parentis = load_parentis_data()

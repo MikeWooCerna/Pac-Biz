@@ -33,12 +33,19 @@ ACCOUNTS = [
     ("Vermont",         "vt_pull.py",       r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\Vermont\VT_RAW.xlsx"),
     ("YCDC",            "ycdc_pull.py",     r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\YCDC\YCDC_RAW.xlsx"),
     ("Blueline",        "bl_pull.py",       r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\Blueline\BL_RAW.xlsx"),
+    ("Masterlist",      "masterlist_fetch.py", r"C:\Users\Mike Woo Cerna\Documents\PB\Masterlist\masterlist_cache.csv"),
 ]
 
-def get_row_count(xlsx_path):
+def get_row_count(file_path):
     try:
+        p = Path(file_path)
+        if not p.exists():
+            return None
+        if p.suffix.lower() == ".csv":
+            lines = sum(1 for _ in p.open("r", encoding="utf-8", errors="replace"))
+            return max(0, lines - 1)
         import openpyxl
-        wb = openpyxl.load_workbook(xlsx_path, read_only=True, data_only=True)
+        wb = openpyxl.load_workbook(file_path, read_only=True, data_only=True)
         ws = wb.active
         count = max(0, (ws.max_row or 1) - 1)
         wb.close()
@@ -177,8 +184,12 @@ def generate():
     elif run_status == "running": hub_st, hub_lbl, hub_color = "running", "running",  "#ffaa00"
     else:                         hub_st, hub_lbl, hub_color = "blocked", "no data",  "#4a3d7a"
 
-    left_html  = "\n".join(render_node(a["name"], a["script"], a["status"], a["ts"], a["rows"], a.get("error")) for a in account_states[:11])
-    right_html = "\n".join(render_node(a["name"], a["script"], a["status"], a["ts"], a["rows"], a.get("error")) for a in account_states[11:])
+    n_left      = 11
+    n_total     = len(account_states)
+    left_label  = f"Data Sources 1&ndash;{n_left}"
+    right_label = f"Data Sources {n_left + 1}&ndash;{n_total}"
+    left_html   = "\n".join(render_node(a["name"], a["script"], a["status"], a["ts"], a["rows"], a.get("error")) for a in account_states[:n_left])
+    right_html  = "\n".join(render_node(a["name"], a["script"], a["status"], a["ts"], a["rows"], a.get("error")) for a in account_states[n_left:])
 
     warn_html = ""
     if run_status == "failed" and failed_at:
@@ -192,7 +203,7 @@ def generate():
         "Reno Cab": "Reno Cab", "Trans Iowa": "Trans Iowa", "Data Carz": "Data Carz",
         "Associated Cab": "Assoc.Cab", "Ollies": "Ollies", "Circle Taxi": "Cir.Taxi",
         "YCOV": "YCOV", "Kelowna": "Kelowna", "Vermont": "Vermont",
-        "YCDC": "YCDC", "Blueline": "Blueline",
+        "YCDC": "YCDC", "Blueline": "Blueline", "Masterlist": "Masterlist",
     }
     blips_js_items = []
     for i, a in enumerate(account_states):
@@ -357,7 +368,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 
   <div class="main-layout">
     <div class="side-col">
-      <div class="section-hdr">Accounts 1&ndash;11</div>
+      <div class="section-hdr">{left_label}</div>
       {left_html}
     </div>
 
@@ -412,7 +423,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
     </div>
 
     <div class="side-col">
-      <div class="section-hdr">Accounts 12&ndash;21</div>
+      <div class="section-hdr">{right_label}</div>
       {right_html}
     </div>
   </div>
