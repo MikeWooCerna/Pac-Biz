@@ -6,7 +6,8 @@ from pathlib import Path
 BASE        = Path(__file__).parent
 STATUS_FILE = BASE / "pipeline_status.json"
 OUTPUT_FILE = BASE / "pipeline_monitor.html"
-LOGO_FILE   = BASE / "pacbiz_logo.png"
+LOGO_FILE    = BASE / "pacbiz_logo.png"
+FAVICON_FILE = BASE / "pacbiz_favicon.png"
 
 DASHBOARD_URL = "https://mikewoocerna.github.io/Pac-Biz/masterlist_dashboard.html"
 
@@ -158,7 +159,11 @@ def generate():
         warn_html = f"""<div class="warn-strip">&#9888; Pipeline stopped at <b>{failed_at}</b> &middot; Exit code 1 &middot; {blocked_ct} step{'s' if blocked_ct != 1 else ''} not reached</div>"""
 
     logo = logo_b64()
-    favicon_tag = f'<link rel="icon" type="image/png" href="data:image/png;base64,{logo}">' if logo else ''
+    try:
+        favicon_b64 = base64.b64encode(FAVICON_FILE.read_bytes()).decode()
+    except Exception:
+        favicon_b64 = logo
+    favicon_tag = f'<link rel="icon" type="image/png" href="data:image/png;base64,{favicon_b64}">' if favicon_b64 else ''
     logo_img = (f'<img src="data:image/png;base64,{logo}" class="logo-img" alt="PacBiz">'
                 if logo else
                 '<div class="logo-fallback">PB</div>')
