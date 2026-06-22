@@ -28,5 +28,16 @@
     "prev_count": 2719,
     "new_count": 2295,
     "error": "Dropped 424 rows (2,719 \u2192 2,295)"
+  },
+  {
+    "run_id": "2026-06-23T06:00:03",
+    "date": "Jun 23, 2026 06:00 AM",
+    "account": "Data Carz",
+    "script": "dc_pull.py",
+    "status": "count_drop",
+    "drop": 140,
+    "prev_count": 2295,
+    "new_count": 2155,
+    "error": "Dropped 140 rows (2,295 \u2192 2,155)"
   }
 ]

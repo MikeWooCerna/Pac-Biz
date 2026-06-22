@@ -141,7 +141,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">0</div><div class="sc-lbl">Failed</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#E84500;">0</div><div class="sc-lbl">Not Reached</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">27,937</div><div class="sc-lbl">Rows Pulled</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#7060a0;">&mdash;</div><div class="sc-lbl">running</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#00e87a;">&#10003;</div><div class="sc-lbl">success</div></div>
   </div>
 
   <div class="divider"></div>
@@ -274,7 +274,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       </div>
       <div class="radar-label">
         <div class="radar-lbl-main">Pipeline / Container Monitoring</div>
-        <div class="radar-lbl-status"><div class="blink-a"></div><span style="color:#ffaa00;font-size:12px;">running</span></div>
+        <div class="radar-lbl-status"><div class="blink-g"></div><span style="color:#00e87a;font-size:12px;">complete</span></div>
       </div>
 
       <div class="connector"></div>
@@ -291,7 +291,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
             <div class="agg-lbl">sources ok</div>
           </div>
           <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">06:00 AM</div><div class="agg-lbl">started</div></div>
-          <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">&mdash;</div><div class="agg-lbl">finished</div></div>
+          <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">06:15 AM</div><div class="agg-lbl">finished</div></div>
           <div class="agg-item" style="grid-column:span 2;"><div class="agg-val" style="color:#ffaa00;font-size:12px;">6:30 AM</div><div class="agg-lbl">next schedule</div></div>
         </div>
       </div>
@@ -348,7 +348,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">2,155 rows</span>
     <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill cnt-drop">&darr; 140</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -435,7 +435,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   </div>
 
   
-  
+  <div class="drop-strip">&#9660; Row count drop detected &mdash; <b>Data Carz</b> &darr;&thinsp;140 rows <span style='opacity:0.65;font-size:11px;'>(2,295 &rarr; 2,155)</span></div>
 
   <div class="divider" style="margin-top:12px;"></div>
   <div class="log-section">
@@ -443,7 +443,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div class="log-wrap">
       <table class="log-table">
         <thead><tr><th>Date</th><th>Dataset</th><th>Status</th></tr></thead>
-        <tbody><tr><td class="log-td-d">Jun 23, 2026 03:00 AM</td><td class="log-td-ds"><b>Data Carz</b> <span class="log-sc">&middot; dc_pull.py</span><div class="log-err">Dropped 424 rows (2,719 → 2,295)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
+        <tbody><tr><td class="log-td-d">Jun 23, 2026 06:00 AM</td><td class="log-td-ds"><b>Data Carz</b> <span class="log-sc">&middot; dc_pull.py</span><div class="log-err">Dropped 140 rows (2,295 → 2,155)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
+<tr><td class="log-td-d">Jun 23, 2026 03:00 AM</td><td class="log-td-ds"><b>Data Carz</b> <span class="log-sc">&middot; dc_pull.py</span><div class="log-err">Dropped 424 rows (2,719 → 2,295)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
 <tr><td class="log-td-d">Jun 23, 2026 03:00 AM</td><td class="log-td-ds"><b>Skyline</b> <span class="log-sc">&middot; Skyline_pull.py</span><div class="log-err">Dropped 144 rows (4,621 → 4,477)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
 <tr><td class="log-td-d">Jun 22, 2026 10:54 PM</td><td class="log-td-ds"><b>Build</b> <span class="log-sc">&middot; dashboard.py</span><div class="log-err">ValueError: Length of values (0) does not match length of index (1000) — VIP transform missing column (df.get footgun). </div></td><td class="log-td-st"><span class="lp lp-f">FAILED</span></td></tr></tbody>
       </table>
