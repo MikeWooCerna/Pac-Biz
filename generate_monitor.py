@@ -310,6 +310,10 @@ def generate():
     elif run_status == "running": hub_st, hub_lbl, hub_color = "running", "running",  "#ffaa00"
     else:                         hub_st, hub_lbl, hub_color = "blocked", "no data",  "#4a3d7a"
 
+    has_failure = (failed_ct > 0 or run_status == "failed"
+                   or build_st == "fail" or git_st == "fail")
+    radar_fail_js = "true" if has_failure else "false"
+
     n_left      = 11
     n_total     = len(account_states)
     left_label  = f"Data Sources 1&ndash;{n_left}"
@@ -618,6 +622,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
   var ang = -Math.PI/2;
   var TRAIL = Math.PI * 1.35;
   var time = 0;
+  var FAIL = {radar_fail_js};
 
   var blips = {blips_js};
 
@@ -637,6 +642,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 
     // sweep trail
     var steps = 90;
+    var trailRgb = FAIL ? '200,30,30' : '110,50,255';
     for (var i = 0; i < steps; i++) {{
       var frac = i / steps;
       var a0 = ang - TRAIL * (1 - frac);
@@ -645,7 +651,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
       ctx.moveTo(cx, cy);
       ctx.arc(cx, cy, R, a0, a1);
       ctx.closePath();
-      ctx.fillStyle = 'rgba(110,50,255,' + (frac * frac * frac * 0.45) + ')';
+      ctx.fillStyle = 'rgba(' + trailRgb + ',' + (frac * frac * frac * 0.45) + ')';
       ctx.fill();
     }}
 
@@ -717,18 +723,21 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
     // sweep arm glow tip
     var tipX = cx + Math.cos(ang)*R*0.9, tipY = cy + Math.sin(ang)*R*0.9;
     var glow = ctx.createRadialGradient(tipX,tipY,0,tipX,tipY,22);
-    glow.addColorStop(0,'rgba(180,100,255,0.65)'); glow.addColorStop(1,'rgba(100,40,255,0)');
+    glow.addColorStop(0, FAIL ? 'rgba(255,60,60,0.65)'   : 'rgba(180,100,255,0.65)');
+    glow.addColorStop(1, FAIL ? 'rgba(180,20,20,0)'      : 'rgba(100,40,255,0)');
     ctx.fillStyle=glow; ctx.beginPath(); ctx.arc(tipX,tipY,22,0,Math.PI*2); ctx.fill();
 
     // sweep arm
     ctx.beginPath(); ctx.moveTo(cx,cy);
     ctx.lineTo(cx+Math.cos(ang)*R, cy+Math.sin(ang)*R);
-    ctx.strokeStyle='rgba(200,130,255,0.95)'; ctx.lineWidth=1.5;
-    ctx.shadowBlur=10; ctx.shadowColor='rgba(180,80,255,0.8)'; ctx.stroke(); ctx.shadowBlur=0;
+    ctx.strokeStyle = FAIL ? 'rgba(255,70,70,0.95)'  : 'rgba(200,130,255,0.95)'; ctx.lineWidth=1.5;
+    ctx.shadowBlur=10;
+    ctx.shadowColor  = FAIL ? 'rgba(255,30,30,0.85)' : 'rgba(180,80,255,0.8)';
+    ctx.stroke(); ctx.shadowBlur=0;
 
     // center dot
     ctx.beginPath(); ctx.arc(cx,cy,3.5,0,Math.PI*2);
-    ctx.fillStyle='rgba(210,150,255,0.9)'; ctx.fill();
+    ctx.fillStyle = FAIL ? 'rgba(255,100,100,0.9)' : 'rgba(210,150,255,0.9)'; ctx.fill();
 
     ctx.restore();
     ang += 0.012; time += 0.022;

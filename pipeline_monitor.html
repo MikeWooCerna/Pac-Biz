@@ -127,7 +127,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     </div>
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run 2026-06-22T22:54</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Built: Jun 22, 2026 11:59 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Built: Jun 23, 2026 12:10 AM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -292,7 +292,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
           </div>
           <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">10:54 PM</div><div class="agg-lbl">started</div></div>
           <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">11:52 PM</div><div class="agg-lbl">finished</div></div>
-          <div class="agg-item" style="grid-column:span 2;"><div class="agg-val" style="color:#ffaa00;font-size:12px;">3:30 AM +1d</div><div class="agg-lbl">next schedule</div></div>
+          <div class="agg-item" style="grid-column:span 2;"><div class="agg-val" style="color:#ffaa00;font-size:12px;">3:30 AM</div><div class="agg-lbl">next schedule</div></div>
         </div>
       </div>
 
@@ -463,6 +463,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   var ang = -Math.PI/2;
   var TRAIL = Math.PI * 1.35;
   var time = 0;
+  var FAIL = false;
 
   var blips = [
     {ang:-90.00,r:0.63,st:"pass",nm:"Masterlist"},
@@ -505,6 +506,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 
     // sweep trail
     var steps = 90;
+    var trailRgb = FAIL ? '200,30,30' : '110,50,255';
     for (var i = 0; i < steps; i++) {
       var frac = i / steps;
       var a0 = ang - TRAIL * (1 - frac);
@@ -513,7 +515,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       ctx.moveTo(cx, cy);
       ctx.arc(cx, cy, R, a0, a1);
       ctx.closePath();
-      ctx.fillStyle = 'rgba(110,50,255,' + (frac * frac * frac * 0.45) + ')';
+      ctx.fillStyle = 'rgba(' + trailRgb + ',' + (frac * frac * frac * 0.45) + ')';
       ctx.fill();
     }
 
@@ -585,18 +587,21 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     // sweep arm glow tip
     var tipX = cx + Math.cos(ang)*R*0.9, tipY = cy + Math.sin(ang)*R*0.9;
     var glow = ctx.createRadialGradient(tipX,tipY,0,tipX,tipY,22);
-    glow.addColorStop(0,'rgba(180,100,255,0.65)'); glow.addColorStop(1,'rgba(100,40,255,0)');
+    glow.addColorStop(0, FAIL ? 'rgba(255,60,60,0.65)'   : 'rgba(180,100,255,0.65)');
+    glow.addColorStop(1, FAIL ? 'rgba(180,20,20,0)'      : 'rgba(100,40,255,0)');
     ctx.fillStyle=glow; ctx.beginPath(); ctx.arc(tipX,tipY,22,0,Math.PI*2); ctx.fill();
 
     // sweep arm
     ctx.beginPath(); ctx.moveTo(cx,cy);
     ctx.lineTo(cx+Math.cos(ang)*R, cy+Math.sin(ang)*R);
-    ctx.strokeStyle='rgba(200,130,255,0.95)'; ctx.lineWidth=1.5;
-    ctx.shadowBlur=10; ctx.shadowColor='rgba(180,80,255,0.8)'; ctx.stroke(); ctx.shadowBlur=0;
+    ctx.strokeStyle = FAIL ? 'rgba(255,70,70,0.95)'  : 'rgba(200,130,255,0.95)'; ctx.lineWidth=1.5;
+    ctx.shadowBlur=10;
+    ctx.shadowColor  = FAIL ? 'rgba(255,30,30,0.85)' : 'rgba(180,80,255,0.8)';
+    ctx.stroke(); ctx.shadowBlur=0;
 
     // center dot
     ctx.beginPath(); ctx.arc(cx,cy,3.5,0,Math.PI*2);
-    ctx.fillStyle='rgba(210,150,255,0.9)'; ctx.fill();
+    ctx.fillStyle = FAIL ? 'rgba(255,100,100,0.9)' : 'rgba(210,150,255,0.9)'; ctx.fill();
 
     ctx.restore();
     ang += 0.012; time += 0.022;
