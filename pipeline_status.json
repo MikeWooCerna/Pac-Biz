@@ -1,170 +1,193 @@
 {
-  "run_id": "2026-06-22T19:00:02",
-  "started_at": "2026-06-22T19:00:02.177143",
-  "finished_at": "2026-06-22T19:12:41.265543",
-  "status": "success",
+  "run_id": "2026-06-22T22:00:02",
+  "started_at": "2026-06-22T22:00:02.135404",
+  "finished_at": null,
+  "status": "running",
   "failed_at": null,
   "steps": [
+    {
+      "account": "Masterlist",
+      "script": "masterlist_fetch.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-06-22T22:00:15.634787",
+      "error": null
+    },
     {
       "account": "Coaching",
       "script": "asana_pull.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-06-22T19:00:10.589035"
+      "timestamp": "2026-06-22T22:00:21.091940",
+      "error": null
     },
     {
       "account": "M7",
       "script": "m7_pull.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-06-22T19:00:15.210100"
+      "timestamp": "2026-06-22T22:00:27.164983",
+      "error": null
     },
     {
       "account": "Parentis Health",
       "script": "parentis_pull.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-06-22T19:00:20.603929"
+      "timestamp": "2026-06-22T22:00:33.006569",
+      "error": null
     },
     {
       "account": "Britelift",
       "script": "britelift_pull.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-06-22T19:00:26.325198"
+      "timestamp": "2026-06-22T22:00:38.555423",
+      "error": null
     },
     {
       "account": "Britelift Chat",
       "script": "britelift_pull.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-06-22T19:00:30.361836"
+      "timestamp": "2026-06-22T22:00:44.192971",
+      "error": null
     },
     {
       "account": "RideX",
       "script": "Ridex_pull.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-06-22T19:00:34.708827"
+      "timestamp": "2026-06-22T22:01:07.144759",
+      "error": null
     },
     {
       "account": "Hamilton",
       "script": "Hamilton_pull.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-06-22T19:01:05.369842"
+      "timestamp": "2026-06-22T22:01:36.696500",
+      "error": null
     },
     {
       "account": "Skyline",
       "script": "Skyline_pull.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-06-22T19:01:44.865416"
+      "timestamp": "2026-06-22T22:02:20.675742",
+      "error": null
     },
     {
       "account": "VIP",
       "script": "vip_pull.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-06-22T19:02:08.287308"
+      "timestamp": "2026-06-22T22:02:42.680246",
+      "error": null
     },
     {
       "account": "C&H",
       "script": "ch_pull.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-06-22T19:02:14.566540"
+      "timestamp": "2026-06-22T22:02:52.940519",
+      "error": null
     },
     {
       "account": "Reno Cab",
       "script": "rc_pull.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-06-22T19:02:32.046299"
+      "timestamp": "2026-06-22T22:03:18.142425",
+      "error": null
     },
     {
       "account": "Trans Iowa",
       "script": "ti_pull.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-06-22T19:02:36.736707"
+      "timestamp": "2026-06-22T22:03:25.334379",
+      "error": null
     },
     {
       "account": "Data Carz",
       "script": "dc_pull.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-06-22T19:02:59.165866"
+      "timestamp": "2026-06-22T22:03:50.084840",
+      "error": null
     },
     {
       "account": "Associated Cab",
       "script": "ac_pull.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-06-22T19:03:21.165800"
+      "timestamp": "2026-06-22T22:04:12.226088",
+      "error": null
     },
     {
       "account": "Ollies",
       "script": "ol_pull.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-06-22T19:03:37.987459"
+      "timestamp": "2026-06-22T22:04:38.392931",
+      "error": null
     },
     {
       "account": "Circle Taxi",
       "script": "ct_pull.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-06-22T19:03:50.103433"
+      "timestamp": "2026-06-22T22:04:52.113176",
+      "error": null
     },
     {
       "account": "YCOV",
       "script": "ycov_pull.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-06-22T19:04:03.159747"
+      "timestamp": "2026-06-22T22:05:04.913717",
+      "error": null
     },
     {
       "account": "Kelowna",
       "script": "kel_pull.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-06-22T19:04:22.061112"
+      "timestamp": "2026-06-22T22:05:33.410944",
+      "error": null
     },
     {
       "account": "Vermont",
       "script": "vt_pull.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-06-22T19:04:29.626622"
+      "timestamp": "2026-06-22T22:05:44.074943",
+      "error": null
     },
     {
       "account": "YCDC",
       "script": "ycdc_pull.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-06-22T19:04:50.223906"
+      "timestamp": "2026-06-22T22:06:10.510012",
+      "error": null
     },
     {
       "account": "Blueline",
       "script": "bl_pull.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-06-22T19:04:54.989801"
+      "timestamp": "2026-06-22T22:06:23.419803",
+      "error": null
     },
     {
       "account": "Build",
       "script": "dashboard.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-06-22T19:12:32.969064"
-    },
-    {
-      "account": "Git Push",
-      "script": "git push",
-      "exit_code": 0,
-      "status": "pass",
-      "timestamp": "2026-06-22T19:12:41.161916"
+      "timestamp": "2026-06-22T22:15:53.069321",
+      "error": null
     }
   ]
 }

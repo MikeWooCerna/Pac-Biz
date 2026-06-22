@@ -84,6 +84,25 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 .section-hdr{font-size:11px;color:#5000b4;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:3px;}
 .divider{border:none;border-top:1px solid rgba(80,0,180,0.2);margin:7px 0;position:relative;z-index:1;}
 .sig{text-align:center;font-size:12px;font-weight:600;letter-spacing:0.08em;background:linear-gradient(90deg,#9050ff,#c090ff 35%,#00e87a 70%,#80ffcc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;padding:6px 0 2px;position:relative;z-index:1;}
+.log-section{margin-top:14px;position:relative;z-index:1;}
+.log-hdr{font-size:11px;color:#5000b4;letter-spacing:0.07em;text-transform:uppercase;margin-bottom:7px;}
+.log-wrap{overflow-x:auto;border-radius:8px;border:1px solid rgba(80,0,180,0.22);}
+.log-table{width:100%;border-collapse:collapse;font-size:11px;}
+.log-table thead tr{background:rgba(40,10,90,0.6);}
+.log-table th{text-align:left;color:#7060a0;font-weight:600;padding:6px 10px;border-bottom:1px solid rgba(80,0,180,0.25);white-space:nowrap;}
+.log-table td{padding:5px 10px;border-bottom:1px solid rgba(80,0,180,0.1);vertical-align:top;}
+.log-table tr:last-child td{border-bottom:none;}
+.log-table tbody tr:hover td{background:rgba(80,0,180,0.07);}
+.log-td-d{color:#7060a0;white-space:nowrap;}
+.log-td-ds{color:#c0a0ff;}
+.log-td-ds b{font-weight:500;}
+.log-sc{color:#5000b4;}
+.log-err{font-size:10px;color:#ff9090;font-family:monospace;margin-top:2px;white-space:pre-wrap;word-break:break-word;}
+.log-td-st{white-space:nowrap;}
+.lp{font-size:10px;padding:1px 8px;border-radius:99px;white-space:nowrap;}
+.lp-f{background:rgba(255,61,61,0.1);color:#ff8080;border:1px solid rgba(255,61,61,0.22);}
+.lp-n{background:rgba(232,69,0,0.1);color:#E84500;border:1px solid rgba(232,69,0,0.28);}
+.log-empty{text-align:center;color:#4a3d7a;font-size:12px;padding:14px;background:rgba(40,10,90,0.25);border-radius:8px;border:1px solid rgba(80,0,180,0.18);}
 @media(prefers-reduced-motion:reduce){
   .blink-g,.blink-r,.blink-a{animation:none;}
   canvas{display:none;}
@@ -103,8 +122,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       </div>
     </div>
     <div style="text-align:right;">
-      <div style="font-size:13px;color:#7060a0;">Run 2026-06-22T19:00</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Built: Jun 22, 2026 09:44 PM</div>
+      <div style="font-size:13px;color:#7060a0;">Run 2026-06-22T22:00</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Built: Jun 22, 2026 10:15 PM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -114,11 +133,11 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   </div>
 
   <div class="stat-cards">
-    <div class="stat-card"><div class="sc-val" style="color:#00e87a;">21</div><div class="sc-lbl">Passed</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#00e87a;">22</div><div class="sc-lbl">Passed</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">0</div><div class="sc-lbl">Failed</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#E84500;">1</div><div class="sc-lbl">Not Reached</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">28,363</div><div class="sc-lbl">Rows Pulled</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#00e87a;">&#10003;</div><div class="sc-lbl">success</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#E84500;">0</div><div class="sc-lbl">Not Reached</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">26,055</div><div class="sc-lbl">Rows Pulled</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#7060a0;">&mdash;</div><div class="sc-lbl">running</div></div>
   </div>
 
   <div class="divider"></div>
@@ -133,18 +152,18 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="main-layout">
     <div class="side-col">
       <div class="section-hdr">Data Sources 1&ndash;11</div>
-      <div class="node n-blocked">
-  <div class="node-title" style="color:#E84500;"><span>Masterlist</span><div class="blink-n"></div></div>
-  <div class="node-row"><b class="b-n"></b>masterlist_fetch.py &middot; &mdash;</div>
+      <div class="node n-pass">
+  <div class="node-title" style="color:#00e87a;"><span>Masterlist</span><div class="blink-g"></div></div>
+  <div class="node-row"><b class="b-g"></b>masterlist_fetch.py &middot; 10:00 PM</div>
   
   <div class="node-meta">
-    <span class="meta-pill o">&mdash; rows</span>
-    <span class="meta-pill o">NOT REACHED</span>
+    <span class="meta-pill g">201 rows</span>
+    <span class="meta-pill g">PASS</span>
   </div>
 </div>
 <div class="node n-pass">
   <div class="node-title" style="color:#00e87a;"><span>Coaching</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>asana_pull.py &middot; 07:00 PM</div>
+  <div class="node-row"><b class="b-g"></b>asana_pull.py &middot; 10:00 PM</div>
   
   <div class="node-meta">
     <span class="meta-pill g">41 rows</span>
@@ -153,7 +172,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 </div>
 <div class="node n-pass">
   <div class="node-title" style="color:#00e87a;"><span>M7</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>m7_pull.py &middot; 07:00 PM</div>
+  <div class="node-row"><b class="b-g"></b>m7_pull.py &middot; 10:00 PM</div>
   
   <div class="node-meta">
     <span class="meta-pill g">29 rows</span>
@@ -162,7 +181,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 </div>
 <div class="node n-pass">
   <div class="node-title" style="color:#00e87a;"><span>Parentis Health</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>parentis_pull.py &middot; 07:00 PM</div>
+  <div class="node-row"><b class="b-g"></b>parentis_pull.py &middot; 10:00 PM</div>
   
   <div class="node-meta">
     <span class="meta-pill g">8 rows</span>
@@ -171,7 +190,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 </div>
 <div class="node n-pass">
   <div class="node-title" style="color:#00e87a;"><span>Britelift</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>britelift_pull.py &middot; 07:00 PM</div>
+  <div class="node-row"><b class="b-g"></b>britelift_pull.py &middot; 10:00 PM</div>
   
   <div class="node-meta">
     <span class="meta-pill g">65 rows</span>
@@ -180,7 +199,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 </div>
 <div class="node n-pass">
   <div class="node-title" style="color:#00e87a;"><span>Britelift Chat</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>britelift_pull.py &middot; 07:00 PM</div>
+  <div class="node-row"><b class="b-g"></b>britelift_pull.py &middot; 10:00 PM</div>
   
   <div class="node-meta">
     <span class="meta-pill g">263 rows</span>
@@ -189,7 +208,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 </div>
 <div class="node n-pass">
   <div class="node-title" style="color:#00e87a;"><span>RideX</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>Ridex_pull.py &middot; 07:00 PM</div>
+  <div class="node-row"><b class="b-g"></b>Ridex_pull.py &middot; 10:01 PM</div>
   
   <div class="node-meta">
     <span class="meta-pill g">73 rows</span>
@@ -198,7 +217,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 </div>
 <div class="node n-pass">
   <div class="node-title" style="color:#00e87a;"><span>Hamilton</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>Hamilton_pull.py &middot; 07:01 PM</div>
+  <div class="node-row"><b class="b-g"></b>Hamilton_pull.py &middot; 10:01 PM</div>
   
   <div class="node-meta">
     <span class="meta-pill g">3,283 rows</span>
@@ -207,7 +226,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 </div>
 <div class="node n-pass">
   <div class="node-title" style="color:#00e87a;"><span>Skyline</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>Skyline_pull.py &middot; 07:01 PM</div>
+  <div class="node-row"><b class="b-g"></b>Skyline_pull.py &middot; 10:02 PM</div>
   
   <div class="node-meta">
     <span class="meta-pill g">4,621 rows</span>
@@ -216,7 +235,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 </div>
 <div class="node n-pass">
   <div class="node-title" style="color:#00e87a;"><span>VIP</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>vip_pull.py &middot; 07:02 PM</div>
+  <div class="node-row"><b class="b-g"></b>vip_pull.py &middot; 10:02 PM</div>
   
   <div class="node-meta">
     <span class="meta-pill g">3,059 rows</span>
@@ -225,7 +244,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 </div>
 <div class="node n-pass">
   <div class="node-title" style="color:#00e87a;"><span>C&H</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>ch_pull.py &middot; 07:02 PM</div>
+  <div class="node-row"><b class="b-g"></b>ch_pull.py &middot; 10:02 PM</div>
   
   <div class="node-meta">
     <span class="meta-pill g">373 rows</span>
@@ -240,7 +259,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       </div>
       <div class="radar-label">
         <div class="radar-lbl-main">Pipeline / Container Monitoring</div>
-        <div class="radar-lbl-status"><div class="blink-g"></div><span style="color:#00e87a;font-size:12px;">complete</span></div>
+        <div class="radar-lbl-status"><div class="blink-a"></div><span style="color:#ffaa00;font-size:12px;">running</span></div>
       </div>
 
       <div class="connector"></div>
@@ -248,16 +267,16 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       <div class="agg-node">
         <div class="agg-title">Data Engine / Processing</div>
         <div class="agg-grid">
-          <div class="agg-item"><div class="agg-val" style="color:#00e87a;">28,363</div><div class="agg-lbl">total rows</div></div>
+          <div class="agg-item"><div class="agg-val" style="color:#00e87a;">26,055</div><div class="agg-lbl">total rows</div></div>
           <div class="agg-item">
             <div class="agg-val" style="display:flex;align-items:center;justify-content:center;gap:5px;">
               <div class="blink-g"></div>
-              <span style="color:#00e87a;">21/22</span>
+              <span style="color:#00e87a;">22/22</span>
             </div>
             <div class="agg-lbl">sources ok</div>
           </div>
-          <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">07:00 PM</div><div class="agg-lbl">started</div></div>
-          <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">07:12 PM</div><div class="agg-lbl">finished</div></div>
+          <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">10:00 PM</div><div class="agg-lbl">started</div></div>
+          <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">&mdash;</div><div class="agg-lbl">finished</div></div>
           <div class="agg-item" style="grid-column:span 2;"><div class="agg-val" style="color:#ffaa00;font-size:12px;">10:30 PM</div><div class="agg-lbl">next schedule</div></div>
         </div>
       </div>
@@ -280,8 +299,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 
       <div class="stage-node">
         <div class="stage-title">Git Repository</div>
-        <div class="stage-status"><div class="blink-g"></div></div>
-        <div class="stage-detail">pushed</div>
+        <div class="stage-status"><div class="blink-n"></div></div>
+        <div class="stage-detail">not reached</div>
       </div>
     </div>
 
@@ -289,7 +308,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       <div class="section-hdr">Data Sources 12&ndash;22</div>
       <div class="node n-pass">
   <div class="node-title" style="color:#00e87a;"><span>Reno Cab</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>rc_pull.py &middot; 07:02 PM</div>
+  <div class="node-row"><b class="b-g"></b>rc_pull.py &middot; 10:03 PM</div>
   
   <div class="node-meta">
     <span class="meta-pill g">2,453 rows</span>
@@ -298,16 +317,16 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 </div>
 <div class="node n-pass">
   <div class="node-title" style="color:#00e87a;"><span>Trans Iowa</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>ti_pull.py &middot; 07:02 PM</div>
+  <div class="node-row"><b class="b-g"></b>ti_pull.py &middot; 10:03 PM</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">42 rows</span>
+    <span class="meta-pill g">51 rows</span>
     <span class="meta-pill g">PASS</span>
   </div>
 </div>
 <div class="node n-pass">
   <div class="node-title" style="color:#00e87a;"><span>Data Carz</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>dc_pull.py &middot; 07:02 PM</div>
+  <div class="node-row"><b class="b-g"></b>dc_pull.py &middot; 10:03 PM</div>
   
   <div class="node-meta">
     <span class="meta-pill g">2,719 rows</span>
@@ -316,16 +335,16 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 </div>
 <div class="node n-pass">
   <div class="node-title" style="color:#00e87a;"><span>Associated Cab</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>ac_pull.py &middot; 07:03 PM</div>
+  <div class="node-row"><b class="b-g"></b>ac_pull.py &middot; 10:04 PM</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">2,191 rows</span>
+    <span class="meta-pill g">1,719 rows</span>
     <span class="meta-pill g">PASS</span>
   </div>
 </div>
 <div class="node n-pass">
   <div class="node-title" style="color:#00e87a;"><span>Ollies</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>ol_pull.py &middot; 07:03 PM</div>
+  <div class="node-row"><b class="b-g"></b>ol_pull.py &middot; 10:04 PM</div>
   
   <div class="node-meta">
     <span class="meta-pill g">1,821 rows</span>
@@ -334,7 +353,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 </div>
 <div class="node n-pass">
   <div class="node-title" style="color:#00e87a;"><span>Circle Taxi</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>ct_pull.py &middot; 07:03 PM</div>
+  <div class="node-row"><b class="b-g"></b>ct_pull.py &middot; 10:04 PM</div>
   
   <div class="node-meta">
     <span class="meta-pill g">1,255 rows</span>
@@ -343,7 +362,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 </div>
 <div class="node n-pass">
   <div class="node-title" style="color:#00e87a;"><span>YCOV</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>ycov_pull.py &middot; 07:04 PM</div>
+  <div class="node-row"><b class="b-g"></b>ycov_pull.py &middot; 10:05 PM</div>
   
   <div class="node-meta">
     <span class="meta-pill g">807 rows</span>
@@ -352,7 +371,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 </div>
 <div class="node n-pass">
   <div class="node-title" style="color:#00e87a;"><span>Kelowna</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>kel_pull.py &middot; 07:04 PM</div>
+  <div class="node-row"><b class="b-g"></b>kel_pull.py &middot; 10:05 PM</div>
   
   <div class="node-meta">
     <span class="meta-pill g">2,261 rows</span>
@@ -361,7 +380,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 </div>
 <div class="node n-pass">
   <div class="node-title" style="color:#00e87a;"><span>Vermont</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>vt_pull.py &middot; 07:04 PM</div>
+  <div class="node-row"><b class="b-g"></b>vt_pull.py &middot; 10:05 PM</div>
   
   <div class="node-meta">
     <span class="meta-pill g">539 rows</span>
@@ -370,16 +389,16 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 </div>
 <div class="node n-pass">
   <div class="node-title" style="color:#00e87a;"><span>YCDC</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>ycdc_pull.py &middot; 07:04 PM</div>
+  <div class="node-row"><b class="b-g"></b>ycdc_pull.py &middot; 10:06 PM</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">2,381 rows</span>
+    <span class="meta-pill g">335 rows</span>
     <span class="meta-pill g">PASS</span>
   </div>
 </div>
 <div class="node n-pass">
   <div class="node-title" style="color:#00e87a;"><span>Blueline</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>bl_pull.py &middot; 07:04 PM</div>
+  <div class="node-row"><b class="b-g"></b>bl_pull.py &middot; 10:06 PM</div>
   
   <div class="node-meta">
     <span class="meta-pill g">79 rows</span>
@@ -390,6 +409,18 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   </div>
 
   
+
+  <div class="divider" style="margin-top:12px;"></div>
+  <div class="log-section">
+    <div class="log-hdr">Incident Log</div>
+    <div class="log-wrap">
+      <table class="log-table">
+        <thead><tr><th>Date</th><th>Dataset</th><th>Status</th></tr></thead>
+        <tbody><div class="log-empty">No incidents recorded &mdash; all pipeline runs have been successful.</div></tbody>
+      </table>
+    </div>
+  </div>
+
   <div class="divider" style="margin-top:12px;"></div>
   <div class="sig">Developed for Pac-Biz Reporting &nbsp;&middot;&nbsp; MCerna &nbsp;&middot;&nbsp; v26.06.22</div>
 </div>
@@ -407,7 +438,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   var time = 0;
 
   var blips = [
-    {ang:-90.00,r:0.63,st:"pending",nm:"Masterlist"},
+    {ang:-90.00,r:0.63,st:"pass",nm:"Masterlist"},
     {ang:-73.64,r:0.44,st:"pass",nm:"Coaching"},
     {ang:-57.27,r:0.63,st:"pass",nm:"M7"},
     {ang:-40.91,r:0.44,st:"pass",nm:"Parentis"},
@@ -549,7 +580,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 
 // ── Dashboard freshness ───────────────────────────────────────────────────────
 (function() {
-  var BUILD_ISO = "2026-06-22T19:12:32.969064";
+  var BUILD_ISO = "2026-06-22T22:15:53.069321";
   var el = document.getElementById('dash-freshness');
   if (!el || !BUILD_ISO) return;
   var buildTs = new Date(BUILD_ISO);
