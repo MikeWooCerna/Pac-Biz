@@ -67,6 +67,19 @@ def fmt_time(iso_str):
     except Exception:
         return str(iso_str)[:16]
 
+def calc_next_schedule():
+    from datetime import timedelta
+    slots = ['03:30','06:30','11:30','15:30','19:30','22:30']
+    now = datetime.now()
+    for t in slots:
+        h, m = int(t[:2]), int(t[3:])
+        candidate = now.replace(hour=h, minute=m, second=0, microsecond=0)
+        if candidate > now:
+            return candidate.strftime("%I:%M %p").lstrip("0")
+    h, m = int(slots[0][:2]), int(slots[0][3:])
+    tmr = (now + timedelta(days=1)).replace(hour=h, minute=m, second=0, microsecond=0)
+    return tmr.strftime("%I:%M %p").lstrip("0") + " +1d"
+
 def dot(status):
     if status == "pass":    return '<div class="blink-g"></div>'
     if status == "fail":    return '<div class="blink-r"></div>'
@@ -197,6 +210,8 @@ def generate():
                 '<div class="logo-fallback">PB</div>')
 
     ok_color  = "#00e87a" if failed_ct == 0 else "#ff9090"
+    sources_dot = "blink-g" if failed_ct == 0 else "blink-r"
+    next_sched  = calc_next_schedule()
     run_icon  = "&#10003;" if run_status == "success" else ("&#10007;" if run_status == "failed" else "&mdash;")
     run_color = "#00e87a" if run_status == "success" else ("#ff3d3d" if run_status == "failed" else "#7060a0")
     git_detail = "pushed" if git_st == "pass" else ("failed" if git_st == "fail" else "not reached")
@@ -223,7 +238,7 @@ def generate():
 <style>
 *{{box-sizing:border-box;margin:0;padding:0;}}
 body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sans-serif;padding:20px;}}
-.eco{{background:#05001a;border-radius:12px;padding:1.25rem 1.25rem 1rem;color:#fff;position:relative;overflow:hidden;max-width:1340px;margin:0 auto;}}
+.eco{{background:#05001a;border-radius:12px;padding:1.25rem 1.25rem 1rem;color:#fff;position:relative;overflow:hidden;max-width:1390px;margin:0 auto;}}
 .grid-bg{{position:absolute;inset:0;background-image:linear-gradient(rgba(80,0,180,0.07) 1px,transparent 1px),linear-gradient(90deg,rgba(80,0,180,0.07) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;}}
 .top-bar{{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.3rem;position:relative;z-index:1;}}
 .logo-box{{display:flex;align-items:center;gap:10px;}}
@@ -246,14 +261,14 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 @keyframes blinkG{{0%,100%{{opacity:1;box-shadow:0 0 5px #00e87a;}}50%{{opacity:0.3;box-shadow:none;}}}}
 @keyframes blinkR{{0%,100%{{opacity:1;box-shadow:0 0 7px #ff3d3d;}}50%{{opacity:0.2;box-shadow:none;}}}}
 @keyframes blinkA{{0%,100%{{opacity:1;box-shadow:0 0 5px #ffaa00;}}50%{{opacity:0.3;box-shadow:none;}}}}
-.main-layout{{display:grid;grid-template-columns:1fr 310px 1fr;gap:7px;align-items:start;position:relative;z-index:1;}}
+.main-layout{{display:grid;grid-template-columns:1fr 348px 1fr;gap:7px;align-items:start;position:relative;z-index:1;}}
 .side-col{{display:flex;flex-direction:column;gap:3px;}}
 .center-col{{display:flex;flex-direction:column;align-items:center;gap:4px;}}
 /* --- Compact account nodes --- */
-.node{{border-radius:7px;border:1px solid;padding:6px 9px;}}
-.node-title{{font-size:13px;font-weight:500;margin-bottom:3px;display:flex;align-items:center;justify-content:space-between;gap:4px;}}
+.node{{border-radius:7px;border:1px solid;padding:5px 8px;}}
+.node-title{{font-size:12px;font-weight:500;margin-bottom:3px;display:flex;align-items:center;justify-content:space-between;gap:4px;}}
 .node-title span{{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}}
-.node-row{{display:flex;align-items:center;gap:4px;font-size:11px;color:#9080b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}}
+.node-row{{display:flex;align-items:center;gap:4px;font-size:10px;color:#9080b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}}
 .node-row b{{width:5px;height:5px;border-radius:50%;flex-shrink:0;}}
 .err-row{{color:#ff9090;}}
 .node-err{{font-size:10px;color:#ff9090;background:rgba(80,0,0,0.3);border-radius:4px;padding:3px 5px;margin-top:3px;font-family:monospace;line-height:1.4;white-space:pre-wrap;word-break:break-word;}}
@@ -267,7 +282,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 .n-blocked,.n-pending{{background:rgba(25,10,55,0.4);border-color:rgba(60,45,110,0.3);}}
 .n-warn{{background:rgba(70,40,0,0.3);border-color:rgba(255,170,0,0.3);}}
 /* --- Center column --- */
-.radar-wrap{{position:relative;width:288px;height:288px;flex-shrink:0;}}
+.radar-wrap{{position:relative;width:324px;height:324px;flex-shrink:0;}}
 .radar-label{{text-align:center;margin-top:4px;}}
 .radar-lbl-main{{font-size:13px;font-weight:500;color:#c0a0ff;}}
 .radar-lbl-status{{font-size:12px;margin-top:2px;display:flex;align-items:center;justify-content:center;gap:4px;}}
@@ -348,22 +363,29 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 
     <div class="center-col">
       <div class="radar-wrap">
-        <canvas id="pb-radar" width="288" height="288" style="width:288px;height:288px;"></canvas>
+        <canvas id="pb-radar" width="324" height="324" style="width:324px;height:324px;"></canvas>
       </div>
       <div class="radar-label">
-        <div class="radar-lbl-main">Pipeline Trigger</div>
+        <div class="radar-lbl-main">Pipeline / Container Monitoring</div>
         <div class="radar-lbl-status">{dot(hub_st)}<span style="color:{hub_color};font-size:12px;">{hub_lbl}</span></div>
       </div>
 
       <div class="connector"></div>
 
       <div class="agg-node">
-        <div class="agg-title">Data Aggregate</div>
+        <div class="agg-title">Data Engine / Processing</div>
         <div class="agg-grid">
           <div class="agg-item"><div class="agg-val" style="color:#00e87a;">{total_rows:,}</div><div class="agg-lbl">total rows</div></div>
-          <div class="agg-item"><div class="agg-val" style="color:{ok_color};">{passed}/{passed+failed_ct+blocked_ct}</div><div class="agg-lbl">sources ok</div></div>
+          <div class="agg-item">
+            <div class="agg-val" style="display:flex;align-items:center;justify-content:center;gap:5px;">
+              <div class="{sources_dot}"></div>
+              <span style="color:{ok_color};">{passed}/{passed+failed_ct+blocked_ct}</span>
+            </div>
+            <div class="agg-lbl">sources ok</div>
+          </div>
           <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">{started_at}</div><div class="agg-lbl">started</div></div>
           <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">{finished_at}</div><div class="agg-lbl">finished</div></div>
+          <div class="agg-item" style="grid-column:span 2;"><div class="agg-val" style="color:#ffaa00;font-size:12px;">{next_sched}</div><div class="agg-lbl">next schedule</div></div>
         </div>
       </div>
 
@@ -372,7 +394,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
       <a href="{DASHBOARD_URL}" target="_blank" class="dash-node">
         <div class="browser-bar">
           <span class="bd bd-r"></span><span class="bd bd-y"></span><span class="bd bd-g"></span>
-          <span class="browser-url">masterlist_dashboard.html</span>
+          <span class="browser-url">PacBiz Dashboard</span>
           <span class="browser-arr">&#8599;</span>
         </div>
         <div class="dash-body">
@@ -523,7 +545,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
     ctx.fillStyle='rgba(210,150,255,0.9)'; ctx.fill();
 
     ctx.restore();
-    ang += 0.022; time += 0.03;
+    ang += 0.012; time += 0.022;
     requestAnimationFrame(draw);
   }}
   draw();
