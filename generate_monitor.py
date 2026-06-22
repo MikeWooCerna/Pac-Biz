@@ -12,6 +12,7 @@ FAVICON_FILE = BASE / "pacbiz_favicon.png"
 DASHBOARD_URL = "https://mikewoocerna.github.io/Pac-Biz/masterlist_dashboard.html"
 
 ACCOUNTS = [
+    ("Masterlist",      "masterlist_fetch.py", r"C:\Users\Mike Woo Cerna\Documents\PB\Masterlist\masterlist_cache.csv"),
     ("Coaching",        "asana_pull.py",    r"C:\Users\Mike Woo Cerna\Documents\PB\Coaching\Output\coaching_logs.xlsx"),
     ("M7",              "m7_pull.py",       r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\M7\M7_RAW.xlsx"),
     ("Parentis Health", "parentis_pull.py", r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\Parentis Health\PARENTIS_RAW.xlsx"),
@@ -33,7 +34,6 @@ ACCOUNTS = [
     ("Vermont",         "vt_pull.py",       r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\Vermont\VT_RAW.xlsx"),
     ("YCDC",            "ycdc_pull.py",     r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\YCDC\YCDC_RAW.xlsx"),
     ("Blueline",        "bl_pull.py",       r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\Blueline\BL_RAW.xlsx"),
-    ("Masterlist",      "masterlist_fetch.py", r"C:\Users\Mike Woo Cerna\Documents\PB\Masterlist\masterlist_cache.csv"),
 ]
 
 def get_row_count(file_path):
@@ -161,7 +161,7 @@ def generate():
             if failed_idx is not None and i > failed_idx:
                 s = "blocked"
             elif run_status == "success":
-                s = "blocked"
+                s = "pending"
             else:
                 s = "pending"
             ts    = "&mdash;"

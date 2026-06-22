@@ -30,6 +30,17 @@ py -3 "%MASTERLIST_DIR%\log_step.py" init
 
 echo.
 echo ========================================
+echo Fetching Masterlist from Google Sheets
+echo ========================================
+py -3 masterlist_fetch.py 2>"%MASTERLIST_DIR%\step_err.tmp"
+if errorlevel 1 (
+    py -3 "%MASTERLIST_DIR%\log_step.py" step "Masterlist" "masterlist_fetch.py" 1
+    goto :fail
+)
+py -3 "%MASTERLIST_DIR%\log_step.py" step "Masterlist" "masterlist_fetch.py" 0
+
+echo.
+echo ========================================
 echo Updating Coaching data from Asana
 echo ========================================
 cd /d "%COACHING_DIR%"
@@ -321,20 +332,6 @@ if errorlevel 1 (
     goto :fail
 )
 py -3 "%MASTERLIST_DIR%\log_step.py" step "Blueline" "bl_pull.py" 0
-
-echo.
-echo ========================================
-echo Fetching Masterlist from Google Sheets
-echo ========================================
-cd /d "%MASTERLIST_DIR%"
-if errorlevel 1 goto :fail
-
-py -3 masterlist_fetch.py 2>"%MASTERLIST_DIR%\step_err.tmp"
-if errorlevel 1 (
-    py -3 "%MASTERLIST_DIR%\log_step.py" step "Masterlist" "masterlist_fetch.py" 1
-    goto :fail
-)
-py -3 "%MASTERLIST_DIR%\log_step.py" step "Masterlist" "masterlist_fetch.py" 0
 
 echo.
 echo ========================================
