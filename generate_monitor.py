@@ -5,7 +5,8 @@ from pathlib import Path
 
 BASE         = Path(__file__).parent
 STATUS_FILE  = BASE / "pipeline_status.json"
-LOG_FILE     = BASE / "pipeline_log.json"
+LOG_FILE      = BASE / "pipeline_log.json"
+BASELINE_FILE = BASE / "pipeline_rowcount_baseline.json"
 OUTPUT_FILE  = BASE / "pipeline_monitor.html"
 LOGO_FILE    = BASE / "pacbiz_logo.png"
 FAVICON_FILE = BASE / "pacbiz_favicon.png"
@@ -89,6 +90,20 @@ def save_log(entries):
     except Exception:
         pass
 
+def load_baseline():
+    try:
+        if BASELINE_FILE.exists():
+            return json.loads(BASELINE_FILE.read_text(encoding="utf-8"))
+    except Exception:
+        pass
+    return {}
+
+def save_baseline(data):
+    try:
+        BASELINE_FILE.write_text(json.dumps(data, indent=2, default=str), encoding="utf-8")
+    except Exception:
+        pass
+
 def fmt_log_date(iso_str):
     if not iso_str:
         return "&mdash;"
@@ -104,7 +119,8 @@ def render_log_table(log_entries):
     rows = []
     for e in reversed(log_entries[-80:]):
         st  = e.get("status", "")
-        pill = ('<span class="lp lp-f">FAILED</span>' if st == "fail"
+        pill = ('<span class="lp lp-f">FAILED</span>'    if st == "fail"
+                else '<span class="lp lp-d">COUNT DROP</span>' if st == "count_drop"
                 else '<span class="lp lp-n">NOT REACHED</span>')
         err  = (e.get("error") or "").strip()
         err_html = f'<div class="log-err">{err[:120]}</div>' if err else ""
@@ -148,7 +164,7 @@ def dot_cls(status):
 STATUS_LABELS = {"pass": "PASS", "fail": "FAIL", "running": "RUNNING",
                  "blocked": "NOT REACHED", "pending": "NOT REACHED"}
 
-def render_node(name, script, status, ts, rows, error=None):
+def render_node(name, script, status, ts, rows, error=None, drop_info=None):
     pill_cls = {"pass": "g", "fail": "r", "blocked": "o", "pending": "o"}.get(status, "")
     rows_str = f"{rows:,}" if rows is not None else "&mdash;"
     status_lbl = STATUS_LABELS.get(status, status.upper())
@@ -160,6 +176,12 @@ def render_node(name, script, status, ts, rows, error=None):
             err_html = '<div class="node-row err-row">Exit code 1 &middot; check logs</div>'
     else:
         err_html = ""
+    if drop_info is not None:
+        count_badge = f'<span class="meta-pill cnt-drop">&darr; {drop_info.get("drop", 0):,}</span>'
+    elif status == "pass":
+        count_badge = '<span class="meta-pill cnt-ok">&#10003;</span>'
+    else:
+        count_badge = ""
     return f"""<div class="node {node_cls(status)}">
   <div class="node-title" style="color:{title_color(status)};"><span>{name}</span>{dot(status)}</div>
   <div class="node-row"><b class="{dot_cls(status)}"></b>{script} &middot; {ts}</div>
@@ -167,6 +189,7 @@ def render_node(name, script, status, ts, rows, error=None):
   <div class="node-meta">
     <span class="meta-pill {pill_cls}">{rows_str} rows</span>
     <span class="meta-pill {pill_cls}">{status_lbl}</span>
+    {count_badge}
   </div>
 </div>"""
 
@@ -221,7 +244,7 @@ def generate():
     blocked_ct = sum(1 for a in account_states if a["status"] in ("blocked", "pending"))
     total_rows = sum(a["rows"] for a in account_states if a["rows"] is not None)
 
-    # Append finished-run incidents to persistent log
+    # Append finished-run incidents and count drops to persistent log
     log_entries = load_log()
     if run_status in ("success", "failed") and raw:
         run_id_full = raw.get("run_id", "")
@@ -236,7 +259,30 @@ def generate():
                     log_entries.append({"run_id": run_id_full, "date": run_date,
                                         "account": a["name"], "script": a["script"],
                                         "status": "not_reached", "error": None})
+            # Row count drop detection against baseline
+            baseline    = load_baseline()
+            new_baseline = dict(baseline)
+            for a in account_states:
+                if a["rows"] is not None:
+                    prev = baseline.get(a["name"])
+                    if prev is not None and a["rows"] < prev:
+                        drop = prev - a["rows"]
+                        log_entries.append({"run_id": run_id_full, "date": run_date,
+                                            "account": a["name"], "script": a["script"],
+                                            "status": "count_drop", "drop": drop,
+                                            "prev_count": prev, "new_count": a["rows"],
+                                            "error": f"Dropped {drop:,} rows ({prev:,} → {a['rows']:,})"})
+                    new_baseline[a["name"]] = a["rows"]
             save_log(log_entries)
+            save_baseline(new_baseline)
+
+    # Collect count drops for the current run (for the alert strip and card badges)
+    count_drops = []
+    if raw:
+        run_id_full = raw.get("run_id", "")
+        count_drops = [e for e in log_entries
+                       if e.get("run_id") == run_id_full and e.get("status") == "count_drop"]
+    drop_by_account = {d["account"]: d for d in count_drops}
 
     log_table_rows = render_log_table(log_entries)
 
@@ -257,12 +303,21 @@ def generate():
     n_total     = len(account_states)
     left_label  = f"Data Sources 1&ndash;{n_left}"
     right_label = f"Data Sources {n_left + 1}&ndash;{n_total}"
-    left_html   = "\n".join(render_node(a["name"], a["script"], a["status"], a["ts"], a["rows"], a.get("error")) for a in account_states[:n_left])
-    right_html  = "\n".join(render_node(a["name"], a["script"], a["status"], a["ts"], a["rows"], a.get("error")) for a in account_states[n_left:])
+    left_html   = "\n".join(render_node(a["name"], a["script"], a["status"], a["ts"], a["rows"], a.get("error"), drop_by_account.get(a["name"])) for a in account_states[:n_left])
+    right_html  = "\n".join(render_node(a["name"], a["script"], a["status"], a["ts"], a["rows"], a.get("error"), drop_by_account.get(a["name"])) for a in account_states[n_left:])
 
     warn_html = ""
     if run_status == "failed" and failed_at:
         warn_html = f"""<div class="warn-strip">&#9888; Pipeline stopped at <b>{failed_at}</b> &middot; Exit code 1 &middot; {blocked_ct} step{'s' if blocked_ct != 1 else ''} not reached</div>"""
+
+    drop_html = ""
+    if count_drops:
+        items = " &nbsp;&middot;&nbsp; ".join(
+            f"<b>{d['account']}</b> &darr;&thinsp;{d.get('drop', 0):,} rows "
+            f"<span style='opacity:0.65;font-size:11px;'>({d.get('prev_count',0):,} &rarr; {d.get('new_count',0):,})</span>"
+            for d in count_drops
+        )
+        drop_html = f'<div class="drop-strip">&#9660; Row count drop detected &mdash; {items}</div>'
 
     # Build radar blips JS array
     SHORT_NAMES = {
@@ -411,6 +466,10 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 .lp-f{{background:rgba(255,61,61,0.1);color:#ff8080;border:1px solid rgba(255,61,61,0.22);}}
 .lp-n{{background:rgba(232,69,0,0.1);color:#E84500;border:1px solid rgba(232,69,0,0.28);}}
 .log-empty{{text-align:center;color:#4a3d7a;font-size:12px;padding:14px;background:rgba(40,10,90,0.25);border-radius:8px;border:1px solid rgba(80,0,180,0.18);}}
+.drop-strip{{background:rgba(50,30,0,0.35);border:1px solid rgba(255,170,0,0.32);border-radius:7px;padding:7px 12px;font-size:13px;color:#ffcc55;display:flex;align-items:flex-start;gap:6px;margin-top:7px;flex-wrap:wrap;position:relative;z-index:1;}}
+.lp-d{{background:rgba(255,170,0,0.1);color:#ffaa00;border:1px solid rgba(255,170,0,0.28);}}
+.cnt-drop{{background:rgba(232,69,0,0.15);color:#ff7040;border:1px solid rgba(232,69,0,0.38);font-weight:600;}}
+.cnt-ok{{background:rgba(0,232,122,0.06);color:#20a060;border:1px solid rgba(0,232,122,0.18);}}
 @media(prefers-reduced-motion:reduce){{
   .blink-g,.blink-r,.blink-a{{animation:none;}}
   canvas{{display:none;}}
@@ -520,6 +579,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
   </div>
 
   {warn_html}
+  {drop_html}
 
   <div class="divider" style="margin-top:12px;"></div>
   <div class="log-section">
