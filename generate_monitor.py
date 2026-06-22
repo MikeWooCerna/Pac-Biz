@@ -516,6 +516,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
       if (b.st === 'pass')    {{ col=[0,232,122];   sz=3;   glow_r=10; }}
       else if (b.st==='fail') {{ col=[255,61,61];   sz=3.5; glow_r=11; }}
       else if (b.st==='running') {{ col=[255,170,0]; sz=3; glow_r=10; }}
+      else if (b.st==='blocked'||b.st==='pending') {{ col=[232,69,0]; sz=3; glow_r=9; }}
       else                    {{ col=[74,61,122];   sz=2;   glow_r=0;  pulse=0.25; }}
       if (glow_r > 0) {{
         var g = ctx.createRadialGradient(bx,by,0,bx,by,glow_r);
@@ -527,10 +528,10 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
       ctx.fillStyle='rgba('+col+','+(0.45+pulse*0.55)+')'; ctx.fill();
 
       // label
-      var isDim = b.st==='blocked'||b.st==='pending';
+      var isNotReached = b.st==='blocked'||b.st==='pending';
       var isFail = b.st==='fail', isRun = b.st==='running';
-      var fontSize = (isFail||isRun) ? 8 : 7;
-      var labelAlpha = isDim ? 0.2 : (isFail ? (0.7+pulse*0.3) : 0.55);
+      var fontSize = (isFail||isRun||isNotReached) ? 8 : 7;
+      var labelAlpha = isNotReached ? (0.5+pulse*0.3) : (isFail ? (0.7+pulse*0.3) : 0.55);
       ctx.font = 'bold '+fontSize+'px system-ui,sans-serif';
       ctx.fillStyle = 'rgba('+col+','+labelAlpha+')';
       var labelOffset = R * b.r + 14;
@@ -539,7 +540,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
       var cosA = Math.cos(ba);
       ctx.textAlign = cosA > 0.2 ? 'left' : (cosA < -0.2 ? 'right' : 'center');
       ctx.textBaseline = 'middle';
-      if (isFail || isRun) {{
+      if (isFail || isRun || isNotReached) {{
         ctx.shadowBlur = 6; ctx.shadowColor = 'rgba('+col+',0.7)';
       }}
       ctx.fillText(b.nm, lx, ly);
