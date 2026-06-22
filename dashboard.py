@@ -1832,8 +1832,8 @@ def transform_vip_data(source):
     for std_key, vip_base in VIP_CRIT_MAP.items():
         ai_col  = f"{vip_base}_AI"
         max_col = f"{vip_base}_Max"
-        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
-        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        ai_s  = pd.to_numeric(df[ai_col]  if ai_col  in df.columns else pd.Series(0, index=df.index, dtype=float), errors="coerce").fillna(0)
+        max_s = pd.to_numeric(df[max_col] if max_col in df.columns else pd.Series(0, index=df.index, dtype=float), errors="coerce").fillna(0)
         if std_key == "rude":
             df[std_key] = [
                 None if mx == 0 else ("No" if ai >= mx else "Yes")
@@ -1858,8 +1858,8 @@ def transform_vip_data(source):
     for vip_key, vip_base in VIP_EXTRA_CRIT_MAP.items():
         ai_col  = f"{vip_base}_AI"
         max_col = f"{vip_base}_Max"
-        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
-        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        ai_s  = pd.to_numeric(df[ai_col]  if ai_col  in df.columns else pd.Series(0, index=df.index, dtype=float), errors="coerce").fillna(0)
+        max_s = pd.to_numeric(df[max_col] if max_col in df.columns else pd.Series(0, index=df.index, dtype=float), errors="coerce").fillna(0)
         if vip_key == "vip_sop":
             df[vip_key] = [
                 "Not Applicable" if mx == 0 else ("Yes" if ai > 0 else "No")
