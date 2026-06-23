@@ -32,7 +32,7 @@ echo.
 echo ========================================
 echo Fetching Masterlist from Google Sheets
 echo ========================================
-py -3 masterlist_fetch.py 2>"%MASTERLIST_DIR%\step_err.tmp"
+py -3 "%MASTERLIST_DIR%\self_heal.py" run-step masterlist_fetch.py
 if errorlevel 1 (
     py -3 "%MASTERLIST_DIR%\log_step.py" step "Masterlist" "masterlist_fetch.py" 1
     goto :fail
@@ -46,7 +46,7 @@ echo ========================================
 cd /d "%COACHING_DIR%"
 if errorlevel 1 goto :fail
 
-py -3 asana_pull.py 2>"%MASTERLIST_DIR%\step_err.tmp"
+py -3 "%MASTERLIST_DIR%\self_heal.py" run-step asana_pull.py
 if errorlevel 1 (
     py -3 "%MASTERLIST_DIR%\log_step.py" step "Coaching" "asana_pull.py" 1
     goto :fail
@@ -60,7 +60,7 @@ echo ========================================
 cd /d "%M7_DIR%"
 if errorlevel 1 goto :fail
 
-py -3 m7_pull.py 2>"%MASTERLIST_DIR%\step_err.tmp"
+py -3 "%MASTERLIST_DIR%\self_heal.py" run-step m7_pull.py
 if errorlevel 1 (
     py -3 "%MASTERLIST_DIR%\log_step.py" step "M7" "m7_pull.py" 1
     goto :fail
@@ -74,7 +74,7 @@ echo ========================================
 cd /d "%PARENTIS_DIR%"
 if errorlevel 1 goto :fail
 
-py -3 parentis_pull.py 2>"%MASTERLIST_DIR%\step_err.tmp"
+py -3 "%MASTERLIST_DIR%\self_heal.py" run-step parentis_pull.py
 if errorlevel 1 (
     py -3 "%MASTERLIST_DIR%\log_step.py" step "Parentis Health" "parentis_pull.py" 1
     goto :fail
@@ -88,7 +88,7 @@ echo ========================================
 cd /d "%BRITELIFT_DIR%"
 if errorlevel 1 goto :fail
 
-py -3 britelift_pull.py 2>"%MASTERLIST_DIR%\step_err.tmp"
+py -3 "%MASTERLIST_DIR%\self_heal.py" run-step britelift_pull.py
 if errorlevel 1 (
     py -3 "%MASTERLIST_DIR%\log_step.py" step "Britelift" "britelift_pull.py" 1
     goto :fail
@@ -102,7 +102,7 @@ echo ========================================
 cd /d "%BLC_DIR%"
 if errorlevel 1 goto :fail
 
-py -3 britelift_pull.py 2>"%MASTERLIST_DIR%\step_err.tmp"
+py -3 "%MASTERLIST_DIR%\self_heal.py" run-step britelift_pull.py
 if errorlevel 1 (
     py -3 "%MASTERLIST_DIR%\log_step.py" step "Britelift Chat" "britelift_pull.py" 1
     goto :fail
@@ -116,7 +116,7 @@ echo ========================================
 cd /d "%RIDEX_DIR%"
 if errorlevel 1 goto :fail
 
-py -3 Ridex_pull.py 2>"%MASTERLIST_DIR%\step_err.tmp"
+py -3 "%MASTERLIST_DIR%\self_heal.py" run-step Ridex_pull.py
 if errorlevel 1 (
     py -3 "%MASTERLIST_DIR%\log_step.py" step "RideX" "Ridex_pull.py" 1
     goto :fail
@@ -130,7 +130,7 @@ echo ========================================
 cd /d "%HAMILTON_DIR%"
 if errorlevel 1 goto :fail
 
-py -3 Hamilton_pull.py 2>"%MASTERLIST_DIR%\step_err.tmp"
+py -3 "%MASTERLIST_DIR%\self_heal.py" run-step Hamilton_pull.py
 if errorlevel 1 (
     py -3 "%MASTERLIST_DIR%\log_step.py" step "Hamilton" "Hamilton_pull.py" 1
     goto :fail
@@ -144,7 +144,7 @@ echo ========================================
 cd /d "%SKYLINE_DIR%"
 if errorlevel 1 goto :fail
 
-py -3 Skyline_pull.py 2>"%MASTERLIST_DIR%\step_err.tmp"
+py -3 "%MASTERLIST_DIR%\self_heal.py" run-step Skyline_pull.py
 if errorlevel 1 (
     py -3 "%MASTERLIST_DIR%\log_step.py" step "Skyline" "Skyline_pull.py" 1
     goto :fail
@@ -158,7 +158,7 @@ echo ========================================
 cd /d "%VIP_DIR%"
 if errorlevel 1 goto :fail
 
-py -3 vip_pull.py 2>"%MASTERLIST_DIR%\step_err.tmp"
+py -3 "%MASTERLIST_DIR%\self_heal.py" run-step vip_pull.py
 if errorlevel 1 (
     py -3 "%MASTERLIST_DIR%\log_step.py" step "VIP" "vip_pull.py" 1
     goto :fail
@@ -172,7 +172,7 @@ echo ========================================
 cd /d "%CH_DIR%"
 if errorlevel 1 goto :fail
 
-py -3 ch_pull.py 2>"%MASTERLIST_DIR%\step_err.tmp"
+py -3 "%MASTERLIST_DIR%\self_heal.py" run-step ch_pull.py
 if errorlevel 1 (
     py -3 "%MASTERLIST_DIR%\log_step.py" step "C&H" "ch_pull.py" 1
     goto :fail
@@ -186,7 +186,7 @@ echo ========================================
 cd /d "%RC_DIR%"
 if errorlevel 1 goto :fail
 
-py -3 rc_pull.py 2>"%MASTERLIST_DIR%\step_err.tmp"
+py -3 "%MASTERLIST_DIR%\self_heal.py" run-step rc_pull.py
 if errorlevel 1 (
     py -3 "%MASTERLIST_DIR%\log_step.py" step "Reno Cab" "rc_pull.py" 1
     goto :fail
@@ -200,7 +200,7 @@ echo ========================================
 cd /d "%TI_DIR%"
 if errorlevel 1 goto :fail
 
-py -3 ti_pull.py 2>"%MASTERLIST_DIR%\step_err.tmp"
+py -3 "%MASTERLIST_DIR%\self_heal.py" run-step ti_pull.py
 if errorlevel 1 (
     py -3 "%MASTERLIST_DIR%\log_step.py" step "Trans Iowa" "ti_pull.py" 1
     goto :fail
@@ -214,7 +214,7 @@ echo ========================================
 cd /d "%DC_DIR%"
 if errorlevel 1 goto :fail
 
-py -3 dc_pull.py 2>"%MASTERLIST_DIR%\step_err.tmp"
+py -3 "%MASTERLIST_DIR%\self_heal.py" run-step dc_pull.py
 if errorlevel 1 (
     py -3 "%MASTERLIST_DIR%\log_step.py" step "Data Carz" "dc_pull.py" 1
     goto :fail
@@ -228,7 +228,7 @@ echo ========================================
 cd /d "%AC_DIR%"
 if errorlevel 1 goto :fail
 
-py -3 ac_pull.py 2>"%MASTERLIST_DIR%\step_err.tmp"
+py -3 "%MASTERLIST_DIR%\self_heal.py" run-step ac_pull.py
 if errorlevel 1 (
     py -3 "%MASTERLIST_DIR%\log_step.py" step "Associated Cab" "ac_pull.py" 1
     goto :fail
@@ -242,7 +242,7 @@ echo ========================================
 cd /d "%OL_DIR%"
 if errorlevel 1 goto :fail
 
-py -3 ol_pull.py 2>"%MASTERLIST_DIR%\step_err.tmp"
+py -3 "%MASTERLIST_DIR%\self_heal.py" run-step ol_pull.py
 if errorlevel 1 (
     py -3 "%MASTERLIST_DIR%\log_step.py" step "Ollies" "ol_pull.py" 1
     goto :fail
@@ -256,7 +256,7 @@ echo ========================================
 cd /d "%CT_DIR%"
 if errorlevel 1 goto :fail
 
-py -3 ct_pull.py 2>"%MASTERLIST_DIR%\step_err.tmp"
+py -3 "%MASTERLIST_DIR%\self_heal.py" run-step ct_pull.py
 if errorlevel 1 (
     py -3 "%MASTERLIST_DIR%\log_step.py" step "Circle Taxi" "ct_pull.py" 1
     goto :fail
@@ -270,7 +270,7 @@ echo ========================================
 cd /d "%YCOV_DIR%"
 if errorlevel 1 goto :fail
 
-py -3 ycov_pull.py 2>"%MASTERLIST_DIR%\step_err.tmp"
+py -3 "%MASTERLIST_DIR%\self_heal.py" run-step ycov_pull.py
 if errorlevel 1 (
     py -3 "%MASTERLIST_DIR%\log_step.py" step "YCOV" "ycov_pull.py" 1
     goto :fail
@@ -284,7 +284,7 @@ echo ========================================
 cd /d "%KEL_DIR%"
 if errorlevel 1 goto :fail
 
-py -3 kel_pull.py 2>"%MASTERLIST_DIR%\step_err.tmp"
+py -3 "%MASTERLIST_DIR%\self_heal.py" run-step kel_pull.py
 if errorlevel 1 (
     py -3 "%MASTERLIST_DIR%\log_step.py" step "Kelowna" "kel_pull.py" 1
     goto :fail
@@ -298,7 +298,7 @@ echo ========================================
 cd /d "%VT_DIR%"
 if errorlevel 1 goto :fail
 
-py -3 vt_pull.py 2>"%MASTERLIST_DIR%\step_err.tmp"
+py -3 "%MASTERLIST_DIR%\self_heal.py" run-step vt_pull.py
 if errorlevel 1 (
     py -3 "%MASTERLIST_DIR%\log_step.py" step "Vermont" "vt_pull.py" 1
     goto :fail
@@ -312,7 +312,7 @@ echo ========================================
 cd /d "%YCDC_DIR%"
 if errorlevel 1 goto :fail
 
-py -3 ycdc_pull.py 2>"%MASTERLIST_DIR%\step_err.tmp"
+py -3 "%MASTERLIST_DIR%\self_heal.py" run-step ycdc_pull.py
 if errorlevel 1 (
     py -3 "%MASTERLIST_DIR%\log_step.py" step "YCDC" "ycdc_pull.py" 1
     goto :fail
@@ -326,7 +326,7 @@ echo ========================================
 cd /d "%BL_DIR%"
 if errorlevel 1 goto :fail
 
-py -3 bl_pull.py 2>"%MASTERLIST_DIR%\step_err.tmp"
+py -3 "%MASTERLIST_DIR%\self_heal.py" run-step bl_pull.py
 if errorlevel 1 (
     py -3 "%MASTERLIST_DIR%\log_step.py" step "Blueline" "bl_pull.py" 1
     goto :fail
@@ -340,12 +340,17 @@ echo ========================================
 cd /d "%MASTERLIST_DIR%"
 if errorlevel 1 goto :fail
 
+echo.
+echo ========================================
+echo Self-heal: checking for count drops
+echo ========================================
+py -3 "%MASTERLIST_DIR%\self_heal.py" heal-drops
+
 echo Syncing latest dashboard repo changes...
 git pull --rebase --autostash
 if errorlevel 1 goto :fail
 
-py -3 "%MASTERLIST_DIR%\fix_footgun.py"
-py -3 dashboard.py 2>"%MASTERLIST_DIR%\step_err.tmp"
+py -3 "%MASTERLIST_DIR%\self_heal.py" run-step dashboard.py
 if errorlevel 1 (
     py -3 "%MASTERLIST_DIR%\log_step.py" step "Build" "dashboard.py" 1
     goto :fail
