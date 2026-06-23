@@ -2,8 +2,8 @@
   "run_id": "2026-06-23T11:00:02",
   "started_at": "2026-06-23T11:00:02.193971",
   "finished_at": null,
-  "status": "running",
-  "failed_at": null,
+  "status": "failed",
+  "failed_at": "Britelift Chat",
   "steps": [
     {
       "account": "Masterlist",
@@ -44,6 +44,14 @@
       "status": "pass",
       "timestamp": "2026-06-23T11:00:57.192615",
       "error": null
+    },
+    {
+      "account": "Britelift Chat",
+      "script": "britelift_pull.py",
+      "exit_code": 1,
+      "status": "fail",
+      "timestamp": "2026-06-23T11:01:09.834107",
+      "error": "    r = self.request(\"get\", url, params=params)\n  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\gspread\\http_client.py\", line 128, in request\n    raise APIError(response)\ngspread.exceptions.APIError: APIError: [503]: The service is currently unavailable."
     }
   ]
 }
