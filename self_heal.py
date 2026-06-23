@@ -11,6 +11,7 @@ Modes:
 import subprocess, sys, time, json
 from datetime import datetime
 from pathlib import Path
+import notify as _notify
 
 BASE        = Path(__file__).parent
 STEP_ERR    = BASE / "step_err.tmp"
@@ -157,6 +158,12 @@ def run_step(script):
                     action="retry",
                     detail=f"Failed on attempt 1, recovered automatically on retry."
                 )
+                _notify.notify_healed(
+                    account=label,
+                    script=script,
+                    action="retry",
+                    detail="Failed on attempt 1, recovered automatically on retry."
+                )
                 print(f"[self-heal] {label} recovered on retry. ✓", flush=True)
             sys.exit(0)
 
@@ -169,6 +176,11 @@ def run_step(script):
             time.sleep(wait)
         else:
             STEP_ERR.write_text(result.stderr or "", encoding="utf-8", errors="replace")
+            _notify.notify_failure(
+                account=script,
+                script=script,
+                error=result.stderr or ""
+            )
             sys.exit(1)
 
 # ── Mode: heal-drops ──────────────────────────────────────────────────────────
@@ -215,15 +227,14 @@ def heal_drops():
 
         new_count = get_row_count(file_path)
         if new_count is not None and new_count >= prev_count:
-            log_heal_event(
-                account=account,
-                script=script,
-                action="repull",
-                detail=f"Count dropped {prev_count:,} → {current:,}. Re-pull recovered {new_count:,} rows."
-            )
+            detail = f"Count dropped {prev_count:,} → {current:,}. Re-pull recovered {new_count:,} rows."
+            log_heal_event(account=account, script=script, action="repull", detail=detail)
+            _notify.notify_healed(account=account, script=script, action="repull", detail=detail)
             print(f"[self-heal] {account}: recovered — {new_count:,} rows. ✓", flush=True)
         else:
             recovered = new_count if new_count is not None else current
+            detail = f"Count dropped {prev_count:,} → {current:,}. Re-pull still low: {recovered:,} rows. Likely a source-side issue."
+            _notify.notify_failure(account=account, script=script, error=detail)
             print(f"[self-heal] {account}: re-pulled but count still low ({recovered:,}). Likely a source-side issue.", flush=True)
 
     if not any_drop:

@@ -4,3 +4,6 @@ __pycache__/
 
 .DS_Store
 Thumbs.db
+
+# Local credentials — never commit
+notify_config.json
