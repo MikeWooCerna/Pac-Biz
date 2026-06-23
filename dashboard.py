@@ -4634,6 +4634,29 @@ def main():
     masterlist = clean_columns(pd.read_csv(_ml_cache   if _ml_cache.exists()   else MASTERLIST_CSV))
     history    = clean_columns(pd.read_csv(_hist_cache if _hist_cache.exists() else HISTORY_CSV))
     movement   = clean_columns(pd.read_csv(_move_cache if _move_cache.exists() else MOVEMENT_CSV))
+    if "Type of Movement" in movement.columns and "Movement Type" in movement.columns:
+        movement["Movement Type"] = movement.apply(
+            lambda r: r["Movement Type"] if (pd.notna(r["Movement Type"]) and str(r["Movement Type"]).strip())
+                      else str(r.get("Type of Movement", "") or "").strip(),
+            axis=1
+        )
+    if "Company Email" in masterlist.columns and "Emp Name" in masterlist.columns:
+        email_to_name = (
+            masterlist[["Company Email", "Emp Name"]]
+            .dropna(subset=["Company Email"])
+            .assign(**{"Company Email": lambda d: d["Company Email"].str.strip().str.lower()})
+            .drop_duplicates("Company Email")
+            .set_index("Company Email")["Emp Name"]
+            .to_dict()
+        )
+    else:
+        email_to_name = {}
+    if "Email Address" in movement.columns:
+        movement["Initiated by"] = movement["Email Address"].apply(
+            lambda e: email_to_name.get(str(e).strip().lower(), "") if pd.notna(e) and str(e).strip() else ""
+        )
+    else:
+        movement["Initiated by"] = ""
     coaching = load_coaching_data(masterlist)
     m7 = load_m7_data()
     parentis = load_parentis_data()
@@ -6881,6 +6904,7 @@ const RECENT_MOVEMENT_COLUMNS = [
     {{label: "Effective Date", field: "Effective Date", sortable: true, sortType: "date"}},
     {{label: "Process Status", field: "Process Status", sortable: true}},
     {{label: "Processed Date", field: "Processed Date Only", sortable: true, sortType: "date"}},
+    {{label: "Initiated by", field: "Initiated by", sortable: true}},
 ];
 const TENURE_GROUPS = [
     {{name: "0-30 Days", maxDays: 30}},
