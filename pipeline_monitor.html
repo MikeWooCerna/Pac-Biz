@@ -133,7 +133,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     </div>
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run 2026-06-23T20:52</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Built: Jun 23, 2026 08:57 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Built: Jun 23, 2026 09:02 PM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -146,7 +146,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div class="stat-card"><div class="sc-val" style="color:#00e87a;">22</div><div class="sc-lbl">Passed</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">0</div><div class="sc-lbl">Failed</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#E84500;">0</div><div class="sc-lbl">Not Reached</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">36,480</div><div class="sc-lbl">Rows Pulled</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">37,928</div><div class="sc-lbl">Rows Pulled</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#7060a0;">&mdash;</div><div class="sc-lbl">running</div></div>
   </div>
 
@@ -288,7 +288,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       <div class="agg-node">
         <div class="agg-title">Data Engine / Processing</div>
         <div class="agg-grid">
-          <div class="agg-item"><div class="agg-val" style="color:#00e87a;">36,480</div><div class="agg-lbl">total rows</div></div>
+          <div class="agg-item"><div class="agg-val" style="color:#00e87a;">37,928</div><div class="agg-lbl">total rows</div></div>
           <div class="agg-item">
             <div class="agg-val" style="display:flex;align-items:center;justify-content:center;gap:5px;">
               <div class="blink-g"></div>
@@ -312,8 +312,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
         </div>
         <div class="dash-body">
           <div class="stage-title">Dashboard</div>
-          <div class="stage-status"><div class="blink-n"></div></div>
-          <div class="stage-detail">not reached</div>
+          <div id="dash-freshness" style="margin:5px 0 3px;min-height:20px;display:flex;justify-content:center;align-items:center;font-size:12px;"></div>
         </div>
       </a>
 
@@ -423,7 +422,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-row"><b class="b-g"></b>ycdc_pull.py &middot; 08:57 PM</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">970 rows</span>
+    <span class="meta-pill g">2,418 rows</span>
     <span class="meta-pill g">PASS</span>
     <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
@@ -667,7 +666,7 @@ ValueError: Length of values (0) does not match length of index (827)</div></td>
 
 // ── Dashboard freshness ───────────────────────────────────────────────────────
 (function() {
-  var BUILD_ISO = "";
+  var BUILD_ISO = "2026-06-23T21:02:07.915243";
   var el = document.getElementById('dash-freshness');
   if (!el || !BUILD_ISO) return;
   var buildTs = new Date(BUILD_ISO);
