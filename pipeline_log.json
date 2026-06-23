@@ -238,5 +238,117 @@
     "prev_count": 14429,
     "new_count": 6857,
     "error": "Dropped 7,572 rows (14,429 \u2192 6,857)"
+  },
+  {
+    "run_id": "2026-06-23T19:00:02",
+    "date": "Jun 23, 2026 07:00 PM",
+    "account": "Skyline",
+    "script": "Skyline_pull.py",
+    "status": "fail",
+    "error": "Traceback (most recent call last):\n  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\openpyxl\\worksheet\\_writer.py\", line 32, in _openpyxl_shutdown\n    os.remove(path)\nPermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\MIKEWO~1\\\\AppData\\\\Local\\\\Temp\\\\openpyxl.6271wd_q'"
+  },
+  {
+    "run_id": "2026-06-23T19:00:02",
+    "date": "Jun 23, 2026 07:00 PM",
+    "account": "VIP",
+    "script": "vip_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-06-23T19:00:02",
+    "date": "Jun 23, 2026 07:00 PM",
+    "account": "C&H",
+    "script": "ch_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-06-23T19:00:02",
+    "date": "Jun 23, 2026 07:00 PM",
+    "account": "Reno Cab",
+    "script": "rc_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-06-23T19:00:02",
+    "date": "Jun 23, 2026 07:00 PM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-06-23T19:00:02",
+    "date": "Jun 23, 2026 07:00 PM",
+    "account": "Data Carz",
+    "script": "dc_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-06-23T19:00:02",
+    "date": "Jun 23, 2026 07:00 PM",
+    "account": "Associated Cab",
+    "script": "ac_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-06-23T19:00:02",
+    "date": "Jun 23, 2026 07:00 PM",
+    "account": "Ollies",
+    "script": "ol_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-06-23T19:00:02",
+    "date": "Jun 23, 2026 07:00 PM",
+    "account": "Circle Taxi",
+    "script": "ct_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-06-23T19:00:02",
+    "date": "Jun 23, 2026 07:00 PM",
+    "account": "YCOV",
+    "script": "ycov_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-06-23T19:00:02",
+    "date": "Jun 23, 2026 07:00 PM",
+    "account": "Kelowna",
+    "script": "kel_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-06-23T19:00:02",
+    "date": "Jun 23, 2026 07:00 PM",
+    "account": "Vermont",
+    "script": "vt_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-06-23T19:00:02",
+    "date": "Jun 23, 2026 07:00 PM",
+    "account": "YCDC",
+    "script": "ycdc_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-06-23T19:00:02",
+    "date": "Jun 23, 2026 07:00 PM",
+    "account": "Blueline",
+    "script": "bl_pull.py",
+    "status": "not_reached",
+    "error": null
   }
 ]
