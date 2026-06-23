@@ -367,5 +367,27 @@
     "status": "healed",
     "action": "repull",
     "error": "Count dropped 2,487 \u2192 1,712. Re-pull recovered 2,487 rows."
+  },
+  {
+    "run_id": "2026-06-24T03:00:02",
+    "date": "Jun 24, 2026 03:00 AM",
+    "account": "Skyline",
+    "script": "Skyline_pull.py",
+    "status": "count_drop",
+    "drop": 6530,
+    "prev_count": 14447,
+    "new_count": 7917,
+    "error": "Dropped 6,530 rows (14,447 \u2192 7,917)"
+  },
+  {
+    "run_id": "2026-06-24T03:00:02",
+    "date": "Jun 24, 2026 03:00 AM",
+    "account": "Circle Taxi",
+    "script": "ct_pull.py",
+    "status": "count_drop",
+    "drop": 23,
+    "prev_count": 523,
+    "new_count": 500,
+    "error": "Dropped 23 rows (523 \u2192 500)"
   }
 ]
