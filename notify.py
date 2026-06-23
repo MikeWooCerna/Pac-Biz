@@ -68,7 +68,7 @@ def _now():
     return datetime.now().strftime("%b %d, %Y %I:%M %p")
 
 def notify_failure(account, script, error=""):
-    subject = f"[PAC-BIZ PIPELINE] FAILED — {account}"
+    subject = f"Report Monitoring — FAILED: {account}"
     error_safe = (error or "").replace("<", "&lt;").replace(">", "&gt;")
     html = f"""
 <div style="font-family:Arial,sans-serif;max-width:600px;">
@@ -97,7 +97,7 @@ def notify_failure(account, script, error=""):
 
 def notify_healed(account, script, action, detail):
     action_label = "Retry" if action == "retry" else "Re-pull"
-    subject = f"[PAC-BIZ PIPELINE] SELF HEALED — {account}"
+    subject = f"Report Monitoring — SELF HEALED: {account}"
     html = f"""
 <div style="font-family:Arial,sans-serif;max-width:600px;">
   <div style="background:#15803d;color:#fff;padding:14px 20px;border-radius:6px 6px 0 0;">
