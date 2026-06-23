@@ -95,6 +95,43 @@ def notify_failure(account, script, error=""):
 </div>"""
     send(subject, html, body_text=f"PIPELINE FAILED\nAccount: {account}\nScript: {script}\nTime: {_now()}\nError: {error}")
 
+def notify_high_volume(account, rows, threshold, level):
+    level_label = "CRITICAL" if level == "crit" else "WARNING"
+    hdr_color   = "#b91c1c" if level == "crit" else "#b45309"
+    bdr_color   = "#fca5a5" if level == "crit" else "#fcd34d"
+    bg_color    = "#fff7f7" if level == "crit" else "#fffbeb"
+    subject = f"Report Monitoring — HIGH VOLUME {level_label}: {account}"
+    html = f"""
+<div style="font-family:Arial,sans-serif;max-width:600px;">
+  <div style="background:{hdr_color};color:#fff;padding:14px 20px;border-radius:6px 6px 0 0;">
+    <b style="font-size:16px;">&#9888; High Volume {level_label}: {account}</b>
+  </div>
+  <div style="border:1px solid {bdr_color};border-top:none;padding:18px 20px;background:{bg_color};border-radius:0 0 6px 6px;">
+    <table style="width:100%;font-size:14px;border-collapse:collapse;">
+      <tr><td style="color:#6b7280;padding:4px 0;width:120px;">Account</td><td><b>{account}</b></td></tr>
+      <tr><td style="color:#6b7280;padding:4px 0;">Row Count</td><td><b>{rows:,}</b></td></tr>
+      <tr><td style="color:#6b7280;padding:4px 0;">Threshold</td><td>{threshold:,}</td></tr>
+      <tr><td style="color:#6b7280;padding:4px 0;">Level</td><td>{level_label}</td></tr>
+      <tr><td style="color:#6b7280;padding:4px 0;">Time</td><td>{_now()}</td></tr>
+    </table>
+    <p style="margin-top:12px;font-size:13px;color:#374151;">
+      This dataset is growing large. If it continues to grow unchecked, memory errors may occur during future pipeline runs.
+      No action is required now, but consider archiving older records in the source sheet.
+    </p>
+    <p style="margin-top:8px;">
+      <a href="https://mikewoocerna.github.io/Pac-Biz/pipeline_monitor.html"
+         style="background:#004C97;color:#fff;padding:8px 16px;border-radius:4px;text-decoration:none;font-size:13px;">
+        View Pipeline Monitor
+      </a>
+    </p>
+  </div>
+</div>"""
+    send(subject, html, body_text=(
+        f"HIGH VOLUME {level_label}\nAccount: {account}\n"
+        f"Row Count: {rows:,}\nThreshold: {threshold:,}\nTime: {_now()}\n"
+        f"Consider archiving older records in the source sheet."
+    ))
+
 def notify_healed(account, script, action, detail):
     action_label = "Retry" if action == "retry" else "Re-pull"
     subject = f"Report Monitoring — SELF HEALED: {account}"

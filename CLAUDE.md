@@ -1,6 +1,6 @@
 # PB Dashboard — project context
 # This file is read by Claude Code (auto) and Codex (manual).
-# Last updated: 2026-06-21
+# Last updated: 2026-06-23
 
 ## What this is
 
@@ -25,7 +25,7 @@ at build time — it has no pull script and no local Excel file.
 | `pull_coaching_update_publish.bat` | Coaching-only partial update + publish |
 | `Masterlist_Pull.py` | Masterlist Google Sheets CSV pull (standalone) |
 | `eval_dist_card.jsx` | Evaluation distribution card component (reference only) |
-| `requirements.txt` | Python deps: pandas>=2.2.0, openpyxl>=3.1.0, requests>=2.32.0 |
+| `requirements.txt` | Python deps: pandas>=2.2.0, openpyxl>=3.1.0, requests>=2.32.0, xlsxwriter>=3.2.0 |
 | `test_connection.py` | Google Sheets API connectivity test |
 | `pacbiz_logo.png` / `pacbiz_favicon.png` | Branding assets embedded in the HTML at build time |
 
@@ -113,19 +113,33 @@ If any step returns a non-zero exit code the entire pipeline aborts (`goto :fail
 
 Pipeline monitoring system is fully live as of 2026-06-22. See `PIPELINE_MONITOR.md` for full technical reference.
 
-### Changes made 2026-06-23
+### Changes made 2026-06-23 (batch 1)
 - **Row count drop alerts** — `pipeline_rowcount_baseline.json` stores last known count per account. After each run, any account that pulled fewer rows than the baseline triggers: (1) an amber warning strip on the monitor, (2) a `↓ N` red badge on the account card, (3) a `COUNT DROP` entry in the incident log. Baseline auto-updates each run.
 - **Account card badges** — every passing account card now shows a small `✓` green badge (no drop) or `↓ N` red badge (count dropped).
 - **Build and Git Push failures in incident log** — previously only data-source account failures were logged. Now `dashboard.py` failures and `git push` failures also appear as `FAILED` rows in the incident log table.
 - **Radar sweep turns red on failure** — sweep arm, trail, tip glow, and center dot switch from purple to red whenever any step fails (account, Build, or Git Push).
 - **VIP transform crash fixed** — see Known issues below.
 
+### Changes made 2026-06-23 (batch 2)
+- **Attrition movement type fix** — the movement Google Sheet has two columns: `Type of Movement` ("Attrition" or "Internal Movement") and `Movement Type` (sub-type, blank for Attrition rows). `dashboard.py` now fills blank `Movement Type` from `Type of Movement` at build time so Attrition rows appear correctly in the Recent Employee Movements table.
+- **"Initiated by" column in Recent Employee Movements** — the `Email Address` field from the movement data is looked up against `Company Email` in the masterlist to resolve the employee name. Displayed as the last column in the table. Blank when email is missing or has no match.
+- **xlsxwriter engine for all pull scripts** — all 19 QA account pull scripts (in `Quality/` subdirectories) were switched from `openpyxl` to `xlsxwriter` as the pandas Excel engine. Root cause: Skyline's dataset reached 14,297 rows × 138 columns and triggered a `MemoryError` in openpyxl, which builds the entire workbook in RAM before writing. xlsxwriter writes rows sequentially to disk and is not affected by dataset size. **Any new pull script must use `engine="xlsxwriter"` in `df.to_excel()`.**
+- **HIGH VOLUME warning system** — `generate_monitor.py` now detects accounts whose row count exceeds configured thresholds:
+  - `HIGH_VOLUME_WARN = 10,000` rows → amber `HIGH VOL` badge on card + amber strip + one-time email (WARNING)
+  - `HIGH_VOLUME_CRIT = 20,000` rows → red `CRITICAL VOL` badge + red strip + one-time email (CRITICAL)
+  - Escalation from warn → crit sends a second email. Dropping back below 10,000 resets the account.
+  - State persisted in `pipeline_highvol_notified.json` (tracked by git, auto-updated each run).
+  - Email sent via `notify.notify_high_volume()`.
+  - Incident log pill: `HIGH VOLUME` (amber, style `.lp-v`).
+
 ### Pending / future work
 - No open work items.
 
 ## Known issues / open questions
 
-- **VIP transform crash — fixed 2026-06-23 (commit `478a497`)** — `transform_vip_data` used `df.get(col, pd.Series(dtype=float))` in both the `VIP_CRIT_MAP` and `VIP_EXTRA_CRIT_MAP` loops. When VIP pulled a sheet missing a criterion column, the footgun returned a 0-length Series, causing a `ValueError: Length of values (0) does not match length of index (1000)` crash at Build time. Fixed by replacing with the safe pattern in both loops.
+- **VIP/Reno Cab transform crash — fixed 2026-06-23** — All 74 `df.get(col, pd.Series(dtype=float))` instances across all AI account transforms replaced with the safe pattern via `fix_footgun.py`. `self_heal.py` runs this automatically before every build attempt, making it impossible for this class of error to recur.
+
+- **Skyline MemoryError — fixed 2026-06-23** — Skyline's dataset reached 14,297 rows × 138 columns, causing `MemoryError` in openpyxl's `write_rows()`. openpyxl holds the entire workbook in RAM before writing. Fixed by switching all 19 pull scripts to `xlsxwriter` (writes row-by-row to disk). A HIGH VOLUME warning fires at 10,000 rows (amber) and 20,000 rows (red/critical) to give advance notice before any future threshold is approached.
 
 - **Britelift Chat uses `britelift_pull.py`** — same script filename as Britelift.
   This is intentional: the bat file `cd`s into the BLC directory first,

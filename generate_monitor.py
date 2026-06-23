@@ -7,8 +7,12 @@ BASE         = Path(__file__).parent
 STATUS_FILE  = BASE / "pipeline_status.json"
 LOG_FILE      = BASE / "pipeline_log.json"
 BASELINE_FILE = BASE / "pipeline_rowcount_baseline.json"
-HEAL_EVENTS  = BASE / "pipeline_heal_events.json"
+HEAL_EVENTS           = BASE / "pipeline_heal_events.json"
+HIGHVOL_NOTIFIED_FILE = BASE / "pipeline_highvol_notified.json"
 OUTPUT_FILE  = BASE / "pipeline_monitor.html"
+
+HIGH_VOLUME_WARN = 10_000   # amber badge + strip
+HIGH_VOLUME_CRIT = 20_000   # red badge + strip + email
 LOGO_FILE    = BASE / "pacbiz_logo.png"
 FAVICON_FILE = BASE / "pacbiz_favicon.png"
 
@@ -105,6 +109,30 @@ def save_baseline(data):
     except Exception:
         pass
 
+def load_highvol_notified():
+    try:
+        if HIGHVOL_NOTIFIED_FILE.exists():
+            return json.loads(HIGHVOL_NOTIFIED_FILE.read_text(encoding="utf-8"))
+    except Exception:
+        pass
+    return {}
+
+def save_highvol_notified(data):
+    try:
+        HIGHVOL_NOTIFIED_FILE.write_text(json.dumps(data, indent=2, default=str), encoding="utf-8")
+    except Exception:
+        pass
+
+def _hv_level(rows):
+    """Return 'crit', 'warn', or None based on row count."""
+    if rows is None:
+        return None
+    if rows >= HIGH_VOLUME_CRIT:
+        return "crit"
+    if rows >= HIGH_VOLUME_WARN:
+        return "warn"
+    return None
+
 def fmt_log_date(iso_str):
     if not iso_str:
         return "&mdash;"
@@ -120,9 +148,10 @@ def render_log_table(log_entries):
     rows = []
     for e in reversed(log_entries[-80:]):
         st  = e.get("status", "")
-        pill = ('<span class="lp lp-f">FAILED</span>'      if st == "fail"
+        pill = ('<span class="lp lp-f">FAILED</span>'          if st == "fail"
                 else '<span class="lp lp-d">COUNT DROP</span>'  if st == "count_drop"
                 else '<span class="lp lp-h">SELF HEALED</span>' if st == "healed"
+                else '<span class="lp lp-v">HIGH VOLUME</span>' if st == "high_volume"
                 else '<span class="lp lp-n">NOT REACHED</span>')
         err  = (e.get("error") or "").strip()
         err_html = f'<div class="log-err">{err[:120]}</div>' if err else ""
@@ -166,7 +195,7 @@ def dot_cls(status):
 STATUS_LABELS = {"pass": "PASS", "fail": "FAIL", "running": "RUNNING",
                  "blocked": "NOT REACHED", "pending": "NOT REACHED"}
 
-def render_node(name, script, status, ts, rows, error=None, drop_info=None):
+def render_node(name, script, status, ts, rows, error=None, drop_info=None, hv_lvl=None):
     pill_cls = {"pass": "g", "fail": "r", "blocked": "o", "pending": "o"}.get(status, "")
     rows_str = f"{rows:,}" if rows is not None else "&mdash;"
     status_lbl = STATUS_LABELS.get(status, status.upper())
@@ -184,6 +213,12 @@ def render_node(name, script, status, ts, rows, error=None, drop_info=None):
         count_badge = '<span class="meta-pill cnt-ok">&#10003;</span>'
     else:
         count_badge = ""
+    if hv_lvl == "crit":
+        vol_badge = '<span class="meta-pill cnt-vol-crit">&#9888; CRITICAL VOL</span>'
+    elif hv_lvl == "warn":
+        vol_badge = '<span class="meta-pill cnt-vol">&#9651; HIGH VOL</span>'
+    else:
+        vol_badge = ""
     return f"""<div class="node {node_cls(status)}">
   <div class="node-title" style="color:{title_color(status)};"><span>{name}</span>{dot(status)}</div>
   <div class="node-row"><b class="{dot_cls(status)}"></b>{script} &middot; {ts}</div>
@@ -191,7 +226,7 @@ def render_node(name, script, status, ts, rows, error=None, drop_info=None):
   <div class="node-meta">
     <span class="meta-pill {pill_cls}">{rows_str} rows</span>
     <span class="meta-pill {pill_cls}">{status_lbl}</span>
-    {count_badge}
+    {count_badge}{vol_badge}
   </div>
 </div>"""
 
@@ -345,6 +380,74 @@ def generate():
                        if e.get("run_id") == run_id_full and e.get("status") == "count_drop"]
     drop_by_account = {d["account"]: d for d in count_drops}
 
+    # ── High-volume detection ─────────────────────────────────────────────────
+    hv_notify_map   = load_highvol_notified()
+    hv_new_notices  = {}   # {account: (rows, level)} — newly crossed threshold this run
+    high_vol_list   = []   # [(account_state, level)] — all currently above threshold
+
+    for a in account_states:
+        lvl = _hv_level(a["rows"])
+        if lvl is None:
+            hv_notify_map.pop(a["name"], None)   # dropped back below — clear record
+            continue
+        high_vol_list.append((a, lvl))
+        prev_lvl = hv_notify_map.get(a["name"])
+        # Notify on first crossing OR escalation from warn → crit
+        if prev_lvl is None or (lvl == "crit" and prev_lvl == "warn"):
+            hv_new_notices[a["name"]] = (a["rows"], lvl)
+            hv_notify_map[a["name"]] = lvl
+
+    save_highvol_notified(hv_notify_map)
+
+    # Send email for newly-crossed thresholds
+    if hv_new_notices:
+        try:
+            import notify as _notify_hv
+            ACCOUNTS_SCRIPT_MAP = {name: script for name, script, _ in ACCOUNTS}
+            for acct, (rows, lvl) in hv_new_notices.items():
+                thresh = HIGH_VOLUME_CRIT if lvl == "crit" else HIGH_VOLUME_WARN
+                _notify_hv.notify_high_volume(acct, rows, thresh, lvl)
+        except Exception:
+            pass
+
+    # Log newly-crossed thresholds into the incident log (once per crossing)
+    if run_status in ("success", "failed") and raw:
+        run_id_full = raw.get("run_id", "")
+        run_date    = fmt_log_date(raw.get("started_at", ""))
+        ACCOUNTS_SCRIPT_MAP = {name: script for name, script, _ in ACCOUNTS}
+        if run_id_full:
+            for acct, (rows, lvl) in hv_new_notices.items():
+                thresh = HIGH_VOLUME_CRIT if lvl == "crit" else HIGH_VOLUME_WARN
+                log_entries.append({
+                    "run_id":  run_id_full,
+                    "date":    run_date,
+                    "account": acct,
+                    "script":  ACCOUNTS_SCRIPT_MAP.get(acct, ""),
+                    "status":  "high_volume",
+                    "error":   f"{'CRITICAL' if lvl == 'crit' else 'Warning'}: {rows:,} rows (threshold {thresh:,})",
+                })
+            if hv_new_notices:
+                save_log(log_entries)
+
+    high_vol_by_account = {a["name"]: lvl for a, lvl in high_vol_list}
+
+    # Build HIGH VOLUME warning strip
+    vol_html = ""
+    if high_vol_list:
+        crit_items = [(a, l) for a, l in high_vol_list if l == "crit"]
+        warn_items = [(a, l) for a, l in high_vol_list if l == "warn"]
+        parts = []
+        for a, l in crit_items + warn_items:
+            lbl = "CRITICAL" if l == "crit" else "HIGH VOL"
+            parts.append(
+                f"<b>{a['name']}</b> &#9651;&thinsp;{a['rows']:,} rows "
+                f"<span style='opacity:0.65;font-size:11px;'>({lbl})</span>"
+            )
+        strip_cls = "vol-strip-crit" if crit_items else "vol-strip"
+        icon      = "&#9888;" if crit_items else "&#9651;"
+        vol_html  = (f'<div class="{strip_cls}">{icon} High volume datasets detected &mdash; '
+                     + " &nbsp;&middot;&nbsp; ".join(parts) + "</div>")
+
     log_table_rows = render_log_table(log_entries)
 
     build_step_data = steps_map.get("Build")
@@ -368,8 +471,8 @@ def generate():
     n_total     = len(account_states)
     left_label  = f"Data Sources 1&ndash;{n_left}"
     right_label = f"Data Sources {n_left + 1}&ndash;{n_total}"
-    left_html   = "\n".join(render_node(a["name"], a["script"], a["status"], a["ts"], a["rows"], a.get("error"), drop_by_account.get(a["name"])) for a in account_states[:n_left])
-    right_html  = "\n".join(render_node(a["name"], a["script"], a["status"], a["ts"], a["rows"], a.get("error"), drop_by_account.get(a["name"])) for a in account_states[n_left:])
+    left_html   = "\n".join(render_node(a["name"], a["script"], a["status"], a["ts"], a["rows"], a.get("error"), drop_by_account.get(a["name"]), high_vol_by_account.get(a["name"])) for a in account_states[:n_left])
+    right_html  = "\n".join(render_node(a["name"], a["script"], a["status"], a["ts"], a["rows"], a.get("error"), drop_by_account.get(a["name"]), high_vol_by_account.get(a["name"])) for a in account_states[n_left:])
 
     warn_html = ""
     if run_status == "failed" and failed_at:
@@ -536,6 +639,11 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 .lp-h{{background:rgba(0,232,122,0.1);color:#00e87a;border:1px solid rgba(0,232,122,0.28);}}
 .cnt-drop{{background:rgba(232,69,0,0.15);color:#ff7040;border:1px solid rgba(232,69,0,0.38);font-weight:600;}}
 .cnt-ok{{background:rgba(0,232,122,0.06);color:#20a060;border:1px solid rgba(0,232,122,0.18);}}
+.cnt-vol{{background:rgba(255,170,0,0.12);color:#ffaa00;border:1px solid rgba(255,170,0,0.38);font-weight:600;}}
+.cnt-vol-crit{{background:rgba(255,61,61,0.12);color:#ff8080;border:1px solid rgba(255,61,61,0.38);font-weight:600;}}
+.vol-strip{{background:rgba(60,30,0,0.4);border:1px solid rgba(255,170,0,0.38);border-radius:7px;padding:7px 12px;font-size:13px;color:#ffcc55;display:flex;align-items:flex-start;gap:6px;margin-top:7px;flex-wrap:wrap;position:relative;z-index:1;}}
+.vol-strip-crit{{background:rgba(60,0,0,0.4);border:1px solid rgba(255,61,61,0.38);border-radius:7px;padding:7px 12px;font-size:13px;color:#ff9090;display:flex;align-items:flex-start;gap:6px;margin-top:7px;flex-wrap:wrap;position:relative;z-index:1;}}
+.lp-v{{background:rgba(255,170,0,0.1);color:#ffaa00;border:1px solid rgba(255,170,0,0.28);}}
 @media(prefers-reduced-motion:reduce){{
   .blink-g,.blink-r,.blink-a{{animation:none;}}
   canvas{{display:none;}}
@@ -646,6 +754,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 
   {warn_html}
   {drop_html}
+  {vol_html}
 
   <div class="divider" style="margin-top:12px;"></div>
   <div class="log-section">

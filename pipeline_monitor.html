@@ -108,6 +108,11 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 .lp-h{background:rgba(0,232,122,0.1);color:#00e87a;border:1px solid rgba(0,232,122,0.28);}
 .cnt-drop{background:rgba(232,69,0,0.15);color:#ff7040;border:1px solid rgba(232,69,0,0.38);font-weight:600;}
 .cnt-ok{background:rgba(0,232,122,0.06);color:#20a060;border:1px solid rgba(0,232,122,0.18);}
+.cnt-vol{background:rgba(255,170,0,0.12);color:#ffaa00;border:1px solid rgba(255,170,0,0.38);font-weight:600;}
+.cnt-vol-crit{background:rgba(255,61,61,0.12);color:#ff8080;border:1px solid rgba(255,61,61,0.38);font-weight:600;}
+.vol-strip{background:rgba(60,30,0,0.4);border:1px solid rgba(255,170,0,0.38);border-radius:7px;padding:7px 12px;font-size:13px;color:#ffcc55;display:flex;align-items:flex-start;gap:6px;margin-top:7px;flex-wrap:wrap;position:relative;z-index:1;}
+.vol-strip-crit{background:rgba(60,0,0,0.4);border:1px solid rgba(255,61,61,0.38);border-radius:7px;padding:7px 12px;font-size:13px;color:#ff9090;display:flex;align-items:flex-start;gap:6px;margin-top:7px;flex-wrap:wrap;position:relative;z-index:1;}
+.lp-v{background:rgba(255,170,0,0.1);color:#ffaa00;border:1px solid rgba(255,170,0,0.28);}
 @media(prefers-reduced-motion:reduce){
   .blink-g,.blink-r,.blink-a{animation:none;}
   canvas{display:none;}
@@ -128,7 +133,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     </div>
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run 2026-06-23T19:23</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Built: Jun 23, 2026 07:31 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Built: Jun 23, 2026 07:44 PM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -244,7 +249,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">14,297 rows</span>
     <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill cnt-ok">&#10003;</span><span class="meta-pill cnt-vol">&#9651; HIGH VOL</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -437,6 +442,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 
   
   
+  <div class="vol-strip">&#9651; High volume datasets detected &mdash; <b>Skyline</b> &#9651;&thinsp;14,297 rows <span style='opacity:0.65;font-size:11px;'>(HIGH VOL)</span></div>
 
   <div class="divider" style="margin-top:12px;"></div>
   <div class="log-section">
@@ -444,7 +450,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div class="log-wrap">
       <table class="log-table">
         <thead><tr><th>Date</th><th>Dataset</th><th>Status</th></tr></thead>
-        <tbody><tr><td class="log-td-d">Jun 23, 2026 07:00 PM</td><td class="log-td-ds"><b>Blueline</b> <span class="log-sc">&middot; bl_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+        <tbody><tr><td class="log-td-d">Jun 23, 2026 07:23 PM</td><td class="log-td-ds"><b>Skyline</b> <span class="log-sc">&middot; Skyline_pull.py</span><div class="log-err">Warning: 14,297 rows (threshold 10,000)</div></td><td class="log-td-st"><span class="lp lp-v">HIGH VOLUME</span></td></tr>
+<tr><td class="log-td-d">Jun 23, 2026 07:00 PM</td><td class="log-td-ds"><b>Blueline</b> <span class="log-sc">&middot; bl_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
 <tr><td class="log-td-d">Jun 23, 2026 07:00 PM</td><td class="log-td-ds"><b>YCDC</b> <span class="log-sc">&middot; ycdc_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
 <tr><td class="log-td-d">Jun 23, 2026 07:00 PM</td><td class="log-td-ds"><b>Vermont</b> <span class="log-sc">&middot; vt_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
 <tr><td class="log-td-d">Jun 23, 2026 07:00 PM</td><td class="log-td-ds"><b>Kelowna</b> <span class="log-sc">&middot; kel_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
