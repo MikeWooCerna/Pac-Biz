@@ -127,7 +127,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     </div>
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run 2026-06-23T09:04</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Built: Jun 23, 2026 09:11 AM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Built: Jun 23, 2026 09:15 AM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -141,7 +141,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">0</div><div class="sc-lbl">Failed</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#E84500;">0</div><div class="sc-lbl">Not Reached</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">22,457</div><div class="sc-lbl">Rows Pulled</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#7060a0;">&mdash;</div><div class="sc-lbl">running</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">&#10007;</div><div class="sc-lbl">failed</div></div>
   </div>
 
   <div class="divider"></div>
@@ -253,7 +253,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">982 rows</span>
     <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill cnt-drop">&darr; 2,084</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -274,7 +274,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       </div>
       <div class="radar-label">
         <div class="radar-lbl-main">Pipeline / Container Monitoring</div>
-        <div class="radar-lbl-status"><div class="blink-a"></div><span style="color:#ffaa00;font-size:12px;">running</span></div>
+        <div class="radar-lbl-status"><div class="blink-r"></div><span style="color:#ff3d3d;font-size:12px;">stopped</span></div>
       </div>
 
       <div class="connector"></div>
@@ -306,8 +306,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
         </div>
         <div class="dash-body">
           <div class="stage-title">Dashboard</div>
-          <div class="stage-status"><div class="blink-n"></div></div>
-          <div class="stage-detail">not reached</div>
+          <div class="stage-status"><div class="blink-r"></div></div>
+          <div class="stage-detail">fail</div>
         </div>
       </a>
 
@@ -315,8 +315,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 
       <div class="stage-node">
         <div class="stage-title">Git Repository</div>
-        <div class="stage-status"><div class="blink-a"></div></div>
-        <div class="stage-detail">queued…</div>
+        <div class="stage-status"><div class="blink-n"></div></div>
+        <div class="stage-detail">not reached</div>
       </div>
     </div>
 
@@ -329,7 +329,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">827 rows</span>
     <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill cnt-drop">&darr; 1,633</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -379,7 +379,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">521 rows</span>
     <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill cnt-drop">&darr; 746</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -419,7 +419,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">794 rows</span>
     <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill cnt-drop">&darr; 1,593</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -435,8 +435,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     </div>
   </div>
 
-  
-  
+  <div class="warn-strip">&#9888; Pipeline stopped at <b>Build</b> &middot; Exit code 1 &middot; 0 steps not reached</div>
+  <div class="drop-strip">&#9660; Row count drop detected &mdash; <b>VIP</b> &darr;&thinsp;2,084 rows <span style='opacity:0.65;font-size:11px;'>(3,066 &rarr; 982)</span> &nbsp;&middot;&nbsp; <b>Reno Cab</b> &darr;&thinsp;1,633 rows <span style='opacity:0.65;font-size:11px;'>(2,460 &rarr; 827)</span> &nbsp;&middot;&nbsp; <b>Circle Taxi</b> &darr;&thinsp;746 rows <span style='opacity:0.65;font-size:11px;'>(1,267 &rarr; 521)</span> &nbsp;&middot;&nbsp; <b>YCDC</b> &darr;&thinsp;1,593 rows <span style='opacity:0.65;font-size:11px;'>(2,387 &rarr; 794)</span></div>
 
   <div class="divider" style="margin-top:12px;"></div>
   <div class="log-section">
@@ -444,7 +444,15 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div class="log-wrap">
       <table class="log-table">
         <thead><tr><th>Date</th><th>Dataset</th><th>Status</th></tr></thead>
-        <tbody><tr><td class="log-td-d">Jun 23, 2026 06:00 AM</td><td class="log-td-ds"><b>Data Carz</b> <span class="log-sc">&middot; dc_pull.py</span><div class="log-err">Dropped 140 rows (2,295 → 2,155)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
+        <tbody><tr><td class="log-td-d">Jun 23, 2026 09:04 AM</td><td class="log-td-ds"><b>Build</b> <span class="log-sc">&middot; dashboard.py</span><div class="log-err">raise ValueError(
+    ...<4 lines>...
+    )
+ValueError: Length of values (0) does not match length of index (827)</div></td><td class="log-td-st"><span class="lp lp-f">FAILED</span></td></tr>
+<tr><td class="log-td-d">Jun 23, 2026 09:04 AM</td><td class="log-td-ds"><b>YCDC</b> <span class="log-sc">&middot; ycdc_pull.py</span><div class="log-err">Dropped 1,593 rows (2,387 → 794)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
+<tr><td class="log-td-d">Jun 23, 2026 09:04 AM</td><td class="log-td-ds"><b>Circle Taxi</b> <span class="log-sc">&middot; ct_pull.py</span><div class="log-err">Dropped 746 rows (1,267 → 521)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
+<tr><td class="log-td-d">Jun 23, 2026 09:04 AM</td><td class="log-td-ds"><b>Reno Cab</b> <span class="log-sc">&middot; rc_pull.py</span><div class="log-err">Dropped 1,633 rows (2,460 → 827)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
+<tr><td class="log-td-d">Jun 23, 2026 09:04 AM</td><td class="log-td-ds"><b>VIP</b> <span class="log-sc">&middot; vip_pull.py</span><div class="log-err">Dropped 2,084 rows (3,066 → 982)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
+<tr><td class="log-td-d">Jun 23, 2026 06:00 AM</td><td class="log-td-ds"><b>Data Carz</b> <span class="log-sc">&middot; dc_pull.py</span><div class="log-err">Dropped 140 rows (2,295 → 2,155)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
 <tr><td class="log-td-d">Jun 23, 2026 03:00 AM</td><td class="log-td-ds"><b>Data Carz</b> <span class="log-sc">&middot; dc_pull.py</span><div class="log-err">Dropped 424 rows (2,719 → 2,295)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
 <tr><td class="log-td-d">Jun 23, 2026 03:00 AM</td><td class="log-td-ds"><b>Skyline</b> <span class="log-sc">&middot; Skyline_pull.py</span><div class="log-err">Dropped 144 rows (4,621 → 4,477)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
 <tr><td class="log-td-d">Jun 22, 2026 10:54 PM</td><td class="log-td-ds"><b>Build</b> <span class="log-sc">&middot; dashboard.py</span><div class="log-err">ValueError: Length of values (0) does not match length of index (1000) — VIP transform missing column (df.get footgun). </div></td><td class="log-td-st"><span class="lp lp-f">FAILED</span></td></tr></tbody>
@@ -467,7 +475,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   var ang = -Math.PI/2;
   var TRAIL = Math.PI * 1.35;
   var time = 0;
-  var FAIL = false;
+  var FAIL = true;
 
   var blips = [
     {ang:-90.00,r:0.63,st:"pass",nm:"Masterlist"},

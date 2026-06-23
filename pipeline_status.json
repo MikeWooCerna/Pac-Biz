@@ -2,8 +2,8 @@
   "run_id": "2026-06-23T09:04:24",
   "started_at": "2026-06-23T09:04:24.113244",
   "finished_at": null,
-  "status": "running",
-  "failed_at": null,
+  "status": "failed",
+  "failed_at": "Build",
   "steps": [
     {
       "account": "Masterlist",
@@ -180,6 +180,14 @@
       "status": "pass",
       "timestamp": "2026-06-23T09:11:31.587818",
       "error": null
+    },
+    {
+      "account": "Build",
+      "script": "dashboard.py",
+      "exit_code": 1,
+      "status": "fail",
+      "timestamp": "2026-06-23T09:15:35.178718",
+      "error": "    raise ValueError(\n    ...<4 lines>...\n    )\nValueError: Length of values (0) does not match length of index (827)"
     }
   ]
 }
