@@ -344,6 +344,7 @@ echo Syncing latest dashboard repo changes...
 git pull --rebase --autostash
 if errorlevel 1 goto :fail
 
+py -3 "%MASTERLIST_DIR%\fix_footgun.py"
 py -3 dashboard.py 2>"%MASTERLIST_DIR%\step_err.tmp"
 if errorlevel 1 (
     py -3 "%MASTERLIST_DIR%\log_step.py" step "Build" "dashboard.py" 1
