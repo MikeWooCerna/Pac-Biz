@@ -1,57 +1,17 @@
 {
-  "run_id": "2026-06-23T11:00:02",
-  "started_at": "2026-06-23T11:00:02.193971",
-  "finished_at": "2026-06-23T11:01:14.966403",
-  "status": "failed",
-  "failed_at": "Britelift Chat",
+  "run_id": "2026-06-23T11:27:16",
+  "started_at": "2026-06-23T11:27:16.666830",
+  "finished_at": null,
+  "status": "running",
+  "failed_at": null,
   "steps": [
     {
       "account": "Masterlist",
       "script": "masterlist_fetch.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-06-23T11:00:15.128428",
+      "timestamp": "2026-06-23T11:27:27.484185",
       "error": null
-    },
-    {
-      "account": "Coaching",
-      "script": "asana_pull.py",
-      "exit_code": 0,
-      "status": "pass",
-      "timestamp": "2026-06-23T11:00:25.766497",
-      "error": null
-    },
-    {
-      "account": "M7",
-      "script": "m7_pull.py",
-      "exit_code": 0,
-      "status": "pass",
-      "timestamp": "2026-06-23T11:00:36.222080",
-      "error": null
-    },
-    {
-      "account": "Parentis Health",
-      "script": "parentis_pull.py",
-      "exit_code": 0,
-      "status": "pass",
-      "timestamp": "2026-06-23T11:00:46.484109",
-      "error": null
-    },
-    {
-      "account": "Britelift",
-      "script": "britelift_pull.py",
-      "exit_code": 0,
-      "status": "pass",
-      "timestamp": "2026-06-23T11:00:57.192615",
-      "error": null
-    },
-    {
-      "account": "Britelift Chat",
-      "script": "britelift_pull.py",
-      "exit_code": 1,
-      "status": "fail",
-      "timestamp": "2026-06-23T11:01:09.834107",
-      "error": "    r = self.request(\"get\", url, params=params)\n  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\gspread\\http_client.py\", line 128, in request\n    raise APIError(response)\ngspread.exceptions.APIError: APIError: [503]: The service is currently unavailable."
     }
   ]
 }
