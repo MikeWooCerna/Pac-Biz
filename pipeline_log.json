@@ -39,5 +39,57 @@
     "prev_count": 2295,
     "new_count": 2155,
     "error": "Dropped 140 rows (2,295 \u2192 2,155)"
+  },
+  {
+    "run_id": "2026-06-23T09:04:24",
+    "date": "Jun 23, 2026 09:04 AM",
+    "account": "VIP",
+    "script": "vip_pull.py",
+    "status": "count_drop",
+    "drop": 2084,
+    "prev_count": 3066,
+    "new_count": 982,
+    "error": "Dropped 2,084 rows (3,066 \u2192 982)"
+  },
+  {
+    "run_id": "2026-06-23T09:04:24",
+    "date": "Jun 23, 2026 09:04 AM",
+    "account": "Reno Cab",
+    "script": "rc_pull.py",
+    "status": "count_drop",
+    "drop": 1633,
+    "prev_count": 2460,
+    "new_count": 827,
+    "error": "Dropped 1,633 rows (2,460 \u2192 827)"
+  },
+  {
+    "run_id": "2026-06-23T09:04:24",
+    "date": "Jun 23, 2026 09:04 AM",
+    "account": "Circle Taxi",
+    "script": "ct_pull.py",
+    "status": "count_drop",
+    "drop": 746,
+    "prev_count": 1267,
+    "new_count": 521,
+    "error": "Dropped 746 rows (1,267 \u2192 521)"
+  },
+  {
+    "run_id": "2026-06-23T09:04:24",
+    "date": "Jun 23, 2026 09:04 AM",
+    "account": "YCDC",
+    "script": "ycdc_pull.py",
+    "status": "count_drop",
+    "drop": 1593,
+    "prev_count": 2387,
+    "new_count": 794,
+    "error": "Dropped 1,593 rows (2,387 \u2192 794)"
+  },
+  {
+    "run_id": "2026-06-23T09:04:24",
+    "date": "Jun 23, 2026 09:04 AM",
+    "account": "Build",
+    "script": "dashboard.py",
+    "status": "fail",
+    "error": "    raise ValueError(\n    ...<4 lines>...\n    )\nValueError: Length of values (0) does not match length of index (827)"
   }
 ]
