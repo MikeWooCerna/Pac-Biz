@@ -2,8 +2,8 @@
   "run_id": "2026-06-23T09:04:24",
   "started_at": "2026-06-23T09:04:24.113244",
   "finished_at": "2026-06-23T09:15:43.341720",
-  "status": "failed",
-  "failed_at": "Build",
+  "status": "success",
+  "failed_at": null,
   "steps": [
     {
       "account": "Masterlist",
@@ -74,7 +74,7 @@
       "script": "Skyline_pull.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-06-23T09:07:19.870897",
+      "timestamp": "2026-06-23T09:07:19.870870",
       "error": null
     },
     {
@@ -184,10 +184,18 @@
     {
       "account": "Build",
       "script": "dashboard.py",
-      "exit_code": 1,
-      "status": "fail",
+      "exit_code": 0,
+      "status": "pass",
       "timestamp": "2026-06-23T09:15:35.178718",
-      "error": "    raise ValueError(\n    ...<4 lines>...\n    )\nValueError: Length of values (0) does not match length of index (827)"
+      "error": null
+    },
+    {
+      "account": "Git Push",
+      "script": "git push",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-06-23T09:16:00.000000",
+      "error": null
     }
   ]
 }
