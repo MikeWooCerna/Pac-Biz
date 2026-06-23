@@ -7,6 +7,7 @@ BASE         = Path(__file__).parent
 STATUS_FILE  = BASE / "pipeline_status.json"
 LOG_FILE      = BASE / "pipeline_log.json"
 BASELINE_FILE = BASE / "pipeline_rowcount_baseline.json"
+HEAL_EVENTS  = BASE / "pipeline_heal_events.json"
 OUTPUT_FILE  = BASE / "pipeline_monitor.html"
 LOGO_FILE    = BASE / "pacbiz_logo.png"
 FAVICON_FILE = BASE / "pacbiz_favicon.png"
@@ -119,8 +120,9 @@ def render_log_table(log_entries):
     rows = []
     for e in reversed(log_entries[-80:]):
         st  = e.get("status", "")
-        pill = ('<span class="lp lp-f">FAILED</span>'    if st == "fail"
-                else '<span class="lp lp-d">COUNT DROP</span>' if st == "count_drop"
+        pill = ('<span class="lp lp-f">FAILED</span>'      if st == "fail"
+                else '<span class="lp lp-d">COUNT DROP</span>'  if st == "count_drop"
+                else '<span class="lp lp-h">SELF HEALED</span>' if st == "healed"
                 else '<span class="lp lp-n">NOT REACHED</span>')
         err  = (e.get("error") or "").strip()
         err_html = f'<div class="log-err">{err[:120]}</div>' if err else ""
@@ -321,6 +323,17 @@ def generate():
                 log_entries.append({"run_id": run_id_full, "date": run_date,
                                     "account": "Git Push", "script": "git push",
                                     "status": "fail", "error": git_s.get("error")})
+            # Incorporate self-heal events from staging file
+            try:
+                if HEAL_EVENTS.exists():
+                    heal_entries = json.loads(HEAL_EVENTS.read_text(encoding="utf-8"))
+                    for h in heal_entries:
+                        if h.get("run_id") == run_id_full:
+                            log_entries.append(h)
+                    HEAL_EVENTS.write_text("[]", encoding="utf-8")
+            except Exception:
+                pass
+
             save_log(log_entries)
             save_baseline(new_baseline)
 
@@ -520,6 +533,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 .log-empty{{text-align:center;color:#4a3d7a;font-size:12px;padding:14px;background:rgba(40,10,90,0.25);border-radius:8px;border:1px solid rgba(80,0,180,0.18);}}
 .drop-strip{{background:rgba(50,30,0,0.35);border:1px solid rgba(255,170,0,0.32);border-radius:7px;padding:7px 12px;font-size:13px;color:#ffcc55;display:flex;align-items:flex-start;gap:6px;margin-top:7px;flex-wrap:wrap;position:relative;z-index:1;}}
 .lp-d{{background:rgba(255,170,0,0.1);color:#ffaa00;border:1px solid rgba(255,170,0,0.28);}}
+.lp-h{{background:rgba(0,232,122,0.1);color:#00e87a;border:1px solid rgba(0,232,122,0.28);}}
 .cnt-drop{{background:rgba(232,69,0,0.15);color:#ff7040;border:1px solid rgba(232,69,0,0.38);font-weight:600;}}
 .cnt-ok{{background:rgba(0,232,122,0.06);color:#20a060;border:1px solid rgba(0,232,122,0.18);}}
 @media(prefers-reduced-motion:reduce){{

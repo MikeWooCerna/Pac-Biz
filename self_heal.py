@@ -9,14 +9,53 @@ Modes:
 """
 
 import subprocess, sys, time, json
+from datetime import datetime
 from pathlib import Path
 
-BASE      = Path(__file__).parent
-STEP_ERR  = BASE / "step_err.tmp"
-BASELINE  = BASE / "pipeline_rowcount_baseline.json"
+BASE        = Path(__file__).parent
+STEP_ERR    = BASE / "step_err.tmp"
+BASELINE    = BASE / "pipeline_rowcount_baseline.json"
+STATUS_FILE = BASE / "pipeline_status.json"
+HEAL_EVENTS = BASE / "pipeline_heal_events.json"
 
 RETRY_WAIT = 60   # seconds between pull retries
 BUILD_WAIT = 30   # seconds between build retries
+
+def current_run_id():
+    try:
+        if STATUS_FILE.exists():
+            return json.loads(STATUS_FILE.read_text(encoding="utf-8")).get("run_id", "")
+    except Exception:
+        pass
+    return ""
+
+def fmt_date(iso_str):
+    try:
+        dt = datetime.fromisoformat(iso_str)
+        return dt.strftime("%b %d, %Y %I:%M %p").lstrip("0")
+    except Exception:
+        return iso_str[:16]
+
+def log_heal_event(account, script, action, detail):
+    """Append a heal event to the staging file for generate_monitor.py to pick up."""
+    run_id = current_run_id()
+    entry = {
+        "run_id":  run_id,
+        "date":    fmt_date(run_id) if run_id else datetime.now().strftime("%b %d, %Y %I:%M %p"),
+        "account": account,
+        "script":  script,
+        "status":  "healed",
+        "action":  action,
+        "error":   detail,
+    }
+    try:
+        events = []
+        if HEAL_EVENTS.exists():
+            events = json.loads(HEAL_EVENTS.read_text(encoding="utf-8"))
+        events.append(entry)
+        HEAL_EVENTS.write_text(json.dumps(events, indent=2, default=str), encoding="utf-8")
+    except Exception as e:
+        print(f"[self-heal] Warning: could not write heal event: {e}", flush=True)
 
 ACCOUNT_PULL_MAP = {
     "Masterlist":      ("masterlist_fetch.py", str(BASE)),
@@ -110,6 +149,15 @@ def run_step(script):
         )
 
         if result.returncode == 0:
+            if attempt == 1:
+                label = "Build" if is_build else script
+                log_heal_event(
+                    account=label,
+                    script=script,
+                    action="retry",
+                    detail=f"Failed on attempt 1, recovered automatically on retry."
+                )
+                print(f"[self-heal] {label} recovered on retry. ✓", flush=True)
             sys.exit(0)
 
         if result.stderr:
@@ -167,6 +215,12 @@ def heal_drops():
 
         new_count = get_row_count(file_path)
         if new_count is not None and new_count >= prev_count:
+            log_heal_event(
+                account=account,
+                script=script,
+                action="repull",
+                detail=f"Count dropped {prev_count:,} → {current:,}. Re-pull recovered {new_count:,} rows."
+            )
             print(f"[self-heal] {account}: recovered — {new_count:,} rows. ✓", flush=True)
         else:
             recovered = new_count if new_count is not None else current
