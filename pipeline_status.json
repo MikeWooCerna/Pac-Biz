@@ -1,81 +1,17 @@
 {
-  "run_id": "2026-06-23T19:00:02",
-  "started_at": "2026-06-23T19:00:02.582855",
-  "finished_at": "2026-06-23T19:05:48.466529",
-  "status": "failed",
-  "failed_at": "Skyline",
+  "run_id": "2026-06-23T19:23:13",
+  "started_at": "2026-06-23T19:23:13.737288",
+  "finished_at": null,
+  "status": "running",
+  "failed_at": null,
   "steps": [
     {
       "account": "Masterlist",
       "script": "masterlist_fetch.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-06-23T19:00:16.298489",
+      "timestamp": "2026-06-23T19:23:24.085609",
       "error": null
-    },
-    {
-      "account": "Coaching",
-      "script": "asana_pull.py",
-      "exit_code": 0,
-      "status": "pass",
-      "timestamp": "2026-06-23T19:00:28.477961",
-      "error": null
-    },
-    {
-      "account": "M7",
-      "script": "m7_pull.py",
-      "exit_code": 0,
-      "status": "pass",
-      "timestamp": "2026-06-23T19:00:41.794073",
-      "error": null
-    },
-    {
-      "account": "Parentis Health",
-      "script": "parentis_pull.py",
-      "exit_code": 0,
-      "status": "pass",
-      "timestamp": "2026-06-23T19:00:52.889476",
-      "error": null
-    },
-    {
-      "account": "Britelift",
-      "script": "britelift_pull.py",
-      "exit_code": 0,
-      "status": "pass",
-      "timestamp": "2026-06-23T19:01:06.718554",
-      "error": null
-    },
-    {
-      "account": "Britelift Chat",
-      "script": "britelift_pull.py",
-      "exit_code": 0,
-      "status": "pass",
-      "timestamp": "2026-06-23T19:01:18.901030",
-      "error": null
-    },
-    {
-      "account": "RideX",
-      "script": "Ridex_pull.py",
-      "exit_code": 0,
-      "status": "pass",
-      "timestamp": "2026-06-23T19:01:30.538614",
-      "error": null
-    },
-    {
-      "account": "Hamilton",
-      "script": "Hamilton_pull.py",
-      "exit_code": 0,
-      "status": "pass",
-      "timestamp": "2026-06-23T19:02:10.632660",
-      "error": null
-    },
-    {
-      "account": "Skyline",
-      "script": "Skyline_pull.py",
-      "exit_code": 1,
-      "status": "fail",
-      "timestamp": "2026-06-23T19:05:39.742944",
-      "error": "Traceback (most recent call last):\n  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\openpyxl\\worksheet\\_writer.py\", line 32, in _openpyxl_shutdown\n    os.remove(path)\nPermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\MIKEWO~1\\\\AppData\\\\Local\\\\Temp\\\\openpyxl.6271wd_q'"
     }
   ]
 }
