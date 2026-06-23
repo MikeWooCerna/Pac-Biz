@@ -227,5 +227,16 @@
     "script": "bl_pull.py",
     "status": "not_reached",
     "error": null
+  },
+  {
+    "run_id": "2026-06-23T15:00:02",
+    "date": "Jun 23, 2026 03:00 PM",
+    "account": "Skyline",
+    "script": "Skyline_pull.py",
+    "status": "count_drop",
+    "drop": 7572,
+    "prev_count": 14429,
+    "new_count": 6857,
+    "error": "Dropped 7,572 rows (14,429 \u2192 6,857)"
   }
 ]
