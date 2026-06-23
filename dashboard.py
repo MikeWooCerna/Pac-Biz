@@ -1441,10 +1441,10 @@ def transform_hamilton_data(source):
             lambda v: str(v).strip().lower() if str(v).strip() not in ("", "nan") else "rated"
         )
 
-    score_ai_s = pd.to_numeric(df.get("score_ai", pd.Series(dtype=float)), errors="coerce").fillna(0)
+    score_ai_s = pd.to_numeric((df["score_ai"] if "score_ai" in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
     df["score_ai"] = score_ai_s.round(1)
 
-    score_h_s = pd.to_numeric(df.get("score_human", pd.Series(dtype=float)), errors="coerce")
+    score_h_s = pd.to_numeric((df["score_human"] if "score_human" in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce")
     df["score_human"] = [round(float(v), 1) if pd.notna(v) else None for v in score_h_s]
 
     def effective_score(row):
@@ -1488,8 +1488,8 @@ def transform_hamilton_data(source):
     for std_key, ham_base in HAMILTON_CRIT_MAP.items():
         ai_col  = f"{ham_base}_AI"
         max_col = f"{ham_base}_Max"
-        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
-        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        ai_s  = pd.to_numeric((df[ai_col]  if ai_col  in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric((df[max_col] if max_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
         if std_key == "rude":
             df[std_key] = [
                 None if mx == 0 else ("No" if ai >= mx else "Yes")
@@ -1604,10 +1604,10 @@ def transform_skyline_data(source):
             lambda v: str(v).strip().lower() if str(v).strip() not in ("", "nan") else "rated"
         )
 
-    score_ai_s = pd.to_numeric(df.get("score_ai", pd.Series(dtype=float)), errors="coerce").fillna(0)
+    score_ai_s = pd.to_numeric((df["score_ai"] if "score_ai" in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
     df["score_ai"] = score_ai_s.round(1)
 
-    score_h_s = pd.to_numeric(df.get("score_human", pd.Series(dtype=float)), errors="coerce")
+    score_h_s = pd.to_numeric((df["score_human"] if "score_human" in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce")
     df["score_human"] = [round(float(v), 1) if pd.notna(v) else None for v in score_h_s]
 
     def effective_score(row):
@@ -1652,8 +1652,8 @@ def transform_skyline_data(source):
     for std_key, sl_base in SKYLINE_CRIT_MAP.items():
         ai_col  = f"{sl_base}_AI"
         max_col = f"{sl_base}_Max"
-        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
-        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        ai_s  = pd.to_numeric((df[ai_col]  if ai_col  in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric((df[max_col] if max_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
         if std_key == "rude":
             df[std_key] = [
                 None if mx == 0 else ("No" if ai >= mx else "Yes")
@@ -1680,8 +1680,8 @@ def transform_skyline_data(source):
     for sl_key, sl_base in SKYLINE_EXTRA_CRIT_MAP.items():
         ai_col  = f"{sl_base}_AI"
         max_col = f"{sl_base}_Max"
-        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
-        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        ai_s  = pd.to_numeric((df[ai_col]  if ai_col  in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric((df[max_col] if max_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
         if sl_key in SKYLINE_NA_KEYS:
             df[sl_key] = [
                 "Not Applicable" if mx == 0 else ("Yes" if ai > 0 else "No")
@@ -1785,10 +1785,10 @@ def transform_vip_data(source):
             lambda v: str(v).strip().lower() if str(v).strip() not in ("", "nan") else "rated"
         )
 
-    score_ai_s = pd.to_numeric(df.get("score_ai", pd.Series(dtype=float)), errors="coerce").fillna(0)
+    score_ai_s = pd.to_numeric((df["score_ai"] if "score_ai" in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
     df["score_ai"] = score_ai_s.round(1)
 
-    score_h_s = pd.to_numeric(df.get("score_human", pd.Series(dtype=float)), errors="coerce")
+    score_h_s = pd.to_numeric((df["score_human"] if "score_human" in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce")
     df["score_human"] = [round(float(v), 1) if pd.notna(v) else None for v in score_h_s]
 
     def effective_score(row):
@@ -1963,10 +1963,10 @@ def transform_ch_data(source):
             lambda v: str(v).strip().lower() if str(v).strip() not in ("", "nan") else "rated"
         )
 
-    score_ai_s = pd.to_numeric(df.get("score_ai", pd.Series(dtype=float)), errors="coerce").fillna(0)
+    score_ai_s = pd.to_numeric((df["score_ai"] if "score_ai" in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
     df["score_ai"] = score_ai_s.round(1)
 
-    score_h_s = pd.to_numeric(df.get("score_human", pd.Series(dtype=float)), errors="coerce")
+    score_h_s = pd.to_numeric((df["score_human"] if "score_human" in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce")
     df["score_human"] = [round(float(v), 1) if pd.notna(v) else None for v in score_h_s]
 
     def effective_score(row):
@@ -2010,8 +2010,8 @@ def transform_ch_data(source):
     for std_key, ch_base in CH_CRIT_MAP.items():
         ai_col  = f"{ch_base}_AI"
         max_col = f"{ch_base}_Max"
-        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
-        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        ai_s  = pd.to_numeric((df[ai_col]  if ai_col  in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric((df[max_col] if max_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
         if std_key == "rude":
             df[std_key] = [
                 None if mx == 0 else ("No" if ai >= mx else "Yes")
@@ -2036,8 +2036,8 @@ def transform_ch_data(source):
     for ch_key, ch_base in CH_EXTRA_CRIT_MAP.items():
         ai_col  = f"{ch_base}_AI"
         max_col = f"{ch_base}_Max"
-        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
-        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        ai_s  = pd.to_numeric((df[ai_col]  if ai_col  in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric((df[max_col] if max_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
         df[ch_key] = [
             None if mx == 0 else ("Yes" if ai > 0 else "No")
             for ai, mx in zip(ai_s, max_s)
@@ -2135,10 +2135,10 @@ def transform_rc_data(source):
             lambda v: str(v).strip().lower() if str(v).strip() not in ("", "nan") else "rated"
         )
 
-    score_ai_s = pd.to_numeric(df.get("score_ai", pd.Series(dtype=float)), errors="coerce").fillna(0)
+    score_ai_s = pd.to_numeric((df["score_ai"] if "score_ai" in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
     df["score_ai"] = score_ai_s.round(1)
 
-    score_h_s = pd.to_numeric(df.get("score_human", pd.Series(dtype=float)), errors="coerce")
+    score_h_s = pd.to_numeric((df["score_human"] if "score_human" in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce")
     df["score_human"] = [round(float(v), 1) if pd.notna(v) else None for v in score_h_s]
 
     def effective_score(row):
@@ -2182,8 +2182,8 @@ def transform_rc_data(source):
     for std_key, rc_base in RC_CRIT_MAP.items():
         ai_col  = f"{rc_base}_AI"
         max_col = f"{rc_base}_Max"
-        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
-        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        ai_s  = pd.to_numeric((df[ai_col]  if ai_col  in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric((df[max_col] if max_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
         if std_key == "rude":
             df[std_key] = [
                 None if mx == 0 else ("No" if ai >= mx else "Yes")
@@ -2208,8 +2208,8 @@ def transform_rc_data(source):
     for rc_key, rc_base in RC_EXTRA_CRIT_MAP.items():
         ai_col  = f"{rc_base}_AI"
         max_col = f"{rc_base}_Max"
-        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
-        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        ai_s  = pd.to_numeric((df[ai_col]  if ai_col  in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric((df[max_col] if max_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
         df[rc_key] = [
             None if mx == 0 else ("Yes" if ai > 0 else "No")
             for ai, mx in zip(ai_s, max_s)
@@ -2307,10 +2307,10 @@ def transform_ti_data(source):
             lambda v: str(v).strip().lower() if str(v).strip() not in ("", "nan") else "rated"
         )
 
-    score_ai_s = pd.to_numeric(df.get("score_ai", pd.Series(dtype=float)), errors="coerce").fillna(0)
+    score_ai_s = pd.to_numeric((df["score_ai"] if "score_ai" in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
     df["score_ai"] = score_ai_s.round(1)
 
-    score_h_s = pd.to_numeric(df.get("score_human", pd.Series(dtype=float)), errors="coerce")
+    score_h_s = pd.to_numeric((df["score_human"] if "score_human" in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce")
     df["score_human"] = [round(float(v), 1) if pd.notna(v) else None for v in score_h_s]
 
     def effective_score(row):
@@ -2354,8 +2354,8 @@ def transform_ti_data(source):
     for std_key, ti_base in TI_CRIT_MAP.items():
         ai_col  = f"{ti_base}_AI"
         max_col = f"{ti_base}_Max"
-        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
-        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        ai_s  = pd.to_numeric((df[ai_col]  if ai_col  in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric((df[max_col] if max_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
         if std_key == "rude":
             df[std_key] = [
                 None if mx == 0 else ("No" if ai >= mx else "Yes")
@@ -2380,8 +2380,8 @@ def transform_ti_data(source):
     for ti_key, ti_base in TI_EXTRA_CRIT_MAP.items():
         ai_col  = f"{ti_base}_AI"
         max_col = f"{ti_base}_Max"
-        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
-        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        ai_s  = pd.to_numeric((df[ai_col]  if ai_col  in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric((df[max_col] if max_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
         df[ti_key] = [
             None if mx == 0 else ("Yes" if ai > 0 else "No")
             for ai, mx in zip(ai_s, max_s)
@@ -2479,10 +2479,10 @@ def transform_dc_data(source):
             lambda v: str(v).strip().lower() if str(v).strip() not in ("", "nan") else "rated"
         )
 
-    score_ai_s = pd.to_numeric(df.get("score_ai", pd.Series(dtype=float)), errors="coerce").fillna(0)
+    score_ai_s = pd.to_numeric((df["score_ai"] if "score_ai" in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
     df["score_ai"] = score_ai_s.round(1)
 
-    score_h_s = pd.to_numeric(df.get("score_human", pd.Series(dtype=float)), errors="coerce")
+    score_h_s = pd.to_numeric((df["score_human"] if "score_human" in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce")
     df["score_human"] = [round(float(v), 1) if pd.notna(v) else None for v in score_h_s]
 
     def effective_score(row):
@@ -2652,10 +2652,10 @@ def transform_ac_data(source):
             lambda v: str(v).strip().lower() if str(v).strip() not in ("", "nan") else "rated"
         )
 
-    score_ai_s = pd.to_numeric(df.get("score_ai", pd.Series(dtype=float)), errors="coerce").fillna(0)
+    score_ai_s = pd.to_numeric((df["score_ai"] if "score_ai" in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
     df["score_ai"] = score_ai_s.round(1)
 
-    score_h_s = pd.to_numeric(df.get("score_human", pd.Series(dtype=float)), errors="coerce")
+    score_h_s = pd.to_numeric((df["score_human"] if "score_human" in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce")
     df["score_human"] = [round(float(v), 1) if pd.notna(v) else None for v in score_h_s]
 
     def effective_score(row):
@@ -2699,8 +2699,8 @@ def transform_ac_data(source):
     for std_key, ac_base in AC_CRIT_MAP.items():
         ai_col  = f"{ac_base}_AI"
         max_col = f"{ac_base}_Max"
-        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
-        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        ai_s  = pd.to_numeric((df[ai_col]  if ai_col  in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric((df[max_col] if max_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
         if std_key == "rude":
             df[std_key] = [
                 None if mx == 0 else ("No" if ai >= mx else "Yes")
@@ -2725,8 +2725,8 @@ def transform_ac_data(source):
     for ac_key, ac_base in AC_EXTRA_CRIT_MAP.items():
         ai_col  = f"{ac_base}_AI"
         max_col = f"{ac_base}_Max"
-        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
-        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        ai_s  = pd.to_numeric((df[ai_col]  if ai_col  in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric((df[max_col] if max_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
         df[ac_key] = [
             None if mx == 0 else ("Yes" if ai > 0 else "No")
             for ai, mx in zip(ai_s, max_s)
@@ -2824,10 +2824,10 @@ def transform_ol_data(source):
             lambda v: str(v).strip().lower() if str(v).strip() not in ("", "nan") else "rated"
         )
 
-    score_ai_s = pd.to_numeric(df.get("score_ai", pd.Series(dtype=float)), errors="coerce").fillna(0)
+    score_ai_s = pd.to_numeric((df["score_ai"] if "score_ai" in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
     df["score_ai"] = score_ai_s.round(1)
 
-    score_h_s = pd.to_numeric(df.get("score_human", pd.Series(dtype=float)), errors="coerce")
+    score_h_s = pd.to_numeric((df["score_human"] if "score_human" in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce")
     df["score_human"] = [round(float(v), 1) if pd.notna(v) else None for v in score_h_s]
 
     def effective_score(row):
@@ -2871,8 +2871,8 @@ def transform_ol_data(source):
     for std_key, ol_base in OL_CRIT_MAP.items():
         ai_col  = f"{ol_base}_AI"
         max_col = f"{ol_base}_Max"
-        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
-        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        ai_s  = pd.to_numeric((df[ai_col]  if ai_col  in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric((df[max_col] if max_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
         if std_key == "rude":
             df[std_key] = [
                 None if mx == 0 else ("No" if ai >= mx else "Yes")
@@ -2898,8 +2898,8 @@ def transform_ol_data(source):
     for ol_key, ol_base in OL_EXTRA_CRIT_MAP.items():
         ai_col  = f"{ol_base}_AI"
         max_col = f"{ol_base}_Max"
-        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
-        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        ai_s  = pd.to_numeric((df[ai_col]  if ai_col  in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric((df[max_col] if max_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
         if ol_key in OL_NA_KEYS:
             df[ol_key] = [
                 "Not Applicable" if mx == 0 else ("Yes" if ai > 0 else "No")
@@ -3003,10 +3003,10 @@ def transform_ct_data(source):
             lambda v: str(v).strip().lower() if str(v).strip() not in ("", "nan") else "rated"
         )
 
-    score_ai_s = pd.to_numeric(df.get("score_ai", pd.Series(dtype=float)), errors="coerce").fillna(0)
+    score_ai_s = pd.to_numeric((df["score_ai"] if "score_ai" in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
     df["score_ai"] = score_ai_s.round(1)
 
-    score_h_s = pd.to_numeric(df.get("score_human", pd.Series(dtype=float)), errors="coerce")
+    score_h_s = pd.to_numeric((df["score_human"] if "score_human" in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce")
     df["score_human"] = [round(float(v), 1) if pd.notna(v) else None for v in score_h_s]
 
     def effective_score(row):
@@ -3050,8 +3050,8 @@ def transform_ct_data(source):
     for std_key, ct_base in CT_CRIT_MAP.items():
         ai_col  = f"{ct_base}_AI"
         max_col = f"{ct_base}_Max"
-        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
-        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        ai_s  = pd.to_numeric((df[ai_col]  if ai_col  in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric((df[max_col] if max_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
         if std_key == "rude":
             df[std_key] = [
                 None if mx == 0 else ("No" if ai >= mx else "Yes")
@@ -3076,8 +3076,8 @@ def transform_ct_data(source):
     for ct_key, ct_base in CT_EXTRA_CRIT_MAP.items():
         ai_col  = f"{ct_base}_AI"
         max_col = f"{ct_base}_Max"
-        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
-        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        ai_s  = pd.to_numeric((df[ai_col]  if ai_col  in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric((df[max_col] if max_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
         df[ct_key] = [
             None if mx == 0 else ("Yes" if ai > 0 else "No")
             for ai, mx in zip(ai_s, max_s)
@@ -3175,10 +3175,10 @@ def transform_ycov_data(source):
             lambda v: str(v).strip().lower() if str(v).strip() not in ("", "nan") else "rated"
         )
 
-    score_ai_s = pd.to_numeric(df.get("score_ai", pd.Series(dtype=float)), errors="coerce").fillna(0)
+    score_ai_s = pd.to_numeric((df["score_ai"] if "score_ai" in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
     df["score_ai"] = score_ai_s.round(1)
 
-    score_h_s = pd.to_numeric(df.get("score_human", pd.Series(dtype=float)), errors="coerce")
+    score_h_s = pd.to_numeric((df["score_human"] if "score_human" in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce")
     df["score_human"] = [round(float(v), 1) if pd.notna(v) else None for v in score_h_s]
 
     def effective_score(row):
@@ -3222,8 +3222,8 @@ def transform_ycov_data(source):
     for std_key, ycov_base in YCOV_CRIT_MAP.items():
         ai_col  = f"{ycov_base}_AI"
         max_col = f"{ycov_base}_Max"
-        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
-        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        ai_s  = pd.to_numeric((df[ai_col]  if ai_col  in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric((df[max_col] if max_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
         if std_key == "rude":
             df[std_key] = [
                 None if mx == 0 else ("No" if ai >= mx else "Yes")
@@ -3248,8 +3248,8 @@ def transform_ycov_data(source):
     for ycov_key, ycov_base in YCOV_EXTRA_CRIT_MAP.items():
         ai_col  = f"{ycov_base}_AI"
         max_col = f"{ycov_base}_Max"
-        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
-        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        ai_s  = pd.to_numeric((df[ai_col]  if ai_col  in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric((df[max_col] if max_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
         df[ycov_key] = [
             None if mx == 0 else ("Yes" if ai > 0 else "No")
             for ai, mx in zip(ai_s, max_s)
@@ -3348,10 +3348,10 @@ def transform_kel_data(source):
             lambda v: str(v).strip().lower() if str(v).strip() not in ("", "nan") else "rated"
         )
 
-    score_ai_s = pd.to_numeric(df.get("score_ai", pd.Series(dtype=float)), errors="coerce").fillna(0)
+    score_ai_s = pd.to_numeric((df["score_ai"] if "score_ai" in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
     df["score_ai"] = score_ai_s.round(1)
 
-    score_h_s = pd.to_numeric(df.get("score_human", pd.Series(dtype=float)), errors="coerce")
+    score_h_s = pd.to_numeric((df["score_human"] if "score_human" in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce")
     df["score_human"] = [round(float(v), 1) if pd.notna(v) else None for v in score_h_s]
 
     def effective_score(row):
@@ -3395,8 +3395,8 @@ def transform_kel_data(source):
     for std_key, kel_base in KEL_CRIT_MAP.items():
         ai_col  = f"{kel_base}_AI"
         max_col = f"{kel_base}_Max"
-        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
-        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        ai_s  = pd.to_numeric((df[ai_col]  if ai_col  in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric((df[max_col] if max_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
         if std_key == "rude":
             df[std_key] = [
                 None if mx == 0 else ("No" if ai >= mx else "Yes")
@@ -3421,8 +3421,8 @@ def transform_kel_data(source):
     for kel_key, kel_base in KEL_EXTRA_CRIT_MAP.items():
         ai_col  = f"{kel_base}_AI"
         max_col = f"{kel_base}_Max"
-        ai_s  = pd.to_numeric(df.get(ai_col,  pd.Series(dtype=float)), errors="coerce").fillna(0)
-        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        ai_s  = pd.to_numeric((df[ai_col]  if ai_col  in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric((df[max_col] if max_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
         df[kel_key] = [
             None if mx == 0 else ("Yes" if ai > 0 else "No")
             for ai, mx in zip(ai_s, max_s)
@@ -3572,8 +3572,8 @@ def transform_vt_data(df):
     for std_key, vt_base in VT_CRIT_MAP.items():
         ai_col = f"{vt_base}_AI"
         max_col = f"{vt_base}_Max"
-        ai_s = pd.to_numeric(df.get(ai_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
-        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        ai_s = pd.to_numeric((df[ai_col] if ai_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric((df[max_col] if max_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
         if std_key == "rude":
             df[std_key] = [
                 None if mx == 0 else ("No" if ai >= mx else "Yes")
@@ -3598,8 +3598,8 @@ def transform_vt_data(df):
     for vt_key, vt_base in VT_EXTRA_CRIT_MAP.items():
         ai_col = f"{vt_base}_AI"
         max_col = f"{vt_base}_Max"
-        ai_s = pd.to_numeric(df.get(ai_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
-        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        ai_s = pd.to_numeric((df[ai_col] if ai_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric((df[max_col] if max_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
         df[vt_key] = [
             None if mx == 0 else ("Yes" if ai > 0 else "No")
             for ai, mx in zip(ai_s, max_s)
@@ -3749,8 +3749,8 @@ def transform_ycdc_data(df):
     for std_key, ycdc_base in YCDC_CRIT_MAP.items():
         ai_col = f"{ycdc_base}_AI"
         max_col = f"{ycdc_base}_Max"
-        ai_s = pd.to_numeric(df.get(ai_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
-        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        ai_s = pd.to_numeric((df[ai_col] if ai_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric((df[max_col] if max_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
         if std_key == "rude":
             df[std_key] = [
                 None if mx == 0 else ("No" if ai >= mx else "Yes")
@@ -3775,8 +3775,8 @@ def transform_ycdc_data(df):
     for ycdc_key, ycdc_base in YCDC_EXTRA_CRIT_MAP.items():
         ai_col = f"{ycdc_base}_AI"
         max_col = f"{ycdc_base}_Max"
-        ai_s = pd.to_numeric(df.get(ai_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
-        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        ai_s = pd.to_numeric((df[ai_col] if ai_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric((df[max_col] if max_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
         df[ycdc_key] = [
             None if mx == 0 else ("Yes" if ai > 0 else "No")
             for ai, mx in zip(ai_s, max_s)
@@ -3926,8 +3926,8 @@ def transform_bl_data(df):
     for std_key, bl_base in BL_CRIT_MAP.items():
         ai_col = f"{bl_base}_AI"
         max_col = f"{bl_base}_Max"
-        ai_s = pd.to_numeric(df.get(ai_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
-        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        ai_s = pd.to_numeric((df[ai_col] if ai_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric((df[max_col] if max_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
         if std_key == "rude":
             df[std_key] = [
                 None if mx == 0 else ("No" if ai >= mx else "Yes")
@@ -3952,8 +3952,8 @@ def transform_bl_data(df):
     for bl_key, bl_base in BL_EXTRA_CRIT_MAP.items():
         ai_col = f"{bl_base}_AI"
         max_col = f"{bl_base}_Max"
-        ai_s = pd.to_numeric(df.get(ai_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
-        max_s = pd.to_numeric(df.get(max_col, pd.Series(dtype=float)), errors="coerce").fillna(0)
+        ai_s = pd.to_numeric((df[ai_col] if ai_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
+        max_s = pd.to_numeric((df[max_col] if max_col in df.columns else pd.Series(0, index=df.index, dtype=float)), errors="coerce").fillna(0)
         df[bl_key] = [
             None if mx == 0 else ("Yes" if ai > 0 else "No")
             for ai, mx in zip(ai_s, max_s)
