@@ -2,8 +2,8 @@
   "run_id": "2026-06-23T19:00:02",
   "started_at": "2026-06-23T19:00:02.582855",
   "finished_at": null,
-  "status": "running",
-  "failed_at": null,
+  "status": "failed",
+  "failed_at": "Skyline",
   "steps": [
     {
       "account": "Masterlist",
@@ -68,6 +68,14 @@
       "status": "pass",
       "timestamp": "2026-06-23T19:02:10.632660",
       "error": null
+    },
+    {
+      "account": "Skyline",
+      "script": "Skyline_pull.py",
+      "exit_code": 1,
+      "status": "fail",
+      "timestamp": "2026-06-23T19:05:39.742944",
+      "error": "Traceback (most recent call last):\n  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\openpyxl\\worksheet\\_writer.py\", line 32, in _openpyxl_shutdown\n    os.remove(path)\nPermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\\\Users\\\\MIKEWO~1\\\\AppData\\\\Local\\\\Temp\\\\openpyxl.6271wd_q'"
     }
   ]
 }

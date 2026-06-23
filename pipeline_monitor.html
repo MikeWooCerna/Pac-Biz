@@ -128,7 +128,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     </div>
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run 2026-06-23T19:00</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Built: Jun 23, 2026 07:02 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Built: Jun 23, 2026 07:05 PM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -139,10 +139,10 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 
   <div class="stat-cards">
     <div class="stat-card"><div class="sc-val" style="color:#00e87a;">8</div><div class="sc-lbl">Passed</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">0</div><div class="sc-lbl">Failed</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#E84500;">14</div><div class="sc-lbl">Not Reached</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">1</div><div class="sc-lbl">Failed</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#E84500;">13</div><div class="sc-lbl">Not Reached</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">4,005</div><div class="sc-lbl">Rows Pulled</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#7060a0;">&mdash;</div><div class="sc-lbl">running</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">&#10007;</div><div class="sc-lbl">failed</div></div>
   </div>
 
   <div class="divider"></div>
@@ -237,13 +237,16 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
-<div class="node n-blocked">
-  <div class="node-title" style="color:#E84500;"><span>Skyline</span><div class="blink-n"></div></div>
-  <div class="node-row"><b class="b-n"></b>Skyline_pull.py &middot; &mdash;</div>
-  
+<div class="node n-fail">
+  <div class="node-title" style="color:#ff6060;"><span>Skyline</span><div class="blink-r"></div></div>
+  <div class="node-row"><b class="b-r"></b>Skyline_pull.py &middot; 07:05 PM</div>
+  <div class="node-err">Traceback (most recent call last):
+  File "C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\openpyxl\worksheet\_writer.py", line 32, in _openpyxl_shutdown
+    os.remove(path)
+PermissionError: [WinError 32] The process cannot access the file because it is being used by another process: 'C:\\Users\\MIKEWO~1\\AppData\\Local\\Temp\\openpyxl.6271wd_q'</div>
   <div class="node-meta">
-    <span class="meta-pill o">&mdash; rows</span>
-    <span class="meta-pill o">NOT REACHED</span>
+    <span class="meta-pill r">&mdash; rows</span>
+    <span class="meta-pill r">FAIL</span>
     
   </div>
 </div>
@@ -275,7 +278,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       </div>
       <div class="radar-label">
         <div class="radar-lbl-main">Pipeline / Container Monitoring</div>
-        <div class="radar-lbl-status"><div class="blink-a"></div><span style="color:#ffaa00;font-size:12px;">running</span></div>
+        <div class="radar-lbl-status"><div class="blink-r"></div><span style="color:#ff3d3d;font-size:12px;">stopped</span></div>
       </div>
 
       <div class="connector"></div>
@@ -286,8 +289,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
           <div class="agg-item"><div class="agg-val" style="color:#00e87a;">4,005</div><div class="agg-lbl">total rows</div></div>
           <div class="agg-item">
             <div class="agg-val" style="display:flex;align-items:center;justify-content:center;gap:5px;">
-              <div class="blink-g"></div>
-              <span style="color:#00e87a;">8/22</span>
+              <div class="blink-r"></div>
+              <span style="color:#ff9090;">8/22</span>
             </div>
             <div class="agg-lbl">sources ok</div>
           </div>
@@ -316,8 +319,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 
       <div class="stage-node">
         <div class="stage-title">Git Repository</div>
-        <div class="stage-status"><div class="blink-a"></div></div>
-        <div class="stage-detail">queued…</div>
+        <div class="stage-status"><div class="blink-n"></div></div>
+        <div class="stage-detail">not reached</div>
       </div>
     </div>
 
@@ -436,7 +439,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     </div>
   </div>
 
-  
+  <div class="warn-strip">&#9888; Pipeline stopped at <b>Skyline</b> &middot; Exit code 1 &middot; 13 steps not reached</div>
   
 
   <div class="divider" style="margin-top:12px;"></div>
@@ -445,7 +448,22 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div class="log-wrap">
       <table class="log-table">
         <thead><tr><th>Date</th><th>Dataset</th><th>Status</th></tr></thead>
-        <tbody><tr><td class="log-td-d">Jun 23, 2026 03:00 PM</td><td class="log-td-ds"><b>Skyline</b> <span class="log-sc">&middot; Skyline_pull.py</span><div class="log-err">Dropped 7,572 rows (14,429 → 6,857)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
+        <tbody><tr><td class="log-td-d">Jun 23, 2026 07:00 PM</td><td class="log-td-ds"><b>Blueline</b> <span class="log-sc">&middot; bl_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jun 23, 2026 07:00 PM</td><td class="log-td-ds"><b>YCDC</b> <span class="log-sc">&middot; ycdc_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jun 23, 2026 07:00 PM</td><td class="log-td-ds"><b>Vermont</b> <span class="log-sc">&middot; vt_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jun 23, 2026 07:00 PM</td><td class="log-td-ds"><b>Kelowna</b> <span class="log-sc">&middot; kel_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jun 23, 2026 07:00 PM</td><td class="log-td-ds"><b>YCOV</b> <span class="log-sc">&middot; ycov_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jun 23, 2026 07:00 PM</td><td class="log-td-ds"><b>Circle Taxi</b> <span class="log-sc">&middot; ct_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jun 23, 2026 07:00 PM</td><td class="log-td-ds"><b>Ollies</b> <span class="log-sc">&middot; ol_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jun 23, 2026 07:00 PM</td><td class="log-td-ds"><b>Associated Cab</b> <span class="log-sc">&middot; ac_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jun 23, 2026 07:00 PM</td><td class="log-td-ds"><b>Data Carz</b> <span class="log-sc">&middot; dc_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jun 23, 2026 07:00 PM</td><td class="log-td-ds"><b>Trans Iowa</b> <span class="log-sc">&middot; ti_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jun 23, 2026 07:00 PM</td><td class="log-td-ds"><b>Reno Cab</b> <span class="log-sc">&middot; rc_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jun 23, 2026 07:00 PM</td><td class="log-td-ds"><b>C&H</b> <span class="log-sc">&middot; ch_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jun 23, 2026 07:00 PM</td><td class="log-td-ds"><b>VIP</b> <span class="log-sc">&middot; vip_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jun 23, 2026 07:00 PM</td><td class="log-td-ds"><b>Skyline</b> <span class="log-sc">&middot; Skyline_pull.py</span><div class="log-err">Traceback (most recent call last):
+  File "C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-pack</div></td><td class="log-td-st"><span class="lp lp-f">FAILED</span></td></tr>
+<tr><td class="log-td-d">Jun 23, 2026 03:00 PM</td><td class="log-td-ds"><b>Skyline</b> <span class="log-sc">&middot; Skyline_pull.py</span><div class="log-err">Dropped 7,572 rows (14,429 → 6,857)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
 <tr><td class="log-td-d">Jun 23, 2026 11:00 AM</td><td class="log-td-ds"><b>Blueline</b> <span class="log-sc">&middot; bl_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
 <tr><td class="log-td-d">Jun 23, 2026 11:00 AM</td><td class="log-td-ds"><b>YCDC</b> <span class="log-sc">&middot; ycdc_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
 <tr><td class="log-td-d">Jun 23, 2026 11:00 AM</td><td class="log-td-ds"><b>Vermont</b> <span class="log-sc">&middot; vt_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
@@ -495,7 +513,7 @@ ValueError: Length of values (0) does not match length of index (827)</div></td>
   var ang = -Math.PI/2;
   var TRAIL = Math.PI * 1.35;
   var time = 0;
-  var FAIL = false;
+  var FAIL = true;
 
   var blips = [
     {ang:-90.00,r:0.63,st:"pass",nm:"Masterlist"},
@@ -506,20 +524,20 @@ ValueError: Length of values (0) does not match length of index (827)</div></td>
     {ang:-8.18,r:0.44,st:"pass",nm:"BLC"},
     {ang:8.18,r:0.63,st:"pass",nm:"RideX"},
     {ang:24.55,r:0.44,st:"pass",nm:"Hamilton"},
-    {ang:40.91,r:0.63,st:"pending",nm:"Skyline"},
-    {ang:57.27,r:0.44,st:"pending",nm:"VIP"},
-    {ang:73.64,r:0.63,st:"pending",nm:"C&H"},
-    {ang:90.00,r:0.44,st:"pending",nm:"Reno Cab"},
-    {ang:106.36,r:0.63,st:"pending",nm:"Trans Iowa"},
-    {ang:122.73,r:0.44,st:"pending",nm:"Data Carz"},
-    {ang:139.09,r:0.63,st:"pending",nm:"Assoc.Cab"},
-    {ang:155.45,r:0.44,st:"pending",nm:"Ollies"},
-    {ang:171.82,r:0.63,st:"pending",nm:"Cir.Taxi"},
-    {ang:188.18,r:0.44,st:"pending",nm:"YCOV"},
-    {ang:204.55,r:0.63,st:"pending",nm:"Kelowna"},
-    {ang:220.91,r:0.44,st:"pending",nm:"Vermont"},
-    {ang:237.27,r:0.63,st:"pending",nm:"YCDC"},
-    {ang:253.64,r:0.44,st:"pending",nm:"Blueline"},
+    {ang:40.91,r:0.63,st:"fail",nm:"Skyline"},
+    {ang:57.27,r:0.44,st:"blocked",nm:"VIP"},
+    {ang:73.64,r:0.63,st:"blocked",nm:"C&H"},
+    {ang:90.00,r:0.44,st:"blocked",nm:"Reno Cab"},
+    {ang:106.36,r:0.63,st:"blocked",nm:"Trans Iowa"},
+    {ang:122.73,r:0.44,st:"blocked",nm:"Data Carz"},
+    {ang:139.09,r:0.63,st:"blocked",nm:"Assoc.Cab"},
+    {ang:155.45,r:0.44,st:"blocked",nm:"Ollies"},
+    {ang:171.82,r:0.63,st:"blocked",nm:"Cir.Taxi"},
+    {ang:188.18,r:0.44,st:"blocked",nm:"YCOV"},
+    {ang:204.55,r:0.63,st:"blocked",nm:"Kelowna"},
+    {ang:220.91,r:0.44,st:"blocked",nm:"Vermont"},
+    {ang:237.27,r:0.63,st:"blocked",nm:"YCDC"},
+    {ang:253.64,r:0.44,st:"blocked",nm:"Blueline"},
   ];
 
   function draw() {
