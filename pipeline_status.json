@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-23T11:00:02",
   "started_at": "2026-06-23T11:00:02.193971",
-  "finished_at": null,
+  "finished_at": "2026-06-23T11:01:14.966403",
   "status": "failed",
   "failed_at": "Britelift Chat",
   "steps": [
