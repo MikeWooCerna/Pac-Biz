@@ -398,5 +398,16 @@
     "status": "healed",
     "action": "retry",
     "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-06-24T11:00:02",
+    "date": "Jun 24, 2026 11:00 AM",
+    "account": "Circle Taxi",
+    "script": "ct_pull.py",
+    "status": "count_drop",
+    "drop": 771,
+    "prev_count": 1283,
+    "new_count": 512,
+    "error": "Dropped 771 rows (1,283 \u2192 512)"
   }
 ]
