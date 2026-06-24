@@ -409,5 +409,14 @@
     "prev_count": 1283,
     "new_count": 512,
     "error": "Dropped 771 rows (1,283 \u2192 512)"
+  },
+  {
+    "run_id": "2026-06-24T11:48:07",
+    "date": "Jun 24, 2026 11:48 AM",
+    "account": "Ridex_pull.py",
+    "script": "Ridex_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
   }
 ]
