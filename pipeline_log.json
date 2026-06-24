@@ -389,5 +389,14 @@
     "prev_count": 523,
     "new_count": 500,
     "error": "Dropped 23 rows (523 \u2192 500)"
+  },
+  {
+    "run_id": "2026-06-24T08:45:27",
+    "date": "Jun 24, 2026 08:45 AM",
+    "account": "kel_pull.py",
+    "script": "kel_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
   }
 ]
