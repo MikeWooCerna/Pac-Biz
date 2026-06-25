@@ -8296,7 +8296,7 @@ function renderCoaching() {{
 }}
 
 function recentMovementsTable() {{
-    const rows = filteredMovementData().slice(-10).reverse().map(r => ({{
+    const rows = filteredMovementData().slice(-20).reverse().map(r => ({{
         ...r,
         "Date Initiated": formatDateOnly(r["Timestamp"]),
         "Process Status": norm(r["Processed"]),
