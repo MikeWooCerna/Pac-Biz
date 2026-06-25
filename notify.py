@@ -132,8 +132,8 @@ def notify_high_volume(account, rows, threshold, level):
         f"Consider archiving older records in the source sheet."
     ))
 
-def notify_movement(subject, body_html, to_email, cc_list=None):
-    """Send a movement notification with custom To + CC (does not use config to_email)."""
+def notify_movement(subject, body_html, to_email, cc_list=None, bcc_list=None):
+    """Send a movement notification with custom To + CC + optional BCC."""
     cfg = load_config()
     if not cfg:
         print("[notify] notify_config.json not found — skipping movement email.")
@@ -152,10 +152,11 @@ def notify_movement(subject, body_html, to_email, cc_list=None):
     msg["To"]      = to_email
     if cc_list:
         msg["Cc"] = ", ".join(cc_list)
+    # BCC omitted from headers — only injected into SMTP envelope
 
     msg.attach(MIMEText(body_html, "html"))
 
-    all_recipients = [to_email] + (cc_list or [])
+    all_recipients = [to_email] + (cc_list or []) + (bcc_list or [])
 
     try:
         with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as smtp:
