@@ -44,6 +44,16 @@ if errorlevel 1 (
 
 echo.
 echo ========================================
+echo Sending movement notifications
+echo ========================================
+cd /d "%MASTERLIST_DIR%"
+py -3 "%MASTERLIST_DIR%\check_movement_notifications.py"
+if errorlevel 1 (
+    echo [WARN] Movement notifications failed -- continuing
+)
+
+echo.
+echo ========================================
 echo Updating Coaching data from Asana
 echo ========================================
 cd /d "%COACHING_DIR%"

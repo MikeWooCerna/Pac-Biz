@@ -132,8 +132,15 @@ Pipeline monitoring system is fully live as of 2026-06-22. See `PIPELINE_MONITOR
   - Email sent via `notify.notify_high_volume()`.
   - Incident log pill: `HIGH VOLUME` (amber, style `.lp-v`).
 
+### Changes made 2026-06-23 (batch 3)
+- **Continue-on-failure pipeline** — both `update_coaching_dashboard_auto.bat` and `update_coaching_dashboard.bat` now continue past individual account failures instead of aborting. Each failed account is logged and skipped; the dashboard still rebuilds using the last cached Excel file for any failed account. The pipeline monitor shows failed accounts in red so you know which data is stale.
+  - **Fatal steps (still abort everything):** `git pull --rebase` before build, `dashboard.py` build, `git push`
+  - **Non-fatal steps (skip and continue):** all 21 account pull steps (Masterlist fetch, Coaching, and all 19 QA accounts)
+  - **New finish state:** `partial` — logged when the build succeeds but one or more accounts failed. Monitor shows "Done with warnings" in this case.
+
 ### Pending / future work
-- No open work items.
+- **Apps Script Monitoring** — Add a new section to `pipeline_monitor.html` (before the incident log) showing per-account Apps Script health: last run time, row count, duration, stale/fail badges. Implementation: `logRunToMasterlist_()` helper in each Apps Script → writes to `GAS_Heartbeat` tab in Masterlist spreadsheet → `check_gas_heartbeat.py` reads it → `pipeline_gas_status.json` → `generate_monitor.py` renders the section. Build when 5+ upsert functions are active and manually checking the Apps Script UI becomes painful.
+- **Storage migration to Google Drive** — Move `PB` folder to Google Drive for Desktop. Only 3 bat files + Task Scheduler need path updates. See memory for details.
 
 ## Known issues / open questions
 

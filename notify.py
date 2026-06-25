@@ -132,6 +132,43 @@ def notify_high_volume(account, rows, threshold, level):
         f"Consider archiving older records in the source sheet."
     ))
 
+def notify_movement(subject, body_html, to_email, cc_list=None):
+    """Send a movement notification with custom To + CC (does not use config to_email)."""
+    cfg = load_config()
+    if not cfg:
+        print("[notify] notify_config.json not found — skipping movement email.")
+        return False
+
+    from_email   = cfg.get("from_email", "")
+    app_password = cfg.get("app_password", "")
+
+    if not all([from_email, app_password, to_email]):
+        print("[notify] Missing from_email, app_password, or to_email — skipping.")
+        return False
+
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = subject
+    msg["From"]    = from_email
+    msg["To"]      = to_email
+    if cc_list:
+        msg["Cc"] = ", ".join(cc_list)
+
+    msg.attach(MIMEText(body_html, "html"))
+
+    all_recipients = [to_email] + (cc_list or [])
+
+    try:
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as smtp:
+            smtp.ehlo()
+            smtp.starttls()
+            smtp.login(from_email, app_password)
+            smtp.sendmail(from_email, all_recipients, msg.as_string())
+        print(f"[notify] Movement email sent: {subject}")
+        return True
+    except Exception as e:
+        print(f"[notify] Failed to send movement email: {e}")
+        return False
+
 def notify_healed(account, script, action, detail):
     action_label = "Retry" if action == "retry" else "Re-pull"
     subject = f"Report Monitoring — SELF HEALED: {account}"
