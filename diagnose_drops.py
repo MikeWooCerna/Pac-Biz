@@ -23,6 +23,11 @@ ACCOUNT_PULL_SCRIPTS = {
     "Kelowna": r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\Kelowna\kel_pull.py",
 }
 
+# Accounts in PILOT_ACCOUNTS are analyzed and emailed but NOT auto-healed.
+# The email includes a recommendation on whether to trigger the heal manually.
+# Remove an account from this set once the auto-heal has been validated in prod.
+PILOT_ACCOUNTS = {"Kelowna"}
+
 # ── helpers ──────────────────────────────────────────────────────────────────
 
 def load_json(path, default):
@@ -99,6 +104,27 @@ def analyse(drops, baseline):
                 "cleared during this run. If the account has recovered, no action is needed."
             )
 
+        # Determine whether a full-year Apps Script heal is warranted
+        # RECURRING and ISOLATED large drops benefit from a heal.
+        # MINOR drops (small, single) likely don't need it.
+        # CLUSTER drops need root-cause investigation before healing.
+        heal_warranted = (
+            pattern in ("RECURRING", "ISOLATED") and not recovered
+        )
+        heal_reason = (
+            "RECURRING pattern detected — the Apps Script is likely filtering by date and resets periodically. "
+            "Triggering the full-year pull will restore the complete dataset."
+            if pattern == "RECURRING" else
+            "Large one-time drop — likely a transient sheet issue. "
+            "Triggering the full-year pull is recommended to confirm full dataset is restored."
+            if pattern == "ISOLATED" else
+            "CLUSTER drop — multiple accounts affected simultaneously. "
+            "Investigate whether the source sheet was cleared before triggering a heal."
+            if pattern == "CLUSTER" else
+            "Small drop — likely legitimate upstream deletions. "
+            "A full-year heal is not recommended; monitor for recurrence instead."
+        )
+
         summaries.append({
             "account":        account,
             "occurrences":    occurrences,
@@ -112,6 +138,8 @@ def analyse(drops, baseline):
             "pattern":        pattern,
             "pattern_desc":   pattern_desc,
             "recommendation": recommendation,
+            "heal_warranted": heal_warranted,
+            "heal_reason":    heal_reason,
         })
 
     # Sort: unrecovered first, then by occurrences desc
@@ -119,6 +147,41 @@ def analyse(drops, baseline):
     return summaries, cluster_runs
 
 # ── email builder ─────────────────────────────────────────────────────────────
+
+def _heal_block(s):
+    """Return an HTML block with a heal recommendation for pilot accounts.
+    Returns empty string for non-pilot accounts or accounts with a trigger URL."""
+    if s["account"] not in PILOT_ACCOUNTS:
+        return ""
+    triggers = load_json(TRIGGERS_FILE, {})
+    if s["account"] not in triggers:
+        return ""
+    if s["recovered"]:
+        return ""
+
+    if s["heal_warranted"]:
+        bg      = "#f0fdf4"
+        border  = "#16a34a"
+        icon    = "&#9989;"
+        heading = "Heal Recommended"
+        color   = "#14532d"
+    else:
+        bg      = "#fffbeb"
+        border  = "#d97706"
+        icon    = "&#9888;"
+        heading = "Heal Not Recommended"
+        color   = "#78350f"
+
+    return f"""
+        <div style="margin-top:10px;padding:10px 12px;background:{bg};border-left:3px solid {border};border-radius:0 4px 4px 0;font-size:12px;color:{color};">
+          <b>{icon} {heading} — {s['account']} (Pilot)</b><br>
+          <span style="display:block;margin-top:4px;">{s['heal_reason']}</span>
+          <span style="display:block;margin-top:6px;color:#374151;">
+            Auto-heal is <b>disabled</b> while {s['account']} is in pilot mode.
+            {"To trigger manually, run: <code style='background:#e5e7eb;padding:1px 4px;border-radius:3px;'>py -3 diagnose_drops.py --heal " + s['account'] + "</code>" if s['heal_warranted'] else "No action needed at this time."}
+          </span>
+        </div>"""
+
 
 PATTERN_STYLE = {
     "RECURRING": ("background:#fef2f2;color:#b91c1c;", "RECURRING"),
@@ -194,6 +257,7 @@ def build_email(summaries, cluster_runs, new_accounts):
         <div style="padding:10px;background:#f0f9ff;border-left:3px solid #0ea5e9;font-size:12px;color:#0c4a6e;border-radius:0 4px 4px 0;">
           <b>Recommendation:</b> {s['recommendation']}
         </div>
+        {_heal_block(s)}
       </div>
     </div>"""
 
@@ -474,21 +538,34 @@ def run():
     else:
         print("[diagnose] Email send failed — drops already marked notified to prevent re-trigger loop.")
 
-    # Auto-trigger Apps Script for any account that has a trigger URL configured
-    # Pass the pre-drop row count so the heal can verify it restored correctly.
+    # Auto-trigger Apps Script for accounts that have a trigger URL AND are not
+    # in PILOT_ACCOUNTS. Pilot accounts receive analysis + email only — heal
+    # requires manual review and approval.
     triggers = load_json(TRIGGERS_FILE, {})
     for account in new_accounts:
-        if account in triggers:
-            # Find the highest prev_count from all new drops for this account
-            # (highest = the count right before the most significant drop)
-            acct_new_drops = [d for d in new_drops if d["account"] == account]
-            prev_count = max(
-                (d.get("prev_count") or 0 for d in acct_new_drops),
-                default=0
-            )
-            ok, msg = trigger_appsscript(account, prev_count=prev_count)
-            status = "recovered" if ok else "trigger failed"
-            print(f"[diagnose] {account} auto-trigger: {status} — {msg}")
+        if account not in triggers:
+            continue
+        if account in PILOT_ACCOUNTS:
+            print(f"[diagnose] {account} is in pilot mode — auto-heal skipped. Review email recommendation.")
+            continue
+        acct_new_drops = [d for d in new_drops if d["account"] == account]
+        prev_count = max(
+            (d.get("prev_count") or 0 for d in acct_new_drops),
+            default=0
+        )
+        ok, msg = trigger_appsscript(account, prev_count=prev_count)
+        status = "recovered" if ok else "trigger failed"
+        print(f"[diagnose] {account} auto-trigger: {status} — {msg}")
 
 if __name__ == "__main__":
-    run()
+    import sys
+    # Manual heal: py -3 diagnose_drops.py --heal Kelowna
+    if len(sys.argv) >= 3 and sys.argv[1] == "--heal":
+        account = " ".join(sys.argv[2:])
+        baseline = load_json(BASELINE_FILE, {})
+        prev_count = baseline.get(account, 0)
+        print(f"[diagnose] Manual heal requested for {account} (baseline: {prev_count:,})")
+        ok, msg = trigger_appsscript(account, prev_count=prev_count)
+        print(f"[diagnose] {account} manual heal: {'OK' if ok else 'FAILED'} — {msg}")
+    else:
+        run()
