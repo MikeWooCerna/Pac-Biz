@@ -10893,6 +10893,13 @@ render();
 </html>
 """
 
+    # Stamp the actual finish time just before writing so the "Refresh Time"
+    # header and PB_BUILD_TS JS variable reflect when the file was completed,
+    # not when dashboard.py started loading data (which can be minutes earlier).
+    finish_time = datetime.now()
+    html = html.replace(refresh_time, finish_time.strftime("%Y-%m-%d %I:%M %p"), 1)
+    html = html.replace(refresh_iso,  finish_time.strftime("%Y-%m-%dT%H:%M:00"), 1)
+
     Path(OUTPUT_FILE).write_text(html, encoding="utf-8")
     print(f"Dashboard generated: {OUTPUT_FILE}")
 
