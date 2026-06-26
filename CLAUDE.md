@@ -1,6 +1,6 @@
 # PB Dashboard — project context
 # This file is read by Claude Code (auto) and Codex (manual).
-# Last updated: 2026-06-26
+# Last updated: 2026-06-27
 
 ## What this is
 
@@ -148,15 +148,20 @@ Pipeline monitoring system is fully live as of 2026-06-22. See `PIPELINE_MONITOR
   - **CLUSTER** = multiple accounts drop in the same run → likely an upsert overwrote the sheet
   - **ISOLATED** = single large one-time drop → transient data source issue
   - **MINOR** = single small drop (≤50 rows) → likely legitimate upstream deletion
-- **Apps Script web app auto-heal for Kelowna** — when a Kelowna count drop is detected, `diagnose_drops.py` automatically:
-  1. Calls the Kelowna Apps Script web app URL → triggers `pullKELLast30Days()` to refresh the Google Sheet
-  2. Re-runs `kel_pull.py` to pull refreshed data to local Excel
-  3. Rebuilds `dashboard.py`
-  4. Runs `git pull → git add → git commit → git push`
-  5. Logs the event as `healed` (action: `appsscript_trigger`) in `pipeline_log.json`
+- **Apps Script web app auto-heal for Kelowna** — when a Kelowna count drop is detected, `diagnose_drops.py` automatically runs the full heal sequence (see details in 2026-06-27 section below).
   - Kelowna trigger URL stored in `appsscript_triggers.json`
   - To add more accounts: deploy `doGet()` on their Apps Script, add URL to `appsscript_triggers.json`, add pull script path to `ACCOUNT_PULL_SCRIPTS` in `diagnose_drops.py`
-  - Kelowna Apps Script also updated with leftover-sheet cleanup (`KEL_Evaluations_new` guard) in both `pullKELEvaluationsToSheet()` and `pullKELLast30Days()`
+  - Kelowna Apps Script updated with leftover-sheet cleanup (`KEL_Evaluations_new` guard) in both `pullKELEvaluationsToSheet()` and `pullKELLast30Days()`
+
+### Changes made 2026-06-27
+- **Auto-heal sequence corrected** — original `doGet()` called `pullKELLast30Days()` (rolling 30 days, ~731 rows) which wiped the full year dataset. Fixed: `doGet()` now calls `clearKELProgress()` + `pullKELEvaluationsToSheet()` (full year, ~2,300+ rows). Any future Apps Script web app for other accounts must follow the same pattern — never call the 30-day pull from `doGet()`.
+- **`doGet()` JSON protocol** — now returns `{"status":"partial","rows_so_far":N,"last_week":"..."}` or `{"status":"complete","rows":N}` instead of plain text "OK". Includes `SpreadsheetApp.flush()` before `getLastRow()` to avoid stale sheet-rename timing. On first call clears progress; on resume calls skips `clearKELProgress()` so prior weekly progress is preserved.
+- **Multi-call heal loop** (`diagnose_drops.py`) — `trigger_appsscript()` now loops up to `MAX_TRIGGER_CALLS = 12` times, calling the web app URL until it returns `"complete"`. Needed because `pullKELEvaluationsToSheet()` uses a 5-minute PropertiesService resume pattern — one HTTP call may only cover part of the year. Each partial response logs progress; loop breaks on `"complete"`. Falls back to plain-text "OK" for backward compatibility.
+- **Pre-drop count verification** — `trigger_appsscript()` now accepts `prev_count` (the exact row count before the drop, read from the drop log event). After the Apps Script completes, it verifies the restored count is ≥ 80% of `prev_count`. Fails clearly if the count is still too low rather than proceeding to rebuild the dashboard with incomplete data. `run()` passes the highest `prev_count` from all new drops for that account.
+- **Healed log entry enriched** — includes `prev_count`, `healed_count`, and percentage restored in the `error` detail field. Visible in the incident log.
+- **Drop badge auto-clears after heal** (`generate_monitor.py`) — after building `drop_by_account`, checks if a `healed` log entry exists for that account with a later `run_id` (ISO string comparison). If yes, removes the account from `drop_by_account` so the "↓ N" badge is no longer shown. Previously the badge persisted across pipeline runs even after a successful heal.
+- **Re-trigger loop bug fixed** (`diagnose_drops.py`) — drops are now marked as notified in `pipeline_drops_notified.json` BEFORE calling `trigger_appsscript()`, not after email success. The heal subprocess calls `generate_monitor.py` → `diagnose_drops.run()` again; if drops were still unnotified at that point, `run()` would re-trigger the heal and loop infinitely.
+- **`pipeline_drops_notified.json` tracked in git** — added to the `git add` line in both `update_coaching_dashboard_auto.bat` and `update_coaching_dashboard.bat` (both `:publish_monitor` and `:fail` sections). Previously untracked; notification state would be lost on fresh clone.
 
 ### Pending / future work
 - **Apps Script Monitoring** — Add a new section to `pipeline_monitor.html` (before the incident log) showing per-account Apps Script health: last run time, row count, duration, stale/fail badges. Implementation: `logRunToMasterlist_()` helper in each Apps Script → writes to `GAS_Heartbeat` tab in Masterlist spreadsheet → `check_gas_heartbeat.py` reads it → `pipeline_gas_status.json` → `generate_monitor.py` renders the section. Build when 5+ upsert functions are active and manually checking the Apps Script UI becomes painful.
