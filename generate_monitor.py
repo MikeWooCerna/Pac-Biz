@@ -380,6 +380,18 @@ def generate():
                        if e.get("run_id") == run_id_full and e.get("status") == "count_drop"]
     drop_by_account = {d["account"]: d for d in count_drops}
 
+    # Remove drops that have already been healed — if a healed entry exists for
+    # the account with a later run_id (ISO string sort), clear the badge.
+    for e in log_entries:
+        if e.get("status") == "healed":
+            acct = e.get("account")
+            if acct in drop_by_account:
+                drop_run = drop_by_account[acct].get("run_id", "")
+                heal_run = e.get("run_id", "")
+                if heal_run > drop_run:
+                    drop_by_account.pop(acct)
+    count_drops = [d for d in count_drops if d["account"] in drop_by_account]
+
     # ── High-volume detection ─────────────────────────────────────────────────
     hv_notify_map   = load_highvol_notified()
     hv_new_notices  = {}   # {account: (rows, level)} — newly crossed threshold this run
@@ -968,3 +980,10 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
     print(f"Pipeline monitor generated: {OUTPUT_FILE.name}")
 
 generate()
+
+# Run drop investigation — sends email only when new drops are found
+try:
+    import diagnose_drops
+    diagnose_drops.run()
+except Exception as _dd_err:
+    print(f"[diagnose_drops] Error: {_dd_err}")
