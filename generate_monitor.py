@@ -238,6 +238,25 @@ def generate():
         except Exception:
             pass
 
+    # ── Sync Build timestamp to dashboard file mtime ─────────────────────────
+    # If masterlist_dashboard.html is newer than the recorded Build step timestamp
+    # (e.g. a heal rebuilt the dashboard after the scheduled run), update the
+    # Build step timestamp so the freshness indicator matches the actual file age.
+    if raw:
+        dashboard_html = BASE / "masterlist_dashboard.html"
+        build_step_sync = next((s for s in raw.get("steps", []) if s["account"] == "Build"), None)
+        if dashboard_html.exists() and build_step_sync:
+            try:
+                html_mtime = datetime.fromtimestamp(dashboard_html.stat().st_mtime)
+                recorded_ts = datetime.fromisoformat(build_step_sync.get("timestamp", ""))
+                if html_mtime > recorded_ts:
+                    build_step_sync["timestamp"] = html_mtime.isoformat()
+                    if build_step_sync.get("status") == "pass":
+                        raw["finished_at"] = html_mtime.isoformat()
+                    STATUS_FILE.write_text(json.dumps(raw, indent=2, default=str), encoding="utf-8")
+            except Exception:
+                pass
+
     # ── Auto-correct stale Build failure ─────────────────────────────────────
     # If the last recorded status is "failed at Build" but masterlist_dashboard.html
     # was updated AFTER the recorded failure timestamp, a manual rebuild succeeded.
