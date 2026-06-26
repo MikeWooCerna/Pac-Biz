@@ -445,5 +445,14 @@
     "status": "healed",
     "action": "retry",
     "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-06-26T19:00:03",
+    "date": "Jun 26, 2026 07:00 PM",
+    "account": "dc_pull.py",
+    "script": "dc_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
   }
 ]
