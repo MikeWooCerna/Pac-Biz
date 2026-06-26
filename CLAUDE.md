@@ -1,6 +1,6 @@
 # PB Dashboard — project context
 # This file is read by Claude Code (auto) and Codex (manual).
-# Last updated: 2026-06-23
+# Last updated: 2026-06-26
 
 ## What this is
 
@@ -28,6 +28,9 @@ at build time — it has no pull script and no local Excel file.
 | `requirements.txt` | Python deps: pandas>=2.2.0, openpyxl>=3.1.0, requests>=2.32.0, xlsxwriter>=3.2.0 |
 | `test_connection.py` | Google Sheets API connectivity test |
 | `pacbiz_logo.png` / `pacbiz_favicon.png` | Branding assets embedded in the HTML at build time |
+| `diagnose_drops.py` | Count drop investigation agent — runs after every build, sends email report, auto-triggers Apps Script heal |
+| `appsscript_triggers.json` | Maps account name → Apps Script web app URL for auto-heal (currently: Kelowna) |
+| `pipeline_drops_notified.json` | Tracks which drop events have already been reported — prevents duplicate emails |
 
 Python executable: `C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\python.exe`
 
@@ -137,6 +140,23 @@ Pipeline monitoring system is fully live as of 2026-06-22. See `PIPELINE_MONITOR
   - **Fatal steps (still abort everything):** `git pull --rebase` before build, `dashboard.py` build, `git push`
   - **Non-fatal steps (skip and continue):** all 21 account pull steps (Masterlist fetch, Coaching, and all 19 QA accounts)
   - **New finish state:** `partial` — logged when the build succeeds but one or more accounts failed. Monitor shows "Done with warnings" in this case.
+
+### Changes made 2026-06-26
+- **Recent Employee Movements table cap fix** — `.slice(-10)` changed to `.slice(-20)` in `recentMovementsTable()` JS function in `dashboard.py`. Previously capped at 10 entries; now shows up to 20.
+- **Count drop investigation agent** (`diagnose_drops.py`) — new file called automatically at the end of `generate_monitor.py` after every pipeline build. Reads `pipeline_log.json`, detects NEW count drops not yet reported, classifies each account's pattern (RECURRING / CLUSTER / ISOLATED / MINOR), and sends a styled investigation email to `reports@pac-biz.com` with findings + recommendations. Already-reported drops tracked in `pipeline_drops_notified.json` — no duplicate emails.
+  - **RECURRING** = same account drops on multiple runs → likely a date-range filter in the Apps Script
+  - **CLUSTER** = multiple accounts drop in the same run → likely an upsert overwrote the sheet
+  - **ISOLATED** = single large one-time drop → transient data source issue
+  - **MINOR** = single small drop (≤50 rows) → likely legitimate upstream deletion
+- **Apps Script web app auto-heal for Kelowna** — when a Kelowna count drop is detected, `diagnose_drops.py` automatically:
+  1. Calls the Kelowna Apps Script web app URL → triggers `pullKELLast30Days()` to refresh the Google Sheet
+  2. Re-runs `kel_pull.py` to pull refreshed data to local Excel
+  3. Rebuilds `dashboard.py`
+  4. Runs `git pull → git add → git commit → git push`
+  5. Logs the event as `healed` (action: `appsscript_trigger`) in `pipeline_log.json`
+  - Kelowna trigger URL stored in `appsscript_triggers.json`
+  - To add more accounts: deploy `doGet()` on their Apps Script, add URL to `appsscript_triggers.json`, add pull script path to `ACCOUNT_PULL_SCRIPTS` in `diagnose_drops.py`
+  - Kelowna Apps Script also updated with leftover-sheet cleanup (`KEL_Evaluations_new` guard) in both `pullKELEvaluationsToSheet()` and `pullKELLast30Days()`
 
 ### Pending / future work
 - **Apps Script Monitoring** — Add a new section to `pipeline_monitor.html` (before the incident log) showing per-account Apps Script health: last run time, row count, duration, stale/fail badges. Implementation: `logRunToMasterlist_()` helper in each Apps Script → writes to `GAS_Heartbeat` tab in Masterlist spreadsheet → `check_gas_heartbeat.py` reads it → `pipeline_gas_status.json` → `generate_monitor.py` renders the section. Build when 5+ upsert functions are active and manually checking the Apps Script UI becomes painful.
