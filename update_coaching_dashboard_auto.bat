@@ -401,7 +401,7 @@ if "%ANY_ACCOUNT_FAILED%"=="1" (
 )
 py -3 "%MASTERLIST_DIR%\generate_monitor.py"
 set MONITOR_DONE=1
-git add pipeline_status.json pipeline_monitor.html pipeline_log.json pipeline_rowcount_baseline.json pipeline_highvol_notified.json
+git add pipeline_status.json pipeline_monitor.html pipeline_log.json pipeline_rowcount_baseline.json pipeline_highvol_notified.json pipeline_drops_notified.json
 git diff --cached --quiet
 if errorlevel 1 (
     git commit -m "Update pipeline monitor"
@@ -425,7 +425,7 @@ if "%MONITOR_DONE%"=="0" (
     cd /d "%MASTERLIST_DIR%" 2>nul
     py -3 "%MASTERLIST_DIR%\log_step.py" finish failed 2>nul
     py -3 "%MASTERLIST_DIR%\generate_monitor.py" 2>nul
-    git add pipeline_status.json pipeline_monitor.html pipeline_log.json pipeline_rowcount_baseline.json pipeline_highvol_notified.json 2>nul
+    git add pipeline_status.json pipeline_monitor.html pipeline_log.json pipeline_rowcount_baseline.json pipeline_highvol_notified.json pipeline_drops_notified.json 2>nul
     git diff --cached --quiet 2>nul
     if errorlevel 1 (
         git commit -m "Update pipeline monitor -- run failed" 2>nul
