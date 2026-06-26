@@ -436,5 +436,14 @@
     "status": "healed",
     "action": "retry",
     "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-06-26T11:00:02",
+    "date": "Jun 26, 2026 11:00 AM",
+    "account": "britelift_pull.py",
+    "script": "britelift_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
   }
 ]
