@@ -454,5 +454,16 @@
     "status": "healed",
     "action": "retry",
     "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-06-26T22:00:03",
+    "date": "Jun 26, 2026 10:00 PM",
+    "account": "Kelowna",
+    "script": "kel_pull.py",
+    "status": "count_drop",
+    "drop": 21,
+    "prev_count": 2353,
+    "new_count": 2332,
+    "error": "Dropped 21 rows (2,353 \u2192 2,332)"
   }
 ]
