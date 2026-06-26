@@ -127,7 +127,53 @@ PATTERN_STYLE = {
     "MINOR":     ("background:#f0fdf4;color:#15803d;", "MINOR"),
 }
 
-def build_email(summaries, cluster_runs, new_accounts):
+def _kelowna_heal_note(s, triggers):
+    """Return an HTML note recommending whether to add Apps Script auto-heal
+    for this account (shown only for accounts without a trigger configured)."""
+    if s["account"] in triggers:
+        return ""   # already has auto-heal
+    if s["recovered"]:
+        return ""   # already resolved, no action needed
+    pattern = s["pattern"]
+    if pattern in ("RECURRING", "ISOLATED") and s["latest_drop"] > 50:
+        verdict   = "&#9989; Recommended"
+        bg        = "#f0fdf4"
+        border    = "#16a34a"
+        color     = "#14532d"
+        rationale = (
+            "This account has a persistent or large drop that would benefit from an Apps Script "
+            "auto-heal — the same setup used for Kelowna. Consider deploying a <code>doGet()</code> "
+            "web app on its Apps Script, adding the URL to <code>appsscript_triggers.json</code>, "
+            "and adding its pull script to <code>ACCOUNT_PULL_SCRIPTS</code> in "
+            "<code>diagnose_drops.py</code>."
+        )
+    elif pattern == "CLUSTER":
+        verdict   = "&#9888; Investigate first"
+        bg        = "#fffbeb"
+        border    = "#d97706"
+        color     = "#78350f"
+        rationale = (
+            "This account dropped together with others — the root cause may be an upsert that "
+            "cleared the sheet. Identify and fix that before adding auto-heal, otherwise the "
+            "heal would just keep re-running after every bad upsert."
+        )
+    else:
+        verdict   = "&#10060; Not needed"
+        bg        = "#f9fafb"
+        border    = "#9ca3af"
+        color     = "#374151"
+        rationale = (
+            "Small or already-recovered drop. Auto-heal would be overkill here. "
+            "Monitor for recurrence before adding infrastructure."
+        )
+    return f"""
+        <div style="margin-top:10px;padding:10px 12px;background:{bg};border-left:3px solid {border};border-radius:0 4px 4px 0;font-size:12px;color:{color};">
+          <b>Auto-heal like Kelowna? {verdict}</b><br>
+          <span style="display:block;margin-top:4px;color:#374151;">{rationale}</span>
+        </div>"""
+
+
+def build_email(summaries, cluster_runs, new_accounts, triggers=None):
     total_affected = len(summaries)
     unrecovered    = [s for s in summaries if not s["recovered"]]
 
@@ -194,6 +240,7 @@ def build_email(summaries, cluster_runs, new_accounts):
         <div style="padding:10px;background:#f0f9ff;border-left:3px solid #0ea5e9;font-size:12px;color:#0c4a6e;border-radius:0 4px 4px 0;">
           <b>Recommendation:</b> {s['recommendation']}
         </div>
+        {_kelowna_heal_note(s, triggers or {})}
       </div>
     </div>"""
 
@@ -453,8 +500,9 @@ def run():
     new_accounts = {d["account"] for d in new_drops}
     drops_for_affected = [d for d in all_drops if d["account"] in new_accounts]
 
+    triggers = load_json(TRIGGERS_FILE, {})
     summaries, cluster_runs = analyse(drops_for_affected, baseline)
-    email_html = build_email(summaries, cluster_runs, new_accounts)
+    email_html = build_email(summaries, cluster_runs, new_accounts, triggers)
 
     affected_list = ", ".join(s["account"] for s in summaries)
     subject = f"Report Monitoring — COUNT DROP: {len(summaries)} account(s) affected ({affected_list})"
@@ -476,7 +524,6 @@ def run():
 
     # Auto-trigger Apps Script for any account that has a trigger URL configured
     # Pass the pre-drop row count so the heal can verify it restored correctly.
-    triggers = load_json(TRIGGERS_FILE, {})
     for account in new_accounts:
         if account in triggers:
             # Find the highest prev_count from all new drops for this account
