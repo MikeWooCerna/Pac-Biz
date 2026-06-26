@@ -104,6 +104,10 @@ If any step returns a non-zero exit code the entire pipeline aborts (`goto :fail
 - **Data freshness age ticks live:** the `updateFreshness()` function runs on page load then
   repeats every 60 seconds via `setInterval(updateFreshness, 60000)` — no refresh needed
   for the age string to stay accurate.
+- **Build finish-time stamping:** `refresh_time` and `refresh_iso` are captured at build START
+  in `dashboard.py` as placeholder strings. Just before `Path(OUTPUT_FILE).write_text()`, both are
+  replaced with `datetime.now()` (finish time) so "Refresh Time:" and `PB_BUILD_TS` reflect when
+  the build actually completed, not when it started. Do not remove this final patch step.
 
 ## GitHub
 
@@ -162,6 +166,8 @@ Pipeline monitoring system is fully live as of 2026-06-22. See `PIPELINE_MONITOR
 - **Drop badge auto-clears after heal** (`generate_monitor.py`) — after building `drop_by_account`, checks if a `healed` log entry exists for that account with a later `run_id` (ISO string comparison). If yes, removes the account from `drop_by_account` so the "↓ N" badge is no longer shown. Previously the badge persisted across pipeline runs even after a successful heal.
 - **Re-trigger loop bug fixed** (`diagnose_drops.py`) — drops are now marked as notified in `pipeline_drops_notified.json` BEFORE calling `trigger_appsscript()`, not after email success. The heal subprocess calls `generate_monitor.py` → `diagnose_drops.run()` again; if drops were still unnotified at that point, `run()` would re-trigger the heal and loop infinitely.
 - **`pipeline_drops_notified.json` tracked in git** — added to the `git add` line in both `update_coaching_dashboard_auto.bat` and `update_coaching_dashboard.bat` (both `:publish_monitor` and `:fail` sections). Previously untracked; notification state would be lost on fresh clone.
+- **Dashboard/monitor timestamp sync** — `dashboard.py` now stamps the actual build finish time (not start time) into the HTML just before writing to disk. `refresh_time` and `refresh_iso` are captured at build start as placeholders; a finish-time patch replaces both strings with `datetime.now()` values immediately before `Path(OUTPUT_FILE).write_text()`. `generate_monitor.py` syncs the Build step timestamp in `pipeline_status.json` to the HTML file's mtime after each run so both the monitor "Built:" display and the dashboard "Refresh Time:" header agree on when the build actually finished.
+- **Auto-heal recommendation in drop emails** — when a count drop email is sent for an account that does NOT have an Apps Script trigger configured, `diagnose_drops.py` appends an HTML recommendation block: ✅ Recommended (RECURRING or large ISOLATED drop), ⚠ Investigate first (CLUSTER drop), or ❌ Not needed (MINOR drop or already recovered). Accounts that already have auto-heal configured are excluded from this block.
 
 ### Pending / future work
 - **Apps Script Monitoring** — Add a new section to `pipeline_monitor.html` (before the incident log) showing per-account Apps Script health: last run time, row count, duration, stale/fail badges. Implementation: `logRunToMasterlist_()` helper in each Apps Script → writes to `GAS_Heartbeat` tab in Masterlist spreadsheet → `check_gas_heartbeat.py` reads it → `pipeline_gas_status.json` → `generate_monitor.py` renders the section. Build when 5+ upsert functions are active and manually checking the Apps Script UI becomes painful.
