@@ -474,5 +474,16 @@
     "status": "healed",
     "action": "appsscript_trigger",
     "error": "Count drop auto-recovered. Apps Script re-triggered, dashboard rebuilt and pushed."
+  },
+  {
+    "run_id": "2026-06-26T23:41:44",
+    "date": "Jun 26, 2026 11:41 PM",
+    "account": "Kelowna",
+    "script": "C:\\Users\\Mike Woo Cerna\\Documents\\PB\\Quality\\Kelowna\\kel_pull.py",
+    "status": "healed",
+    "action": "appsscript_trigger",
+    "prev_count": 2332,
+    "healed_count": 0,
+    "error": "Count drop auto-recovered. Apps Script re-triggered, dashboard rebuilt and pushed. Rows before drop: 2,332 \u2192 rows after heal: unknown."
   }
 ]
