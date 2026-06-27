@@ -503,5 +503,38 @@
     "status": "healed",
     "action": "retry",
     "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-06-27T19:00:02",
+    "date": "Jun 27, 2026 07:00 PM",
+    "account": "Hamilton",
+    "script": "Hamilton_pull.py",
+    "status": "count_drop",
+    "drop": 1032,
+    "prev_count": 3423,
+    "new_count": 2391,
+    "error": "Dropped 1,032 rows (3,423 \u2192 2,391)"
+  },
+  {
+    "run_id": "2026-06-27T19:00:02",
+    "date": "Jun 27, 2026 07:00 PM",
+    "account": "Data Carz",
+    "script": "dc_pull.py",
+    "status": "count_drop",
+    "drop": 801,
+    "prev_count": 2825,
+    "new_count": 2024,
+    "error": "Dropped 801 rows (2,825 \u2192 2,024)"
+  },
+  {
+    "run_id": "2026-06-27T19:00:02",
+    "date": "Jun 27, 2026 07:00 PM",
+    "account": "Ollies",
+    "script": "ol_pull.py",
+    "status": "count_drop",
+    "drop": 455,
+    "prev_count": 1891,
+    "new_count": 1436,
+    "error": "Dropped 455 rows (1,891 \u2192 1,436)"
   }
 ]
