@@ -165,7 +165,7 @@ def render_log_table(log_entries):
 
 def calc_next_schedule():
     from datetime import timedelta
-    slots = ['03:30','06:30','11:30','15:30','19:30','22:30']
+    slots = ['03:00','06:00','11:00','15:00','19:00','22:00']
     now = datetime.now()
     for t in slots:
         h, m = int(t[:2]), int(t[3:])
