@@ -675,7 +675,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 .vol-strip{{background:rgba(60,30,0,0.4);border:1px solid rgba(255,170,0,0.38);border-radius:7px;padding:7px 12px;font-size:13px;color:#ffcc55;display:flex;align-items:flex-start;gap:6px;margin-top:7px;flex-wrap:wrap;position:relative;z-index:1;}}
 .vol-strip-crit{{background:rgba(60,0,0,0.4);border:1px solid rgba(255,61,61,0.38);border-radius:7px;padding:7px 12px;font-size:13px;color:#ff9090;display:flex;align-items:flex-start;gap:6px;margin-top:7px;flex-wrap:wrap;position:relative;z-index:1;}}
 .lp-v{{background:rgba(255,170,0,0.1);color:#ffaa00;border:1px solid rgba(255,170,0,0.28);}}
-@media(max-width:900px){{
+@media(max-width:600px){{
   body{{padding:12px;}}
   .main-layout{{display:flex;flex-direction:column;gap:4px;}}
   .center-col{{order:-1;width:100%;}}
