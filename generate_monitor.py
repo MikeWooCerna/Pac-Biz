@@ -677,12 +677,13 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 .lp-v{{background:rgba(255,170,0,0.1);color:#ffaa00;border:1px solid rgba(255,170,0,0.28);}}
 @media(max-width:900px){{
   body{{padding:12px;}}
-  .main-layout{{display:flex;flex-direction:column;gap:6px;}}
+  .main-layout{{display:flex;flex-direction:column;gap:4px;}}
   .center-col{{order:-1;width:100%;}}
   .radar-wrap{{width:240px;height:240px;flex-shrink:1;align-self:center;}}
   .radar-wrap canvas{{width:240px!important;height:240px!important;}}
   .side-col{{display:grid;grid-template-columns:1fr 1fr;gap:4px;}}
-  .side-col .section-hdr{{grid-column:span 2;}}
+  .side-col .section-hdr{{display:none;}}
+  .main-layout>.side-col:first-child::before{{content:'Data Sources';display:block;grid-column:span 2;font-size:11px;color:#5000b4;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:3px;}}
   .stat-cards{{flex-wrap:wrap;}}
   .stat-card{{flex:1 1 80px;min-width:70px;}}
 }}
