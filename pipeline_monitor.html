@@ -113,6 +113,27 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 .vol-strip{background:rgba(60,30,0,0.4);border:1px solid rgba(255,170,0,0.38);border-radius:7px;padding:7px 12px;font-size:13px;color:#ffcc55;display:flex;align-items:flex-start;gap:6px;margin-top:7px;flex-wrap:wrap;position:relative;z-index:1;}
 .vol-strip-crit{background:rgba(60,0,0,0.4);border:1px solid rgba(255,61,61,0.38);border-radius:7px;padding:7px 12px;font-size:13px;color:#ff9090;display:flex;align-items:flex-start;gap:6px;margin-top:7px;flex-wrap:wrap;position:relative;z-index:1;}
 .lp-v{background:rgba(255,170,0,0.1);color:#ffaa00;border:1px solid rgba(255,170,0,0.28);}
+@media(max-width:900px){
+  body{padding:12px;}
+  .main-layout{display:flex;flex-direction:column;gap:6px;}
+  .center-col{order:-1;width:100%;}
+  .radar-wrap{width:240px;height:240px;flex-shrink:1;align-self:center;}
+  .radar-wrap canvas{width:240px!important;height:240px!important;}
+  .side-col{display:grid;grid-template-columns:1fr 1fr;gap:4px;}
+  .side-col .section-hdr{grid-column:span 2;}
+  .stat-cards{flex-wrap:wrap;}
+  .stat-card{flex:1 1 80px;min-width:70px;}
+}
+@media(max-width:480px){
+  body{padding:8px;}
+  .eco{padding:0.75rem 0.75rem 0.6rem;}
+  .page-title h1{font-size:19px;}
+  .radar-wrap{width:200px;height:200px;}
+  .radar-wrap canvas{width:200px!important;height:200px!important;}
+  .node-row,.meta-pill,.log-err,.browser-url{font-size:11px;}
+  .agg-val{font-size:12px;}
+  .brand-name{font-size:16px;}
+}
 @media(prefers-reduced-motion:reduce){
   .blink-g,.blink-r,.blink-a{animation:none;}
   canvas{display:none;}
@@ -133,7 +154,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     </div>
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run 2026-06-27T11:00</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Built: Jun 27, 2026 02:04 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Built: Jun 27, 2026 02:24 PM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -528,6 +549,8 @@ ValueError: Length of values (0) does not match length of index (827)</div></td>
   var ctx = c.getContext('2d');
   var W = c.width, H = c.height, cx = W/2, cy = H/2;
   var R = W/2 - 2;
+  var wrapW = c.parentElement ? c.parentElement.offsetWidth : 0;
+  if (wrapW > 0 && wrapW < W) { c.width = wrapW; c.height = wrapW; W = c.width; H = c.height; cx = W/2; cy = H/2; R = W/2 - 2; }
   var ang = -Math.PI/2;
   var TRAIL = Math.PI * 1.35;
   var time = 0;
