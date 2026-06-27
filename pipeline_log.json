@@ -536,5 +536,16 @@
     "prev_count": 1891,
     "new_count": 1436,
     "error": "Dropped 455 rows (1,891 \u2192 1,436)"
+  },
+  {
+    "run_id": "2026-06-27T21:42:03",
+    "date": "Jun 27, 2026 09:42 PM",
+    "account": "Hamilton",
+    "script": "C:\\Users\\Mike Woo Cerna\\Documents\\PB\\Quality\\Hamilton\\Hamilton_pull.py",
+    "status": "healed",
+    "action": "appsscript_trigger",
+    "prev_count": 3423,
+    "healed_count": 3423,
+    "error": "Count drop auto-recovered. Apps Script re-triggered, dashboard rebuilt and pushed. Rows before drop: 3,423 \u2192 rows after heal: 3,423 (100%)."
   }
 ]
