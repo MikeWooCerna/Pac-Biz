@@ -2,8 +2,8 @@
   "run_id": "2026-06-28T22:00:01",
   "started_at": "2026-06-28T22:00:01.615903",
   "finished_at": null,
-  "status": "running",
-  "failed_at": null,
+  "status": "failed",
+  "failed_at": "C&H",
   "steps": [
     {
       "account": "Masterlist",
@@ -84,6 +84,14 @@
       "status": "pass",
       "timestamp": "2026-06-28T22:03:39.769303",
       "error": null
+    },
+    {
+      "account": "C&H",
+      "script": "ch_pull.py",
+      "exit_code": 1,
+      "status": "fail",
+      "timestamp": "2026-06-28T22:11:08.056013",
+      "error": "    r = self.request(\"get\", url, params=params)\n  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\gspread\\http_client.py\", line 128, in request\n    raise APIError(response)\ngspread.exceptions.APIError: APIError: [503]: The service is currently unavailable."
     }
   ]
 }
