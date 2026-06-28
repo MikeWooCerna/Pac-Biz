@@ -665,5 +665,14 @@
     "script": "bl_pull.py",
     "status": "not_reached",
     "error": null
+  },
+  {
+    "run_id": "2026-06-29T06:00:01",
+    "date": "Jun 29, 2026 06:00 AM",
+    "account": "ac_pull.py",
+    "script": "ac_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
   }
 ]
