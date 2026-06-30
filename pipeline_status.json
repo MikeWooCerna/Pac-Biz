@@ -84,6 +84,14 @@
       "status": "pass",
       "timestamp": "2026-06-30T15:03:45.827488",
       "error": null
+    },
+    {
+      "account": "C&H",
+      "script": "ch_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-06-30T15:04:02.207220",
+      "error": null
     }
   ]
 }
