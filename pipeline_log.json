@@ -705,5 +705,14 @@
     "prev_count": 3531,
     "healed_count": 3531,
     "error": "Count drop auto-recovered. Apps Script re-triggered, dashboard rebuilt and pushed. Rows before drop: 3,531 \u2192 rows after heal: 3,531 (100%)."
+  },
+  {
+    "run_id": "2026-07-01T15:00:02",
+    "date": "Jul 01, 2026 03:00 PM",
+    "account": "rc_pull.py",
+    "script": "rc_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
   }
 ]
