@@ -811,5 +811,16 @@
     "prev_count": 614,
     "new_count": 377,
     "error": "Dropped 237 rows (614 \u2192 377)"
+  },
+  {
+    "run_id": "2026-07-03T22:34:19",
+    "date": "Jul 03, 2026 10:34 PM",
+    "account": "Vermont",
+    "script": "vt_pull.py",
+    "status": "healed",
+    "action": "next_run_recovered",
+    "prev_count": 614,
+    "healed_count": 614,
+    "error": "Count drop recovered on the next successful pipeline run. Rows before drop: 614 -> rows after heal: 614 (100%)."
   }
 ]
