@@ -822,5 +822,14 @@
     "prev_count": 614,
     "healed_count": 614,
     "error": "Count drop recovered on the next successful pipeline run. Rows before drop: 614 -> rows after heal: 614 (100%)."
+  },
+  {
+    "run_id": "2026-07-04T03:00:02",
+    "date": "Jul 04, 2026 03:00 AM",
+    "account": "Ridex_pull.py",
+    "script": "Ridex_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
   }
 ]

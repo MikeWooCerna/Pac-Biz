@@ -155,7 +155,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     </div>
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run 2026-07-04T03:00</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Built: Jul 04, 2026 03:18 AM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Built: Jul 04, 2026 03:19 AM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -169,7 +169,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">0</div><div class="sc-lbl">Failed</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#E84500;">0</div><div class="sc-lbl">Not Reached</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">42,736</div><div class="sc-lbl">Rows Pulled</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#7060a0;">&mdash;</div><div class="sc-lbl">running</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#00e87a;">&#10003;</div><div class="sc-lbl">success</div></div>
   </div>
 
   <div class="divider"></div>
@@ -302,7 +302,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       </div>
       <div class="radar-label">
         <div class="radar-lbl-main">Pipeline / Container Monitoring</div>
-        <div class="radar-lbl-status"><div class="blink-a"></div><span style="color:#ffaa00;font-size:12px;">running</span></div>
+        <div class="radar-lbl-status"><div class="blink-g"></div><span style="color:#00e87a;font-size:12px;">complete</span></div>
       </div>
 
       <div class="connector"></div>
@@ -319,7 +319,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
             <div class="agg-lbl">sources ok</div>
           </div>
           <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">03:00 AM</div><div class="agg-lbl">started</div></div>
-          <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">03:18 AM</div><div class="agg-lbl">finished</div></div>
+          <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">03:19 AM</div><div class="agg-lbl">finished</div></div>
           <div class="agg-item" style="grid-column:span 2;"><div class="agg-val" style="color:#ffaa00;font-size:12px;">6:00 AM</div><div class="agg-lbl">next schedule</div></div>
         </div>
       </div>
@@ -472,7 +472,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div class="log-wrap">
       <table class="log-table">
         <thead><tr><th>Date</th><th>Dataset</th><th>Status</th></tr></thead>
-        <tbody><tr><td class="log-td-d">Jul 03, 2026 10:34 PM</td><td class="log-td-ds"><b>Vermont</b> <span class="log-sc">&middot; vt_pull.py</span><div class="log-err">Count drop recovered on the next successful pipeline run. Rows before drop: 614 -> rows after heal: 614 (100%).</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
+        <tbody><tr><td class="log-td-d">Jul 04, 2026 03:00 AM</td><td class="log-td-ds"><b>Ridex_pull.py</b> <span class="log-sc">&middot; Ridex_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
+<tr><td class="log-td-d">Jul 03, 2026 10:34 PM</td><td class="log-td-ds"><b>Vermont</b> <span class="log-sc">&middot; vt_pull.py</span><div class="log-err">Count drop recovered on the next successful pipeline run. Rows before drop: 614 -> rows after heal: 614 (100%).</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
 <tr><td class="log-td-d">Jul 03, 2026 07:00 PM</td><td class="log-td-ds"><b>Vermont</b> <span class="log-sc">&middot; vt_pull.py</span><div class="log-err">Dropped 237 rows (614 → 377)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
 <tr><td class="log-td-d">Jul 02, 2026 10:19 PM</td><td class="log-td-ds"><b>Ollies</b> <span class="log-sc">&middot; C:\Users\Mike Woo Cerna\Documents\PB\Quality\Ollies\ol_pull.py</span><div class="log-err">Count drop auto-recovered. Apps Script re-triggered, dashboard rebuilt and pushed. Rows before drop: 1,963 → rows after </div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
 <tr><td class="log-td-d">Jul 02, 2026 10:00 PM</td><td class="log-td-ds"><b>Ollies</b> <span class="log-sc">&middot; ol_pull.py</span><div class="log-err">Dropped 125 rows (1,963 → 1,838)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
@@ -552,8 +553,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 <tr><td class="log-td-d">Jun 23, 2026 11:00 AM</td><td class="log-td-ds"><b>C&H</b> <span class="log-sc">&middot; ch_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
 <tr><td class="log-td-d">Jun 23, 2026 11:00 AM</td><td class="log-td-ds"><b>VIP</b> <span class="log-sc">&middot; vip_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
 <tr><td class="log-td-d">Jun 23, 2026 11:00 AM</td><td class="log-td-ds"><b>Skyline</b> <span class="log-sc">&middot; Skyline_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
-<tr><td class="log-td-d">Jun 23, 2026 11:00 AM</td><td class="log-td-ds"><b>Hamilton</b> <span class="log-sc">&middot; Hamilton_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
-<tr><td class="log-td-d">Jun 23, 2026 11:00 AM</td><td class="log-td-ds"><b>RideX</b> <span class="log-sc">&middot; Ridex_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr></tbody>
+<tr><td class="log-td-d">Jun 23, 2026 11:00 AM</td><td class="log-td-ds"><b>Hamilton</b> <span class="log-sc">&middot; Hamilton_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr></tbody>
       </table>
     </div>
   </div>
