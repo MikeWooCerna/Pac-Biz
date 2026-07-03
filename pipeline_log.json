@@ -831,5 +831,101 @@
     "status": "healed",
     "action": "retry",
     "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-07-04T06:00:02",
+    "date": "Jul 04, 2026 06:00 AM",
+    "account": "C&H",
+    "script": "ch_pull.py",
+    "status": "fail",
+    "error": "    r = self.request(\"get\", url, params=params)\n  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\gspread\\http_client.py\", line 128, in request\n    raise APIError(response)\ngspread.exceptions.APIError: APIError: [503]: The service is currently unavailable."
+  },
+  {
+    "run_id": "2026-07-04T06:00:02",
+    "date": "Jul 04, 2026 06:00 AM",
+    "account": "Reno Cab",
+    "script": "rc_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-04T06:00:02",
+    "date": "Jul 04, 2026 06:00 AM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-04T06:00:02",
+    "date": "Jul 04, 2026 06:00 AM",
+    "account": "Data Carz",
+    "script": "dc_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-04T06:00:02",
+    "date": "Jul 04, 2026 06:00 AM",
+    "account": "Associated Cab",
+    "script": "ac_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-04T06:00:02",
+    "date": "Jul 04, 2026 06:00 AM",
+    "account": "Ollies",
+    "script": "ol_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-04T06:00:02",
+    "date": "Jul 04, 2026 06:00 AM",
+    "account": "Circle Taxi",
+    "script": "ct_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-04T06:00:02",
+    "date": "Jul 04, 2026 06:00 AM",
+    "account": "YCOV",
+    "script": "ycov_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-04T06:00:02",
+    "date": "Jul 04, 2026 06:00 AM",
+    "account": "Kelowna",
+    "script": "kel_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-04T06:00:02",
+    "date": "Jul 04, 2026 06:00 AM",
+    "account": "Vermont",
+    "script": "vt_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-04T06:00:02",
+    "date": "Jul 04, 2026 06:00 AM",
+    "account": "YCDC",
+    "script": "ycdc_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-04T06:00:02",
+    "date": "Jul 04, 2026 06:00 AM",
+    "account": "Blueline",
+    "script": "bl_pull.py",
+    "status": "not_reached",
+    "error": null
   }
 ]
