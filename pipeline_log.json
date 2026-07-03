@@ -800,5 +800,16 @@
     "prev_count": 1963,
     "healed_count": 1963,
     "error": "Count drop auto-recovered. Apps Script re-triggered, dashboard rebuilt and pushed. Rows before drop: 1,963 \u2192 rows after heal: 1,963 (100%)."
+  },
+  {
+    "run_id": "2026-07-03T19:00:02",
+    "date": "Jul 03, 2026 07:00 PM",
+    "account": "Vermont",
+    "script": "vt_pull.py",
+    "status": "count_drop",
+    "drop": 237,
+    "prev_count": 614,
+    "new_count": 377,
+    "error": "Dropped 237 rows (614 \u2192 377)"
   }
 ]
