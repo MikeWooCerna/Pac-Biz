@@ -737,6 +737,152 @@
     .arch-icon-stack{ display:none !important; }
     #archCablesSvg{ display:none !important; }
   }
+
+  /* ================= LEFT MARGIN: Development Lifecycle loop card (added 2026-07-04) ================= */
+  /* Mirrors .arch-icon-stack but on the opposite margin — positioned by
+     layoutArch() in <script> below, vertically centered on the same
+     Viewer / Analytics card row the right-side icon stack is centered on. */
+  .arch-devloop{
+    position:absolute;
+    top:0;
+    left:0;
+    width:240px;
+    z-index:2;
+    pointer-events:none;
+    visibility:hidden;
+    opacity:.9;
+  }
+  .dl-card{
+    border:2px solid var(--green);
+    border-radius:12px;
+    background:rgba(0,20,40,.85);
+    padding:14px 12px 16px;
+    text-align:center;
+  }
+  .dl-card svg{ display:block; margin:0 auto; overflow:visible; }
+  .dl-phase{
+    font-size:9px;
+    font-weight:700;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+    fill:#E8F0FB;
+  }
+  .dl-center-title{
+    font-size:13px;
+    font-weight:800;
+    fill:#fff;
+  }
+  .dl-center-sub{
+    font-size:10px;
+    font-weight:600;
+    fill:#4A9EE8;
+  }
+  .dl-loop-path{
+    fill:none;
+    stroke:#39B54A;
+    stroke-width:2;
+    stroke-dasharray:4 5;
+    opacity:.7;
+    animation:dlDash 6s linear infinite;
+  }
+  @keyframes dlDash{ to{ stroke-dashoffset:-180; } }
+
+  @media (prefers-reduced-motion: reduce){
+    .dl-loop-path{ animation:none !important; }
+  }
+
+  /* ================= RIGHT MARGIN: animated "Coming Soon" badge (added 2026-07-04) ================= */
+  /* Positioned by layoutArch() in <script> below, stacked directly above the
+     Data Container / Data Pipeline / Data Processing icon column so the two
+     right-margin elements never overlap. */
+  .arch-comingsoon{
+    position:absolute;
+    top:0;
+    left:0;
+    width:240px;
+    z-index:2;
+    pointer-events:none;
+    visibility:hidden;
+  }
+  .cs-card{
+    position:relative;
+    border:2px solid var(--green);
+    border-radius:12px;
+    background:rgba(0,20,40,.85);
+    padding:24px 16px 20px;
+    text-align:center;
+    overflow:hidden;
+    box-shadow:0 0 14px rgba(57,181,74,.5);
+    animation:csPulseBorder 2.6s ease-in-out infinite;
+  }
+  .cs-title{
+    font-size:20px;
+    font-weight:900;
+    letter-spacing:1px;
+    color:#fff;
+    text-shadow:0 0 20px var(--green);
+  }
+  .cs-sub{
+    margin-top:6px;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.5px;
+    color:#4A9EE8;
+  }
+  .cs-progress{
+    margin-top:18px;
+    height:6px;
+    border-radius:4px;
+    background:rgba(255,255,255,.08);
+    overflow:hidden;
+  }
+  .cs-progress-fill{
+    height:100%;
+    width:60%;
+    border-radius:4px;
+    background:linear-gradient(90deg, var(--green), var(--green-light));
+    animation:csProgressFill 3.2s ease-in-out infinite;
+  }
+  .cs-sparkle{
+    position:absolute;
+    width:5px;
+    height:5px;
+    border-radius:50%;
+    background:var(--green-light);
+    box-shadow:0 0 6px var(--green-light);
+    opacity:.7;
+    animation:csSparkle 2.4s ease-in-out infinite;
+  }
+  .cs-sparkle-1{ top:10px; left:16px; animation-delay:0s; }
+  .cs-sparkle-2{ top:16px; right:20px; animation-delay:.6s; }
+  .cs-sparkle-3{ bottom:38px; left:24px; animation-delay:1.2s; }
+  .cs-sparkle-4{ bottom:22px; right:16px; animation-delay:1.8s; }
+
+  @keyframes csPulseBorder{
+    0%,100%{ box-shadow:0 0 8px rgba(57,181,74,.35), inset 0 0 8px rgba(57,181,74,.08); border-color:var(--green); }
+    50%{ box-shadow:0 0 26px rgba(57,181,74,.85), inset 0 0 14px rgba(57,181,74,.2); border-color:var(--green-light); }
+  }
+  @keyframes csProgressFill{
+    0%{ width:4%; }
+    85%{ width:96%; }
+    100%{ width:4%; }
+  }
+  @keyframes csSparkle{
+    0%,100%{ opacity:.15; transform:scale(.5); }
+    50%{ opacity:1; transform:scale(1.3); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .cs-card, .cs-progress-fill, .cs-sparkle{ animation:none !important; }
+    .cs-sparkle{ opacity:.55; }
+  }
+
+  @media (max-width: 1500px){
+    /* Same "not enough room beside the centered .page" rationale as the
+       right-side icon stack above — hide gracefully rather than overflow. */
+    .arch-devloop{ display:none !important; }
+    .arch-comingsoon{ display:none !important; }
+  }
 </style>
 </head>
 <body>
@@ -963,12 +1109,71 @@
 
   </div>
 
+  <!-- LEFT MARGIN — Development Lifecycle loop (added 2026-07-04; positioned
+       via layoutArch() in <script> below — mirrors the right-side icon stack,
+       vertically centered on the Viewer / Analytics card row) -->
+  <div class="arch-devloop" id="archDevLoop">
+    <div class="dl-card">
+      <svg width="200" height="200" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="archDevGlow" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur stdDeviation="3" result="dlBlur"/>
+            <feMerge>
+              <feMergeNode in="dlBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+
+        <!-- loop path the glow dot travels along (two 180deg arcs = full circle) -->
+        <path id="archDevLoopPath" class="dl-loop-path" d="M110,30 A80,80 0,1,1 110,190 A80,80 0,1,1 110,30"></path>
+
+        <!-- 6 phase labels evenly spaced around the loop -->
+        <text class="dl-phase" x="110" y="15" text-anchor="middle">Plan</text>
+        <text class="dl-phase" x="192" y="63" text-anchor="middle">Code</text>
+        <text class="dl-phase" x="192" y="157" text-anchor="middle">Build</text>
+        <text class="dl-phase" x="110" y="205" text-anchor="middle">Test</text>
+        <text class="dl-phase" x="28" y="158" text-anchor="middle">Deploy</text>
+        <text class="dl-phase" x="28" y="62" text-anchor="middle">Monitor</text>
+
+        <!-- center label -->
+        <text class="dl-center-title" x="110" y="106" text-anchor="middle">DEVELOPMENT</text>
+        <text class="dl-center-sub" x="110" y="122" text-anchor="middle">Lifecycle</text>
+
+        <!-- glowing dot — travels continuously along the loop. begin="indefinite"
+             so it never auto-starts; <script> below calls beginElement() on it
+             only when prefers-reduced-motion is NOT set (see archDevDotMotion). -->
+        <circle id="archDevDot" r="5" cx="110" cy="30" fill="#39B54A" filter="url(#archDevGlow)">
+          <animateMotion id="archDevDotMotion" dur="8s" repeatCount="indefinite" begin="indefinite">
+            <mpath href="#archDevLoopPath"/>
+          </animateMotion>
+        </circle>
+      </svg>
+    </div>
+  </div>
+
+  <!-- RIGHT MARGIN — animated "Coming Soon" badge (added 2026-07-04; positioned
+       via layoutArch() in <script> below, stacked directly above the
+       Data Container / Data Pipeline / Data Processing icon column above so
+       the two right-margin elements never overlap) -->
+  <div class="arch-comingsoon" id="archComingSoon">
+    <div class="cs-card">
+      <span class="cs-sparkle cs-sparkle-1" aria-hidden="true"></span>
+      <span class="cs-sparkle cs-sparkle-2" aria-hidden="true"></span>
+      <span class="cs-sparkle cs-sparkle-3" aria-hidden="true"></span>
+      <span class="cs-sparkle cs-sparkle-4" aria-hidden="true"></span>
+      <div class="cs-title">COMING SOON</div>
+      <div class="cs-sub">Pac-Biz Scheduler</div>
+      <div class="cs-progress"><div class="cs-progress-fill"></div></div>
+    </div>
+  </div>
+
   <div class="page">
 
     <div class="doc-header">
       <span class="doc-eyebrow">Pac-Biz Operations</span>
       <h1>Scheduler — System Architecture</h1>
-      <p>Access flow & module overview · Boss Presentation</p>
+      <p>Access flow & module overview</p>
     </div>
 
     <!-- LOGIN -->
@@ -1139,6 +1344,8 @@
     (function(){
       var svg = document.getElementById('archCablesSvg');
       var stack = document.getElementById('archIconStack');
+      var devLoopEl = document.getElementById('archDevLoop');
+      var comingSoonEl = document.getElementById('archComingSoon');
       if(!svg || !stack) return;
 
       var schedulerEl = document.querySelector('.apex-card');
@@ -1152,6 +1359,16 @@
       var pageEl = document.querySelector('.page');
 
       var archReduceMotionQuery = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+
+      // Development Lifecycle loop dot (added 2026-07-04) — its animateMotion
+      // element has begin="indefinite" so it never auto-starts; kick it off here only
+      // when motion is not reduced. If SMIL begin() is unsupported the dot
+      // simply stays at its resting cx/cy (top of the loop), which still reads
+      // correctly as a static diagram.
+      var devDotMotion = document.getElementById('archDevDotMotion');
+      if(devDotMotion && devDotMotion.beginElement && !(archReduceMotionQuery && archReduceMotionQuery.matches)){
+        try{ devDotMotion.beginElement(); }catch(err){ /* unsupported — static fallback is fine */ }
+      }
 
       function docRect(el){
         var r = el.getBoundingClientRect();
@@ -1204,6 +1421,27 @@
         var gap = 28;
         var left = pageR.right + gap;
 
+        // Development Lifecycle loop (left margin) — computed and applied
+        // here, BEFORE the icon-stack's own fit/early-return below, so a
+        // right-side icon-stack overflow never hides the left-side dev-loop
+        // (its own margin may still have plenty of room). comingSoon (right
+        // margin) intentionally stays coupled to the icon-stack fit check
+        // further down, since it shares that same right-margin column.
+        if(devLoopEl){
+          var devLoopWidth = devLoopEl.offsetWidth || 240;
+          var devLoopHeight = devLoopEl.offsetHeight || 240;
+          var devLoopLeft = pageR.left - gap - devLoopWidth;
+          if(devLoopLeft >= 8){
+            devLoopEl.style.left = devLoopLeft + 'px';
+            devLoopEl.style.top = (rowCenterY - devLoopHeight / 2) + 'px';
+            devLoopEl.style.display = 'block';
+            devLoopEl.style.visibility = 'visible';
+          } else {
+            devLoopEl.style.display = 'none';
+            devLoopEl.style.visibility = 'hidden';
+          }
+        }
+
         var fitsHorizontally = (left + stackWidth + 16) <= docW;
         if(!fitsHorizontally){
           stack.style.visibility = 'hidden';
@@ -1249,6 +1487,46 @@
 
         // Route 6: Data Processing -> Dashboard Tab Integration (curve down-left)
         setPathD('archPathProcToIntegration', hCurve(procR.left, procR.bottom, integR.right, integR.top + integR.height * 0.25));
+
+        // -------- position the right-margin "Coming Soon" badge (added 2026-07-04) -------- //
+        // Shares the right-margin column with the icon stack above it, so it
+        // intentionally stays coupled to the icon-stack's own fit check (the
+        // early return above already hides both when the icon stack itself
+        // doesn't fit). Clamped to sit above the icon stack, with a gap, so
+        // the two right-margin elements never overlap.
+        if(comingSoonEl){
+          var csWidth = comingSoonEl.offsetWidth || 240;
+          if((left + csWidth + 16) <= docW){
+            var csHeight = comingSoonEl.offsetHeight || 150;
+            var iconStackTop = parseFloat(stack.style.top);
+            if(isNaN(iconStackTop)) iconStackTop = schedR.top;
+            var csTop = Math.min(schedR.top, iconStackTop - csHeight - gap);
+            var csFits = true;
+            if(csTop < 8){
+              // Only fall back to the top-of-viewport clamp if it still
+              // preserves the no-overlap gap above the icon stack; otherwise
+              // there isn't enough vertical room for the badge at all, so
+              // hide it rather than let the clamp force an overlap.
+              if(8 + csHeight + gap <= iconStackTop){
+                csTop = 8;
+              } else {
+                csFits = false;
+              }
+            }
+            if(csFits){
+              comingSoonEl.style.left = left + 'px';
+              comingSoonEl.style.top = csTop + 'px';
+              comingSoonEl.style.display = 'block';
+              comingSoonEl.style.visibility = 'visible';
+            } else {
+              comingSoonEl.style.display = 'none';
+              comingSoonEl.style.visibility = 'hidden';
+            }
+          } else {
+            comingSoonEl.style.display = 'none';
+            comingSoonEl.style.visibility = 'hidden';
+          }
+        }
 
         if(!(archReduceMotionQuery && archReduceMotionQuery.matches)){
           var dots = svg.querySelectorAll('circle');
