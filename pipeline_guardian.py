@@ -14,12 +14,14 @@ import subprocess
 import sys
 import urllib.request
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 
 BASE = Path(__file__).parent
 STATUS_FILE = BASE / "pipeline_status.json"
 MONITOR_FILE = BASE / "pipeline_monitor.html"
 GENERATE_MONITOR = BASE / "generate_monitor.py"
+LOG_FILE = BASE / "pipeline_log.json"
 
 LIVE_MONITOR_URL = "https://mikewoocerna.github.io/Pac-Biz/pipeline_monitor.html"
 
@@ -253,6 +255,44 @@ def print_stats(label: str, stats: MonitorStats) -> None:
     )
 
 
+def log_guardian_event(issues: list[str], fixed: bool, pushed: bool) -> None:
+    """Append a Guardian run to pipeline_log.json so the monitor's incident log
+    can show when the guardian fixed or flagged a mismatch.
+
+    Only called when a mismatch was actually detected — clean runs are never
+    logged. `status` is "guardian_fix" when a --fix attempt resolved the
+    mismatch, otherwise "guardian_warn" (report-only mode, or a --fix attempt
+    that did not fully resolve the mismatch).
+    """
+    if not issues:
+        return
+
+    now = datetime.now()
+    status = "guardian_fix" if fixed else "guardian_warn"
+    entry = {
+        "run_id": now.strftime("%Y-%m-%dT%H:%M:%S"),
+        "date": now.strftime("%b %d, %Y %I:%M %p"),
+        "account": "Guardian",
+        "script": "pipeline_guardian.py",
+        "status": status,
+        "error": "; ".join(issues),
+    }
+
+    try:
+        entries = json.loads(LOG_FILE.read_text(encoding="utf-8")) if LOG_FILE.exists() else []
+    except Exception:
+        entries = []
+    if not isinstance(entries, list):
+        entries = []
+
+    entries.append(entry)
+
+    try:
+        LOG_FILE.write_text(json.dumps(entries[-300:], indent=2, default=str), encoding="utf-8")
+    except Exception:
+        pass
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Check and optionally repair the pipeline monitor.")
     parser.add_argument("--fix", action="store_true", help="Regenerate the monitor if it is stale.")
@@ -284,6 +324,11 @@ def main() -> int:
         for line in blockers:
             print(f"  {line}")
 
+    # Preserve the originally-detected mismatch for the guardian log entry —
+    # `issues` itself gets reassigned below once a --fix attempt is made.
+    original_issues = list(issues)
+    fixed = False
+
     if issues:
         print("[guardian] Local monitor mismatch detected:")
         for issue in issues:
@@ -292,6 +337,7 @@ def main() -> int:
             print("[guardian] Regenerating monitor...")
             if not regenerate_monitor():
                 print("[guardian] ERROR: monitor regeneration failed.")
+                log_guardian_event(original_issues, fixed=False, pushed=False)
                 return 1
             local_stats = local_monitor_stats()
             print_stats("local monitor after fix", local_stats)
@@ -300,7 +346,9 @@ def main() -> int:
                 print("[guardian] ERROR: monitor still mismatches after regeneration:")
                 for issue in issues:
                     print(f"  - {issue}")
+                log_guardian_event(original_issues, fixed=False, pushed=False)
                 return 1
+            fixed = True
         else:
             print("[guardian] Run with --fix to regenerate pipeline_monitor.html.")
     else:
@@ -310,8 +358,13 @@ def main() -> int:
         if not args.fix:
             print("[guardian] ERROR: --push requires --fix.")
             return 2
-        if not commit_and_push("Guardian: refresh pipeline monitor"):
+        pushed = commit_and_push("Guardian: refresh pipeline monitor")
+        if original_issues:
+            log_guardian_event(original_issues, fixed=fixed, pushed=pushed)
+        if not pushed:
             return 1
+    elif original_issues:
+        log_guardian_event(original_issues, fixed=fixed, pushed=False)
 
     if args.live:
         live_stats, live_error = live_monitor_stats()

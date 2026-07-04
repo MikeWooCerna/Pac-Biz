@@ -152,6 +152,8 @@ def render_log_table(log_entries):
                 else '<span class="lp lp-d">COUNT DROP</span>'  if st == "count_drop"
                 else '<span class="lp lp-h">SELF HEALED</span>' if st == "healed"
                 else '<span class="lp lp-v">HIGH VOLUME</span>' if st == "high_volume"
+                else '<span class="lp lp-g">GUARDIAN FIX</span>'  if st == "guardian_fix"
+                else '<span class="lp lp-g lp-gw">GUARDIAN WARN</span>'  if st == "guardian_warn"
                 else '<span class="lp lp-n">NOT REACHED</span>')
         err  = (e.get("error") or "").strip()
         err_html = f'<div class="log-err">{err[:120]}</div>' if err else ""
@@ -481,6 +483,19 @@ def generate():
 
     log_table_rows = render_log_table(log_entries)
 
+    # Most recent Guardian run (if any) — surfaced as a small status line under
+    # the Git Repository stage node.
+    guardian_entries = [e for e in log_entries if e.get("account") == "Guardian"]
+    last_guardian = guardian_entries[-1] if guardian_entries else None
+    if last_guardian is None:
+        guardian_line = ""
+    elif last_guardian.get("status") == "guardian_fix":
+        guardian_line = f'<div class="stage-detail" style="color:#0e7490;font-size:10px;">&#10003; Guardian fixed · {last_guardian["date"]}</div>'
+    elif last_guardian.get("status") == "guardian_warn":
+        guardian_line = f'<div class="stage-detail" style="color:#b45309;font-size:10px;">&#9888; Guardian warned · {last_guardian["date"]}</div>'
+    else:
+        guardian_line = ""
+
     build_step_data = steps_map.get("Build")
     git_step        = steps_map.get("Git Push")
     build_st  = build_step_data["status"] if build_step_data else ("blocked" if run_status in ("failed", "unknown") else "pending")
@@ -675,6 +690,8 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 .vol-strip{{background:rgba(60,30,0,0.4);border:1px solid rgba(255,170,0,0.38);border-radius:7px;padding:7px 12px;font-size:13px;color:#ffcc55;display:flex;align-items:flex-start;gap:6px;margin-top:7px;flex-wrap:wrap;position:relative;z-index:1;}}
 .vol-strip-crit{{background:rgba(60,0,0,0.4);border:1px solid rgba(255,61,61,0.38);border-radius:7px;padding:7px 12px;font-size:13px;color:#ff9090;display:flex;align-items:flex-start;gap:6px;margin-top:7px;flex-wrap:wrap;position:relative;z-index:1;}}
 .lp-v{{background:rgba(255,170,0,0.1);color:#ffaa00;border:1px solid rgba(255,170,0,0.28);}}
+.lp-g{{background:#0e7490;color:#fff;}}
+.lp-gw{{background:#92400e;color:#fff;}}
 @media(max-width:600px){{
   body{{padding:12px;}}
   .main-layout{{display:flex;flex-direction:column;gap:4px;}}
@@ -796,6 +813,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
         <div class="stage-title">Git Repository</div>
         <div class="stage-status">{dot(git_st)}</div>
         <div class="stage-detail">{git_detail}</div>
+        {guardian_line}
       </div>
     </div>
 

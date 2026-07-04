@@ -227,6 +227,28 @@ Guardian behavior:
 - Reports live GitHub Pages mismatch as likely deployment/cache delay instead of overwriting source data.
 - Treats cache files such as `masterlist_cache.csv`, `history_cache.csv`, `movement_cache.csv`, `movement_notified.json`, and `step_err.tmp` as local runtime files.
 
+### Guardian incident logging (added 2026-07-04)
+
+`log_guardian_event(issues, fixed, pushed)` in `pipeline_guardian.py` appends a Guardian entry to `pipeline_log.json` so a guardian run shows up in the same incident log as pipeline failures and count drops.
+
+- Fires **only** when a monitor↔status mismatch is actually detected — never logged on a clean run.
+- `guardian_fix` — a `--fix` attempt regenerated the monitor and fully resolved the mismatch.
+- `guardian_warn` — a mismatch was found in report-only mode (no `--fix`), or a `--fix` attempt did not fully resolve it.
+- Entry schema matches every other incident-log entry: `{ run_id, date, account: "Guardian", script: "pipeline_guardian.py", status, error }` — `error` is the mismatch list joined with `"; "`.
+- `pipeline_log.json` is already in `APPROVED_PUSH_FILES`, so Guardian-authored entries survive the guardian's own `commit_and_push()`.
+
+New pill statuses in `generate_monitor.py` → `render_log_table()`:
+
+| Status value | Pill label | Color | Trigger |
+|---|---|---|---|
+| `guardian_fix` | GUARDIAN FIX | Teal `.lp-g` `#0e7490` | `--fix` attempt resolved a mismatch |
+| `guardian_warn` | GUARDIAN WARN | Dark amber `.lp-g` `.lp-gw` `#92400e` | Mismatch detected and not resolved (report-only, or failed fix) |
+
+The Git Repository stage node also surfaces the most recent Guardian run, sourced from the latest `account == "Guardian"` entry in the log:
+- `✓ Guardian fixed · <date>` (teal) when the latest Guardian status is `guardian_fix`
+- `⚠ Guardian warned · <date>` (amber) when the latest Guardian status is `guardian_warn`
+- Nothing shown if no Guardian entry exists yet
+
 ---
 
 ## Adding a new account
