@@ -10,9 +10,7 @@ from zoneinfo import ZoneInfo
 
 import pandas as pd
 
-MASTERLIST_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS82OdHh0VFVA9K6P3b7Y8pjPmdeJSOQxj1KQ_4ts5HYL4YgUHwKjpFymrPCJdfMK0Rox6fnSTG3rKf/pub?gid=0&single=true&output=csv"
-HISTORY_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS82OdHh0VFVA9K6P3b7Y8pjPmdeJSOQxj1KQ_4ts5HYL4YgUHwKjpFymrPCJdfMK0Rox6fnSTG3rKf/pub?gid=166777136&single=true&output=csv"
-MOVEMENT_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS82OdHh0VFVA9K6P3b7Y8pjPmdeJSOQxj1KQ_4ts5HYL4YgUHwKjpFymrPCJdfMK0Rox6fnSTG3rKf/pub?gid=693236738&single=true&output=csv"
+from sheets_urls import MASTERLIST_CSV, HISTORY_CSV, MOVEMENT_CSV
 
 GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/18hKmm2SmlWqB23osiV3JTF0aWn86vvZ-YJSC-Rr3JcY/edit#gid=0"
 
@@ -4806,6 +4804,8 @@ def main():
         --tab-accent: var(--dark-blue);
     }}
 
+    .tab-button[data-tab="schedule"] {{ --tab-accent: #39B54A; }}
+
     .tab-button:hover {{
         border-color: var(--tab-accent);
         background: #F8FAFC;
@@ -6067,6 +6067,7 @@ def main():
     <button class="tab-button active" type="button" data-tab="masterlist" role="tab" aria-selected="true">Masterlist</button>
     <button class="tab-button" type="button" data-tab="coaching" role="tab" aria-selected="false">Coaching</button>
     <button class="tab-button" type="button" data-tab="quality" role="tab" aria-selected="false">Quality</button>
+    <button class="tab-button" type="button" data-tab="schedule" role="tab" aria-selected="false">Schedule</button>
 </div>
 
 <div class="masterlist-controls" id="masterlistControls">
@@ -6805,6 +6806,15 @@ def main():
   </div>
 </div>
 
+</div>
+
+<div class="tab-panel" id="schedulePanel" data-tab="schedule" role="tabpanel">
+    <iframe
+        src="scheduler-arch.html"
+        style="width:100%;height:calc(100vh - 120px);border:none;display:block;"
+        title="Scheduler System Architecture"
+        loading="lazy">
+    </iframe>
 </div>
 
 <div class="footer">
