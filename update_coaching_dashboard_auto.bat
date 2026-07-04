@@ -409,6 +409,15 @@ if errorlevel 1 (
     git push
 )
 
+echo.
+echo ========================================
+echo Pipeline Guardian: final monitor check
+echo ========================================
+py -3 "%MASTERLIST_DIR%\pipeline_guardian.py" --fix --push --live
+if errorlevel 1 (
+    echo [WARN] Pipeline Guardian found an issue. Check the message above.
+)
+
 :done
 echo.
 if "%ANY_ACCOUNT_FAILED%"=="1" (
