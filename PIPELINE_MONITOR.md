@@ -195,6 +195,40 @@ The page has a 60s auto-reload so viewers see updates approximately every 60s du
 
 ---
 
+## Pipeline Guardian
+
+`pipeline_guardian.py` is a conservative safety check for the monitor layer. It does **not** re-pull account data and does **not** hide source-side count drops. Its job is to catch and repair stale monitor output, especially when `pipeline_status.json` says the run finished successfully but `pipeline_monitor.html` still shows blocked or not-reached steps.
+
+Default report-only check:
+```bat
+py -3 pipeline_guardian.py --live
+```
+
+Repair stale local monitor output:
+```bat
+py -3 pipeline_guardian.py --fix
+```
+
+Repair, commit, push, and verify the live GitHub Pages monitor:
+```bat
+py -3 pipeline_guardian.py --fix --push --live
+```
+
+There is also a launcher:
+```bat
+pipeline_guardian.bat
+```
+
+Guardian behavior:
+- Compares `pipeline_status.json` against the local generated monitor stats.
+- Regenerates `pipeline_monitor.html` only when there is a mismatch and `--fix` is provided.
+- Pushes only approved monitor artifacts when `--push` is provided.
+- Blocks push if non-monitor files are dirty, so dashboard/code edits do not get mixed into monitor repairs.
+- Reports live GitHub Pages mismatch as likely deployment/cache delay instead of overwriting source data.
+- Treats cache files such as `masterlist_cache.csv`, `history_cache.csv`, `movement_cache.csv`, `movement_notified.json`, and `step_err.tmp` as local runtime files.
+
+---
+
 ## Adding a new account
 
 1. Add the pull step to both bat files (same pattern as existing steps)

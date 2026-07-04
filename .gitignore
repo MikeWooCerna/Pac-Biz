@@ -7,3 +7,10 @@ Thumbs.db
 
 # Local credentials — never commit
 notify_config.json
+
+# Local pipeline/runtime cache
+history_cache.csv
+masterlist_cache.csv
+movement_cache.csv
+movement_notified.json
+step_err.tmp
