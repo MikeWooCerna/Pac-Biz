@@ -9136,7 +9136,7 @@ function mlVStackbar(id, weekly, w, h) {{
     // always touching the very top of the chart regardless of scale.
     const step = mlNiceStep(maxV, 4);
     const topTick = Math.max(step, Math.ceil(maxV / step) * step);
-    ctx.textAlign = "right"; ctx.textBaseline = "middle"; ctx.font = "9px Arial";
+    ctx.textAlign = "right"; ctx.textBaseline = "middle"; ctx.font = "10px Arial";
     for (let tick = 0; tick <= topTick + 0.0001; tick += step) {{
         const y = axisY - (tick / topTick) * ch;
         ctx.strokeStyle = tick === 0 ? "rgba(15,32,64,.18)" : "rgba(15,32,64,.10)";
@@ -9153,7 +9153,7 @@ function mlVStackbar(id, weekly, w, h) {{
     // segment gets rounded TOP corners (bottom corners stay square so it
     // joins the segment below with no visual seam).
     const segRects = [];
-    const segLabelFont = "bold 10px Arial";
+    const segLabelFont = "bold 11px Arial";
     weeks.forEach((wk, i) => {{
         const x = pad.l + i * (barW + gap);
         let y = axisY;
@@ -9173,7 +9173,10 @@ function mlVStackbar(id, weekly, w, h) {{
                 // Only skip a genuinely tiny sliver or a segment narrower than
                 // the count text. Counts are intentionally used without the
                 // percentage suffix to keep the labels readable in compact bars.
-                if (bh >= 9 && barW >= tw + 4) {{
+                // Height threshold scaled from 9 -> 10 to stay proportional
+                // after segLabelFont grew from 10px to 11px (keeps the same
+                // suppression behavior relative to the new glyph height).
+                if (bh >= 10 && barW >= tw + 4) {{
                     // WCAG-based contrast pick (item C accessibility note):
                     // Mike's reference calls for white text on both segments,
                     // but white-on-green (#39B54A) is only ~2.7:1 — below the
@@ -9195,7 +9198,7 @@ function mlVStackbar(id, weekly, w, h) {{
             y -= bh;
         }});
         // Bold total-count label above the bar.
-        ctx.font = "bold 12px Arial"; ctx.textAlign = "center";
+        ctx.font = "bold 13px Arial"; ctx.textAlign = "center";
         ctx.fillStyle = mlGetVar("--text") || "#0F2240";
         const topY = axisY - (total / topTick) * ch;
         ctx.fillText(String(total), x + barW / 2, Math.max(topY - 8, 12));
@@ -9203,10 +9206,10 @@ function mlVStackbar(id, weekly, w, h) {{
         // Two-line x-axis label: week date on top, muted 4-digit year below.
         const wkDate = parseDateValue(wk.name);
         const line1 = wkDate ? `${{MONTH_LABELS[wkDate.getMonth()]}} ${{wkDate.getDate()}}` : wk.name;
-        ctx.font = "bold 10px Arial"; ctx.fillStyle = mlGetVar("--text") || "#0F2240";
+        ctx.font = "bold 11px Arial"; ctx.fillStyle = mlGetVar("--text") || "#0F2240";
         ctx.fillText(line1, x + barW / 2, axisY + 16);
         if (wkDate) {{
-            ctx.font = "9px Arial"; ctx.fillStyle = mlGetVar("--muted") || "#5A6B80";
+            ctx.font = "10px Arial"; ctx.fillStyle = mlGetVar("--muted") || "#5A6B80";
             ctx.fillText(String(wkDate.getFullYear()), x + barW / 2, axisY + 27);
         }}
     }});
@@ -9215,7 +9218,7 @@ function mlVStackbar(id, weekly, w, h) {{
     // then Regular) to match the stack's visual top-to-bottom reading order.
     const colorByClass = Object.fromEntries(classes.map((cl, i) => [cl, colors[i]]));
     const legendOrder = [...classes].reverse();
-    ctx.font = "10px Arial"; ctx.textAlign = "left";
+    ctx.font = "11px Arial"; ctx.textAlign = "left";
     let lx = pad.l;
     const legendY = h - 6;
     legendOrder.forEach(cls => {{
