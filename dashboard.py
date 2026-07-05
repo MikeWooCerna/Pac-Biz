@@ -6392,7 +6392,7 @@ def main():
     #ml-ovl {{ position: fixed; inset: 0; background: rgba(8,20,45,.58); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity .2s ease; }}
     #ml-ovl.ml-open {{ opacity: 1; pointer-events: all; }}
     #ml-ovl .ml-xcard {{
-        background: #fff; border-radius: 8px; box-shadow: 0 28px 70px rgba(0,0,0,.28); width: 100%; max-width: 1100px; max-height: 92vh;
+        background: #fff; border-radius: 8px; box-shadow: 0 28px 70px rgba(0,0,0,.28); width: min(96vw, 1760px); max-width: none; height: 90vh; max-height: 92vh;
         display: flex; flex-direction: column; overflow: hidden; border-top: 3px solid var(--blue);
         transform: scale(.97) translateY(6px); transition: transform .2s ease;
     }}
@@ -6402,27 +6402,29 @@ def main():
     #ml-ovl .ml-xcard-sub {{ font-size: 11px; color: var(--muted); margin-top: 1px; }}
     #ml-ovl .ml-closebtn {{ background: none; border: none; cursor: pointer; color: var(--muted); padding: 4px 6px; border-radius: 4px; font-family: Arial, sans-serif; font-size: 18px; line-height: 1; transition: background .15s, color .15s; }}
     #ml-ovl .ml-closebtn:hover {{ background: var(--bg); color: var(--text); }}
-    #ml-xbd {{ flex: 1; overflow: auto; padding: 24px; display: flex; align-items: center; justify-content: center; }}
-    #ml-xbd.ml-xbd-table {{ display: block; padding: 0; }}
-    #ml-xbd.ml-xbd-table .ml-twrap {{ max-height: none; width: 100%; overflow: auto; }}
-    #ml-xbd.ml-xbd-table .ml-twrap table.ml-dt {{ width: max-content; min-width: 100%; table-layout: auto; }}
+    #ml-xbd {{ flex: 1; min-height: 0; overflow: auto; padding: 24px; display: flex; align-items: center; justify-content: center; }}
+    #ml-xbd.ml-xbd-table {{ display: block; padding: 0; overflow: hidden; min-height: 0; }}
+    #ml-xbd.ml-xbd-table .ml-twrap {{ height: 100%; max-height: none; width: 100%; overflow: auto; }}
+    #ml-xbd.ml-xbd-table .ml-twrap table.ml-dt {{ width: max-content; min-width: 100%; table-layout: auto; border-collapse: separate; border-spacing: 0; font-size: 12px; font-variant-numeric: tabular-nums; }}
+    #ml-xbd.ml-xbd-table .ml-dt thead tr {{ background: var(--blue); }}
     #ml-xbd.ml-xbd-table .ml-dt th,
-    #ml-xbd.ml-xbd-table .ml-dt td {{ padding: 9px 12px; vertical-align: middle; line-height: 1.25; white-space: nowrap; }}
-    #ml-xbd.ml-xbd-table .ml-dt th {{ position: sticky; top: 0; z-index: 2; }}
-    #ml-xbd.ml-xbd-table .ml-dt .ml-col-id {{ min-width: 76px; }}
-    #ml-xbd.ml-xbd-table .ml-dt .ml-col-name {{ min-width: 180px; }}
-    #ml-xbd.ml-xbd-table .ml-dt .ml-col-date {{ min-width: 96px; }}
-    #ml-xbd.ml-xbd-table .ml-dt .ml-col-class {{ min-width: 132px; }}
-    #ml-xbd.ml-xbd-table .ml-dt .ml-col-tenure {{ min-width: 132px; }}
-    #ml-xbd.ml-xbd-table .ml-dt .ml-col-title {{ min-width: 210px; }}
-    #ml-xbd.ml-xbd-table .ml-dt .ml-col-group {{ min-width: 145px; }}
-    #ml-xbd.ml-xbd-table .ml-dt .ml-col-dept {{ min-width: 130px; }}
-    #ml-xbd.ml-xbd-table .ml-dt .ml-col-account {{ min-width: 150px; }}
+    #ml-xbd.ml-xbd-table .ml-dt td {{ padding: 9px 14px; vertical-align: middle; line-height: 1.25; white-space: nowrap; border-bottom: 1px solid var(--ml-border); color: var(--text); }}
+    #ml-xbd.ml-xbd-table .ml-dt th {{ position: sticky; top: 0; z-index: 5; padding: 9px 14px; text-align: left; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: #fff; background: var(--blue); border-bottom: 1px solid #003B73; box-shadow: 0 1px 0 rgba(15,23,42,.18); white-space: nowrap; }}
+    #ml-xbd.ml-xbd-table .ml-dt tbody tr:hover td {{ background: rgba(0,76,151,.025); }}
+    #ml-xbd.ml-xbd-table .ml-dt .ml-col-id {{ min-width: 88px; }}
+    #ml-xbd.ml-xbd-table .ml-dt .ml-col-name {{ min-width: 220px; }}
+    #ml-xbd.ml-xbd-table .ml-dt .ml-col-date {{ min-width: 116px; }}
+    #ml-xbd.ml-xbd-table .ml-dt .ml-col-class {{ min-width: 156px; }}
+    #ml-xbd.ml-xbd-table .ml-dt .ml-col-tenure {{ min-width: 150px; }}
+    #ml-xbd.ml-xbd-table .ml-dt .ml-col-title {{ min-width: 260px; }}
+    #ml-xbd.ml-xbd-table .ml-dt .ml-col-group {{ min-width: 170px; }}
+    #ml-xbd.ml-xbd-table .ml-dt .ml-col-dept {{ min-width: 150px; }}
+    #ml-xbd.ml-xbd-table .ml-dt .ml-col-account {{ min-width: 180px; }}
     #ml-xbd.ml-xbd-table .ml-dt .ml-col-supervisor,
-    #ml-xbd.ml-xbd-table .ml-dt .ml-col-manager {{ min-width: 180px; }}
-    #ml-xbd.ml-xbd-table .ml-dt .ml-col-status {{ min-width: 140px; }}
-    #ml-xbd.ml-xbd-table .ml-dt .ml-col-email {{ min-width: 240px; max-width: 320px; }}
-    #ml-xbd.ml-xbd-table .ml-dt .ml-clip {{ display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }}
+    #ml-xbd.ml-xbd-table .ml-dt .ml-col-manager {{ min-width: 220px; }}
+    #ml-xbd.ml-xbd-table .ml-dt .ml-col-status {{ min-width: 150px; }}
+    #ml-xbd.ml-xbd-table .ml-dt .ml-col-email {{ min-width: 310px; max-width: none; }}
+    #ml-xbd.ml-xbd-table .ml-dt .ml-clip {{ display: block; overflow: visible; text-overflow: clip; white-space: nowrap; }}
     #ml-xbd.ml-xbd-scroll {{ align-items: flex-start; }}
     #ml-cv-tt {{ position: fixed; pointer-events: none; z-index: 10000; background: #0F2240; color: #fff; font-size: 11px; font-family: Arial, sans-serif; padding: 5px 9px; border-radius: 5px; box-shadow: 0 4px 14px rgba(0,0,0,.25); white-space: nowrap; opacity: 0; transition: opacity .1s; top: 0; left: 0; }}
     #ml-cv-tt.ml-show {{ opacity: 1; }}
