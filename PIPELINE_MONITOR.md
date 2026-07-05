@@ -251,6 +251,32 @@ The Git Repository stage node also surfaces the most recent Guardian run, source
 
 ---
 
+## Employee Movement Notifications
+
+`check_movement_notifications.py` runs immediately after `masterlist_fetch.py`, before the account QA pulls. It reads `movement_cache.csv`, compares each processed movement against `movement_notified.json`, and sends one HTML email per newly processed movement.
+
+Notification eligibility:
+- `Processed` must be `Yes`
+- `Void` must not be `Yes`
+- `Timestamp` must not already exist in `movement_notified.json`
+
+Duplicate protection:
+- `movement_notified.json` stores the timestamps that already generated movement emails.
+- If `movement_notified.json` is missing, the script now seeds it from all existing processed/non-void movement rows and sends **no emails**. This prevents old processed movements from firing again after a local cleanup, clone, or tracker reset.
+
+Employment status display in movement emails:
+- The movement source can store class-style values such as `Regular`, `Probationary`, or `Option`.
+- Emails must display only dashboard-style employment status values: `Active`, `Inactive`, or `No changes`.
+- Mapping is handled by `normalize_employment_status_for_email()`:
+  - `Regular`, `Probationary`, `Option`, full-time, and part-time style values → `Active`
+  - Attrition rows → `Inactive`
+  - Inactive/terminated/resigned/separated/end-of-contract style values → `Inactive`
+  - Blank/N/A/dash values → `No changes`
+
+The notification script is intentionally not logged as a formal `pipeline_status.json` step today; it prints its own `[movement_notify]` messages and the pipeline continues with a warning if the notification step exits non-zero.
+
+---
+
 ## Adding a new account
 
 1. Add the pull step to both bat files (same pattern as existing steps)
