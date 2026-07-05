@@ -4700,9 +4700,9 @@ def main():
         latest_date = pd.to_datetime(history["Date Generated"], errors="coerce").max()
         latest_snapshot = latest_date.strftime("%m/%d/%Y") if pd.notna(latest_date) else ""
 
-    # Masterlist KPI strip scalars (avg tenure of active staff, new hires this month).
-    # Computed here in Python; JS does not currently calculate these.
-    masterlist_kpis = {"avgTenure": 0, "newThisMonth": 0}
+    # Masterlist KPI strip scalar (avg tenure of active staff).
+    # Computed here in Python; JS does not currently calculate this.
+    masterlist_kpis = {"avgTenure": 0}
     if "Hire Date" in masterlist.columns:
         _hire_dt = pd.to_datetime(masterlist["Hire Date"], errors="coerce")  # temp only, does not overwrite display column
         _now = datetime.now()
@@ -4713,8 +4713,6 @@ def main():
         _active_tenure_days = (_now - _hire_dt[_active_mask]).dt.days.dropna()
         if len(_active_tenure_days):
             masterlist_kpis["avgTenure"] = round(float(_active_tenure_days.mean()) / 365.25, 1)
-        _new_mask = (_hire_dt.dt.month == _now.month) & (_hire_dt.dt.year == _now.year)
-        masterlist_kpis["newThisMonth"] = int(_new_mask.sum())
 
     # Movement / history KPI strip scalars for the redesigned 7-tile KPI strip.
     # movement sheet has no literal "Status" column, so processing status is
@@ -5509,16 +5507,6 @@ def main():
         font-weight: 900;
     }}
 
-    #masterlistTable td.emp-status-active {{
-        color: var(--green);
-        font-weight: 700;
-    }}
-
-    #masterlistTable td.emp-status-inactive {{
-        color: #E53935;
-        font-weight: 700;
-    }}
-
     #coachingTable .id-col {{
         width: 135px;
         white-space: nowrap;
@@ -5560,74 +5548,6 @@ def main():
     #masterlistCard {{
         display: flex;
         flex-direction: column;
-    }}
-
-    #masterlistCard #masterlistTable {{
-        min-height: 0;
-    }}
-
-    .masterlist-focus-icon {{
-        position: relative;
-        display: inline-block;
-        width: 15px;
-        height: 15px;
-    }}
-
-    .masterlist-focus-icon::before,
-    .masterlist-focus-icon::after {{
-        content: "";
-        position: absolute;
-        width: 6px;
-        height: 6px;
-        border-color: currentColor;
-        border-style: solid;
-    }}
-
-    .masterlist-focus-icon::before {{
-        top: 0;
-        right: 0;
-        border-width: 2px 2px 0 0;
-    }}
-
-    .masterlist-focus-icon::after {{
-        left: 0;
-        bottom: 0;
-        border-width: 0 0 2px 2px;
-    }}
-
-    .masterlist-focus-mode .masterlist-focus-icon::before {{
-        top: 2px;
-        right: 2px;
-        border-width: 0 0 2px 2px;
-    }}
-
-    .masterlist-focus-mode .masterlist-focus-icon::after {{
-        left: 2px;
-        bottom: 2px;
-        border-width: 2px 2px 0 0;
-    }}
-
-    body.masterlist-focus-mode #masterlistControls .cards {{
-        display: none;
-    }}
-
-    body.masterlist-focus-mode #masterlistPanel .grid > :not(#masterlistCard) {{
-        display: none;
-    }}
-
-    body.masterlist-focus-mode #masterlistCard {{
-        min-height: 0;
-        height: calc(100vh - 300px);
-    }}
-
-    body.masterlist-focus-mode #masterlistCard .table-scroll {{
-        max-height: none;
-        height: 100%;
-    }}
-
-    body.masterlist-focus-mode #masterlistTable {{
-        flex: 1 1 auto;
-        min-height: 0;
     }}
 
     /* Quality detail table focus mode */
@@ -7411,21 +7331,6 @@ const COACHING_STATUS_COLORS = {{
     "Pending": "#FB8C00",
     "Completed": "#43A047",
 }};
-const MASTERLIST_COLUMNS = [
-    {{label: "Employee ID", field: "ID No.", sortable: true, sortType: "number"}},
-    {{label: "Employee Name", field: "Emp Name", sortable: true}},
-    {{label: "Hire Date", field: "Hire Date", sortable: true, sortType: "date"}},
-    {{label: "Employement Class", field: "Employement Class", sortable: true}},
-    {{label: "Tenure", field: "Tenure", sortable: true, sortField: "__TenureDays", sortType: "number"}},
-    {{label: "Job Title", field: "Job Title", sortable: true}},
-    {{label: "Employee Group", field: "Employee Group", sortable: true}},
-    {{label: "Department", field: "Department", sortable: true}},
-    {{label: "LOB/Account", field: "LOB / Account", sortable: true}},
-    {{label: "Immediate Supervisor", field: "Immediate Supervisor", sortable: true}},
-    {{label: "Manager", field: "Manager", sortable: true}},
-    {{label: "Employment Status", field: "Employment Status", sortable: true}},
-    {{label: "Email", field: "Company Email", sortable: true}},
-];
 const COACHING_COLUMNS = [
     {{label: "Coaching ID", field: "Coaching ID", className: "id-col nowrap"}},
     {{label: "Emp Name", field: "Emp Name", className: "name-col nowrap", sortable: true}},
@@ -7500,10 +7405,6 @@ const COACHING_FILTERS = {{
     category: new Set(),
     categoryStatus: new Set(),
     month: new Set(),
-}};
-const masterlistSortState = {{
-    field: "Emp Name",
-    direction: "asc",
 }};
 const movementSortState = {{
     field: "Date Initiated",
@@ -8226,254 +8127,6 @@ function toggleCoachingCardExpand(cardId) {{
     if(window.Plotly) setTimeout(()=>window.dispatchEvent(new Event('resize')), 80);
 }}
 
-function bar(id, title, data, yTitle, maxItems = 10) {{
-    const top = (maxItems === null ? data : data.slice(0, maxItems)).reverse();
-    const chartHeight = Math.max(300, top.length * 30 + 80);
-    Plotly.newPlot(id, [{{
-        x: top.map(d => d.count),
-        y: top.map(d => d.name),
-        type: "bar",
-        orientation: "h",
-        text: top.map(d => d.count),
-        textposition: "auto",
-        marker: {{color: "#004C97"}}
-    }}], {{
-        title: {{text: title, font: {{color: "#004C97", size: 15}}}},
-        height: chartHeight,
-        margin: {{l: 135, r: 20, t: 45, b: 35}},
-        xaxis: {{title: "Headcount"}},
-        yaxis: {{title: yTitle}},
-        paper_bgcolor: "white",
-        plot_bgcolor: "white",
-        font: {{family: "Arial", size: 10}}
-    }}, {{responsive: true}});
-}}
-
-function scrollableBar(id, title, data, yTitle) {{
-    const container = document.getElementById(id);
-    if (!container) return;
-    const reversed = [...data].reverse();
-    const rowH = 28, topM = 10, botM = 25;
-    const chartH = Math.max(100, reversed.length * rowH + topM + botM);
-    const pw = Math.max(200, container.clientWidth - 24);
-    const footerHtml = `<div style="width:100%;text-align:center;font-size:10px;color:#555;font-family:Arial;padding-bottom:2px;">Headcount</div>`;
-    container.innerHTML = `<div class="chart-scroll-container"><div class="chart-scroll-title">${{escapeHtml(title)}}</div><div class="chart-scroll-area"><div id="${{id}}Plot"></div></div><div class="chart-scroll-footer">${{footerHtml}}</div></div>`;
-    Plotly.newPlot(`${{id}}Plot`, [{{
-        x: reversed.map(d => d.count),
-        y: reversed.map(d => d.name),
-        type: "bar", orientation: "h",
-        text: reversed.map(d => d.count), textposition: "auto",
-        marker: {{color: "#004C97"}}
-    }}], {{
-        height: chartH, width: pw,
-        margin: {{l: 135, r: 20, t: topM, b: botM}},
-        xaxis: {{side: "bottom"}},
-        yaxis: {{title: yTitle}},
-        paper_bgcolor: "white", plot_bgcolor: "white",
-        font: {{family: "Arial", size: 10}}
-    }}, {{responsive: false}});
-}}
-
-function segmentBar(id, title, data, yTitle) {{
-    const rows = [...data].reverse();
-    Plotly.newPlot(id, [{{
-        x: rows.map(d => d.count),
-        y: rows.map(d => d.name),
-        type: "bar",
-        orientation: "h",
-        text: rows.map(d => d.count),
-        textposition: "auto",
-        marker: {{color: rows.map((_, i) => COLORS[i % COLORS.length])}},
-        hovertemplate: "%{{y}}<br>Headcount: %{{x}}<extra></extra>",
-    }}], {{
-        title: {{text: title, font: {{color: "#004C97", size: 15}}}},
-        height: 390,
-        margin: {{l: 120, r: 20, t: 45, b: 35}},
-        xaxis: {{title: "Headcount"}},
-        yaxis: {{title: yTitle}},
-        paper_bgcolor: "white",
-        plot_bgcolor: "white",
-        font: {{family: "Arial", size: 10}}
-    }}, {{responsive: true}});
-}}
-
-function accountTenureStack(data) {{
-    const accounts = countBy(data, "LOB / Account").filter(d => APPROVED_ACCOUNTS.has(d.name.toLowerCase())).map(d => d.name);
-    const rows = [...accounts].reverse();
-    const counts = {{}};
-
-    rows.forEach(account => {{
-        counts[account] = Object.fromEntries(TENURE_GROUPS.map(group => [group.name, 0]));
-    }});
-
-    data.forEach(r => {{
-        const account = norm(r["LOB / Account"]) || "Blank";
-        if (!counts[account]) return;
-        const groupName = tenureGroupName(parseDateValue(r["Hire Date"]), new Date());
-        if (groupName) counts[account][groupName] += 1;
-    }});
-
-    const totals = rows.map(account =>
-        TENURE_GROUPS.reduce((sum, group) => sum + counts[account][group.name], 0)
-    );
-    const maxTotal = Math.max(...totals, 1);
-    const minimumReadableSegment = Math.max(3, Math.ceil(maxTotal * 0.05));
-    const shouldShowSegmentLabel = (value, total) =>
-        value >= minimumReadableSegment && (value / Math.max(total, 1)) >= 0.16;
-
-    const traces = TENURE_GROUPS.map((group, i) => ({{
-        name: group.name,
-        x: rows.map(account => counts[account][group.name]),
-        y: rows,
-        type: "bar",
-        orientation: "h",
-        text: rows.map((account, index) => {{
-            const value = counts[account][group.name];
-            return shouldShowSegmentLabel(value, totals[index]) ? value : "";
-        }}),
-        textposition: "inside",
-        texttemplate: "%{{text}}",
-        textangle: 0,
-        textfont: {{family: "Arial", size: 10}},
-        insidetextanchor: "middle",
-        constraintext: "inside",
-        cliponaxis: true,
-        marker: {{color: COLORS[i % COLORS.length]}},
-        hovertemplate: "%{{y}}<br>" + group.name + ": %{{x}}<extra></extra>",
-    }}));
-
-    const totalAnnotations = rows.map((account, index) => ({{
-        x: totals[index],
-        y: account,
-        text: `<b>${{totals[index]}}</b>`,
-        xref: "x",
-        yref: "y",
-        showarrow: false,
-        xanchor: "left",
-        yanchor: "middle",
-        xshift: 8,
-        font: {{family: "Arial", size: 11, color: "#002B5C"}},
-    }}));
-
-    const atsContainer = document.getElementById("accountTenureStack");
-    const rowH = 28, topM = 10, botM = 25;
-    const chartH = Math.max(100, rows.length * rowH + topM + botM);
-    const pw = Math.max(200, atsContainer.clientWidth - 24);
-    const legendHtml = `<div style="width:100%;text-align:center;font-size:10px;color:#555;font-family:Arial;padding-bottom:2px;">Headcount</div>` +
-        TENURE_GROUPS.map((g, i) =>
-            `<span class="scroll-legend-item"><span class="scroll-legend-swatch" style="background:${{COLORS[i % COLORS.length]}}"></span>${{escapeHtml(g.name)}}</span>`
-        ).join("");
-    atsContainer.innerHTML = `<div class="chart-scroll-container"><div class="chart-scroll-title">Tenure by Account</div><div class="chart-scroll-area"><div id="accountTenureStackPlot"></div></div><div class="chart-scroll-footer">${{legendHtml}}</div></div>`;
-    Plotly.newPlot("accountTenureStackPlot", traces, {{
-        height: chartH, width: pw,
-        margin: {{l: 135, r: 58, t: topM, b: botM}},
-        barmode: "stack",
-        showlegend: false,
-        xaxis: {{range: [0, Math.ceil(maxTotal * 1.12)]}},
-        yaxis: {{title: "Account"}},
-        paper_bgcolor: "white",
-        plot_bgcolor: "white",
-        annotations: totalAnnotations,
-        uniformtext: {{mode: "hide", minsize: 9}},
-        font: {{family: "Arial", size: 10}}
-    }}, {{responsive: false}});
-}}
-
-function weeklyChart() {{
-    const seen = new Set();
-    const deduped = [];
-    historyData.forEach(r => {{
-        const week = norm(r["Week"]);
-        const empId = norm(r["ID No."]);
-        if (week && empId && !seen.has(`${{week}}|${{empId}}`)) {{
-            seen.add(`${{week}}|${{empId}}`);
-            deduped.push(r);
-        }}
-    }});
-
-    const weeks = [...new Set(deduped.map(r => norm(r["Week"])))].filter(Boolean)
-        .sort((a, b) => new Date(a) - new Date(b));
-
-    const countMap = {{}};
-    deduped.forEach(r => {{
-        const week = norm(r["Week"]);
-        const cls = norm(r["Employement Class"]) || "Other";
-        const key = `${{week}}|${{cls}}`;
-        countMap[key] = (countMap[key] || 0) + 1;
-    }});
-
-    // Sort classes by total headcount descending: largest at bottom (first trace), smallest at top (last trace)
-    const classTotals = {{}};
-    deduped.forEach(r => {{
-        const cls = norm(r["Employement Class"]) || "Other";
-        classTotals[cls] = (classTotals[cls] || 0) + 1;
-    }});
-    const allClasses = Object.keys(classTotals).sort((a, b) => classTotals[b] - classTotals[a]);
-
-    const totals = {{}};
-    weeks.forEach(week => {{
-        totals[week] = allClasses.reduce((sum, cls) => sum + (countMap[`${{week}}|${{cls}}`] || 0), 0);
-    }});
-    const maxTotal = Math.max(...Object.values(totals), 1);
-
-    const traces = allClasses.map((cls, i) => {{
-        const yValues = weeks.map(week => countMap[`${{week}}|${{cls}}`] || 0);
-        return {{
-            name: cls,
-            x: weeks,
-            y: yValues,
-            type: "bar",
-            text: yValues.map(v => v > 0 ? v : ""),
-            textposition: "inside",
-            insidetextanchor: "middle",
-            textfont: {{family: "Arial", size: 10, color: "white"}},
-            constraintext: "inside",
-            hovertemplate: `${{cls}}<br>Week: %{{x}}<br>Headcount: %{{y}}<extra></extra>`,
-            marker: {{color: COLORS[i % COLORS.length]}},
-        }};
-    }});
-
-    const annotations = weeks.map(week => ({{
-        x: week,
-        y: totals[week],
-        text: `<b>${{totals[week]}}</b>`,
-        xref: "x",
-        yref: "y",
-        showarrow: false,
-        yanchor: "bottom",
-        xanchor: "center",
-        yshift: 5,
-        font: {{family: "Arial", size: 13, color: "#002B5C"}},
-    }}));
-
-    const legendHtml = allClasses.map((cls, i) =>
-        `<span style="display:inline-flex;align-items:center;font-size:10px;color:#444;font-family:Arial;white-space:nowrap;margin:0 4px;">` +
-        `<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${{COLORS[i % COLORS.length]}};margin-right:4px;"></span>` +
-        `${{escapeHtml(cls)}}</span>`
-    ).join("");
-    const wContainer = document.getElementById("weeklyLine");
-    if (!wContainer) return;
-    wContainer.innerHTML =
-        `<div id="weeklyLinePlot"></div>` +
-        `<div style="text-align:center;font-size:11px;color:#555;font-family:Arial;margin:24px 0 0;">Week</div>` +
-        `<div style="display:flex;flex-wrap:wrap;justify-content:center;gap:4px 10px;padding:24px 4px 24px;">${{legendHtml}}</div>`;
-
-    Plotly.newPlot("weeklyLinePlot", traces, {{
-        title: {{text: "Weekly Headcount", font: {{color: "#004C97", size: 15}}}},
-        height: 310,
-        margin: {{l: 45, r: 20, t: 45, b: 30}},
-        barmode: "stack",
-        xaxis: {{title: ""}},
-        yaxis: {{title: "Headcount", range: [0, Math.ceil(maxTotal * 1.15)]}},
-        paper_bgcolor: "white",
-        plot_bgcolor: "white",
-        showlegend: false,
-        annotations: annotations,
-        uniformtext: {{mode: "hide", minsize: 8}},
-        font: {{family: "Arial", size: 10}}
-    }}, {{responsive: true}});
-}}
-
 function coachingCategoryChart(data) {{
     const rows = countBy(data, "Coaching Category");
     const colors = rows.map((row, index) => COACHING_CATEGORY_COLORS[row.name] || COLORS[index % COLORS.length]);
@@ -8639,20 +8292,6 @@ function coachingConfidenceGauge(data) {{
             </svg>
         </div>
     `;
-}}
-
-function masterlistTable(data) {{
-    const tableData = data
-        .filter(r => filterMatches(MASTERLIST_FILTERS.empName, norm(r["Emp Name"])))
-        .map(r => {{
-            const hireDate = parseDateValue(r["Hire Date"]);
-            return Object.assign({{}}, r, {{
-                Tenure: tenureGroupName(hireDate, new Date()),
-                __TenureDays: hireDate ? wholeDayDiff(hireDate, new Date()) : -1,
-            }});
-        }});
-    renderDataTable("masterlistTable", sortedTableRows(tableData, MASTERLIST_COLUMNS, masterlistSortState), MASTERLIST_COLUMNS, masterlistSortState);
-    bindTableSorting("masterlistTable", MASTERLIST_COLUMNS, masterlistSortState, render);
 }}
 
 function coachingTable(data) {{
@@ -8884,20 +8523,6 @@ function reflowDashboard() {{
     if (document.getElementById("masterlistPanel")?.classList.contains("active")) {{
         mlDrawAll();
     }}
-}}
-
-function setMasterlistFocusMode(active) {{
-    document.body.classList.toggle("masterlist-focus-mode", active);
-    const button = document.getElementById("masterlistFocusToggle");
-    if (button) {{
-        button.setAttribute("aria-label", active ? "Collapse Master List" : "Expand Master List");
-        button.setAttribute("title", active ? "Collapse Master List" : "Expand Master List");
-    }}
-    setTimeout(reflowDashboard, 0);
-}}
-
-function toggleMasterlistFocusMode() {{
-    setMasterlistFocusMode(!document.body.classList.contains("masterlist-focus-mode"));
 }}
 
 function setLogsFocusMode(active) {{
