@@ -4632,6 +4632,22 @@ def main():
     masterlist = clean_columns(pd.read_csv(_ml_cache   if _ml_cache.exists()   else MASTERLIST_CSV))
     history    = clean_columns(pd.read_csv(_hist_cache if _hist_cache.exists() else HISTORY_CSV))
     movement   = clean_columns(pd.read_csv(_move_cache if _move_cache.exists() else MOVEMENT_CSV))
+    coaching = load_coaching_data(masterlist)
+    # NOTE: the "Emp Name" rebuild below is intentionally deferred until AFTER
+    # load_coaching_data() so Coaching sees the ORIGINAL untouched "Emp Name"
+    # (transform_coaching_logs -> build_email_name_lookup reads masterlist["Emp Name"]).
+    # Everything below only feeds the Masterlist tab / Movements table, which
+    # run later, so mutating masterlist here is safe.
+    if "Last Name" in masterlist.columns and "First Name" in masterlist.columns:
+        # Rebuild "Emp Name" as strict two-part "Lastname, Firstname" (middle name dropped).
+        _ln = masterlist["Last Name"].astype(str).str.strip()
+        _fn = masterlist["First Name"].astype(str).str.strip()
+        _ln = _ln.where(_ln.str.lower() != "nan", "")
+        _fn = _fn.where(_fn.str.lower() != "nan", "")
+        masterlist["Emp Name"] = [
+            f"{ln}, {fn}" if ln and fn else (ln or fn)
+            for ln, fn in zip(_ln, _fn)
+        ]
     if "Type of Movement" in movement.columns and "Movement Type" in movement.columns:
         movement["Movement Type"] = movement.apply(
             lambda r: r["Movement Type"] if (pd.notna(r["Movement Type"]) and str(r["Movement Type"]).strip())
@@ -4655,7 +4671,6 @@ def main():
         )
     else:
         movement["Initiated by"] = ""
-    coaching = load_coaching_data(masterlist)
     m7 = load_m7_data()
     parentis = load_parentis_data()
     britelift = load_britelift_data()
@@ -4684,6 +4699,55 @@ def main():
     if "Date Generated" in history.columns:
         latest_date = pd.to_datetime(history["Date Generated"], errors="coerce").max()
         latest_snapshot = latest_date.strftime("%m/%d/%Y") if pd.notna(latest_date) else ""
+
+    # Masterlist KPI strip scalars (avg tenure of active staff, new hires this month).
+    # Computed here in Python; JS does not currently calculate these.
+    masterlist_kpis = {"avgTenure": 0, "newThisMonth": 0}
+    if "Hire Date" in masterlist.columns:
+        _hire_dt = pd.to_datetime(masterlist["Hire Date"], errors="coerce")  # temp only, does not overwrite display column
+        _now = datetime.now()
+        if "Employment Status" in masterlist.columns:
+            _active_mask = masterlist["Employment Status"].astype(str).str.strip().str.upper() == "ACTIVE"
+        else:
+            _active_mask = pd.Series(True, index=masterlist.index)
+        _active_tenure_days = (_now - _hire_dt[_active_mask]).dt.days.dropna()
+        if len(_active_tenure_days):
+            masterlist_kpis["avgTenure"] = round(float(_active_tenure_days.mean()) / 365.25, 1)
+        _new_mask = (_hire_dt.dt.month == _now.month) & (_hire_dt.dt.year == _now.year)
+        masterlist_kpis["newThisMonth"] = int(_new_mask.sum())
+
+    # Movement / history KPI strip scalars for the redesigned 7-tile KPI strip.
+    # movement sheet has no literal "Status" column, so processing status is
+    # read from "Processed" (Yes/blank), which is column R (18th column,
+    # position index 17) as the sheet is currently laid out. "Void" marks a
+    # row as cancelled regardless of its processed state.
+    # "Movements" (main tile value) = total logged movements, excluding voided
+    # rows entirely — a voided row was never a real movement.
+    # "for processing" (sub-value) = the subset of those non-void movements
+    # whose "Processed" column is still blank (i.e. genuinely pending action).
+    masterlist_kpis["movementsPending"] = 0
+    masterlist_kpis["movementsForProcessing"] = 0
+    masterlist_kpis["historyRecords"] = int(len(history))
+    if not movement.empty and len(movement.columns) > 17:
+        _colR_name = None
+        for _c in movement.columns:
+            if str(_c).strip().lower() == "processed":
+                _colR_name = _c
+                break
+        if _colR_name is None:
+            _colR_name = movement.columns[17]  # positional fallback; currently "Processed"
+            print("WARN: 'Processed' column not found by name; falling back to column index 17:", _colR_name)
+        _colR_blank = movement[_colR_name].fillna("").astype(str).str.strip() == ""
+        if "Void" in movement.columns:
+            _not_void = movement["Void"].fillna("").astype(str).str.strip().str.upper() != "YES"
+        else:
+            _not_void = pd.Series(True, index=movement.index)
+        # Movements: total non-void movement rows logged (voided rows excluded
+        # entirely — they never happened).
+        masterlist_kpis["movementsPending"] = int(_not_void.sum())
+        # For processing: of those non-void movements, the ones whose
+        # "Processed" column is still blank and therefore need action.
+        masterlist_kpis["movementsForProcessing"] = int((_colR_blank & _not_void).sum())
 
     logo_uri = get_image_data_uri(LOGO_FILE)
     favicon_uri = get_image_data_uri(FAVICON_FILE) or logo_uri
@@ -4828,6 +4892,9 @@ def main():
 
     .tab-panel.active {{
         display: block;
+        /* Change 14: the footer is now sticky-bottom (global, all tabs) — reserve
+           clearance so it never overlaps the last row of whichever tab is active. */
+        padding-bottom: 40px;
     }}
 
     .under-construction {{
@@ -5354,6 +5421,18 @@ def main():
         vertical-align: top;
     }}
 
+    /* Change 3: Recent Employee Movements header — explicit white-bold-on-blue,
+       scoped to the #recentMovements container only (generic renderDataTable()
+       output has no id/class of its own to hook, so this is the one place we
+       target the container id directly) so the rule can never leak onto the
+       other tables that share the same generic table/th markup (Coaching
+       summary/logs tables, QA leaderboards, etc.). */
+    #recentMovements table thead th {{
+        background: var(--blue);
+        color: #fff;
+        font-weight: 700;
+    }}
+
     .long-text {{
         min-width: 280px;
         max-width: 520px;
@@ -5787,9 +5866,12 @@ def main():
     .footer {{
         background: linear-gradient(90deg, var(--green), var(--blue));
         color: white;
-        padding: 14px 28px;
+        padding: 6px 28px;
         text-align: center;
-        font-size: 13px;
+        font-size: 11px;
+        position: sticky;
+        bottom: 0;
+        z-index: 500; /* below the expand modal (9999), above the sticky KPI strip (150) */
     }}
 
     @media (max-width: 1300px) {{
@@ -6045,6 +6127,360 @@ def main():
         #qualityPanel .qa-g3 {{ grid-template-columns:1fr }}
         #qualityPanel .qa-g2 {{ grid-template-columns:1fr }}
     }}
+
+    /* ── Masterlist tab redesign (Phase 2 port of masterlist-poc.html) ──
+       All new selectors are scoped under #masterlistPanel / #masterlistControls
+       and every new class is ml- prefixed so nothing here can leak into or
+       collide with Coaching's .card/.cards/.chart-card or Quality's .qa- rules.
+       --ml-surface/--ml-border/--ml-shadow/--ml-r are NEW local tokens (not a
+       redefinition of the shared :root --blue/--green/--bg/--text/--muted).
+       --ml-pad-x/--ml-pad-y/--ml-gap (item D) are the shared spacing rhythm
+       for every chart card's header/body padding and inter-card gaps — on
+       the 4/8/12/16/24/32 scale, used instead of each card having its own
+       ad hoc padding numbers. */
+    #masterlistPanel, #masterlistControls {{
+        --ml-surface: #fff;
+        --ml-border: #DDE6EE;
+        --ml-shadow: 0 1px 3px rgba(0,76,151,.07), 0 4px 14px rgba(0,76,151,.05);
+        --ml-r: 8px;
+        --ml-pad-x: 16px;
+        --ml-pad-y: 12px;
+        --ml-gap: 16px;
+    }}
+
+    /* Filter bar — same #masterlistControls markup/IDs/handlers, restyled via
+       scoped override only (NOT a rename of the shared .filters/.filter-box/
+       .multi-filter/.multi-options classes, which Coaching also uses).
+       Change 1: compact pill-style dropdowns (POC look) + z-index/overflow fix
+       so an open dropdown never renders behind the sticky KPI strip below it. */
+    #masterlistControls .filters {{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: flex-end;
+        grid-template-columns: none;
+        background: var(--ml-surface);
+        border-radius: var(--ml-r);
+        box-shadow: var(--ml-shadow);
+        border-top: 3px solid var(--blue);
+        padding: 10px 15px;
+        margin: 0 18px 14px;
+        overflow: visible; /* never clip the open dropdown menu below */
+    }}
+    #masterlistControls .filter-box {{
+        background: none;
+        border: none;
+        box-shadow: none;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 132px;
+        overflow: visible;
+    }}
+    #masterlistControls .filter-box label {{
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: var(--muted);
+        margin-bottom: 0;
+    }}
+    #masterlistControls .multi-filter summary {{
+        padding: 6px 14px;
+        min-height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        border: 1.5px solid var(--ml-border);
+        border-radius: 999px;
+        font-size: 12px;
+        background: var(--ml-surface);
+        color: var(--text);
+        transition: border-color .15s, box-shadow .15s;
+    }}
+    #masterlistControls .multi-filter summary:hover {{ border-color: var(--blue); }}
+    #masterlistControls .multi-filter[open] summary {{ border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0,76,151,.08); }}
+    /* Bug fix (change 1): base .multi-options is z-index:20 — lower than the
+       sticky KPI strip's z-index:150 below it, so an opened dropdown painted
+       behind the strip. Raise it well above (300) without touching the base
+       class (Coaching's own filter bar keeps its original stacking). */
+    /* Fix (item 1): base .multi-options is left:0;right:0 — same width as the
+       ~132px filter-box, too narrow for longer option labels and forcing
+       mid-word wrapping. Let it size to its own content (clamped) so it opens
+       wide enough for a clean single line per option. */
+    #masterlistControls .multi-options {{
+        left: 0;
+        right: auto;
+        min-width: 220px;
+        max-width: 320px;
+        border-radius: 8px;
+        box-shadow: 0 12px 28px rgba(15,23,42,.15);
+        z-index: 300;
+        padding: 6px;
+    }}
+    /* Fix (item 1): consistent per-row height, checkbox + label on one line,
+       adequate padding, subtle hover — scoped so Coaching's own multi-select
+       filter (same base .multi-option class) is untouched. */
+    #masterlistControls .multi-option {{
+        display: flex;
+        align-items: center;
+        flex-wrap: nowrap;
+        gap: 10px;
+        padding: 9px 10px;
+        min-height: 34px;
+        border-radius: 6px;
+        font-size: 12px;
+    }}
+    #masterlistControls .multi-option span {{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }}
+    #masterlistControls .multi-option input[type="checkbox"] {{
+        flex-shrink: 0;
+        width: 14px;
+        height: 14px;
+        margin: 0;
+        accent-color: var(--blue);
+    }}
+    #masterlistControls .multi-option:hover {{ background: var(--bg); }}
+    #masterlistControls .multi-option.select-all {{
+        padding-bottom: 12px;
+        margin-bottom: 6px;
+    }}
+
+    /* Clear filters button (item 6) — reuses the same .ml-btn/.ml-sec visual
+       pattern already used by the chart-card action buttons (defined under
+       #masterlistPanel further below); duplicated here under #masterlistControls
+       because the filter bar lives outside #masterlistPanel, so it can't inherit
+       that scoped rule. Pushed to the end of the filter row via margin-left:auto,
+       matching the POC's f-clear-btn placement/behavior. */
+    #masterlistControls .ml-btn {{
+        padding: 5px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--blue);
+        background: var(--blue); color: #fff; font-family: Arial, sans-serif; transition: opacity .15s; text-decoration: none;
+        display: inline-flex; align-items: center; justify-content: center; min-height: 32px;
+    }}
+    #masterlistControls .ml-btn:hover {{ opacity: .85; }}
+    #masterlistControls .ml-btn:focus-visible {{ outline: 2px solid var(--blue); outline-offset: 1px; }}
+    #masterlistControls .ml-btn.ml-sec {{ background: none; color: var(--blue); }}
+    #masterlistControls .ml-clear-btn {{ margin-left: auto; align-self: flex-end; }}
+
+    /* KPI strip — brand-new 5-tile sticky strip. Deliberately NOT the shared
+       .cards/.card classes (those are global — used by Coaching's own KPI
+       tiles) so this cannot restyle anything outside the Masterlist tab. */
+    #masterlistControls .ml-kpi-strip {{
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0,1fr));
+        gap: 12px;
+        padding: 0 18px 14px;
+        position: sticky;
+        top: var(--ml-stick-top, 0px);
+        z-index: 150;
+        background: var(--bg);
+    }}
+    #masterlistControls .ml-kpi {{
+        background: var(--ml-surface);
+        border-radius: var(--ml-r);
+        padding: 13px 15px 11px;
+        box-shadow: var(--ml-shadow);
+        border-left: 3px solid var(--ml-border);
+    }}
+    #masterlistControls .ml-kpi.g {{ border-left-color: var(--green); }}
+    #masterlistControls .ml-kpi.b {{ border-left-color: var(--blue); }}
+    #masterlistControls .ml-kpi-lbl {{
+        font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+        color: var(--muted); margin-bottom: 2px;
+    }}
+    #masterlistControls .ml-kpi-val {{
+        font-size: 26px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; color: var(--text);
+    }}
+    #masterlistControls .ml-kpi.g .ml-kpi-val {{ color: var(--green); }}
+    #masterlistControls .ml-kpi.b .ml-kpi-val {{ color: var(--blue); }}
+    #masterlistControls .ml-kpi-sub {{ font-size: 11px; color: var(--muted); margin-top: 2px; }}
+
+    /* Chart cards — new ml-card pattern, distinct from the shared .card/.chart-card */
+    #masterlistPanel .ml-grid {{ display: flex; flex-direction: column; gap: var(--ml-gap); }}
+    /* Item A fix: align-items:start (was the grid default "stretch") so each
+       card in a row keeps ITS OWN natural content height instead of being
+       stretched to match the tallest card in the row (e.g. "By Department"'s
+       long legend). Stretching was the real cause of inconsistent legend
+       anchoring — a short donut (Active Status) would get stretched tall by
+       its row-mate, then its canvas centered inside that leftover space,
+       so the legend never actually sat at the visual bottom of the card. */
+    #masterlistPanel .ml-row {{ display: grid; gap: var(--ml-gap); align-items: start; }}
+    #masterlistPanel .ml-r5 {{ grid-template-columns: repeat(5, minmax(0,1fr)); }}
+    #masterlistPanel .ml-r4 {{ grid-template-columns: repeat(4, minmax(0,1fr)); }}
+    /* Change 2: this row only (Tenure by Account + Weekly Headcount Trend)
+       overrides the row default above back to align-items:stretch so both
+       cards render at the SAME height (the row's height is still driven by
+       the taller card's natural content, same as before — stretch just makes
+       the shorter card's box grow to match it instead of sitting shorter).
+       Scoped to .ml-r2asym specifically (same specificity as .ml-row, but
+       wins on source order) so the other rows keep the donut-legend
+       bottom-anchoring fix above untouched. */
+    #masterlistPanel .ml-r2asym {{ grid-template-columns: 3fr 2fr; align-items: stretch; }}
+    #masterlistPanel .ml-card {{
+        background: var(--ml-surface);
+        border-radius: var(--ml-r);
+        box-shadow: var(--ml-shadow);
+        border-top: 3px solid var(--blue);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        transition: box-shadow .15s;
+    }}
+    #masterlistPanel .ml-card:hover {{ box-shadow: 0 2px 8px rgba(0,76,151,.12), 0 8px 24px rgba(0,76,151,.08); }}
+    #masterlistPanel .ml-card.gc {{ border-top-color: var(--green); }}
+    /* Item D: header padding uses the shared --ml-pad-x/--ml-pad-y rhythm
+       (was the ad hoc 11px 13px 9px) so every card's header aligns exactly
+       with its body below. */
+    #masterlistPanel .ml-card-hd {{
+        display: flex; align-items: flex-start; justify-content: space-between; padding: var(--ml-pad-y) var(--ml-pad-x) 8px;
+        border-bottom: 1px solid var(--ml-border); gap: 8px;
+    }}
+    #masterlistPanel .ml-card-ttl {{ font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--blue); margin-bottom: 1px; }}
+    #masterlistPanel .ml-card.gc .ml-card-ttl {{ color: #1a7a2e; }}
+    #masterlistPanel .ml-card-sub {{ font-size: 11px; color: var(--muted); }}
+    /* Item D: body padding uses the same shared rhythm, symmetric top/bottom
+       (was 10px 12px 13px) so the left/right edge lines up with the header
+       above. min-height stays — it's the floor for a very short donut
+       (e.g. Employment Class) before the card grows to fit real content. */
+    #masterlistPanel .ml-card-bd {{ padding: var(--ml-pad-y) var(--ml-pad-x); flex: 1; display: flex; align-items: center; justify-content: center; min-height: 170px; }}
+    #masterlistPanel .ml-card-bd canvas {{ display: block; max-width: 100%; box-sizing: border-box; }}
+    /* Fix (item 5): the max-width above is a safety net so a bad first-paint
+       measurement can never push a canvas wider than its card and cause a
+       page-level horizontal scrollbar. Exempt the two charts that deliberately
+       draw WIDER than the visible card and rely on their own .ml-hscroll-x
+       wrapper (overflow-x:auto) to scroll — clamping them here would silently
+       break that intentional natural-width/horizontal-scroll behavior. */
+    #masterlistPanel .ml-hscroll-x canvas {{ max-width: none; }}
+    /* Item D: left padding matches --ml-pad-x (16px, was 12px) so this card's
+       content lines up with every other card's left edge; top/bottom match
+       --ml-pad-y too. Right stays a literal 6px — NOT the shared token — by
+       design: it's deliberately thin to leave room for .ml-hbar-scroll's own
+       6px scrollbar gutter (12px combined, matching the left edge), not an
+       ad hoc leftover value. */
+    #masterlistPanel .ml-card-bd.ml-hbar-bd {{ align-items: stretch; justify-content: flex-start; padding: var(--ml-pad-y) 6px var(--ml-pad-y) var(--ml-pad-x); }}
+    #masterlistPanel .ml-hbar-scroll {{ width: 100%; max-height: 242px; overflow-y: auto; padding-right: 6px; }}
+    #masterlistPanel .ml-hbar-scroll::-webkit-scrollbar {{ width: 8px; }}
+    #masterlistPanel .ml-hbar-scroll::-webkit-scrollbar-track {{ background: transparent; }}
+    #masterlistPanel .ml-hbar-scroll::-webkit-scrollbar-thumb {{ background: var(--ml-border); border-radius: 4px; }}
+    #masterlistPanel .ml-hbar-scroll:hover::-webkit-scrollbar-thumb {{ background: var(--muted); }}
+
+    /* Horizontal-scroll pattern (robustness fixes B1/B2) — analogous to
+       .ml-hbar-scroll above but scrolls sideways. Used by "Tenure by Account"
+       (22+ accounts) and "Weekly Headcount Trend" (grows every week) so bars
+       get a real minimum width instead of being silently squeezed/clipped;
+       the canvas takes its natural computed width and this wrapper scrolls
+       within the card's fixed-width body. Same item-D padding rationale as
+       .ml-hbar-bd above — 16px left/12px top-bottom from the shared tokens,
+       6px right reserved for .ml-hscroll-x's own scrollbar gutter. */
+    #masterlistPanel .ml-card-bd.ml-hscroll-bd {{ align-items: stretch; justify-content: flex-start; padding: var(--ml-pad-y) 6px var(--ml-pad-y) var(--ml-pad-x); }}
+    #masterlistPanel .ml-hscroll-x {{ width: 100%; overflow-x: auto; overflow-y: hidden; padding-bottom: 6px; }}
+    #masterlistPanel .ml-hscroll-x::-webkit-scrollbar {{ height: 8px; }}
+    #masterlistPanel .ml-hscroll-x::-webkit-scrollbar-track {{ background: transparent; }}
+    #masterlistPanel .ml-hscroll-x::-webkit-scrollbar-thumb {{ background: var(--ml-border); border-radius: 4px; }}
+    #masterlistPanel .ml-hscroll-x:hover::-webkit-scrollbar-thumb {{ background: var(--muted); }}
+
+    /* Expand button — hover-only, keyboard-visible. Own ml-xbtn class — NOT
+       the Coaching tab's .coaching-expand-btn. */
+    #masterlistPanel .ml-xbtn {{
+        background: none; border: 1px solid var(--ml-border); cursor: pointer; padding: 5px 6px; border-radius: 4px;
+        color: var(--muted); display: flex; align-items: center; justify-content: center;
+        transition: background .15s, color .15s, border-color .15s, opacity .15s; flex-shrink: 0; opacity: 0;
+    }}
+    #masterlistPanel .ml-card:hover .ml-xbtn, #masterlistPanel .ml-card:focus-within .ml-xbtn,
+    #masterlistPanel .ml-tcrd:hover .ml-xbtn, #masterlistPanel .ml-tcrd:focus-within .ml-xbtn,
+    #masterlistPanel .ml-xbtn:focus {{ opacity: 1; }}
+    #masterlistPanel .ml-xbtn:hover {{ background: var(--bg); color: var(--blue); border-color: var(--blue); }}
+    #masterlistPanel .ml-xbtn:focus-visible {{ outline: 2px solid var(--blue); outline-offset: 1px; }}
+
+    /* Master List table card */
+    #masterlistPanel .ml-tcrd {{
+        background: var(--ml-surface); border-radius: var(--ml-r); box-shadow: var(--ml-shadow);
+        border-top: 3px solid var(--blue); overflow: hidden;
+    }}
+    #masterlistPanel .ml-thd {{ display: flex; align-items: center; justify-content: space-between; padding: 11px 15px; border-bottom: 1px solid var(--ml-border); flex-wrap: wrap; gap: 8px; }}
+    #masterlistPanel .ml-ttl {{ font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--blue); }}
+    #masterlistPanel .ml-tacts {{ display: flex; gap: 7px; align-items: center; flex-wrap: wrap; }}
+    #masterlistPanel .ml-twrap {{ overflow-x: auto; max-height: 420px; overflow-y: auto; }}
+    #masterlistPanel table.ml-dt {{ width: 100%; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }}
+    /* Change 3: header restyled to white bold on Pac-Biz blue (matches the QA
+       detail table header convention) — was gray text (var(--muted)) on a
+       light var(--bg) row, low contrast. Sort/hover states now darken the
+       blue background instead of changing text color, so the white text and
+       its sort-indicator glyph (.ml-sort-ic, inherits color) stay legible in
+       every state — changing the text color itself would have gone
+       white-on-blue -> blue-on-blue (invisible) on hover/sorted. */
+    #masterlistPanel .ml-dt thead tr {{ background: var(--blue); }}
+    #masterlistPanel .ml-dt th {{
+        padding: 7px 12px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em;
+        color: #fff; border-bottom: 1px solid var(--ml-border); white-space: nowrap; cursor: default; user-select: none;
+    }}
+    #masterlistPanel #ml-thead th[data-key] {{ cursor: pointer; }}
+    #masterlistPanel #ml-thead th[data-key]:hover {{ background: #003B73; }}
+    #masterlistPanel .ml-dt th.ml-sorted {{ background: #003B73; }}
+    #masterlistPanel .ml-dt th.ml-th-static {{ cursor: default; }}
+    #masterlistPanel .ml-dt th.ml-th-static:hover {{ background: var(--blue); }}
+    #masterlistPanel .ml-dt th .ml-sort-ic {{ margin-left: 2px; color: #fff; }}
+    #masterlistPanel .ml-dt th[data-key]:focus-visible {{ outline: 2px solid #fff; outline-offset: -2px; }}
+    #masterlistPanel .ml-dt td {{ padding: 7px 12px; border-bottom: 1px solid var(--ml-border); color: var(--text); white-space: nowrap; }}
+    #masterlistPanel .ml-dt tbody tr:last-child td {{ border-bottom: none; }}
+    #masterlistPanel .ml-dt tbody tr:hover td {{ background: rgba(0,76,151,.025); }}
+    #masterlistPanel .ml-pill {{ display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: .04em; }}
+    #masterlistPanel .ml-pa {{ background: #DCFCE7; color: #15803D; }}
+    #masterlistPanel .ml-pi {{ background: #FEE2E2; color: #B91C1C; }}
+    #masterlistPanel .ml-pp {{ background: #FEF9C3; color: #854D0E; }}
+
+    /* Pager */
+    #masterlistPanel .ml-tpager {{ display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 15px; border-top: 1px solid var(--ml-border); flex-wrap: wrap; }}
+    #masterlistPanel .ml-tpager-range {{ font-size: 11px; color: var(--muted); }}
+    #masterlistPanel .ml-tpager-controls {{ display: flex; align-items: center; gap: 8px; }}
+    #masterlistPanel .ml-tpager-page {{ font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; min-width: 88px; text-align: center; }}
+    #masterlistPanel .ml-btn {{
+        padding: 5px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1.5px solid var(--blue);
+        background: var(--blue); color: #fff; font-family: Arial, sans-serif; transition: opacity .15s; text-decoration: none;
+        display: inline-flex; align-items: center; justify-content: center; min-height: 32px;
+    }}
+    #masterlistPanel .ml-btn:hover {{ opacity: .85; }}
+    #masterlistPanel .ml-btn.ml-sec {{ background: none; color: var(--blue); }}
+    #masterlistPanel .ml-btn.ml-ico {{ padding: 5px 7px; color: var(--muted); background: none; border-color: var(--ml-border); }}
+    #masterlistPanel .ml-btn.ml-ico:hover {{ color: var(--blue); border-color: var(--blue); }}
+    #masterlistPanel .ml-btn.ml-ico[disabled] {{ opacity: .4; cursor: not-allowed; }}
+    #masterlistPanel .ml-btn.ml-ico[disabled]:hover {{ color: var(--muted); border-color: var(--ml-border); }}
+
+    /* Expand overlay + hover tooltip — top-level IDs, safe to leave unscoped (unique, no collisions) */
+    #ml-ovl {{ position: fixed; inset: 0; background: rgba(8,20,45,.58); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity .2s ease; }}
+    #ml-ovl.ml-open {{ opacity: 1; pointer-events: all; }}
+    #ml-ovl .ml-xcard {{
+        background: #fff; border-radius: 8px; box-shadow: 0 28px 70px rgba(0,0,0,.28); width: 100%; max-width: 1100px; max-height: 92vh;
+        display: flex; flex-direction: column; overflow: hidden; border-top: 3px solid var(--blue);
+        transform: scale(.97) translateY(6px); transition: transform .2s ease;
+    }}
+    #ml-ovl.ml-open .ml-xcard {{ transform: scale(1) translateY(0); }}
+    #ml-ovl .ml-xcard-hd {{ display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; border-bottom: 1px solid #DDE6EE; }}
+    #ml-ovl .ml-xcard-ttl {{ font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--blue); }}
+    #ml-ovl .ml-xcard-sub {{ font-size: 11px; color: var(--muted); margin-top: 1px; }}
+    #ml-ovl .ml-closebtn {{ background: none; border: none; cursor: pointer; color: var(--muted); padding: 4px 6px; border-radius: 4px; font-family: Arial, sans-serif; font-size: 18px; line-height: 1; transition: background .15s, color .15s; }}
+    #ml-ovl .ml-closebtn:hover {{ background: var(--bg); color: var(--text); }}
+    #ml-xbd {{ flex: 1; overflow: auto; padding: 24px; display: flex; align-items: center; justify-content: center; }}
+    #ml-xbd.ml-xbd-table {{ display: block; padding: 0; }}
+    #ml-xbd.ml-xbd-table .ml-twrap {{ max-height: none; }}
+    #ml-xbd.ml-xbd-table .ml-twrap table.ml-dt {{ width: 100%; }}
+    #ml-xbd.ml-xbd-scroll {{ align-items: flex-start; }}
+    #ml-cv-tt {{ position: fixed; pointer-events: none; z-index: 10000; background: #0F2240; color: #fff; font-size: 11px; font-family: Arial, sans-serif; padding: 5px 9px; border-radius: 5px; box-shadow: 0 4px 14px rgba(0,0,0,.25); white-space: nowrap; opacity: 0; transition: opacity .1s; top: 0; left: 0; }}
+    #ml-cv-tt.ml-show {{ opacity: 1; }}
+
+    @media (prefers-reduced-motion: reduce) {{
+        #masterlistPanel .ml-card, #masterlistPanel .ml-xbtn, #ml-ovl, #ml-ovl .ml-xcard {{ transition: none; }}
+    }}
+
+    @media (max-width: 1300px) {{
+        #masterlistPanel .ml-r5, #masterlistPanel .ml-r4, #masterlistPanel .ml-r2asym {{ grid-template-columns: 1fr; }}
+        #masterlistControls .ml-kpi-strip {{ grid-template-columns: repeat(2, 1fr); position: static; }}
+    }}
 </style>
 </head>
 
@@ -6128,18 +6564,45 @@ def main():
             <div class="multi-options" id="employmentStatusOptions"></div>
         </details>
     </div>
+    <button class="ml-btn ml-sec ml-clear-btn" id="mlClearFiltersBtn" type="button">Clear filters</button>
 </div>
 
-<div class="cards">
-    <div class="card"><div class="label">Headcount</div><div class="value" id="headcount">0</div></div>
-    <div class="card"><div class="label">Active</div><div class="value" id="active">0</div></div>
-    <div class="card"><div class="label">Inactive</div><div class="value" id="inactive">0</div></div>
-    <div class="card"><div class="label">Movements</div><div class="value" id="movements">0</div></div>
-    <div class="card"><div class="label">Departments</div><div class="value" id="departments">0</div></div>
-    <div class="card"><div class="label">Sub Departments</div><div class="value" id="accounts">0</div></div>
-    <div class="card"><div class="label">Accounts</div><div class="value" id="approvedAccounts">0</div></div>
-    <div class="card"><div class="label">Managers</div><div class="value" id="managers">0</div></div>
-    <div class="card"><div class="label">History Records</div><div class="value" id="historyRecords">0</div></div>
+<div class="ml-kpi-strip" id="masterlistKpiStrip">
+    <div class="ml-kpi g">
+        <div class="ml-kpi-lbl">Active Employees</div>
+        <div class="ml-kpi-val" id="ml-kpi-active">0</div>
+        <div class="ml-kpi-sub">Currently active</div>
+    </div>
+    <div class="ml-kpi b">
+        <div class="ml-kpi-lbl">Total Headcount</div>
+        <div class="ml-kpi-val" id="ml-kpi-total">0</div>
+        <div class="ml-kpi-sub" id="ml-kpi-total-sub">Incl. 0 inactive</div>
+    </div>
+    <div class="ml-kpi">
+        <div class="ml-kpi-lbl">Departments</div>
+        <div class="ml-kpi-val" id="ml-kpi-departments">0</div>
+        <div class="ml-kpi-sub">Across filtered results</div>
+    </div>
+    <div class="ml-kpi">
+        <div class="ml-kpi-lbl">Accounts</div>
+        <div class="ml-kpi-val" id="ml-kpi-accounts">22</div>
+        <div class="ml-kpi-sub">Active accounts</div>
+    </div>
+    <div class="ml-kpi">
+        <div class="ml-kpi-lbl">Avg Tenure</div>
+        <div class="ml-kpi-val" id="ml-kpi-avgtenure">0<span style="font-size:14px;font-weight:400"> yrs</span></div>
+        <div class="ml-kpi-sub">Org-wide, active staff</div>
+    </div>
+    <div class="ml-kpi">
+        <div class="ml-kpi-lbl">Movements</div>
+        <div class="ml-kpi-val" id="ml-kpi-movements">0</div>
+        <div class="ml-kpi-sub" id="ml-kpi-movements-sub">0 for processing</div>
+    </div>
+    <div class="ml-kpi">
+        <div class="ml-kpi-lbl">History Records</div>
+        <div class="ml-kpi-val" id="ml-kpi-history">0</div>
+        <div class="ml-kpi-sub">Snapshot log entries</div>
+    </div>
 </div>
 </div>
 
@@ -6198,41 +6661,118 @@ def main():
 </div>
 
 <div class="tab-panel active" id="masterlistPanel" data-tab="masterlist" role="tabpanel">
-<div class="grid">
-    <div class="donut-chart-row">
-        <div class="chart-card"><div id="deptDonut"></div></div>
-        <div class="chart-card"><div id="activeDonut"></div></div>
-        <div class="chart-card"><div id="employeeGroupDonut"></div></div>
-        <div class="chart-card"><div id="employmentClassDonut"></div></div>
+<div class="grid ml-grid">
+
+  <div class="ml-row ml-r5">
+    <div class="ml-card" data-cid="active" data-ttl="Active Status" data-sub="Active vs inactive employees">
+      <div class="ml-card-hd"><div><div class="ml-card-ttl">Active Status</div><div class="ml-card-sub">Active vs inactive employees</div></div>
+      <button class="ml-xbtn" type="button" aria-label="Expand Active Status" onclick="mlOpenExpand(this.closest('.ml-card'), this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button></div>
+      <div class="ml-card-bd"><canvas id="c-ml-active"></canvas></div>
     </div>
-    <div class="bar-chart-row">
-        <div class="chart-card chart-card-scrollable"><div id="accountBar"></div></div>
-        <div class="chart-card"><div id="managerBar"></div></div>
-        <div class="chart-card"><div id="supervisorBar"></div></div>
+    <div class="ml-card" data-cid="dept" data-ttl="By Department" data-sub="Headcount distribution">
+      <div class="ml-card-hd"><div><div class="ml-card-ttl">By Department</div><div class="ml-card-sub">Headcount distribution</div></div>
+      <button class="ml-xbtn" type="button" aria-label="Expand By Department" onclick="mlOpenExpand(this.closest('.ml-card'), this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button></div>
+      <div class="ml-card-bd"><canvas id="c-ml-dept"></canvas></div>
     </div>
-    <div class="chart-card chart-card-scrollable"><div id="accountTenureStack"></div></div>
-    <div class="chart-card"><div id="tenureSegmentation"></div></div>
-    <div class="chart-card"><div id="ageGroupBar"></div></div>
-    <div class="chart-card"><div id="weeklyLine"></div></div>
-    <div class="chart-card full" id="masterlistCard">
-        <div class="table-heading">
-            <h3>Master List</h3>
-            <div class="table-actions">
-                <a class="table-action" href="{masterlist_source_url}" target="_blank" rel="noopener">{masterlist_source_label}</a>
-                <a class="table-action secondary" href="{masterlist_excel_url}" target="_blank" rel="noopener">Download Excel</a>
-                <button class="table-action icon-action" type="button" id="masterlistFocusToggle" aria-label="Expand Master List" title="Expand Master List">
-                    <span class="masterlist-focus-icon" aria-hidden="true"></span>
-                </button>
-            </div>
-        </div>
-        <div id="masterlistTable"></div>
+    <div class="ml-card" data-cid="empgrp" data-ttl="Employee Group" data-sub="Classification breakdown">
+      <div class="ml-card-hd"><div><div class="ml-card-ttl">Employee Group</div><div class="ml-card-sub">Classification breakdown</div></div>
+      <button class="ml-xbtn" type="button" aria-label="Expand Employee Group" onclick="mlOpenExpand(this.closest('.ml-card'), this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button></div>
+      <div class="ml-card-bd"><canvas id="c-ml-empgrp"></canvas></div>
     </div>
-    <div class="chart-card full">
-        <h3 style="color:#004C97;margin:4px 0 12px;">Recent Employee Movements</h3>
-        <div id="recentMovements"></div>
+    <div class="ml-card" data-cid="empclass" data-ttl="Employment Class" data-sub="Full-time · Part-time · Casual">
+      <div class="ml-card-hd"><div><div class="ml-card-ttl">Employment Class</div><div class="ml-card-sub">Full-time · Part-time · Casual</div></div>
+      <button class="ml-xbtn" type="button" aria-label="Expand Employment Class" onclick="mlOpenExpand(this.closest('.ml-card'), this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button></div>
+      <div class="ml-card-bd"><canvas id="c-ml-empclass"></canvas></div>
     </div>
+    <div class="ml-card" data-cid="tenureseg" data-ttl="Tenure Segmentation" data-sub="Headcount by tenure band">
+      <div class="ml-card-hd"><div><div class="ml-card-ttl">Tenure Segmentation</div><div class="ml-card-sub">Headcount by tenure band</div></div>
+      <button class="ml-xbtn" type="button" aria-label="Expand Tenure Segmentation" onclick="mlOpenExpand(this.closest('.ml-card'), this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button></div>
+      <div class="ml-card-bd"><canvas id="c-ml-tenureseg"></canvas></div>
+    </div>
+  </div>
+
+  <div class="ml-row ml-r4">
+    <div class="ml-card" data-cid="account" data-ttl="By Account" data-sub="Headcount per account">
+      <div class="ml-card-hd"><div><div class="ml-card-ttl">By Account</div><div class="ml-card-sub">Headcount per account</div></div>
+      <button class="ml-xbtn" type="button" aria-label="Expand By Account" onclick="mlOpenExpand(this.closest('.ml-card'), this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button></div>
+      <div class="ml-card-bd ml-hbar-bd"><div class="ml-hbar-scroll"><canvas id="c-ml-account"></canvas></div></div>
+    </div>
+    <div class="ml-card" data-cid="manager" data-ttl="By Manager" data-sub="Direct reports per manager">
+      <div class="ml-card-hd"><div><div class="ml-card-ttl">By Manager</div><div class="ml-card-sub">Direct reports per manager</div></div>
+      <button class="ml-xbtn" type="button" aria-label="Expand By Manager" onclick="mlOpenExpand(this.closest('.ml-card'), this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button></div>
+      <div class="ml-card-bd ml-hbar-bd"><div class="ml-hbar-scroll"><canvas id="c-ml-manager"></canvas></div></div>
+    </div>
+    <div class="ml-card" data-cid="supervisor" data-ttl="By Supervisor" data-sub="Span of control">
+      <div class="ml-card-hd"><div><div class="ml-card-ttl">By Supervisor</div><div class="ml-card-sub">Span of control</div></div>
+      <button class="ml-xbtn" type="button" aria-label="Expand By Supervisor" onclick="mlOpenExpand(this.closest('.ml-card'), this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button></div>
+      <div class="ml-card-bd ml-hbar-bd"><div class="ml-hbar-scroll"><canvas id="c-ml-supervisor"></canvas></div></div>
+    </div>
+    <div class="ml-card" data-cid="age" data-ttl="Age Group" data-sub="Workforce demographics">
+      <div class="ml-card-hd"><div><div class="ml-card-ttl">Age Group</div><div class="ml-card-sub">Workforce demographics</div></div>
+      <button class="ml-xbtn" type="button" aria-label="Expand Age Group" onclick="mlOpenExpand(this.closest('.ml-card'), this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button></div>
+      <div class="ml-card-bd ml-hbar-bd"><div class="ml-hbar-scroll"><canvas id="c-ml-age"></canvas></div></div>
+    </div>
+  </div>
+
+  <div class="ml-row ml-r2asym">
+    <div class="ml-card" data-cid="tenurestack" data-ttl="Tenure by Account" data-sub="Stacked tenure bands per account · scroll for all">
+      <div class="ml-card-hd"><div><div class="ml-card-ttl">Tenure by Account</div><div class="ml-card-sub">Stacked tenure bands per account · scroll for all</div></div>
+      <button class="ml-xbtn" type="button" aria-label="Expand Tenure by Account" onclick="mlOpenExpand(this.closest('.ml-card'), this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button></div>
+      <div class="ml-card-bd ml-hscroll-bd"><div class="ml-hscroll-x"><canvas id="c-ml-tenurestack"></canvas></div></div>
+    </div>
+    <div class="ml-card gc" data-cid="weekly" data-ttl="Weekly Headcount Trend" data-sub="Headcount by week, by Employment Class">
+      <div class="ml-card-hd"><div><div class="ml-card-ttl" style="color:#1a7a2e">Weekly Headcount Trend</div><div class="ml-card-sub">Headcount by week, by Employment Class</div></div>
+      <button class="ml-xbtn" type="button" aria-label="Expand Weekly Trend" onclick="mlOpenExpand(this.closest('.ml-card'), this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button></div>
+      <div class="ml-card-bd ml-hscroll-bd"><div class="ml-hscroll-x"><canvas id="c-ml-weekly"></canvas></div></div>
+    </div>
+  </div>
+
+  <div class="ml-tcrd" data-cid="masterlist" data-ttl="Master List" data-sub="Full employee roster" id="masterlistCard">
+    <div class="ml-thd">
+      <div class="ml-ttl">Master List</div>
+      <div class="ml-tacts">
+        <a class="ml-btn" href="{masterlist_source_url}" target="_blank" rel="noopener">{masterlist_source_label}</a>
+        <a class="ml-btn ml-sec" href="{masterlist_excel_url}" target="_blank" rel="noopener">Download Excel</a>
+        <button class="ml-btn ml-sec ml-ico" type="button" id="masterlistFocusToggle" aria-label="Expand Master List" title="Expand Master List">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="ml-twrap">
+      <table class="ml-dt" id="ml-table">
+        <thead id="ml-thead"></thead>
+        <tbody id="ml-tbody"></tbody>
+      </table>
+    </div>
+    <div class="ml-tpager">
+      <span class="ml-tpager-range" id="ml-pager-range">Showing 0 of 0 employees</span>
+      <div class="ml-tpager-controls">
+        <button class="ml-btn ml-ico" type="button" id="ml-prev" aria-label="Previous page"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <span class="ml-tpager-page" id="ml-pager-page">Page 1 of 1</span>
+        <button class="ml-btn ml-ico" type="button" id="ml-next" aria-label="Next page"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-card full">
+    <h3 style="color:#004C97;margin:4px 0 12px;">Recent Employee Movements</h3>
+    <div id="recentMovements"></div>
+  </div>
+
 </div>
 </div>
+
+<!-- Masterlist expand modal + hover tooltip (top-level; ml-open/ml-ovl/ml-xbd IDs are unique dashboard-wide) -->
+<div id="ml-ovl" role="dialog" aria-modal="true" aria-labelledby="ml-xttl">
+  <div class="ml-xcard">
+    <div class="ml-xcard-hd">
+      <div><div class="ml-xcard-ttl" id="ml-xttl"></div><div class="ml-xcard-sub" id="ml-xsub"></div></div>
+      <button class="ml-closebtn" id="ml-xcls" type="button" aria-label="Close">&#10005;</button>
+    </div>
+    <div class="ml-xcard-bd" id="ml-xbd"></div>
+  </div>
+</div>
+<div id="ml-cv-tt" aria-hidden="true"></div>
 
 <div class="tab-panel" id="coachingPanel" data-tab="coaching" role="tabpanel">
 <div class="grid coaching-grid">
@@ -6823,6 +7363,7 @@ def main():
 
 <script>
 const masterlist = {to_records(masterlist)};
+const masterlistKpis = {json.dumps(masterlist_kpis, default=str)};
 const historyData = {to_records(history)};
 const movementData = {to_records(movement)};
 const coachingData = {to_records(coaching)};
@@ -7380,6 +7921,19 @@ function populateMasterlistFilters() {{
         MASTERLIST_FILTERS.employmentStatus,
         render
     );
+}}
+
+// Item 6 — Clear filters (POC parity: masterlist-poc.html's #f-clear resets
+// FILTER_STATE to its defaults, resets each control, then re-runs drawAll()).
+// Here "default" for every MASTERLIST_FILTERS Set is empty == "all selected"
+// (see populateMultiFilter/syncMultiFilterOptions), so clearing every Set and
+// rebuilding the dropdowns puts every filter back to "All" with no search —
+// then render() re-draws charts/table/KPIs off the now-unfiltered data.
+function mlClearFilters() {{
+    Object.values(MASTERLIST_FILTERS).forEach(set => set.clear());
+    closeMultiFilters();
+    populateMasterlistFilters();
+    render();
 }}
 
 function closeMultiFilters(exceptFilter = null) {{
@@ -8321,6 +8875,15 @@ function reflowDashboard() {{
     if (window.Plotly) {{
         document.querySelectorAll(".js-plotly-plot").forEach(plot => Plotly.Plots.resize(plot));
     }}
+    // Masterlist canvases report 0 width/height while their tab is display:none —
+    // recompute the sticky-header offset and redraw only when the tab is visible.
+    const mainHdr = document.querySelector(".sticky-dashboard-header");
+    if (mainHdr) {{
+        document.documentElement.style.setProperty("--ml-stick-top", mainHdr.offsetHeight + "px");
+    }}
+    if (document.getElementById("masterlistPanel")?.classList.contains("active")) {{
+        mlDrawAll();
+    }}
 }}
 
 function setMasterlistFocusMode(active) {{
@@ -8351,39 +8914,1152 @@ function toggleLogsFocusMode() {{
     setLogsFocusMode(!document.body.classList.contains("logs-focus-mode"));
 }}
 
+// ─── MASTERLIST TAB — CANVAS CHART SYSTEM ──────────────────────────────────
+// Ported from masterlist-poc.html (Phase 2, Mike-approved). Every new global
+// here is ml-/MC_/ML_-prefixed and every new DOM id is ml- prefixed so none
+// of this can collide with the Coaching tab's donut()/bar()/scrollableBar()/
+// accountTenureStack()/weeklyChart()/renderDonutWithSummary()/COLORS or the
+// Quality tab's qa-* helpers. Data always comes from the SAME filtered
+// dataset render() already computes via filteredMasterlist() — there is no
+// second/parallel filter system here.
+const MC_COLORS = ["#004C97", "#39B54A", "#1E7EE6", "#F59E0B", "#0891B2", "#8B5CF6", "#EF4444", "#F97316", "#0D9488"];
+const ML_STATUS_COLORS = {{ ACTIVE: "#39B54A", PROBATION: "#F59E0B", INACTIVE: "#EF4444" }};
+
+function mlGetVar(name) {{
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}}
+
+function mlMkCanvas(id, w, h) {{
+    const el = document.getElementById(id);
+    if (!el) return null;
+    const dpr = window.devicePixelRatio || 1;
+    el.width = w * dpr; el.height = h * dpr;
+    el.style.width = w + "px"; el.style.height = h + "px";
+    const ctx = el.getContext("2d");
+    ctx.scale(dpr, dpr);
+    return {{el, ctx, w, h}};
+}}
+
+function mlEmptyState(ctx, w, h) {{
+    ctx.clearRect(0, 0, w, h);
+    ctx.textAlign = "center";
+    ctx.fillStyle = mlGetVar("--muted") || "#5A6B80";
+    ctx.font = "12px Arial";
+    ctx.fillText("No data for selected filters", w / 2, h / 2);
+}}
+
+// Fix (item 4): measure the actual card-body INNER width at draw time via
+// getBoundingClientRect() (not a hardcoded number) — subtract the immediate
+// parent's REAL computed left/right padding instead of the old fixed "-24"
+// magic number, which was only correct for the plain .ml-card-bd padding
+// (10px 12px 13px = 24) and slightly off for cards like the hbar wrapper.
+function mlCardWidth(canvasId, fallback) {{
+    const el = document.getElementById(canvasId);
+    if (!el || !el.parentElement) return fallback;
+    const parent = el.parentElement;
+    const rect = parent.getBoundingClientRect();
+    const cs = window.getComputedStyle(parent);
+    const padX = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+    const w = rect.width - padX;
+    return w > 80 ? Math.floor(w) : fallback;
+}}
+
+function mlShowTip(x, y, text) {{
+    const tt = document.getElementById("ml-cv-tt");
+    if (!tt) return;
+    tt.textContent = text;
+    tt.style.left = (x + 14) + "px";
+    tt.style.top = (y + 14) + "px";
+    tt.classList.add("ml-show");
+}}
+// HTML variant (change 13) — only used where the tooltip needs a second line
+// (e.g. Tenure by Account's per-segment "Total:" line). Callers are
+// responsible for escaping any data-derived text before interpolating.
+function mlShowTipHtml(x, y, html) {{
+    const tt = document.getElementById("ml-cv-tt");
+    if (!tt) return;
+    tt.innerHTML = html;
+    tt.style.left = (x + 14) + "px";
+    tt.style.top = (y + 14) + "px";
+    tt.classList.add("ml-show");
+}}
+function mlMoveTip(x, y) {{
+    const tt = document.getElementById("ml-cv-tt");
+    if (!tt) return;
+    tt.style.left = (x + 14) + "px";
+    tt.style.top = (y + 14) + "px";
+}}
+function mlHideTip() {{
+    document.getElementById("ml-cv-tt")?.classList.remove("ml-show");
+}}
+// fmt (optional): function(rect) -> tooltip text. Defaults to "label — N employees".
+// htmlMode (optional): when true, fmt's return value is treated as pre-escaped HTML
+// (via mlShowTipHtml) instead of plain text — used only by the Tenure-by-Account
+// stacked-segment tooltip (change 13), which needs a second "Total:" line.
+//
+// Perf fix (change 12): the hit-test used to run — and, worse, could have driven
+// a full chart redraw — on every raw mousemove event. It now only (a) coalesces
+// rapid events via requestAnimationFrame so the hit-test runs at most once per
+// frame, and (b) skips re-building the tooltip text/DOM write entirely while the
+// cursor stays over the SAME rect, only repositioning it. The underlying chart
+// canvas is never redrawn here — only the floating #ml-cv-tt tooltip moves.
+function mlAttachBarTooltip(el, rects, fmt, htmlMode) {{
+    fmt = fmt || (r => `${{r.label}} — ${{r.value}} employee${{r.value === 1 ? "" : "s"}}`);
+    let pendingEvt = null, rafId = null, lastHitIdx = -1;
+    function process() {{
+        rafId = null;
+        const e = pendingEvt;
+        pendingEvt = null;
+        if (!e) return;
+        const x = e.offsetX, y = e.offsetY;
+        let hit = null, hitIdx = -1;
+        for (let i = 0; i < rects.length; i++) {{
+            const r = rects[i];
+            if (x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) {{ hit = r; hitIdx = i; break; }}
+        }}
+        if (hit) {{
+            if (hitIdx !== lastHitIdx) {{
+                if (htmlMode) mlShowTipHtml(e.clientX, e.clientY, fmt(hit));
+                else mlShowTip(e.clientX, e.clientY, fmt(hit));
+                lastHitIdx = hitIdx;
+            }} else {{
+                mlMoveTip(e.clientX, e.clientY);
+            }}
+            el.style.cursor = "pointer";
+        }} else {{
+            if (lastHitIdx !== -1) {{ mlHideTip(); lastHitIdx = -1; }}
+            el.style.cursor = "default";
+        }}
+    }}
+    el.onmousemove = (e) => {{
+        pendingEvt = e;
+        if (rafId == null) rafId = requestAnimationFrame(process);
+    }};
+    el.onmouseleave = () => {{
+        if (rafId != null) {{ cancelAnimationFrame(rafId); rafId = null; }}
+        pendingEvt = null;
+        lastHitIdx = -1;
+        mlHideTip();
+        el.style.cursor = "default";
+    }};
+}}
+
+// ── Legend layout helper (item A — standardized donut legends) — STRICT
+//    column grid (default 2, parameterized via `cols` — Tweak 3: the Tenure
+//    Segmentation donut requests 3 columns to fit its 8 bands into 3 rows;
+//    every other donut keeps the default 2), not the old dynamic flow-wrap
+//    (which could pack 3-4 short entries per row on one donut and only 1 on
+//    another). Every donut calls this through mlDonut with the SAME
+//    font/rowH/dot size, so the grid reads identically card-to-card; only
+//    the column width adapts to that card's own longest label (so a
+//    3-entry list like Active Status doesn't get stretched into a
+//    half-empty column). mlDonut anchors this grid to the BOTTOM of the
+//    canvas (Tweak 2) and reserves exactly
+//    `rows * rowH` of height for it. ──────────────────────────────────────
+function mlLegendLayout(ctx, items, w, font, rowH, startX, cols) {{
+    startX = startX == null ? 8 : startX;
+    cols = cols || 2; // default 2-column grid; Tenure Segmentation passes 3
+    ctx.font = font;
+    const colGap = 16; // gap between adjacent legend columns
+    const dotTextGap = 14; // dot + gap before label text — matches the +14 draw offset in mlDonut
+    const availW = w - startX * 2;
+    // Change 1: columns are placed in N equal slots spanning the FULL
+    // available legend width edge-to-edge (was startX + i*(colW+colGap),
+    // which packed columns tightly from the left using only as much width
+    // as the longest label needed — on a short-label donut like the 3-column
+    // Tenure Segmentation legend that left all 3 columns clustered in the
+    // left/middle of the card instead of reaching the right edge). Each
+    // column's own text-wrap width is still capped by its longest label
+    // (or the slot minus colGap, whichever is smaller) so labels never
+    // collide across a slot boundary — only the DOT/column starting X now
+    // comes from the even slot division.
+    const slotW = availW / cols;
+    let maxTextW = 0;
+    items.forEach(it => {{
+        const tw = ctx.measureText(it.name).width;
+        if (tw > maxTextW) maxTextW = tw;
+    }});
+    const colW = Math.max(20, Math.min(slotW - colGap, dotTextGap + maxTextW));
+    const colX = [];
+    for (let i = 0; i < cols; i++) colX.push(startX + i * slotW);
+    const positions = items.map((it, i) => ({{
+        item: it,
+        x: colX[i % cols],
+        y: Math.floor(i / cols) * rowH,
+        colW,
+    }}));
+    const rows = Math.max(1, Math.ceil(items.length / cols));
+    return {{positions, rows, colW}};
+}}
+// Truncates text with an ellipsis so a legend label can never overflow past
+// its column into the neighboring one (item A — strict column grid).
+function mlEllipsize(ctx, text, maxW) {{
+    if (ctx.measureText(text).width <= maxW) return text;
+    let out = text;
+    while (out.length > 1 && ctx.measureText(out + "…").width > maxW) out = out.slice(0, -1);
+    return out + "…";
+}}
+
+// ── Donut chart — segs: [{{name, count, color}}] ────────────────────────────
+function mlDonut(id, segs, w, h, opts) {{
+    opts = opts || {{}};
+    w = w || 220; h = h || 219;
+    const total = (segs || []).reduce((s, x) => s + x.count, 0);
+    // Fix (item 3): measure the legend BEFORE sizing the canvas, using a
+    // detached scratch context (same pattern as mlHbar's label measuring
+    // below), so the card can grow a little to fit every entry — proper
+    // row/column spacing, no squashing — instead of being locked to the old
+    // fixed height regardless of how many legend rows a big list (e.g. "By
+    // Department" with 11 items) actually needs.
+    // Tweak 3: legend column count is parameterized (default 2); only the
+    // Tenure Segmentation donut (8 bands) requests 3 via opts.legendCols —
+    // every other donut keeps the default 2-column grid.
+    const legendCols = opts.legendCols || 2;
+    const legendFont = "10px Arial", legendRowH = 18, legendGap = opts.mini ? 0 : 22;
+    const meas = document.createElement("canvas").getContext("2d");
+    const legendLayout = (opts.mini || !total) ? {{positions: [], rows: 0}} : mlLegendLayout(meas, segs, w, legendFont, legendRowH, undefined, legendCols);
+    const legendH = opts.mini ? 0 : (legendGap + legendLayout.rows * legendRowH + 6);
+    const minArcH = 150; // room for the arc + on-chart labels regardless of legend height
+    const drawH = opts.mini ? h : Math.max(h, minArcH + legendH);
+    const c = mlMkCanvas(id, w, drawH);
+    if (!c) return;
+    const ctx = c.ctx;
+    ctx.clearRect(0, 0, w, drawH);
+    if (!total) {{ mlEmptyState(ctx, w, drawH); c.el.onmousemove = null; c.el.onmouseleave = null; c.el.style.cursor = "default"; return; }}
+    // Change 7/8: legend now shows EVERY segment (not just the first 4) and
+    // wraps to as many rows as it needs — pre-measured above at the smaller
+    // 10px legend font so the arc is sized around the ACTUAL legend height,
+    // giving a clear, non-touching gap between the arc/on-chart labels and
+    // the legend block below, whether it's a 3-segment or an 8-segment donut.
+    const cx = w / 2, cy = (drawH - legendH) / 2 + (opts.mini ? 0 : 4);
+    const r = Math.min(cx, cy) * (opts.mini ? 0.9 : 0.76), ir = r * 0.58;
+    let a = -Math.PI / 2;
+    const arcs = [];
+    segs.forEach(s => {{
+        const sw = (s.count / total) * Math.PI * 2;
+        if (s.count > 0) {{
+            ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, r, a, a + sw); ctx.closePath();
+            ctx.fillStyle = s.color; ctx.fill();
+            arcs.push({{start: a, end: a + sw, seg: s}});
+        }}
+        a += sw;
+    }});
+    ctx.beginPath(); ctx.arc(cx, cy, ir, 0, Math.PI * 2);
+    ctx.fillStyle = "#fff";
+    ctx.fill();
+
+    if (!opts.mini) {{
+        arcs.forEach(ar => {{
+            const pct = ar.seg.count / total;
+            if (pct < 0.04) return;
+            const mid = (ar.start + ar.end) / 2;
+            const ax = cx + Math.cos(mid) * (r + 2), ay = cy + Math.sin(mid) * (r + 2);
+            const lx = cx + Math.cos(mid) * (r + 15), ly = cy + Math.sin(mid) * (r + 15);
+            ctx.strokeStyle = ar.seg.color; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(lx, ly); ctx.stroke();
+            ctx.font = "bold 13px Arial"; ctx.textBaseline = "middle";
+            ctx.textAlign = Math.cos(mid) >= 0 ? "left" : "right";
+            ctx.fillStyle = mlGetVar("--text") || "#0F2240";
+            ctx.fillText(ar.seg.count, lx + (Math.cos(mid) >= 0 ? 4 : -4), ly);
+        }});
+        ctx.textBaseline = "alphabetic";
+    }}
+
+    if (opts.mini) {{ c.el.onmousemove = null; c.el.onmouseleave = null; return; }}
+
+    const big = segs.reduce((m, s) => s.count > m.count ? s : m, segs[0]);
+    ctx.textAlign = "center";
+    ctx.fillStyle = mlGetVar("--text") || "#0F2240";
+    ctx.font = "bold 22px Arial";
+    ctx.fillText(big.count, cx, cy + 2);
+    ctx.font = "11px Arial";
+    ctx.fillStyle = mlGetVar("--muted") || "#5A6B80";
+    ctx.fillText(big.name, cx, cy + 17);
+
+    // Item A: draw every legend entry (including 0-count ones, e.g. Tenure
+    // Segmentation bands with no members) from the pre-measured strict
+    // column grid above (2, or 3 for Tenure Segmentation) — same dot
+    // size/row height/font on every donut, wrapped rows land exactly where
+    // mlLegendLayout() predicted (legendH already reserved it).
+    // Tweak 2: anchor the legend block to the BOTTOM of the canvas (fixed
+    // ~22px gap from the card-body bottom edge to the LAST row's text
+    // baseline) instead of floating directly beneath the arc at a variable
+    // position — matches the weekly-headcount chart's fixed bottom legend.
+    // drawH already reserves legendH of room above this point (the arc's
+    // own sizing/centering via cy, above, is untouched), so a taller legend
+    // (more rows) only pushes legendBaseY — and the arc above it — further
+    // up; it can never collide with or run past the bottom edge.
+    const legendBottomPad = 22; // ~20-24px target from canvas bottom to the LAST row's baseline
+    const legendBaseY = drawH - legendBottomPad - 8 - (legendLayout.rows - 1) * legendRowH;
+    ctx.font = legendFont; ctx.textAlign = "left";
+    legendLayout.positions.forEach(p => {{
+        ctx.fillStyle = p.item.color;
+        ctx.beginPath(); ctx.arc(p.x + 4, legendBaseY + p.y + 4, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = mlGetVar("--muted") || "#5A6B80";
+        // +14 gap between the swatch dot and its label text; label is
+        // ellipsized to the column width so long names (e.g. a consolidated
+        // "HR Group" department slice) never overlap the next column.
+        const maxTextW = Math.max(4, p.colW - 14);
+        ctx.fillText(mlEllipsize(ctx, p.item.name, maxTextW), p.x + 14, legendBaseY + p.y + 8);
+    }});
+
+    c.el.onmousemove = (e) => {{
+        const x = e.offsetX, y = e.offsetY, dx = x - cx, dy = y - cy;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < ir || dist > r) {{ mlHideTip(); c.el.style.cursor = "default"; return; }}
+        let ang = Math.atan2(dy, dx);
+        if (ang < -Math.PI / 2) ang += Math.PI * 2;
+        let hit = null;
+        for (let i = 0; i < arcs.length; i++) {{
+            if (ang >= arcs[i].start && ang <= arcs[i].end) {{ hit = arcs[i]; break; }}
+        }}
+        if (hit) {{
+            const pct = Math.round((hit.seg.count / total) * 100);
+            mlShowTip(e.clientX, e.clientY, `${{hit.seg.name}} — ${{hit.seg.count}} employee${{hit.seg.count === 1 ? "" : "s"}} (${{pct}}%)`);
+            c.el.style.cursor = "pointer";
+        }} else {{ mlHideTip(); c.el.style.cursor = "default"; }}
+    }};
+    c.el.onmouseleave = () => {{ mlHideTip(); c.el.style.cursor = "default"; }};
+}}
+
+// ── Horizontal bar — shows EVERY row (data must already be full, no slice) ──
+function mlHbar(id, data, w, opts) {{
+    opts = opts || {{}};
+    w = w || 280;
+    const barH = opts.barH || 22, gap = opts.gap || 10;
+    if (!data || !data.length || data.reduce((s, d) => s + d.count, 0) === 0) {{
+        const cEmpty = mlMkCanvas(id, w, 120);
+        if (!cEmpty) return;
+        mlEmptyState(cEmpty.ctx, w, 120);
+        return;
+    }}
+    const meas = document.createElement("canvas").getContext("2d");
+    meas.font = "11px Arial";
+    let labelW = 0; data.forEach(d => {{ const mw = meas.measureText(d.name).width; if (mw > labelW) labelW = mw; }});
+    meas.font = "bold 11px Arial";
+    let valueW = 0; data.forEach(d => {{ const mw = meas.measureText(String(d.count)).width; if (mw > valueW) valueW = mw; }});
+    const pad = {{ t: 8, r: Math.max(28, valueW + 16), b: 8, l: Math.min(220, Math.max(72, labelW + 16)) }};
+    const h = pad.t + pad.b + data.length * (barH + gap) - gap;
+    const c = mlMkCanvas(id, w, h);
+    if (!c) return;
+    const ctx = c.ctx;
+    ctx.clearRect(0, 0, w, h);
+    const maxV = Math.max.apply(null, data.map(d => d.count)) || 1;
+    const bw = w - pad.l - pad.r;
+    const rects = [];
+    data.forEach((d, i) => {{
+        const y = pad.t + (barH + gap) * i;
+        const blen = (d.count / maxV) * bw;
+        ctx.fillStyle = "rgba(0,76,151,.06)";
+        ctx.beginPath(); ctx.roundRect(pad.l, y, bw, barH, 3); ctx.fill();
+        const grad = ctx.createLinearGradient(pad.l, 0, pad.l + Math.max(blen, 2), 0);
+        grad.addColorStop(0, "#004C97"); grad.addColorStop(1, "#1E7EE6");
+        ctx.fillStyle = grad;
+        ctx.beginPath(); ctx.roundRect(pad.l, y, Math.max(blen, 2), barH, 3); ctx.fill();
+        ctx.textAlign = "right"; ctx.fillStyle = mlGetVar("--muted") || "#5A6B80";
+        ctx.font = "11px Arial";
+        ctx.fillText(d.name, pad.l - 8, y + barH / 2 + 4);
+        ctx.textAlign = "left"; ctx.fillStyle = mlGetVar("--text") || "#0F2240";
+        ctx.font = "bold 11px Arial";
+        ctx.fillText(d.count, pad.l + blen + 6, y + barH / 2 + 4);
+        rects.push({{x: pad.l, y, w: bw, h: barH, label: d.name, value: d.count}});
+    }});
+    mlAttachBarTooltip(c.el, rects);
+}}
+
+// ── Vertical bar (Weekly Headcount) ─────────────────────────────────────────
+function mlVbar(id, data, w, h) {{
+    w = w || 320; h = h || 219;
+    const c = mlMkCanvas(id, w, h);
+    if (!c) return;
+    const ctx = c.ctx;
+    ctx.clearRect(0, 0, w, h);
+    if (!data || !data.length || data.reduce((s, d) => s + d.count, 0) === 0) {{ mlEmptyState(ctx, w, h); return; }}
+    const pad = {{ t: 20, r: 10, b: 26, l: 8 }};
+    const cw = w - pad.l - pad.r, ch = h - pad.t - pad.b;
+    const n = data.length, gap = 10;
+    const barW = Math.min(40, (cw - gap * (n - 1)) / n);
+    const totalW = barW * n + gap * (n - 1);
+    const startX = pad.l + (cw - totalW) / 2;
+    const maxV = Math.max.apply(null, data.map(d => d.count)) || 1;
+    const rects = [];
+    data.forEach((d, i) => {{
+        const x = startX + i * (barW + gap);
+        const bh = (d.count / maxV) * ch;
+        const y = pad.t + ch - bh;
+        ctx.fillStyle = "rgba(57,181,74,.08)";
+        ctx.beginPath(); ctx.roundRect(x, pad.t, barW, ch, 3); ctx.fill();
+        const grad = ctx.createLinearGradient(0, y, 0, pad.t + ch);
+        grad.addColorStop(0, "#39B54A"); grad.addColorStop(1, "#8fd89b");
+        ctx.fillStyle = grad;
+        ctx.beginPath(); ctx.roundRect(x, y, barW, Math.max(bh, 2), 3); ctx.fill();
+        ctx.textAlign = "center"; ctx.fillStyle = mlGetVar("--text") || "#0F2240";
+        ctx.font = "bold 10px Arial";
+        ctx.fillText(d.count, x + barW / 2, Math.max(y - 6, 10));
+        ctx.fillStyle = mlGetVar("--muted") || "#5A6B80"; ctx.font = "9px Arial";
+        ctx.fillText(d.name, x + barW / 2, h - pad.b + 12);
+        rects.push({{x, y: pad.t, w: barW, h: ch, label: d.name, value: d.count}});
+    }});
+    mlAttachBarTooltip(c.el, rects);
+}}
+
+// ── Stacked bar (Tenure by Account) ─────────────────────────────────────────
+// WCAG-based readable text-contrast helper for in-segment value labels.
+function mlContrastTextColor(hex) {{
+    const r = parseInt(hex.slice(1, 3), 16) / 255, g = parseInt(hex.slice(3, 5), 16) / 255, b = parseInt(hex.slice(5, 7), 16) / 255;
+    const lin = ch => ch <= 0.03928 ? ch / 12.92 : Math.pow((ch + 0.055) / 1.055, 2.4);
+    const L = 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+    const contrastWhite = 1.05 / (L + 0.05);
+    const contrastDark = (L + 0.05) / 0.05;
+    return contrastWhite >= contrastDark ? "#FFFFFF" : "#0F2240";
+}}
+function mlStackbar(id, accounts, groups, colors, w, h) {{
+    w = w || 900; h = h || 299;
+    const c = mlMkCanvas(id, w, h);
+    if (!c) return;
+    const ctx = c.ctx;
+    ctx.clearRect(0, 0, w, h);
+    if (!accounts || !accounts.length) {{ mlEmptyState(ctx, w, h); c.el.onmousemove = null; c.el.onmouseleave = null; return; }}
+    const pad = {{ t: 8, r: 16, b: 40, l: 14 }};
+    const bw = Math.max((w - pad.l - pad.r) / accounts.length - 10, 18);
+    const maxV = Math.max.apply(null, accounts.map(a => a.vals.reduce((s, v) => s + v, 0))) || 1;
+    const ch = h - pad.t - pad.b;
+    const segRects = [];
+    const segLabelFont = "bold 11px Arial";
+    accounts.forEach((acc, i) => {{
+        const x = pad.l + i * (bw + 10);
+        let y = h - pad.b;
+        const accountTotal = acc.vals.reduce((s, v) => s + v, 0); // change 13
+        acc.vals.forEach((v, j) => {{
+            const bh = (v / maxV) * ch;
+            ctx.fillStyle = colors[j];
+            ctx.beginPath();
+            if (j === acc.vals.length - 1) ctx.roundRect(x, y - bh, bw, bh, 3);
+            else ctx.rect(x, y - bh, bw, bh);
+            ctx.fill();
+            segRects.push({{x, y: y - bh, w: bw, h: bh, account: acc.name, band: groups[j], value: v, total: accountTotal}});
+            if (v > 0) {{
+                ctx.font = segLabelFont;
+                const txt = String(v);
+                const tw = ctx.measureText(txt).width;
+                if (bh >= 15 && bw >= tw + 6) {{
+                    ctx.fillStyle = mlContrastTextColor(colors[j]);
+                    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+                    ctx.fillText(txt, x + bw / 2, y - bh / 2 + 1);
+                }}
+            }}
+            y -= bh;
+        }});
+        ctx.textBaseline = "alphabetic";
+        ctx.textAlign = "center"; ctx.fillStyle = mlGetVar("--muted") || "#5A6B80";
+        ctx.font = "10px Arial";
+        ctx.fillText(acc.name, x + bw / 2, h - pad.b + 14);
+    }});
+    let lx = pad.l, ly = h - 10;
+    groups.forEach((g, i) => {{
+        ctx.fillStyle = colors[i];
+        ctx.beginPath(); ctx.arc(lx + 4, ly, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.textAlign = "left"; ctx.fillStyle = mlGetVar("--muted") || "#5A6B80";
+        ctx.font = "9px Arial";
+        ctx.fillText(g, lx + 11, ly + 4);
+        lx += ctx.measureText(g).width + 24;
+        if (lx > w - 110) {{ lx = pad.l; ly += 13; }}
+    }});
+    // Change 13: tooltip keeps the existing "<Account> — <band>: N employees" line
+    // and adds a second line with the account's TOTAL across all bands.
+    mlAttachBarTooltip(c.el, segRects, r =>
+        `${{escapeHtml(r.account)}} — ${{escapeHtml(r.band)}}: ${{r.value}} employee${{r.value === 1 ? "" : "s"}}` +
+        `<br>Total: ${{r.total}} employee${{r.total === 1 ? "" : "s"}}`,
+        true);
+}}
+
+// ── "Nice" axis-step helper (item C) — picks a round gridline interval
+// (1/2/5 × a power of ten) for a given max value and target tick count, e.g.
+// a max of 187 with 4 ticks -> step 50 (gridlines at 0/50/100/150/200), never
+// an arbitrary in-between number. ───────────────────────────────────────────
+function mlNiceStep(maxV, ticks) {{
+    ticks = ticks || 4;
+    if (!maxV || maxV <= 0) return 1;
+    const raw = maxV / ticks;
+    const mag = Math.pow(10, Math.floor(Math.log10(raw)));
+    const norm = raw / mag;
+    const nice = norm <= 1 ? 1 : norm <= 2 ? 2 : norm <= 5 ? 5 : 10;
+    return nice * mag;
+}}
+
+// ── Vertical stacked bar (Weekly Headcount Trend, by Employment Class) —
+// weekly: {{weeks: [{{name, vals: [...]}}], classes: [...], colors: [...]}}.
+// Item C rework to match the reference design:
+//   • stack order fixed by mlBuildWeeklyStacked (Regular bottom/green,
+//     Probationary top/blue) — this function just draws whatever order/
+//     colors it's given, bottom segment first;
+//   • bold total-count label above each bar;
+//   • in-segment "N (P%)" labels, drawn only when a segment is tall/wide
+//     enough to hold the text without overlapping;
+//   • "nice"-step y-axis gridlines (faint, dotted) with small value labels;
+//   • slim bars (~30% of each slot) with generous (~70%) gaps, real
+//     left/right chart margins;
+//   • two-line x-axis labels (week date, muted year below);
+//   • bottom, left-aligned legend.
+function mlVStackbar(id, weekly, w, h) {{
+    w = w || 320; h = h || 260;
+    const weeks = (weekly && weekly.weeks) || [];
+    const classes = (weekly && weekly.classes) || [];
+    const colors = (weekly && weekly.colors) || [];
+    const c = mlMkCanvas(id, w, h);
+    if (!c) return;
+    const ctx = c.ctx;
+    ctx.clearRect(0, 0, w, h);
+    const grandTotal = weeks.reduce((s, wk) => s + wk.vals.reduce((s2, v) => s2 + v, 0), 0);
+    if (!weeks.length || !grandTotal) {{ mlEmptyState(ctx, w, h); c.el.onmousemove = null; c.el.onmouseleave = null; return; }}
+    // Fixed chart margins (item C) — pad.l leaves room for the y-axis value
+    // labels, pad.b leaves room for the axis gap + 2-line x-labels + legend
+    // row + bottom breathing room. Kept in sync with mlWeeklyNaturalWidth's
+    // own pad.l/pad.r + minSlotW below, so the .ml-hscroll-x fallback only
+    // ever has to scroll — it never has to squeeze a bar narrower than
+    // minBarW.
+    // Change 4: pad.b 86 -> 83 (moves the x-axis line 3px closer to the card
+    // bottom edge); axisY = h - pad.b so the date/year label baselines below
+    // (axisY + 28 / axisY + 38) ride along with it unchanged.
+    const pad = {{t: 30, r: 16, b: 83, l: 36}};
+    const cw = w - pad.l - pad.r, ch = h - pad.t - pad.b;
+    const n = weeks.length;
+    // Change 4: barRatio 0.3 -> 0.4 — bars now ~40% of each slot, ~60% gap
+    // (was ~30%/~70%), i.e. a 60% gap width as requested.
+    const minBarW = 16, barRatio = 0.4; // bars ~40% of each slot, ~60% gap
+    let barW, gap;
+    if (n <= 1) {{
+        barW = Math.max(minBarW, cw * barRatio); gap = 0;
+    }} else {{
+        const slotW = cw / n;
+        barW = Math.max(minBarW, slotW * barRatio);
+        gap = slotW - barW;
+    }}
+    const maxV = Math.max.apply(null, weeks.map(wk => wk.vals.reduce((s, v) => s + v, 0))) || 1;
+    const axisY = pad.t + ch;
+
+    // Y-axis — "nice" step gridlines (faint dotted, zero line solid) + small
+    // muted value labels. Bars below are scaled to the SAME topTick (not
+    // maxV) so the tallest bar lines up exactly with its gridline instead of
+    // always touching the very top of the chart regardless of scale.
+    const step = mlNiceStep(maxV, 4);
+    const topTick = Math.max(step, Math.ceil(maxV / step) * step);
+    ctx.textAlign = "right"; ctx.textBaseline = "middle"; ctx.font = "9px Arial";
+    for (let tick = 0; tick <= topTick + 0.0001; tick += step) {{
+        const y = axisY - (tick / topTick) * ch;
+        ctx.strokeStyle = tick === 0 ? "rgba(15,32,64,.18)" : "rgba(15,32,64,.10)";
+        ctx.setLineDash(tick === 0 ? [] : [2, 3]);
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + cw, y); ctx.stroke();
+        ctx.fillStyle = mlGetVar("--muted") || "#5A6B80";
+        ctx.fillText(String(Math.round(tick)), pad.l - 8, y);
+    }}
+    ctx.setLineDash([]);
+    ctx.textBaseline = "alphabetic";
+
+    // Bars — drawn bottom segment first (index 0) upward; only the topmost
+    // segment gets rounded TOP corners (bottom corners stay square so it
+    // joins the segment below with no visual seam).
+    const segRects = [];
+    // Change 4: dropped from 10px to 9px so the "N (P%)" text fits inside
+    // more segments now that barRatio-widened bars are still finite width.
+    const segLabelFont = "bold 9px Arial";
+    weeks.forEach((wk, i) => {{
+        const x = pad.l + i * (barW + gap);
+        let y = axisY;
+        const total = wk.vals.reduce((s, v) => s + v, 0);
+        wk.vals.forEach((v, j) => {{
+            const bh = (v / topTick) * ch;
+            const isTop = j === wk.vals.length - 1;
+            if (v > 0) {{
+                ctx.fillStyle = colors[j];
+                ctx.beginPath();
+                if (isTop) ctx.roundRect(x, y - bh, barW, bh, [3, 3, 0, 0]);
+                else ctx.rect(x, y - bh, barW, bh);
+                ctx.fill();
+                const pct = total ? Math.round((v / total) * 100) : 0;
+                const txt = `${{v}} (${{pct}}%)`;
+                ctx.font = segLabelFont;
+                const tw = ctx.measureText(txt).width;
+                // Change 4: threshold lowered from bh>=16 && barW>=tw+6 so the
+                // in-segment label ALWAYS shows on essentially every visible
+                // segment (matches Mike's reference) — only a genuinely tiny
+                // sliver segment (<10px tall) or one narrower than the text
+                // itself still skips the label, so text is never drawn taller
+                // than the segment that contains it.
+                if (bh >= 10 && barW >= tw + 2) {{
+                    // WCAG-based contrast pick (item C accessibility note):
+                    // Mike's reference calls for white text on both segments,
+                    // but white-on-green (#39B54A) is only ~2.7:1 — below the
+                    // 4.5:1 body-text minimum at this label size. Reusing the
+                    // same mlContrastTextColor() helper already used by the
+                    // Tenure-by-Account stacked bar keeps white on the blue
+                    // (Probationary) segment and switches to dark navy on the
+                    // green (Regular) segment automatically.
+                    ctx.fillStyle = mlContrastTextColor(colors[j]);
+                    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+                    ctx.fillText(txt, x + barW / 2, y - bh / 2 + 1);
+                    ctx.textBaseline = "alphabetic";
+                }}
+            }}
+            segRects.push({{x, y: y - bh, w: barW, h: Math.max(bh, v > 0 ? 1 : 0), week: wk.name, cls: classes[j] || "Unspecified", value: v, total}});
+            y -= bh;
+        }});
+        // Bold total-count label above the bar.
+        ctx.font = "bold 11px Arial"; ctx.textAlign = "center";
+        ctx.fillStyle = mlGetVar("--text") || "#0F2240";
+        const topY = axisY - (total / topTick) * ch;
+        ctx.fillText(String(total), x + barW / 2, Math.max(topY - 8, 12));
+
+        // Two-line x-axis label: week date on top, muted 4-digit year below.
+        const wkDate = parseDateValue(wk.name);
+        const line1 = wkDate ? `${{MONTH_LABELS[wkDate.getMonth()]}} ${{wkDate.getDate()}}` : wk.name;
+        ctx.font = "10px Arial"; ctx.fillStyle = mlGetVar("--text") || "#0F2240";
+        ctx.fillText(line1, x + barW / 2, axisY + 28);
+        if (wkDate) {{
+            ctx.font = "9px Arial"; ctx.fillStyle = mlGetVar("--muted") || "#5A6B80";
+            ctx.fillText(String(wkDate.getFullYear()), x + barW / 2, axisY + 38);
+        }}
+    }});
+
+    // Legend — bottom, left-aligned, listed top-segment-first (Probationary,
+    // then Regular) to match the stack's visual top-to-bottom reading order.
+    const colorByClass = Object.fromEntries(classes.map((cl, i) => [cl, colors[i]]));
+    const legendOrder = [...classes].reverse();
+    ctx.font = "10px Arial"; ctx.textAlign = "left";
+    let lx = pad.l;
+    const legendY = h - 12;
+    legendOrder.forEach(cls => {{
+        ctx.fillStyle = colorByClass[cls];
+        ctx.beginPath(); ctx.arc(lx + 4, legendY, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = mlGetVar("--muted") || "#5A6B80";
+        ctx.fillText(cls, lx + 12, legendY + 4);
+        lx += ctx.measureText(cls).width + 12 + 22;
+    }});
+
+    mlAttachBarTooltip(c.el, segRects, r => `${{r.week}} — ${{r.cls}}: ${{r.value}} employee${{r.value === 1 ? "" : "s"}} (Total: ${{r.total}})`);
+}}
+
+// ── Aggregation helpers — reuse countBy()/tenureCounts()/ageGroupCounts()/
+//    TENURE_GROUPS/AGE_GROUPS/APPROVED_ACCOUNTS/tenureGroupName() (all defined
+//    above); do not duplicate their bucketing logic. ──────────────────────────
+function mlWithColors(list) {{
+    return list.map((d, i) => ({{name: d.name, count: d.count, color: MC_COLORS[i % MC_COLORS.length]}}));
+}}
+function mlStatusSegs(data) {{
+    const order = ["Active", "Probation", "Inactive"];
+    const counts = Object.fromEntries(order.map(s => [s, 0]));
+    let other = 0;
+    data.forEach(r => {{
+        const st = norm(r["Employment Status"]);
+        const key = order.find(o => o.toLowerCase() === st.toLowerCase());
+        if (key) counts[key] += 1; else if (st) other += 1;
+    }});
+    const segs = order.filter(k => counts[k] > 0).map(k => ({{name: k, count: counts[k], color: ML_STATUS_COLORS[k.toUpperCase()]}}));
+    if (other > 0) segs.push({{name: "Other", count: other, color: "#94A3B8"}});
+    return segs;
+}}
+function mlTenureSegs(data) {{
+    // Item A: show EVERY tenure band in the legend, even one with 0 members
+    // right now (was filtered out here, silently dropping bands like
+    // "31-60 Days" from the legend when nobody currently falls in them).
+    return tenureCounts(data).map((d, i) => ({{name: d.name, count: d.count, color: MC_COLORS[i % MC_COLORS.length]}}));
+}}
+// By-Department DONUT ONLY: collapse every "HR"-prefixed sub-department
+// (case-insensitive after trim, e.g. "HR", "HR - Payroll", "HR-Finance",
+// "hr ops") into a single "HR Group" slice. This is a donut-only view of the
+// raw "Department" field — it does NOT mutate `data`/`masterlist`, so the
+// Master List table (mlRenderTable), the Department filter dropdown
+// (uniqueValues(masterlist, "Department")), and the "Departments" KPI tile
+// (uniqueValues(data, "Department").length) all keep reading the untouched
+// per-employee Department values elsewhere and are unaffected by this
+// grouping. Blank/missing values fall back to "Blank" (same as countBy())
+// and are never folded into "HR Group".
+function mlDeptDonutCounts(data) {{
+    const out = {{}};
+    data.forEach(r => {{
+        const raw = norm(r["Department"]);
+        const key = raw ? (raw.toLowerCase().startsWith("hr") ? "HR Group" : raw) : "Blank";
+        out[key] = (out[key] || 0) + 1;
+    }});
+    return Object.entries(out).map(([name, count]) => ({{name, count}})).sort((a, b) => b.count - a.count);
+}}
+function mlAccountTenureStack(data) {{
+    const accountNames = countBy(data, "LOB / Account")
+        .filter(d => APPROVED_ACCOUNTS.has(d.name.toLowerCase()))
+        .map(d => d.name);
+    const counts = {{}};
+    accountNames.forEach(account => {{ counts[account] = Object.fromEntries(TENURE_GROUPS.map(g => [g.name, 0])); }});
+    data.forEach(r => {{
+        const account = norm(r["LOB / Account"]) || "Blank";
+        if (!counts[account]) return;
+        const groupName = tenureGroupName(parseDateValue(r["Hire Date"]), new Date());
+        if (groupName) counts[account][groupName] += 1;
+    }});
+    const accounts = accountNames.map(name => ({{name, vals: TENURE_GROUPS.map(g => counts[name][g.name])}}));
+    return {{
+        accounts,
+        groups: TENURE_GROUPS.map(g => g.name),
+        colors: TENURE_GROUPS.map((g, i) => MC_COLORS[i % MC_COLORS.length]),
+    }};
+}}
+// Change 11: Weekly Headcount Trend is now a STACKED bar by Employment Class
+// (was a single-series total). Same source/dedupe logic as the old
+// mlBuildWeekly() (History sheet "Week" column, one row per employee per
+// Monday-start week, deduped by week+ID) — now also buckets by
+// "Employement Class" (typo preserved to match the masterlist/history field).
+function mlBuildWeeklyStacked() {{
+    const seen = new Set();
+    const deduped = [];
+    historyData.forEach(r => {{
+        const week = norm(r["Week"]);
+        const empId = norm(r["ID No."]);
+        if (week && empId && !seen.has(`${{week}}|${{empId}}`)) {{
+            seen.add(`${{week}}|${{empId}}`);
+            deduped.push(r);
+        }}
+    }});
+    const weekKeys = [...new Set(deduped.map(r => norm(r["Week"])))].filter(Boolean).sort((a, b) => new Date(a) - new Date(b));
+    const classSet = new Set();
+    deduped.forEach(r => {{ classSet.add(norm(r["Employement Class"]) || "Unspecified"); }});
+    // Item C: fixed stack order — Regular always first (drawn at the BOTTOM
+    // of the stack, per mlVStackbar's bottom-up draw loop) then Probationary
+    // (drawn on TOP), matching the reference design. Any other/unexpected
+    // class value the data happens to contain is appended afterward
+    // (alphabetically) so the chart never silently drops a class it doesn't
+    // recognize.
+    const ML_CLASS_ORDER = ["Regular", "Probationary"];
+    const classes = [
+        ...ML_CLASS_ORDER.filter(cls => classSet.has(cls)),
+        ...[...classSet].filter(cls => !ML_CLASS_ORDER.includes(cls)).sort(),
+    ];
+    // Fixed brand colors so Regular is always green / Probationary always
+    // blue regardless of draw order; any extra class falls back to the
+    // shared MC_COLORS palette.
+    const ML_CLASS_COLORS = {{Regular: "#39B54A", Probationary: "#004C97"}};
+    let extraColorIdx = 0;
+    const colors = classes.map(cls => ML_CLASS_COLORS[cls] || MC_COLORS[(extraColorIdx++) % MC_COLORS.length]);
+    const counts = {{}};
+    weekKeys.forEach(w => {{ counts[w] = Object.fromEntries(classes.map(c => [c, 0])); }});
+    deduped.forEach(r => {{
+        const week = norm(r["Week"]);
+        if (!counts[week]) return;
+        const cls = norm(r["Employement Class"]) || "Unspecified";
+        counts[week][cls] = (counts[week][cls] || 0) + 1;
+    }});
+    const weeks = weekKeys.map(w => ({{name: w, vals: classes.map(c => counts[w][c])}}));
+    return {{ weeks, classes, colors }};
+}}
+
+// ── Natural-width helpers (robustness B1/B2 + change 11) — the minimum bar
+// width each chart needs to stay legible, independent of the card's visible
+// width. Callers take Math.max(cardWidth, naturalWidth) and let the
+// .ml-hscroll-x wrapper (or the modal's own overflow:auto body) scroll
+// horizontally whenever the natural width wins. ────────────────────────────
+function mlStackNaturalWidth(accountCount) {{
+    const minBarW = 34, gap = 10, padLR = 14 + 16;
+    return padLR + Math.max(accountCount, 1) * (minBarW + gap) - gap;
+}}
+function mlWeeklyNaturalWidth(weekCount) {{
+    // Item C: kept in sync with mlVStackbar's own pad.l/pad.r (36/16) and
+    // bar-gap geometry. Change 4 note: minBarW/barRatio moved from 16/0.3 to
+    // 16/0.4 (minSlotW 54 -> 40) in mlVStackbar — updated here too so this
+    // stays in sync; the .ml-hscroll-x wrapper only ever needs to scroll, it
+    // never has to squeeze a bar narrower than minBarW.
+    const minSlotW = 40, padLR = 36 + 16;
+    return padLR + Math.max(weekCount, 1) * minSlotW;
+}}
+
+// ── Chart registry (used by the expand modal) + last-rendered args ─────────
+const ML_CHART_FN = {{
+    dept: "donut", active: "donut", empgrp: "donut", empclass: "donut", tenureseg: "donut",
+    account: "hbar", manager: "hbar", supervisor: "hbar", age: "hbar",
+    tenurestack: "stackbar", weekly: "vstackbar",
+}};
+let mlCurrentArgs = {{}};
+// Item C: ML_VSTACK_H raised 219 -> 264 to fit the new total-count label
+// above the bars, the two-line x-axis (date + year), and the bottom legend
+// row without cramping — see mlVStackbar's own pad.t/pad.b for the exact
+// vertical budget this height needs to satisfy.
+const ML_DONUT_H = 219, ML_STACKBAR_H = 299, ML_VBAR_H = 219, ML_VSTACK_H = 264;
+
+function mlRenderCharts(data) {{
+    mlCurrentArgs.dept = mlWithColors(mlDeptDonutCounts(data));
+    mlDonut("c-ml-dept", mlCurrentArgs.dept, 220, ML_DONUT_H);
+
+    mlCurrentArgs.active = mlStatusSegs(data);
+    mlDonut("c-ml-active", mlCurrentArgs.active, 220, ML_DONUT_H);
+
+    mlCurrentArgs.empgrp = mlWithColors(countBy(data, "Employee Group"));
+    mlDonut("c-ml-empgrp", mlCurrentArgs.empgrp, 220, ML_DONUT_H);
+
+    mlCurrentArgs.empclass = mlWithColors(countBy(data, "Employement Class"));
+    mlDonut("c-ml-empclass", mlCurrentArgs.empclass, 220, ML_DONUT_H);
+
+    mlCurrentArgs.tenureseg = mlTenureSegs(data);
+    // Tweak 3: 3-column legend for Tenure Segmentation's 8 bands (all other
+    // donuts stay the default 2-column grid — see mlDonut/mlLegendLayout).
+    mlDonut("c-ml-tenureseg", mlCurrentArgs.tenureseg, 220, ML_DONUT_H, {{legendCols: 3}});
+
+    mlCurrentArgs.account = countBy(data, "LOB / Account").filter(d => APPROVED_ACCOUNTS.has(d.name.toLowerCase()));
+    mlHbar("c-ml-account", mlCurrentArgs.account, mlCardWidth("c-ml-account", 280));
+
+    mlCurrentArgs.manager = countBy(data, "Manager");
+    mlHbar("c-ml-manager", mlCurrentArgs.manager, mlCardWidth("c-ml-manager", 280));
+
+    mlCurrentArgs.supervisor = countBy(data, "Immediate Supervisor");
+    mlHbar("c-ml-supervisor", mlCurrentArgs.supervisor, mlCardWidth("c-ml-supervisor", 280));
+
+    mlCurrentArgs.age = ageGroupCounts(data);
+    mlHbar("c-ml-age", mlCurrentArgs.age, mlCardWidth("c-ml-age", 280));
+
+    // Change 13/B2: canvas width is Math.max(visible card width, the natural
+    // width the account count actually needs at a legible minimum bar width) —
+    // the .ml-hscroll-x wrapper (added to this card's markup) scrolls whenever
+    // the natural width wins, instead of the old behavior of squeezing every
+    // bar to fit and eventually clipping content off-canvas.
+    mlCurrentArgs.tenurestack = mlAccountTenureStack(data);
+    {{
+        const stackW = Math.max(mlCardWidth("c-ml-tenurestack", 900), mlStackNaturalWidth(mlCurrentArgs.tenurestack.accounts.length));
+        mlStackbar("c-ml-tenurestack", mlCurrentArgs.tenurestack.accounts, mlCurrentArgs.tenurestack.groups, mlCurrentArgs.tenurestack.colors, stackW, ML_STACKBAR_H);
+    }}
+
+    // Change 11/B1: stacked-by-Employment-Class weekly trend, full card width,
+    // with the same natural-width + horizontal-scroll robustness as above so
+    // it never degrades into unreadable slivers as more weeks accumulate.
+    mlCurrentArgs.weekly = mlBuildWeeklyStacked();
+    {{
+        const weeklyW = Math.max(mlCardWidth("c-ml-weekly", 320), mlWeeklyNaturalWidth(mlCurrentArgs.weekly.weeks.length));
+        mlVStackbar("c-ml-weekly", mlCurrentArgs.weekly, weeklyW, ML_VSTACK_H);
+    }}
+
+    mlRenderTable(data);
+}}
+
+function mlDrawAll() {{
+    mlRenderCharts(filteredMasterlist());
+}}
+
+// ── Master List table — click-to-sort + pagination ──────────────────────────
+// NOTE: preserves the pre-existing quirk of the old masterlistTable(): the
+// Employee Name multi-filter (MASTERLIST_FILTERS.empName) is applied ONLY to
+// the table, not to the charts above — same as before this port.
+// Change A (fixes change #10): restored to the full 13 columns of the dead
+// masterlistTable()/MASTERLIST_COLUMNS reference — same field keys, same
+// labels (incl. the "Employement Class" typo), same order. The 7-column trim
+// is what caused header labels to render wrong (e.g. "Class" instead of
+// "Employement Class", "Account" instead of "LOB/Account").
+const ML_COLUMNS = [
+    {{key: "ID No.", label: "Employee ID", sortType: "number"}},
+    {{key: "Emp Name", label: "Employee Name"}},
+    {{key: "Hire Date", label: "Hire Date", sortType: "date"}},
+    {{key: "Employement Class", label: "Employement Class"}},
+    {{key: "__mlTenureDays", label: "Tenure"}},
+    {{key: "Job Title", label: "Job Title"}},
+    {{key: "Employee Group", label: "Employee Group"}},
+    {{key: "Department", label: "Department"}},
+    {{key: "LOB / Account", label: "LOB/Account"}},
+    {{key: "Immediate Supervisor", label: "Immediate Supervisor"}},
+    {{key: "Manager", label: "Manager"}},
+    {{key: "Employment Status", label: "Employment Status"}},
+    {{key: "Company Email", label: "Email"}},
+];
+// Default sort mirrors the pre-port default (masterlistSortState: Emp Name asc)
+// so the first paint isn't a jarring switch to unsorted/insertion order.
+const ML_TABLE_STATE = {{page: 1, pageSize: 20, sortKey: "Emp Name", sortDir: "asc"}};
+
+function mlSortGlyph(key) {{
+    if (ML_TABLE_STATE.sortKey !== key) return "\\u2195";
+    return ML_TABLE_STATE.sortDir === "asc" ? "\\u25B2" : "\\u25BC";
+}}
+function mlBuildTheadHtml(interactive) {{
+    return "<tr>" + ML_COLUMNS.map(c => {{
+        const active = ML_TABLE_STATE.sortKey === c.key;
+        const classes = [];
+        if (active) classes.push("ml-sorted");
+        if (!interactive) classes.push("ml-th-static");
+        const clsAttr = classes.length ? ` class="${{classes.join(" ")}}"` : "";
+        let attrs = "";
+        if (interactive) {{
+            const ariaSort = active ? (ML_TABLE_STATE.sortDir === "asc" ? "ascending" : "descending") : "none";
+            attrs = ` data-key="${{c.key}}" tabindex="0" aria-sort="${{ariaSort}}"`;
+        }}
+        return `<th${{clsAttr}}${{attrs}}>${{escapeHtml(c.label)}} <span class="ml-sort-ic" aria-hidden="true">${{mlSortGlyph(c.key)}}</span></th>`;
+    }}).join("") + "</tr>";
+}}
+function mlRenderThead() {{
+    const thead = document.getElementById("ml-thead");
+    if (thead) thead.innerHTML = mlBuildTheadHtml(true);
+}}
+function mlCycleSort(key) {{
+    if (ML_TABLE_STATE.sortKey !== key) {{ ML_TABLE_STATE.sortKey = key; ML_TABLE_STATE.sortDir = "asc"; }}
+    else if (ML_TABLE_STATE.sortDir === "asc") {{ ML_TABLE_STATE.sortDir = "desc"; }}
+    else {{ ML_TABLE_STATE.sortKey = null; ML_TABLE_STATE.sortDir = null; }}
+    ML_TABLE_STATE.page = 1;
+    mlRenderTable(filteredMasterlist());
+}}
+// Change A: sort now respects each column's declared sortType (number/date),
+// falling back to the existing tenure-days special case and plain string
+// compare — matching the original MASTERLIST_COLUMNS sort behavior instead of
+// treating every restored column (e.g. "ID No.", "Hire Date") as a string.
+function mlSortRows(rows) {{
+    if (!ML_TABLE_STATE.sortKey) return rows.slice();
+    const key = ML_TABLE_STATE.sortKey, dir = ML_TABLE_STATE.sortDir;
+    const col = ML_COLUMNS.find(c => c.key === key) || {{}};
+    return rows.slice().sort((a, b) => {{
+        let cmp;
+        if (key === "__mlTenureDays") {{
+            cmp = (a.__mlTenureDays || 0) - (b.__mlTenureDays || 0);
+        }} else if (col.sortType === "date") {{
+            const av = parseDateValue(a[key])?.getTime() || 0;
+            const bv = parseDateValue(b[key])?.getTime() || 0;
+            cmp = av - bv;
+        }} else if (col.sortType === "number") {{
+            const av = Number(norm(a[key]).replace(/,/g, "")) || 0;
+            const bv = Number(norm(b[key]).replace(/,/g, "")) || 0;
+            cmp = av - bv;
+        }} else {{
+            cmp = norm(a[key]).localeCompare(norm(b[key]), undefined, {{sensitivity: "base"}});
+        }}
+        return dir === "desc" ? -cmp : cmp;
+    }});
+}}
+function mlPillClass(status) {{
+    const v = norm(status).toUpperCase();
+    if (v === "ACTIVE") return "ml-pa";
+    if (v === "INACTIVE") return "ml-pi";
+    if (v) return "ml-pp";
+    return "";
+}}
+// Change A: cell rendering is now driven generically off ML_COLUMNS so all 13
+// columns stay in sync with the thead with no per-column hardcoding to drift.
+function mlCellHtml(r, col) {{
+    if (col.key === "__mlTenureDays") return escapeHtml(r.__mlTenureLabel || "\\u2014");
+    if (col.key === "Employment Status") {{
+        const pillClass = mlPillClass(r[col.key]);
+        return pillClass ? `<span class="ml-pill ${{pillClass}}">${{escapeHtml(r[col.key])}}</span>` : "";
+    }}
+    return escapeHtml(r[col.key]);
+}}
+function mlBuildRowsHtml(rows) {{
+    if (!rows.length) {{
+        return `<tr><td colspan="${{ML_COLUMNS.length}}" style="text-align:center;color:var(--muted);padding:18px">No employees match the selected filters.</td></tr>`;
+    }}
+    return rows.map(r => "<tr>" + ML_COLUMNS.map(c => `<td>${{mlCellHtml(r, c)}}</td>`).join("") + "</tr>").join("");
+}}
+function mlRenderPager(total, totalPages, start, end) {{
+    const rangeEl = document.getElementById("ml-pager-range");
+    const pageEl = document.getElementById("ml-pager-page");
+    const prevBtn = document.getElementById("ml-prev");
+    const nextBtn = document.getElementById("ml-next");
+    if (!rangeEl || !pageEl || !prevBtn || !nextBtn) return;
+    rangeEl.textContent = total === 0 ? "Showing 0 of 0 employees" : `Showing ${{start + 1}}\\u2013${{end}} of ${{total}} employees`;
+    pageEl.textContent = `Page ${{ML_TABLE_STATE.page}} of ${{totalPages}}`;
+    prevBtn.disabled = ML_TABLE_STATE.page <= 1;
+    nextBtn.disabled = ML_TABLE_STATE.page >= totalPages;
+}}
+function mlPrepareRows(data) {{
+    return data.map(r => {{
+        const hireDate = parseDateValue(r["Hire Date"]);
+        return Object.assign({{}}, r, {{
+            __mlTenureLabel: formatTenureDisplay(hireDate) || "\\u2014",
+            __mlTenureDays: hireDate ? wholeDayDiff(hireDate, new Date()) : -1,
+        }});
+    }});
+}}
+function mlTableData(data) {{
+    return data.filter(r => filterMatches(MASTERLIST_FILTERS.empName, norm(r["Emp Name"])));
+}}
+function mlRenderTable(data) {{
+    mlRenderThead();
+    const prepared = mlPrepareRows(mlTableData(data));
+    const sorted = mlSortRows(prepared);
+    const total = sorted.length;
+    const totalPages = Math.max(1, Math.ceil(total / ML_TABLE_STATE.pageSize));
+    if (ML_TABLE_STATE.page > totalPages) ML_TABLE_STATE.page = totalPages;
+    if (ML_TABLE_STATE.page < 1) ML_TABLE_STATE.page = 1;
+    const start = total ? (ML_TABLE_STATE.page - 1) * ML_TABLE_STATE.pageSize : 0;
+    const end = Math.min(start + ML_TABLE_STATE.pageSize, total);
+    const tbody = document.getElementById("ml-tbody");
+    if (tbody) tbody.innerHTML = mlBuildRowsHtml(sorted.slice(start, end));
+    mlRenderPager(total, totalPages, start, end);
+}}
+function mlWireTable() {{
+    const thead = document.getElementById("ml-thead");
+    if (thead) {{
+        thead.addEventListener("click", (e) => {{
+            const th = e.target.closest("th[data-key]");
+            if (!th || !thead.contains(th)) return;
+            mlCycleSort(th.getAttribute("data-key"));
+        }});
+        thead.addEventListener("keydown", (e) => {{
+            if (e.key !== "Enter" && e.key !== " ") return;
+            const th = e.target.closest("th[data-key]");
+            if (!th || !thead.contains(th)) return;
+            e.preventDefault();
+            mlCycleSort(th.getAttribute("data-key"));
+        }});
+    }}
+    const prevBtn = document.getElementById("ml-prev");
+    const nextBtn = document.getElementById("ml-next");
+    if (prevBtn) prevBtn.addEventListener("click", () => {{
+        if (!prevBtn.disabled) {{ ML_TABLE_STATE.page--; mlRenderTable(filteredMasterlist()); }}
+    }});
+    if (nextBtn) nextBtn.addEventListener("click", () => {{
+        if (!nextBtn.disabled) {{ ML_TABLE_STATE.page++; mlRenderTable(filteredMasterlist()); }}
+    }});
+}}
+
+// ── Expand modal ─────────────────────────────────────────────────────────
+let mlActiveCid = null;
+let mlLastTrigger = null;
+
+function mlOpenExpand(card, triggerEl) {{
+    const ovl = document.getElementById("ml-ovl");
+    const xbd = document.getElementById("ml-xbd");
+    const xttl = document.getElementById("ml-xttl");
+    const xsub = document.getElementById("ml-xsub");
+    const xcls = document.getElementById("ml-xcls");
+    if (!ovl || !xbd || !card) return;
+    mlLastTrigger = triggerEl || null;
+    const cid = card.getAttribute("data-cid");
+    if (xttl) xttl.textContent = card.getAttribute("data-ttl") || "";
+    if (xsub) xsub.textContent = card.getAttribute("data-sub") || "";
+    xbd.innerHTML = "";
+    xbd.classList.remove("ml-xbd-table", "ml-xbd-scroll");
+    mlActiveCid = cid;
+    const isTableCard = card.classList.contains("ml-tcrd");
+    if (isTableCard) {{
+        xbd.classList.add("ml-xbd-table");
+        if (cid === "masterlist") {{
+            const sortedAll = mlSortRows(mlPrepareRows(mlTableData(filteredMasterlist())));
+            const wrap = document.createElement("div");
+            wrap.className = "ml-twrap";
+            const tbl = document.createElement("table");
+            tbl.className = "ml-dt";
+            const theadEl = document.createElement("thead");
+            theadEl.innerHTML = mlBuildTheadHtml(false);
+            const tbodyEl = document.createElement("tbody");
+            tbodyEl.innerHTML = mlBuildRowsHtml(sortedAll);
+            tbl.appendChild(theadEl); tbl.appendChild(tbodyEl);
+            wrap.appendChild(tbl);
+            xbd.appendChild(wrap);
+        }}
+    }} else if (cid && ML_CHART_FN[cid]) {{
+        const fn = ML_CHART_FN[cid];
+        const cw = Math.min(1000, window.innerWidth - 100);
+        const el = document.createElement("canvas");
+        el.id = "xc-ml-" + cid;
+        xbd.appendChild(el);
+        if (fn === "donut") {{
+            const ch = Math.min(480, window.innerHeight - 200);
+            // Tweak 3: preserve the 3-column legend for Tenure Segmentation
+            // in the expand modal too; every other donut stays default 2.
+            mlDonut(el.id, mlCurrentArgs[cid], cw > 600 ? 420 : 300, ch > 360 ? 360 : 280, cid === "tenureseg" ? {{legendCols: 3}} : undefined);
+        }} else if (fn === "hbar") {{
+            xbd.classList.add("ml-xbd-scroll");
+            mlHbar(el.id, mlCurrentArgs[cid], cw, {{barH: 26, gap: 14}});
+        }} else if (fn === "stackbar") {{
+            // B2/change 13: same natural-width floor as the card view — #ml-xbd
+            // already has overflow:auto, so it scrolls horizontally on its own.
+            xbd.classList.add("ml-xbd-scroll");
+            const stackW = Math.max(cw, mlStackNaturalWidth((mlCurrentArgs[cid].accounts || []).length));
+            mlStackbar(el.id, mlCurrentArgs[cid].accounts, mlCurrentArgs[cid].groups, mlCurrentArgs[cid].colors, stackW, 340);
+        }} else if (fn === "vstackbar") {{
+            xbd.classList.add("ml-xbd-scroll");
+            const weeklyW = Math.max(cw, mlWeeklyNaturalWidth(((mlCurrentArgs[cid] && mlCurrentArgs[cid].weeks) || []).length));
+            const ch2 = Math.min(420, window.innerHeight - 220);
+            mlVStackbar(el.id, mlCurrentArgs[cid], weeklyW, ch2);
+        }}
+    }}
+    ovl.classList.add("ml-open");
+    document.body.style.overflow = "hidden";
+    if (xcls) xcls.focus();
+}}
+// Change 12 (expand-close scrollbar bug): the expanded canvas is a wholly
+// separate DOM node (id "xc-ml-<cid>") appended into #ml-xbd, never the
+// card's own "c-ml-<cid>" canvas — but to guard against any leftover inline
+// sizing/oversized node lingering after close, this now (1) explicitly
+// removes every canvas under #ml-xbd before clearing it, and (2) re-runs the
+// ORIGINATING card's own chart at its normal card width so the small card
+// canvas is guaranteed freshly sized/redrawn, never left showing a stray
+// horizontal scrollbar from whatever was being displayed in the modal.
+function mlRedrawCard(cid) {{
+    if (!cid || !ML_CHART_FN[cid] || !mlCurrentArgs[cid]) return;
+    const fn = ML_CHART_FN[cid];
+    const canvasId = "c-ml-" + cid;
+    if (fn === "donut") {{
+        // Tweak 3: preserve the 3-column legend for Tenure Segmentation on
+        // card redraw too; every other donut stays default 2.
+        mlDonut(canvasId, mlCurrentArgs[cid], 220, ML_DONUT_H, cid === "tenureseg" ? {{legendCols: 3}} : undefined);
+    }} else if (fn === "hbar") {{
+        mlHbar(canvasId, mlCurrentArgs[cid], mlCardWidth(canvasId, 280));
+    }} else if (fn === "stackbar") {{
+        const stackW = Math.max(mlCardWidth(canvasId, 900), mlStackNaturalWidth((mlCurrentArgs[cid].accounts || []).length));
+        mlStackbar(canvasId, mlCurrentArgs[cid].accounts, mlCurrentArgs[cid].groups, mlCurrentArgs[cid].colors, stackW, ML_STACKBAR_H);
+    }} else if (fn === "vstackbar") {{
+        const weeklyW = Math.max(mlCardWidth(canvasId, 320), mlWeeklyNaturalWidth(((mlCurrentArgs[cid] && mlCurrentArgs[cid].weeks) || []).length));
+        mlVStackbar(canvasId, mlCurrentArgs[cid], weeklyW, ML_VSTACK_H);
+    }}
+}}
+function mlCloseExpand() {{
+    const ovl = document.getElementById("ml-ovl");
+    const xbd = document.getElementById("ml-xbd");
+    if (!ovl || !xbd) return;
+    if (!ovl.classList.contains("ml-open")) return;
+    const closingCid = mlActiveCid;
+    ovl.classList.remove("ml-open");
+    document.body.style.overflow = "";
+    mlActiveCid = null;
+    xbd.querySelectorAll("canvas").forEach(cv => cv.remove()); // fully tear down the expanded canvas node
+    xbd.innerHTML = "";
+    xbd.classList.remove("ml-xbd-table", "ml-xbd-scroll");
+    mlHideTip();
+    mlRedrawCard(closingCid); // restore the originating card's own canvas at its proper width
+    if (mlLastTrigger) {{ mlLastTrigger.focus(); mlLastTrigger = null; }}
+}}
+function mlWireExpandModal() {{
+    const ovl = document.getElementById("ml-ovl");
+    const xcls = document.getElementById("ml-xcls");
+    if (xcls) xcls.addEventListener("click", mlCloseExpand);
+    if (ovl) ovl.addEventListener("click", (e) => {{ if (e.target === ovl) mlCloseExpand(); }});
+    document.addEventListener("keydown", (e) => {{
+        if (e.key === "Escape" && ovl && ovl.classList.contains("ml-open")) mlCloseExpand();
+    }});
+}}
+// ─── END MASTERLIST TAB — CANVAS CHART SYSTEM ──────────────────────────────
+
 function render() {{
     const data = filteredMasterlist();
-    const movements = filteredMovementData();
 
     const active = data.filter(r => norm(r["Employment Status"]).toUpperCase() === "ACTIVE").length;
     const inactive = data.filter(r => norm(r["Employment Status"]).toUpperCase() === "INACTIVE").length;
 
-    setText("headcount", data.length);
-    setText("active", active);
-    setText("inactive", inactive);
-    setText("movements", movements.length);
-    setText("historyRecords", historyData.length);
-    setText("departments", uniqueValues(data, "Department").length);
-    setText("accounts", uniqueValues(data, "LOB / Account").length);
-    setText("approvedAccounts", new Set(data.map(r => norm(r["LOB / Account"])).filter(v => v && APPROVED_ACCOUNTS.has(v.toLowerCase()))).size);
-    setText("managers", uniqueValues(data, "Manager").length);
+    // KPI strip (change 6 — 7 tiles: Active Employees | Total Headcount |
+    // Departments | Accounts | Avg Tenure | Movements | History Records).
+    // Active/Total/Departments react to the current filters (same "data" used
+    // by every chart below); Avg Tenure/Movements/History Records are org-wide
+    // scalars computed once in Python (masterlistKpis); Accounts is a fixed,
+    // hardcoded 22 baked into the markup and is never touched here.
+    setText("ml-kpi-active", active);
+    setText("ml-kpi-total", data.length);
+    const mlTotalSubEl = document.getElementById("ml-kpi-total-sub"); // change 2
+    if (mlTotalSubEl) mlTotalSubEl.textContent = `Incl. ${{Number(inactive).toLocaleString()}} inactive`;
+    setText("ml-kpi-departments", uniqueValues(data, "Department").length);
+    const mlAvgTenureEl = document.getElementById("ml-kpi-avgtenure");
+    if (mlAvgTenureEl) mlAvgTenureEl.innerHTML = `${{Number(masterlistKpis.avgTenure || 0).toLocaleString()}}<span style="font-size:14px;font-weight:400"> yrs</span>`;
+    setText("ml-kpi-movements", masterlistKpis.movementsPending || 0); // change 4
+    const mlMovementsSubEl = document.getElementById("ml-kpi-movements-sub");
+    if (mlMovementsSubEl) mlMovementsSubEl.textContent = `${{Number(masterlistKpis.movementsForProcessing || 0).toLocaleString()}} for processing`;
+    setText("ml-kpi-history", masterlistKpis.historyRecords || 0); // change 5
 
-    donut("deptDonut", "Headcount by Department", countBy(data, "Department"), "value");
-    const approvedAccountData = countBy(data, "LOB / Account").filter(d => APPROVED_ACCOUNTS.has(d.name.toLowerCase()));
-    scrollableBar("accountBar", "Headcount by Account", approvedAccountData, "Account");
-    donut("activeDonut", "Active vs Inactive", [
-        {{name: "Active", count: active}},
-        {{name: "Inactive", count: inactive}}
-    ]);
-    bar("managerBar", "Headcount by Manager (Top 10)", countBy(data, "Manager"), "Manager");
-    bar("supervisorBar", "Headcount by Supervisor (Top 10)", countBy(data, "Immediate Supervisor"), "Supervisor");
-    donut("employeeGroupDonut", "Employee Group Distribution", countBy(data, "Employee Group"));
-    donut("employmentClassDonut", "Employement Class", countBy(data, "Employement Class"));
-    accountTenureStack(data);
-    segmentBar("tenureSegmentation", "Tenure Segmentation", tenureCounts(data), "Tenure Group");
-    segmentBar("ageGroupBar", "Age Group", ageGroupCounts(data), "Age Group");
-    weeklyChart();
-    masterlistTable(data);
+    // Any filter change resets the Master List table back to page 1 (render()
+    // only fires on a filter change or the initial load in this codebase —
+    // sort-cycle/pager clicks call mlRenderTable() directly and do not hit this
+    // reset, matching the POC's applyFilters() behavior).
+    ML_TABLE_STATE.page = 1;
+
+    mlRenderCharts(data);
     recentMovementsTable();
 }}
 
@@ -10788,7 +12464,10 @@ function switchTab(tabName) {{
         setLogsFocusMode(false);
     }}
     if (!isMasterlist) {{
-        setMasterlistFocusMode(false);
+        // Close a stray Masterlist expand modal if the user navigates away
+        // while it's open (setMasterlistFocusMode is no longer wired to any
+        // button — the Master List "expand" button now opens mlOpenExpand()).
+        mlCloseExpand();
     }}
     if (tabName !== "quality") {{
         setQAFocusMode(false);
@@ -10813,9 +12492,51 @@ initMultiFilterBehavior();
 document.getElementById("downloadCoachingExcel")?.addEventListener("click", downloadCoachingExcel);
 document.getElementById("openCoachingSheets")?.addEventListener("click", openCoachingSheets);
 document.getElementById("logsFocusToggle")?.addEventListener("click", toggleLogsFocusMode);
-document.getElementById("masterlistFocusToggle")?.addEventListener("click", toggleMasterlistFocusMode);
+// Master List "expand" button now opens the ml* expand modal (replaces the old
+// masterlist-focus-mode toggle so the button isn't fought over by two mechanisms).
+document.getElementById("masterlistFocusToggle")?.addEventListener("click", (e) => {{
+    mlOpenExpand(document.getElementById("masterlistCard"), e.currentTarget);
+}});
+mlWireTable();
+mlWireExpandModal();
+document.getElementById("mlClearFiltersBtn")?.addEventListener("click", mlClearFilters);
+{{
+    const mainHdr = document.querySelector(".sticky-dashboard-header");
+    if (mainHdr) {{
+        document.documentElement.style.setProperty("--ml-stick-top", mainHdr.offsetHeight + "px");
+    }}
+}}
 renderCoaching();
 render();
+
+// Item 5 — first-load render/overflow fix. The initial render() above runs
+// synchronously during parse, before the browser has fully settled layout
+// (sticky header height, logo image, scrollbar gutter), so the Masterlist
+// canvases can measure the wrong width on that very first paint — producing
+// a bad vertical-chart layout and, since a too-wide measurement can briefly
+// exceed the viewport, a stray page-level horizontal scrollbar. A manual
+// refresh "fixes" it only because layout is already settled by the time
+// scripts re-run. Re-measure/redraw after window 'load', once more a
+// rAF double-tick later (next two paints), and once more after a short
+// settle delay — each gated on the Masterlist tab actually being active so
+// this never fights the existing tab-switch/filter-change/focus-toggle path
+// (reflowDashboard -> mlDrawAll). A real window resize previously had no
+// listener at all for these canvases — add one (debounced) here too.
+function mlRedrawIfActive() {{
+    if (document.getElementById("masterlistPanel")?.classList.contains("active")) {{
+        mlDrawAll();
+    }}
+}}
+window.addEventListener("load", () => {{
+    mlRedrawIfActive();
+    requestAnimationFrame(() => requestAnimationFrame(mlRedrawIfActive));
+    setTimeout(mlRedrawIfActive, 300);
+}});
+let mlResizeSettleTimer = null;
+window.addEventListener("resize", () => {{
+    if (mlResizeSettleTimer) clearTimeout(mlResizeSettleTimer);
+    mlResizeSettleTimer = setTimeout(mlRedrawIfActive, 150);
+}});
 </script>
 
 <script>
