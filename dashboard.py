@@ -6520,6 +6520,13 @@ def main():
             <div class="multi-options" id="employmentStatusOptions"></div>
         </details>
     </div>
+    <div class="filter-box">
+        <label>Employment Class</label>
+        <details class="multi-filter" id="employmentClassFilter">
+            <summary id="employmentClassFilterSummary">All</summary>
+            <div class="multi-options" id="employmentClassOptions"></div>
+        </details>
+    </div>
     <button class="ml-btn ml-sec ml-clear-btn" id="mlClearFiltersBtn" type="button">Clear filters</button>
 </div>
 
@@ -7427,6 +7434,7 @@ const MASTERLIST_FILTERS = {{
     tenure: new Set(),
     employeeGroup: new Set(),
     employmentStatus: new Set(),
+    employmentClass: new Set(),
 }};
 const APPROVED_ACCOUNTS = new Set([
     "Alpha Tax", "Associate", "Associated Cab", "Brite Lift", "Buffalo", "C&H",
@@ -7858,6 +7866,13 @@ function populateMasterlistFilters() {{
         MASTERLIST_FILTERS.employmentStatus,
         render
     );
+    populateMultiFilter(
+        "employmentClassOptions",
+        "employmentClassFilterSummary",
+        uniqueValues(masterlist, "Employement Class"),
+        MASTERLIST_FILTERS.employmentClass,
+        render
+    );
 }}
 
 // Item 6 — Clear filters (POC parity: masterlist-poc.html's #f-clear resets
@@ -7919,7 +7934,8 @@ function filteredMasterlist() {{
             filterMatches(MASTERLIST_FILTERS.manager, norm(r["Manager"])) &&
             filterMatches(MASTERLIST_FILTERS.tenure, tenureGroup) &&
             filterMatches(MASTERLIST_FILTERS.employeeGroup, norm(r["Employee Group"])) &&
-            filterMatches(MASTERLIST_FILTERS.employmentStatus, norm(r["Employment Status"]))
+            filterMatches(MASTERLIST_FILTERS.employmentStatus, norm(r["Employment Status"])) &&
+            filterMatches(MASTERLIST_FILTERS.employmentClass, norm(r["Employement Class"]))
         );
     }});
 }}
