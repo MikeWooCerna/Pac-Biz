@@ -6230,6 +6230,9 @@ def main():
        its row-mate, then its canvas centered inside that leftover space,
        so the legend never actually sat at the visual bottom of the card. */
     #masterlistPanel .ml-row {{ display: grid; gap: var(--ml-gap); align-items: start; }}
+    /* The five donut cards use one shared canvas height, so stretching this
+       row keeps the card shells aligned without letting legends float. */
+    #masterlistPanel .ml-r5 {{ align-items: stretch; }}
     #masterlistPanel .ml-r5 {{ grid-template-columns: repeat(5, minmax(0,1fr)); }}
     #masterlistPanel .ml-r4 {{ grid-template-columns: repeat(4, minmax(0,1fr)); }}
     /* Change 2: this row only (Tenure by Account + Weekly Headcount Trend)
@@ -8725,6 +8728,20 @@ function mlEllipsize(ctx, text, maxW) {{
     return out + "…";
 }}
 
+function mlDonutNaturalHeight(segs, w, h, opts) {{
+    opts = opts || {{}};
+    w = w || 220; h = h || 219;
+    const total = (segs || []).reduce((s, x) => s + x.count, 0);
+    if (opts.mini || !total) return h;
+    const legendCols = opts.legendCols || 2;
+    const legendFont = "10px Arial", legendRowH = 18, legendGap = 22;
+    const meas = document.createElement("canvas").getContext("2d");
+    const legendLayout = mlLegendLayout(meas, segs, w, legendFont, legendRowH, undefined, legendCols);
+    const legendH = legendGap + legendLayout.rows * legendRowH + 6;
+    const minArcH = 150;
+    return Math.max(h, minArcH + legendH);
+}}
+
 // ── Donut chart — segs: [{{name, count, color}}] ────────────────────────────
 function mlDonut(id, segs, w, h, opts) {{
     opts = opts || {{}};
@@ -8745,7 +8762,8 @@ function mlDonut(id, segs, w, h, opts) {{
     const legendLayout = (opts.mini || !total) ? {{positions: [], rows: 0}} : mlLegendLayout(meas, segs, w, legendFont, legendRowH, undefined, legendCols);
     const legendH = opts.mini ? 0 : (legendGap + legendLayout.rows * legendRowH + 6);
     const minArcH = 150; // room for the arc + on-chart labels regardless of legend height
-    const drawH = opts.mini ? h : Math.max(h, minArcH + legendH);
+    const naturalDrawH = opts.mini ? h : Math.max(h, minArcH + legendH);
+    const drawH = opts.fixedDrawH ? Math.max(opts.fixedDrawH, naturalDrawH) : naturalDrawH;
     const c = mlMkCanvas(id, w, drawH);
     if (!c) return;
     const ctx = c.ctx;
@@ -8814,7 +8832,7 @@ function mlDonut(id, segs, w, h, opts) {{
     // own sizing/centering via cy, above, is untouched), so a taller legend
     // (more rows) only pushes legendBaseY — and the arc above it — further
     // up; it can never collide with or run past the bottom edge.
-    const legendBottomPad = 22; // ~20-24px target from canvas bottom to the LAST row's baseline
+    const legendBottomPad = opts.legendBottomPad == null ? 12 : opts.legendBottomPad;
     const legendBaseY = drawH - legendBottomPad - 8 - (legendLayout.rows - 1) * legendRowH;
     ctx.font = legendFont; ctx.textAlign = "left";
     legendLayout.positions.forEach(p => {{
@@ -9302,6 +9320,7 @@ const ML_CHART_FN = {{
     tenurestack: "stackbar", weekly: "vstackbar",
 }};
 let mlCurrentArgs = {{}};
+let mlCurrentDonutRowH = ML_DONUT_H;
 // Item C: ML_VSTACK_H raised 219 -> 264 to fit the new total-count label
 // above the bars, the two-line x-axis (date + year), and the bottom legend
 // row without cramping — see mlVStackbar's own pad.t/pad.b for the exact
@@ -9310,21 +9329,25 @@ const ML_DONUT_H = 219, ML_STACKBAR_H = 299, ML_VBAR_H = 219, ML_VSTACK_H = 264;
 
 function mlRenderCharts(data) {{
     mlCurrentArgs.dept = mlWithColors(mlDeptDonutCounts(data));
-    mlDonut("c-ml-dept", mlCurrentArgs.dept, 220, ML_DONUT_H);
-
     mlCurrentArgs.active = mlStatusSegs(data);
-    mlDonut("c-ml-active", mlCurrentArgs.active, 220, ML_DONUT_H);
-
     mlCurrentArgs.empgrp = mlWithColors(countBy(data, "Employee Group"));
-    mlDonut("c-ml-empgrp", mlCurrentArgs.empgrp, 220, ML_DONUT_H);
-
     mlCurrentArgs.empclass = mlWithColors(countBy(data, "Employement Class"));
-    mlDonut("c-ml-empclass", mlCurrentArgs.empclass, 220, ML_DONUT_H);
-
     mlCurrentArgs.tenureseg = mlTenureSegs(data);
     // Tweak 3: 3-column legend for Tenure Segmentation's 8 bands (all other
     // donuts stay the default 2-column grid — see mlDonut/mlLegendLayout).
-    mlDonut("c-ml-tenureseg", mlCurrentArgs.tenureseg, 220, ML_DONUT_H, {{legendCols: 3}});
+    const rowDonutH = Math.max(
+        mlDonutNaturalHeight(mlCurrentArgs.dept, 220, ML_DONUT_H),
+        mlDonutNaturalHeight(mlCurrentArgs.active, 220, ML_DONUT_H),
+        mlDonutNaturalHeight(mlCurrentArgs.empgrp, 220, ML_DONUT_H),
+        mlDonutNaturalHeight(mlCurrentArgs.empclass, 220, ML_DONUT_H),
+        mlDonutNaturalHeight(mlCurrentArgs.tenureseg, 220, ML_DONUT_H, {{legendCols: 3}})
+    );
+    mlCurrentDonutRowH = rowDonutH;
+    mlDonut("c-ml-dept", mlCurrentArgs.dept, 220, ML_DONUT_H, {{fixedDrawH: rowDonutH}});
+    mlDonut("c-ml-active", mlCurrentArgs.active, 220, ML_DONUT_H, {{fixedDrawH: rowDonutH}});
+    mlDonut("c-ml-empgrp", mlCurrentArgs.empgrp, 220, ML_DONUT_H, {{fixedDrawH: rowDonutH}});
+    mlDonut("c-ml-empclass", mlCurrentArgs.empclass, 220, ML_DONUT_H, {{fixedDrawH: rowDonutH}});
+    mlDonut("c-ml-tenureseg", mlCurrentArgs.tenureseg, 220, ML_DONUT_H, {{legendCols: 3, fixedDrawH: rowDonutH}});
 
     mlCurrentArgs.account = countBy(data, "LOB / Account").filter(d => APPROVED_ACCOUNTS.has(d.name.toLowerCase()));
     mlHbar("c-ml-account", mlCurrentArgs.account, mlCardWidth("c-ml-account", 280));
@@ -9616,7 +9639,7 @@ function mlRedrawCard(cid) {{
     if (fn === "donut") {{
         // Tweak 3: preserve the 3-column legend for Tenure Segmentation on
         // card redraw too; every other donut stays default 2.
-        mlDonut(canvasId, mlCurrentArgs[cid], 220, ML_DONUT_H, cid === "tenureseg" ? {{legendCols: 3}} : undefined);
+        mlDonut(canvasId, mlCurrentArgs[cid], 220, ML_DONUT_H, cid === "tenureseg" ? {{legendCols: 3, fixedDrawH: mlCurrentDonutRowH}} : {{fixedDrawH: mlCurrentDonutRowH}});
     }} else if (fn === "hbar") {{
         mlHbar(canvasId, mlCurrentArgs[cid], mlCardWidth(canvasId, 280));
     }} else if (fn === "stackbar") {{
