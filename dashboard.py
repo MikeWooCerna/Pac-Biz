@@ -9320,12 +9320,12 @@ const ML_CHART_FN = {{
     tenurestack: "stackbar", weekly: "vstackbar",
 }};
 let mlCurrentArgs = {{}};
-let mlCurrentDonutRowH = ML_DONUT_H;
 // Item C: ML_VSTACK_H raised 219 -> 264 to fit the new total-count label
 // above the bars, the two-line x-axis (date + year), and the bottom legend
 // row without cramping — see mlVStackbar's own pad.t/pad.b for the exact
 // vertical budget this height needs to satisfy.
 const ML_DONUT_H = 219, ML_STACKBAR_H = 299, ML_VBAR_H = 219, ML_VSTACK_H = 264;
+let mlCurrentDonutRowH = ML_DONUT_H;
 
 function mlRenderCharts(data) {{
     mlCurrentArgs.dept = mlWithColors(mlDeptDonutCounts(data));
