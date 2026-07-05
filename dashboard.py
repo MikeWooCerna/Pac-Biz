@@ -9068,7 +9068,7 @@ function mlNiceStep(maxV, ticks) {{
 //     Probationary top/blue) — this function just draws whatever order/
 //     colors it's given, bottom segment first;
 //   • bold total-count label above each bar;
-//   • in-segment "N (P%)" labels, drawn only when a segment is tall/wide
+//   • in-segment count labels, drawn only when a segment is tall/wide
 //     enough to hold the text without overlapping;
 //   • "nice"-step y-axis gridlines (faint, dotted) with small value labels;
 //   • slim bars (~30% of each slot) with generous (~70%) gaps, real
@@ -9092,10 +9092,10 @@ function mlVStackbar(id, weekly, w, h) {{
     // own pad.l/pad.r + minSlotW below, so the .ml-hscroll-x fallback only
     // ever has to scroll — it never has to squeeze a bar narrower than
     // minBarW.
-    // Change 4: pad.b 86 -> 83 (moves the x-axis line 3px closer to the card
-    // bottom edge); axisY = h - pad.b so the date/year label baselines below
-    // (axisY + 28 / axisY + 38) ride along with it unchanged.
-    const pad = {{t: 30, r: 16, b: 83, l: 36}};
+    // Keep the same card/canvas size, but lower the x-axis and tighten the
+    // date label gap so the weekly labels read as attached to the axis instead
+    // of floating in the lower whitespace.
+    const pad = {{t: 30, r: 16, b: 68, l: 36}};
     const cw = w - pad.l - pad.r, ch = h - pad.t - pad.b;
     const n = weeks.length;
     // Change 4: barRatio 0.3 -> 0.4 — bars now ~40% of each slot, ~60% gap
@@ -9135,9 +9135,7 @@ function mlVStackbar(id, weekly, w, h) {{
     // segment gets rounded TOP corners (bottom corners stay square so it
     // joins the segment below with no visual seam).
     const segRects = [];
-    // Change 4: dropped from 10px to 9px so the "N (P%)" text fits inside
-    // more segments now that barRatio-widened bars are still finite width.
-    const segLabelFont = "bold 9px Arial";
+    const segLabelFont = "bold 10px Arial";
     weeks.forEach((wk, i) => {{
         const x = pad.l + i * (barW + gap);
         let y = axisY;
@@ -9151,17 +9149,13 @@ function mlVStackbar(id, weekly, w, h) {{
                 if (isTop) ctx.roundRect(x, y - bh, barW, bh, [3, 3, 0, 0]);
                 else ctx.rect(x, y - bh, barW, bh);
                 ctx.fill();
-                const pct = total ? Math.round((v / total) * 100) : 0;
-                const txt = `${{v}} (${{pct}}%)`;
+                const txt = String(v);
                 ctx.font = segLabelFont;
                 const tw = ctx.measureText(txt).width;
-                // Change 4: threshold lowered from bh>=16 && barW>=tw+6 so the
-                // in-segment label ALWAYS shows on essentially every visible
-                // segment (matches Mike's reference) — only a genuinely tiny
-                // sliver segment (<10px tall) or one narrower than the text
-                // itself still skips the label, so text is never drawn taller
-                // than the segment that contains it.
-                if (bh >= 10 && barW >= tw + 2) {{
+                // Only skip a genuinely tiny sliver or a segment narrower than
+                // the count text. Counts are intentionally used without the
+                // percentage suffix to keep the labels readable in compact bars.
+                if (bh >= 9 && barW >= tw + 4) {{
                     // WCAG-based contrast pick (item C accessibility note):
                     // Mike's reference calls for white text on both segments,
                     // but white-on-green (#39B54A) is only ~2.7:1 — below the
@@ -9172,6 +9166,9 @@ function mlVStackbar(id, weekly, w, h) {{
                     // green (Regular) segment automatically.
                     ctx.fillStyle = mlContrastTextColor(colors[j]);
                     ctx.textAlign = "center"; ctx.textBaseline = "middle";
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = ctx.fillStyle === "#fff" ? "rgba(15,32,64,.25)" : "rgba(255,255,255,.45)";
+                    ctx.strokeText(txt, x + barW / 2, y - bh / 2 + 1);
                     ctx.fillText(txt, x + barW / 2, y - bh / 2 + 1);
                     ctx.textBaseline = "alphabetic";
                 }}
@@ -9180,7 +9177,7 @@ function mlVStackbar(id, weekly, w, h) {{
             y -= bh;
         }});
         // Bold total-count label above the bar.
-        ctx.font = "bold 11px Arial"; ctx.textAlign = "center";
+        ctx.font = "bold 12px Arial"; ctx.textAlign = "center";
         ctx.fillStyle = mlGetVar("--text") || "#0F2240";
         const topY = axisY - (total / topTick) * ch;
         ctx.fillText(String(total), x + barW / 2, Math.max(topY - 8, 12));
@@ -9188,11 +9185,11 @@ function mlVStackbar(id, weekly, w, h) {{
         // Two-line x-axis label: week date on top, muted 4-digit year below.
         const wkDate = parseDateValue(wk.name);
         const line1 = wkDate ? `${{MONTH_LABELS[wkDate.getMonth()]}} ${{wkDate.getDate()}}` : wk.name;
-        ctx.font = "10px Arial"; ctx.fillStyle = mlGetVar("--text") || "#0F2240";
-        ctx.fillText(line1, x + barW / 2, axisY + 28);
+        ctx.font = "bold 10px Arial"; ctx.fillStyle = mlGetVar("--text") || "#0F2240";
+        ctx.fillText(line1, x + barW / 2, axisY + 16);
         if (wkDate) {{
             ctx.font = "9px Arial"; ctx.fillStyle = mlGetVar("--muted") || "#5A6B80";
-            ctx.fillText(String(wkDate.getFullYear()), x + barW / 2, axisY + 38);
+            ctx.fillText(String(wkDate.getFullYear()), x + barW / 2, axisY + 27);
         }}
     }});
 
@@ -9202,7 +9199,7 @@ function mlVStackbar(id, weekly, w, h) {{
     const legendOrder = [...classes].reverse();
     ctx.font = "10px Arial"; ctx.textAlign = "left";
     let lx = pad.l;
-    const legendY = h - 12;
+    const legendY = h - 6;
     legendOrder.forEach(cls => {{
         ctx.fillStyle = colorByClass[cls];
         ctx.beginPath(); ctx.arc(lx + 4, legendY, 4, 0, Math.PI * 2); ctx.fill();
