@@ -927,5 +927,25 @@
     "script": "bl_pull.py",
     "status": "not_reached",
     "error": null
+  },
+  {
+    "run_id": "2026-07-06T01:24:39",
+    "date": "Jul 06, 2026 01:24 AM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "count_drop",
+    "drop": 62,
+    "prev_count": 62,
+    "new_count": 0,
+    "error": "Dropped 62 rows (62 \u2192 0)"
+  },
+  {
+    "run_id": "2026-07-06T01:24:39",
+    "date": "Jul 06, 2026 01:24 AM",
+    "account": "Reno Cab",
+    "script": "rc_pull.py",
+    "status": "healed",
+    "action": "repull",
+    "error": "Count dropped 2,885 \u2192 2,499. Re-pull recovered 2,885 rows."
   }
 ]
