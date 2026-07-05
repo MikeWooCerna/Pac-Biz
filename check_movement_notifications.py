@@ -148,6 +148,45 @@ def _no_chg(text):
     return text
 
 
+def normalize_employment_status_for_email(value, is_attrition=False):
+    """Movement forms may store class-like values; emails show only Active/Inactive."""
+    if is_attrition:
+        return "Inactive"
+
+    raw = "" if pd.isna(value) else str(value).strip()
+    key = raw.lower()
+    if not key or key in ("n/a", "na", "none", "-", "n/a.", "n.a."):
+        return "No changes"
+
+    inactive_tokens = (
+        "inactive",
+        "terminated",
+        "termination",
+        "resigned",
+        "attrition",
+        "separated",
+        "end of contract",
+    )
+    if any(token in key for token in inactive_tokens):
+        return "Inactive"
+
+    active_tokens = (
+        "active",
+        "regular",
+        "probation",
+        "probationary",
+        "option",
+        "full time",
+        "full-time",
+        "part time",
+        "part-time",
+    )
+    if any(token in key for token in active_tokens):
+        return "Active"
+
+    return raw
+
+
 def build_html(row, ref_num, submitted_by, processed_on, ml_df=None):
     import re as _re
     is_attrition  = str(row.get("Type of Movement", "")).strip().lower() == "attrition"
@@ -162,13 +201,13 @@ def build_html(row, ref_num, submitted_by, processed_on, ml_df=None):
         account    = cur["account"]    or "—"
         supervisor = cur["supervisor"] or "—"
         job_title  = cur["job_title"]  or "—"
-        emp_status = cur["emp_status"] or "—"
+        emp_status = normalize_employment_status_for_email(cur["emp_status"], is_attrition=True)
     else:
         dept       = na_or(row.get("New Department", ""))
         account    = na_or(row.get("New Account", ""))
         supervisor = na_or(row.get("New Supervisor", ""))
         job_title  = na_or(row.get("New Job Title", ""))
-        emp_status = na_or(row.get("New Employment Status", ""))
+        emp_status = normalize_employment_status_for_email(row.get("New Employment Status", ""))
     remarks   = na_or(row.get("Remarks/Comments", ""), "")
     proc_note = na_or(row.get("Processed Note", ""), "")
 
