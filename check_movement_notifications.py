@@ -32,7 +32,7 @@ def load_notified():
             return set(json.loads(NOTIFIED_FILE.read_text(encoding="utf-8")))
         except Exception:
             return set()
-    return set()
+    return None
 
 
 def save_notified(seen):
@@ -451,6 +451,22 @@ def main():
 
     seen = load_notified()
     e2n, n2e = build_lookups(ml_df)
+
+    eligible_timestamps = {
+        str(row.get("Timestamp", "")).strip()
+        for _, row in mv_df.iterrows()
+        if str(row.get("Processed", "")).strip().lower() == "yes"
+        and str(row.get("Void", "")).strip().lower() != "yes"
+        and str(row.get("Timestamp", "")).strip()
+    }
+
+    if seen is None:
+        save_notified(eligible_timestamps)
+        print(
+            "[movement_notify] movement_notified.json missing — seeded "
+            f"{len(eligible_timestamps)} existing processed movement(s); no emails sent."
+        )
+        return 0
 
     new_rows = [
         row for _, row in mv_df.iterrows()
