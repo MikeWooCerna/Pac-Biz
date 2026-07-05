@@ -6352,6 +6352,20 @@ def main():
     #masterlistPanel .ml-dt td {{ padding: 7px 12px; border-bottom: 1px solid var(--ml-border); color: var(--text); white-space: nowrap; }}
     #masterlistPanel .ml-dt tbody tr:last-child td {{ border-bottom: none; }}
     #masterlistPanel .ml-dt tbody tr:hover td {{ background: rgba(0,76,151,.025); }}
+    #masterlistPanel .ml-dt .ml-col-id {{ min-width: 76px; }}
+    #masterlistPanel .ml-dt .ml-col-name {{ min-width: 180px; }}
+    #masterlistPanel .ml-dt .ml-col-date {{ min-width: 96px; }}
+    #masterlistPanel .ml-dt .ml-col-class {{ min-width: 132px; }}
+    #masterlistPanel .ml-dt .ml-col-tenure {{ min-width: 132px; }}
+    #masterlistPanel .ml-dt .ml-col-title {{ min-width: 210px; }}
+    #masterlistPanel .ml-dt .ml-col-group {{ min-width: 145px; }}
+    #masterlistPanel .ml-dt .ml-col-dept {{ min-width: 130px; }}
+    #masterlistPanel .ml-dt .ml-col-account {{ min-width: 150px; }}
+    #masterlistPanel .ml-dt .ml-col-supervisor,
+    #masterlistPanel .ml-dt .ml-col-manager {{ min-width: 180px; }}
+    #masterlistPanel .ml-dt .ml-col-status {{ min-width: 140px; }}
+    #masterlistPanel .ml-dt .ml-col-email {{ min-width: 240px; max-width: 320px; }}
+    #masterlistPanel .ml-dt .ml-clip {{ display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }}
     #masterlistPanel .ml-pill {{ display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: .04em; }}
     #masterlistPanel .ml-pa {{ background: #DCFCE7; color: #15803D; }}
     #masterlistPanel .ml-pi {{ background: #FEE2E2; color: #B91C1C; }}
@@ -6390,8 +6404,25 @@ def main():
     #ml-ovl .ml-closebtn:hover {{ background: var(--bg); color: var(--text); }}
     #ml-xbd {{ flex: 1; overflow: auto; padding: 24px; display: flex; align-items: center; justify-content: center; }}
     #ml-xbd.ml-xbd-table {{ display: block; padding: 0; }}
-    #ml-xbd.ml-xbd-table .ml-twrap {{ max-height: none; }}
-    #ml-xbd.ml-xbd-table .ml-twrap table.ml-dt {{ width: 100%; }}
+    #ml-xbd.ml-xbd-table .ml-twrap {{ max-height: none; width: 100%; overflow: auto; }}
+    #ml-xbd.ml-xbd-table .ml-twrap table.ml-dt {{ width: max-content; min-width: 100%; table-layout: auto; }}
+    #ml-xbd.ml-xbd-table .ml-dt th,
+    #ml-xbd.ml-xbd-table .ml-dt td {{ padding: 9px 12px; vertical-align: middle; line-height: 1.25; white-space: nowrap; }}
+    #ml-xbd.ml-xbd-table .ml-dt th {{ position: sticky; top: 0; z-index: 2; }}
+    #ml-xbd.ml-xbd-table .ml-dt .ml-col-id {{ min-width: 76px; }}
+    #ml-xbd.ml-xbd-table .ml-dt .ml-col-name {{ min-width: 180px; }}
+    #ml-xbd.ml-xbd-table .ml-dt .ml-col-date {{ min-width: 96px; }}
+    #ml-xbd.ml-xbd-table .ml-dt .ml-col-class {{ min-width: 132px; }}
+    #ml-xbd.ml-xbd-table .ml-dt .ml-col-tenure {{ min-width: 132px; }}
+    #ml-xbd.ml-xbd-table .ml-dt .ml-col-title {{ min-width: 210px; }}
+    #ml-xbd.ml-xbd-table .ml-dt .ml-col-group {{ min-width: 145px; }}
+    #ml-xbd.ml-xbd-table .ml-dt .ml-col-dept {{ min-width: 130px; }}
+    #ml-xbd.ml-xbd-table .ml-dt .ml-col-account {{ min-width: 150px; }}
+    #ml-xbd.ml-xbd-table .ml-dt .ml-col-supervisor,
+    #ml-xbd.ml-xbd-table .ml-dt .ml-col-manager {{ min-width: 180px; }}
+    #ml-xbd.ml-xbd-table .ml-dt .ml-col-status {{ min-width: 140px; }}
+    #ml-xbd.ml-xbd-table .ml-dt .ml-col-email {{ min-width: 240px; max-width: 320px; }}
+    #ml-xbd.ml-xbd-table .ml-dt .ml-clip {{ display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }}
     #ml-xbd.ml-xbd-scroll {{ align-items: flex-start; }}
     #ml-cv-tt {{ position: fixed; pointer-events: none; z-index: 10000; background: #0F2240; color: #fff; font-size: 11px; font-family: Arial, sans-serif; padding: 5px 9px; border-radius: 5px; box-shadow: 0 4px 14px rgba(0,0,0,.25); white-space: nowrap; opacity: 0; transition: opacity .1s; top: 0; left: 0; }}
     #ml-cv-tt.ml-show {{ opacity: 1; }}
@@ -9398,19 +9429,19 @@ function mlDrawAll() {{
 // is what caused header labels to render wrong (e.g. "Class" instead of
 // "Employement Class", "Account" instead of "LOB/Account").
 const ML_COLUMNS = [
-    {{key: "ID No.", label: "Employee ID", sortType: "number"}},
-    {{key: "Emp Name", label: "Employee Name"}},
-    {{key: "Hire Date", label: "Hire Date", sortType: "date"}},
-    {{key: "Employement Class", label: "Employement Class"}},
-    {{key: "__mlTenureDays", label: "Tenure"}},
-    {{key: "Job Title", label: "Job Title"}},
-    {{key: "Employee Group", label: "Employee Group"}},
-    {{key: "Department", label: "Department"}},
-    {{key: "LOB / Account", label: "LOB/Account"}},
-    {{key: "Immediate Supervisor", label: "Immediate Supervisor"}},
-    {{key: "Manager", label: "Manager"}},
-    {{key: "Employment Status", label: "Employment Status"}},
-    {{key: "Company Email", label: "Email"}},
+    {{key: "ID No.", label: "Employee ID", sortType: "number", cls: "ml-col-id"}},
+    {{key: "Emp Name", label: "Employee Name", cls: "ml-col-name"}},
+    {{key: "Hire Date", label: "Hire Date", sortType: "date", cls: "ml-col-date"}},
+    {{key: "Employement Class", label: "Employement Class", cls: "ml-col-class"}},
+    {{key: "__mlTenureDays", label: "Tenure", cls: "ml-col-tenure"}},
+    {{key: "Job Title", label: "Job Title", cls: "ml-col-title"}},
+    {{key: "Employee Group", label: "Employee Group", cls: "ml-col-group"}},
+    {{key: "Department", label: "Department", cls: "ml-col-dept"}},
+    {{key: "LOB / Account", label: "LOB/Account", cls: "ml-col-account"}},
+    {{key: "Immediate Supervisor", label: "Immediate Supervisor", cls: "ml-col-supervisor"}},
+    {{key: "Manager", label: "Manager", cls: "ml-col-manager"}},
+    {{key: "Employment Status", label: "Employment Status", cls: "ml-col-status"}},
+    {{key: "Company Email", label: "Email", cls: "ml-col-email"}},
 ];
 // Default sort mirrors the pre-port default (masterlistSortState: Emp Name asc)
 // so the first paint isn't a jarring switch to unsorted/insertion order.
@@ -9424,6 +9455,7 @@ function mlBuildTheadHtml(interactive) {{
     return "<tr>" + ML_COLUMNS.map(c => {{
         const active = ML_TABLE_STATE.sortKey === c.key;
         const classes = [];
+        if (c.cls) classes.push(c.cls);
         if (active) classes.push("ml-sorted");
         if (!interactive) classes.push("ml-th-static");
         const clsAttr = classes.length ? ` class="${{classes.join(" ")}}"` : "";
@@ -9493,7 +9525,7 @@ function mlBuildRowsHtml(rows) {{
     if (!rows.length) {{
         return `<tr><td colspan="${{ML_COLUMNS.length}}" style="text-align:center;color:var(--muted);padding:18px">No employees match the selected filters.</td></tr>`;
     }}
-    return rows.map(r => "<tr>" + ML_COLUMNS.map(c => `<td>${{mlCellHtml(r, c)}}</td>`).join("") + "</tr>").join("");
+    return rows.map(r => "<tr>" + ML_COLUMNS.map(c => `<td class="${{c.cls || ""}}"><span class="ml-clip" title="${{escapeHtml(norm(c.key === "__mlTenureDays" ? r.__mlTenureLabel : r[c.key]))}}">${{mlCellHtml(r, c)}}</span></td>`).join("") + "</tr>").join("");
 }}
 function mlRenderPager(total, totalPages, start, end) {{
     const rangeEl = document.getElementById("ml-pager-range");
