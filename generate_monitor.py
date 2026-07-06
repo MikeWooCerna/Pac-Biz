@@ -796,7 +796,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 
       <div class="connector"></div>
 
-      <a href="{DASHBOARD_URL}" target="_blank" class="dash-node">
+      <a href="{DASHBOARD_URL}" target="_blank" rel="noopener" class="dash-node">
         <div class="browser-bar">
           <span class="bd bd-r"></span><span class="bd bd-y"></span><span class="bd bd-g"></span>
           <span class="browser-url">PacBiz Dashboard</span>
