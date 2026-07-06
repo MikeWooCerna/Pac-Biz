@@ -6328,7 +6328,17 @@ def main():
     #masterlistPanel .ml-thd {{ display: flex; align-items: center; justify-content: space-between; padding: 11px 15px; border-bottom: 1px solid var(--ml-border); flex-wrap: wrap; gap: 8px; }}
     #masterlistPanel .ml-ttl {{ font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--blue); }}
     #masterlistPanel .ml-tacts {{ display: flex; gap: 7px; align-items: center; flex-wrap: wrap; }}
-    #masterlistPanel .ml-twrap {{ overflow-x: auto; max-height: 420px; overflow-y: auto; }}
+    /* Item 1 perf fix: hint the browser to isolate this scroller as its own
+       paint/composite layer so horizontal-scrollbar drag doesn't force a
+       repaint of ancestor/sibling content each frame (the likely cause of
+       the reported drag lag — see report). `contain: paint` clips/isolates
+       painting to this box; `will-change: scroll-position` is the
+       purpose-built hint for scrollable containers (cheaper than promoting
+       via `transform`). Deliberately NOT applied to the sticky th/td cells
+       themselves or to any element between them and this scroller, per Item
+       3's compatibility note — sticky positioning still resolves against
+       this element as the nearest scrolling ancestor. */
+    #masterlistPanel .ml-twrap {{ overflow-x: auto; max-height: 420px; overflow-y: auto; contain: paint; will-change: scroll-position; }}
     #masterlistPanel table.ml-dt {{ width: 100%; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }}
     /* Change 3: header restyled to white bold on Pac-Biz blue (matches the QA
        detail table header convention) — was gray text (var(--muted)) on a
@@ -6342,6 +6352,29 @@ def main():
         padding: 7px 12px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em;
         color: #fff; border-bottom: 1px solid var(--ml-border); white-space: nowrap; cursor: default; user-select: none;
     }}
+    /* Item 3: freeze columns through "Employee Name" (cols 1-2: ID No., Emp
+       Name) on horizontal scroll — Excel freeze-panes behavior. Fixed
+       width+box-sizing:border-box makes the left offsets below deterministic
+       even though the table itself stays table-layout:auto. Placed BEFORE the
+       .ml-sorted/:hover rules further down so those still win the header
+       background on tie (equal specificity, source-order tiebreak) — sort/
+       hover feedback on the frozen header cells is preserved. Backgrounds are
+       flat/opaque (no gradients) and no `contain`/`will-change`/`transform`
+       is applied to these cells themselves — only to the .ml-twrap scroll
+       ancestor below — so sticky positioning keeps working (see Item 1 fix). */
+    #masterlistPanel .ml-dt th:nth-child(1), #masterlistPanel .ml-dt td:nth-child(1),
+    #masterlistPanel .ml-dt th:nth-child(2), #masterlistPanel .ml-dt td:nth-child(2) {{
+        position: sticky; box-sizing: border-box;
+    }}
+    #masterlistPanel .ml-dt th:nth-child(1), #masterlistPanel .ml-dt td:nth-child(1) {{
+        left: 0; width: 116px; min-width: 116px; max-width: 116px;
+    }}
+    #masterlistPanel .ml-dt th:nth-child(2), #masterlistPanel .ml-dt td:nth-child(2) {{
+        left: 116px; width: 220px; min-width: 220px; max-width: 220px;
+        box-shadow: 2px 0 4px rgba(0,0,0,.06); /* freeze boundary divider */
+    }}
+    #masterlistPanel .ml-dt th:nth-child(1), #masterlistPanel .ml-dt th:nth-child(2) {{ z-index: 4; background: var(--blue); }}
+    #masterlistPanel .ml-dt td:nth-child(1), #masterlistPanel .ml-dt td:nth-child(2) {{ z-index: 2; background: #fff; }}
     #masterlistPanel #ml-thead th[data-key] {{ cursor: pointer; }}
     #masterlistPanel #ml-thead th[data-key]:hover {{ background: #003B73; }}
     #masterlistPanel .ml-dt th.ml-sorted {{ background: #003B73; }}
@@ -6404,13 +6437,52 @@ def main():
     #ml-ovl .ml-closebtn:hover {{ background: var(--bg); color: var(--text); }}
     #ml-xbd {{ flex: 1; min-height: 0; overflow: auto; padding: 24px; display: flex; align-items: center; justify-content: center; }}
     #ml-xbd.ml-xbd-table {{ display: block; padding: 0; overflow: hidden; min-height: 0; }}
-    #ml-xbd.ml-xbd-table .ml-twrap {{ height: 100%; max-height: none; width: 100%; overflow: auto; }}
+    /* Item 1 perf fix (modal): same rationale as the #masterlistPanel .ml-twrap
+       rule — isolate this scroller's paint/composite layer so dragging the
+       horizontal scrollbar over the full (unpaginated) row set doesn't force
+       a repaint of the sticky header/frozen columns on every scroll tick. */
+    #ml-xbd.ml-xbd-table .ml-twrap {{ height: 100%; max-height: none; width: 100%; overflow: auto; contain: paint; will-change: scroll-position; }}
     #ml-xbd.ml-xbd-table .ml-twrap table.ml-dt {{ width: max-content; min-width: 100%; table-layout: auto; border-collapse: separate; border-spacing: 0; font-size: 12px; font-variant-numeric: tabular-nums; }}
     #ml-xbd.ml-xbd-table .ml-dt thead tr {{ background: var(--blue); }}
     #ml-xbd.ml-xbd-table .ml-dt th,
     #ml-xbd.ml-xbd-table .ml-dt td {{ padding: 9px 14px; vertical-align: middle; line-height: 1.25; white-space: nowrap; border-bottom: 1px solid var(--ml-border); color: var(--text); }}
     #ml-xbd.ml-xbd-table .ml-dt th {{ position: sticky; top: 0; z-index: 5; padding: 9px 14px; text-align: left; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: #fff; background: var(--blue); border-bottom: 1px solid #003B73; box-shadow: 0 1px 0 rgba(15,23,42,.18); white-space: nowrap; }}
     #ml-xbd.ml-xbd-table .ml-dt tbody tr:hover td {{ background: rgba(0,76,151,.025); }}
+    /* Item 3: freeze columns through "Employee Name" in the expand modal too
+       (same rationale as the #masterlistPanel block above). th here already
+       has top:0 sticky — adding left:0/left:<offset> makes these two header
+       cells sticky on BOTH axes (valid, standard "frozen corner" pattern), so
+       z-index must clear the plain top-sticky header's z-index:5 above. The
+       two frozen columns' .ml-clip spans are force-clipped (ellipsis) below,
+       overriding the modal's normal no-clip behavior, so the fixed width
+       holds regardless of content length — same tradeoff as the small table
+       view, and full text is still available via the existing title tooltip. */
+    #ml-xbd.ml-xbd-table .ml-dt th:nth-child(1), #ml-xbd.ml-xbd-table .ml-dt td:nth-child(1),
+    #ml-xbd.ml-xbd-table .ml-dt th:nth-child(2), #ml-xbd.ml-xbd-table .ml-dt td:nth-child(2) {{
+        position: sticky; box-sizing: border-box;
+    }}
+    #ml-xbd.ml-xbd-table .ml-dt th:nth-child(1), #ml-xbd.ml-xbd-table .ml-dt td:nth-child(1) {{
+        left: 0; width: 128px; min-width: 128px; max-width: 128px;
+    }}
+    #ml-xbd.ml-xbd-table .ml-dt th:nth-child(2), #ml-xbd.ml-xbd-table .ml-dt td:nth-child(2) {{
+        left: 128px; width: 248px; min-width: 248px; max-width: 248px;
+        box-shadow: 2px 0 4px rgba(0,0,0,.06); /* freeze boundary divider */
+    }}
+    #ml-xbd.ml-xbd-table .ml-dt th:nth-child(1), #ml-xbd.ml-xbd-table .ml-dt th:nth-child(2) {{ z-index: 8; background: var(--blue); }}
+    #ml-xbd.ml-xbd-table .ml-dt td:nth-child(1), #ml-xbd.ml-xbd-table .ml-dt td:nth-child(2) {{ z-index: 6; background: #fff; }}
+    #ml-xbd.ml-xbd-table .ml-dt td:nth-child(1) .ml-clip, #ml-xbd.ml-xbd-table .ml-dt td:nth-child(2) .ml-clip {{
+        overflow: hidden; text-overflow: ellipsis;
+    }}
+    /* Item 2 (modal pill support): #ml-ovl is a top-level overlay outside
+       #masterlistPanel, so the .ml-pill/.ml-pa/.ml-pi/.ml-pp rules scoped to
+       #masterlistPanel never reached it — Employment Status pills were
+       already silently unstyled in the expand modal before this change. Add
+       the same rules here (verbatim colors) so both Employment Status AND
+       the new Tenure conditional-formatting pills render correctly. */
+    #ml-ovl .ml-pill {{ display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: .04em; }}
+    #ml-ovl .ml-pa {{ background: #DCFCE7; color: #15803D; }}
+    #ml-ovl .ml-pi {{ background: #FEE2E2; color: #B91C1C; }}
+    #ml-ovl .ml-pp {{ background: #FEF9C3; color: #854D0E; }}
     #ml-xbd.ml-xbd-table .ml-dt .ml-col-id {{ min-width: 88px; }}
     #ml-xbd.ml-xbd-table .ml-dt .ml-col-name {{ min-width: 220px; }}
     #ml-xbd.ml-xbd-table .ml-dt .ml-col-date {{ min-width: 116px; }}
@@ -7505,15 +7577,25 @@ function tenureGroupName(hireDate, asOfDate) {{
     return TENURE_GROUPS.find(group => days <= group.maxDays)?.name || "";
 }}
 
-function formatTenureDisplay(hireDate) {{
-    if (!hireDate) return "";
-    const now = new Date();
+// Single source of truth for the calendar-based (day-of-month agnostic)
+// years/months breakdown used by the displayed tenure label. asOfDate is
+// optional so callers that need to reuse one "now" across multiple
+// computations for the same row (see mlPrepareRows) can pass it in.
+function tenureBreakdown(hireDate, asOfDate) {{
+    const now = asOfDate || new Date();
     const days = wholeDayDiff(hireDate, now);
-    if (days < 0) return "";
-    if (days < 31) return `${{days}} Day${{days !== 1 ? "s" : ""}}`;
+    if (days < 0) return null;
     let years = now.getFullYear() - hireDate.getFullYear();
     let months = now.getMonth() - hireDate.getMonth();
     if (months < 0) {{ years--; months += 12; }}
+    return {{ days, years, months, totalMonths: years * 12 + months }};
+}}
+function formatTenureDisplay(hireDate, asOfDate) {{
+    if (!hireDate) return "";
+    const b = tenureBreakdown(hireDate, asOfDate);
+    if (!b) return "";
+    const {{ days, years, months }} = b;
+    if (days < 31) return `${{days}} Day${{days !== 1 ? "s" : ""}}`;
     if (years === 0) return `${{months}} Month${{months !== 1 ? "s" : ""}}`;
     if (months === 0) return `${{years}} Year${{years !== 1 ? "s" : ""}}`;
     return `${{years}} Year${{years !== 1 ? "s" : ""}}, ${{months}} Month${{months !== 1 ? "s" : ""}}`;
@@ -9532,7 +9614,10 @@ function mlPillClass(status) {{
 // Change A: cell rendering is now driven generically off ML_COLUMNS so all 13
 // columns stay in sync with the thead with no per-column hardcoding to drift.
 function mlCellHtml(r, col) {{
-    if (col.key === "__mlTenureDays") return escapeHtml(r.__mlTenureLabel || "\\u2014");
+    if (col.key === "__mlTenureDays") {{
+        const label = escapeHtml(r.__mlTenureLabel || "\\u2014");
+        return r.__mlTenureFlag ? `<span class="ml-pill ${{r.__mlTenureFlag}}">${{label}}</span>` : label;
+    }}
     if (col.key === "Employment Status") {{
         const pillClass = mlPillClass(r[col.key]);
         return pillClass ? `<span class="ml-pill ${{pillClass}}">${{escapeHtml(r[col.key])}}</span>` : "";
@@ -9556,12 +9641,27 @@ function mlRenderPager(total, totalPages, start, end) {{
     prevBtn.disabled = ML_TABLE_STATE.page <= 1;
     nextBtn.disabled = ML_TABLE_STATE.page >= totalPages;
 }}
+// Item 2 thresholds (Probationary rows only): >=6 months -> red (ml-pi, same
+// convention as the Inactive pill), >=5 and <6 months -> yellow (ml-pp, same
+// convention as the Probation pill). Non-Probationary rows and rows with no
+// parseable Hire Date never get a flag. tenureMonths MUST come from the same
+// tenureBreakdown() call that produced the displayed label so the color can
+// never contradict the visible number (see mlPrepareRows).
+function mlTenureFlag(empClass, tenureMonths) {{
+    if (norm(empClass) !== "Probationary" || tenureMonths < 0) return "";
+    if (tenureMonths >= 6) return "ml-pi";
+    if (tenureMonths >= 5) return "ml-pp";
+    return "";
+}}
 function mlPrepareRows(data) {{
+    const now = new Date();
     return data.map(r => {{
         const hireDate = parseDateValue(r["Hire Date"]);
+        const breakdown = hireDate ? tenureBreakdown(hireDate, now) : null;
         return Object.assign({{}}, r, {{
-            __mlTenureLabel: formatTenureDisplay(hireDate) || "\\u2014",
-            __mlTenureDays: hireDate ? wholeDayDiff(hireDate, new Date()) : -1,
+            __mlTenureLabel: (hireDate ? formatTenureDisplay(hireDate, now) : "") || "\\u2014",
+            __mlTenureDays: breakdown ? breakdown.days : -1,
+            __mlTenureFlag: mlTenureFlag(r["Employement Class"], breakdown ? breakdown.totalMonths : -1),
         }});
     }});
 }}
