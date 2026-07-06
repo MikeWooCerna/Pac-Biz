@@ -965,5 +965,16 @@
     "status": "healed",
     "action": "retry",
     "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-07-06T19:00:01",
+    "date": "Jul 06, 2026 07:00 PM",
+    "account": "Ollies",
+    "script": "ol_pull.py",
+    "status": "count_drop",
+    "drop": 40,
+    "prev_count": 2003,
+    "new_count": 1963,
+    "error": "Dropped 40 rows (2,003 \u2192 1,963)"
   }
 ]
