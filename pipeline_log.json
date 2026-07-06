@@ -947,5 +947,23 @@
     "status": "healed",
     "action": "repull",
     "error": "Count dropped 2,885 \u2192 2,499. Re-pull recovered 2,885 rows."
+  },
+  {
+    "run_id": "2026-07-06T11:00:01",
+    "date": "Jul 06, 2026 11:00 AM",
+    "account": "britelift_pull.py",
+    "script": "britelift_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-07-06T11:00:01",
+    "date": "Jul 06, 2026 11:00 AM",
+    "account": "Ridex_pull.py",
+    "script": "Ridex_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
   }
 ]
