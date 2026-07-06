@@ -9032,8 +9032,14 @@ function mlDonut(id, segs, w, h, opts) {{
     const legendBaseY = drawH - legendBottomPad - 8 - (legendLayout.rows - 1) * legendRowH;
     ctx.font = legendFont; ctx.textAlign = "left";
     legendLayout.positions.forEach(p => {{
-        ctx.fillStyle = p.item.color;
-        ctx.beginPath(); ctx.arc(p.x + 4, legendBaseY + p.y + 4, 4, 0, Math.PI * 2); ctx.fill();
+        // Active Status card: the swatch dot is NOT drawn on canvas — the
+        // pulsing DOM overlay dot (mlSyncActiveLegendDots) is the only dot,
+        // otherwise the static canvas dot shows through the fade and the
+        // blink is invisible.
+        if (id !== "c-ml-active") {{
+            ctx.fillStyle = p.item.color;
+            ctx.beginPath(); ctx.arc(p.x + 4, legendBaseY + p.y + 4, 4, 0, Math.PI * 2); ctx.fill();
+        }}
         ctx.fillStyle = mlGetVar("--muted") || "#5A6B80";
         // +14 gap between the swatch dot and its label text; label is
         // ellipsized to the column width so long names (e.g. a consolidated
