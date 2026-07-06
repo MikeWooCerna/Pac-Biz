@@ -6279,6 +6279,20 @@ def main():
        wrapper (overflow-x:auto) to scroll — clamping them here would silently
        break that intentional natural-width/horizontal-scroll behavior. */
     #masterlistPanel .ml-hscroll-x canvas {{ max-width: none; }}
+    /* Active Status donut — blinking legend dots (cosmetic only, nothing
+       moves). Canvas can't animate, so a small absolutely-positioned DOM
+       dot is overlaid exactly on top of each canvas-drawn legend swatch for
+       THIS card only (see mlSyncActiveLegendDots/mlDonut, id "c-ml-active").
+       position:relative on this one card's body gives the dots a local
+       positioning context without affecting any other card's layout. */
+    #masterlistPanel .ml-card[data-cid="active"] .ml-card-bd {{ position: relative; }}
+    .ml-legend-pulse-dot {{
+        position: absolute; border-radius: 50%; pointer-events: none;
+        animation: qa-pulse 2s ease-in-out infinite;
+    }}
+    @media (prefers-reduced-motion: reduce) {{
+        .ml-legend-pulse-dot {{ animation: none; }}
+    }}
     /* Item D: left padding matches --ml-pad-x (16px, was 12px) so this card's
        content lines up with every other card's left edge; top/bottom match
        --ml-pad-y too. Right stays a literal 6px — NOT the shared token — by
@@ -6611,7 +6625,7 @@ def main():
     <div class="ml-kpi b">
         <div class="ml-kpi-lbl">Total Headcount</div>
         <div class="ml-kpi-val" id="ml-kpi-total">0</div>
-        <div class="ml-kpi-sub" id="ml-kpi-total-sub">Incl. 0 inactive</div>
+        <div class="ml-kpi-sub" id="ml-kpi-total-sub">Incl. <span style="color:#B91C1C;font-weight:700;font-size:13px">0</span> inactive</div>
     </div>
     <div class="ml-kpi">
         <div class="ml-kpi-lbl">Departments</div>
@@ -8873,6 +8887,57 @@ function mlDonutNaturalHeight(segs, w, h, opts) {{
     return Math.max(h, minArcH + legendH);
 }}
 
+// ── Active Status donut — blinking legend dot overlay (cosmetic only) ──────
+// Canvas can't animate a fill, so these two small DOM dots sit exactly on
+// top of the canvas-drawn "Active"/"Inactive" legend swatches for the
+// "c-ml-active" card only — every other donut legend is untouched. Called
+// from inside mlDonut (below) every time that card redraws, so it tracks
+// filter-change re-renders and window resizes automatically without any
+// separate polling loop. Coordinates are converted from the canvas's own
+// logical drawing space (w x drawH, the same space legendBaseY/p.x/p.y are
+// computed in) into actual on-screen CSS pixels via getBoundingClientRect(),
+// which correctly accounts for devicePixelRatio (the canvas's internal
+// width/height are DPR-scaled, but style.width/height and therefore the
+// rendered box are not) AND any CSS max-width squeeze of the canvas element
+// relative to its authored w/h.
+function mlClearActiveLegendDots(canvasEl) {{
+    const wrap = canvasEl && canvasEl.parentElement;
+    if (!wrap) return;
+    wrap.querySelectorAll(".ml-legend-pulse-dot").forEach(d => d.remove());
+}}
+function mlSyncActiveLegendDots(canvasEl, legendLayout, legendBaseY, w, drawH) {{
+    const wrap = canvasEl && canvasEl.parentElement;
+    if (!wrap || !legendLayout || !legendLayout.positions.length) {{ mlClearActiveLegendDots(canvasEl); return; }}
+    let dots = Array.from(wrap.querySelectorAll(".ml-legend-pulse-dot"));
+    if (dots.length !== legendLayout.positions.length) {{
+        dots.forEach(d => d.remove());
+        dots = legendLayout.positions.map(() => {{
+            const d = document.createElement("div");
+            d.className = "ml-legend-pulse-dot";
+            d.setAttribute("aria-hidden", "true");
+            wrap.appendChild(d);
+            return d;
+        }});
+    }}
+    const canvasRect = canvasEl.getBoundingClientRect();
+    const wrapRect = wrap.getBoundingClientRect();
+    if (!canvasRect.width || !canvasRect.height) return; // hidden tab, etc.
+    const scaleX = canvasRect.width / w;
+    const scaleY = canvasRect.height / drawH;
+    const offLeft = canvasRect.left - wrapRect.left;
+    const offTop = canvasRect.top - wrapRect.top;
+    const dotD = 8 * Math.min(scaleX, scaleY); // matches the r=4 canvas arc (diameter 8)
+    legendLayout.positions.forEach((p, i) => {{
+        const dot = dots[i];
+        if (!dot) return;
+        dot.style.background = p.item.color;
+        dot.style.width = dotD + "px";
+        dot.style.height = dotD + "px";
+        dot.style.left = (offLeft + (p.x + 4) * scaleX - dotD / 2) + "px";
+        dot.style.top = (offTop + (legendBaseY + p.y + 4) * scaleY - dotD / 2) + "px";
+    }});
+}}
+
 // ── Donut chart — segs: [{{name, count, color}}] ────────────────────────────
 function mlDonut(id, segs, w, h, opts) {{
     opts = opts || {{}};
@@ -8899,7 +8964,7 @@ function mlDonut(id, segs, w, h, opts) {{
     if (!c) return;
     const ctx = c.ctx;
     ctx.clearRect(0, 0, w, drawH);
-    if (!total) {{ mlEmptyState(ctx, w, drawH); c.el.onmousemove = null; c.el.onmouseleave = null; c.el.style.cursor = "default"; return; }}
+    if (!total) {{ mlEmptyState(ctx, w, drawH); if (id === "c-ml-active") mlClearActiveLegendDots(c.el); c.el.onmousemove = null; c.el.onmouseleave = null; c.el.style.cursor = "default"; return; }}
     // Change 7/8: legend now shows EVERY segment (not just the first 4) and
     // wraps to as many rows as it needs — pre-measured above at the smaller
     // 10px legend font so the arc is sized around the ACTUAL legend height,
@@ -8939,7 +9004,7 @@ function mlDonut(id, segs, w, h, opts) {{
         ctx.textBaseline = "alphabetic";
     }}
 
-    if (opts.mini) {{ c.el.onmousemove = null; c.el.onmouseleave = null; return; }}
+    if (opts.mini) {{ if (id === "c-ml-active") mlClearActiveLegendDots(c.el); c.el.onmousemove = null; c.el.onmouseleave = null; return; }}
 
     const big = segs.reduce((m, s) => s.count > m.count ? s : m, segs[0]);
     ctx.textAlign = "center";
@@ -8976,6 +9041,15 @@ function mlDonut(id, segs, w, h, opts) {{
         const maxTextW = Math.max(4, p.colW - 14);
         ctx.fillText(mlEllipsize(ctx, p.item.name, maxTextW), p.x + 14, legendBaseY + p.y + 8);
     }});
+
+    // Blinking legend dot overlay — Active Status card only (see
+    // mlSyncActiveLegendDots above). Runs on every call to mlDonut for this
+    // card, so it self-corrects on filter-change re-renders, the expand
+    // modal close redraw (mlRedrawCard), and the debounced window resize
+    // handler (mlRedrawIfActive -> mlDrawAll) — no separate polling needed.
+    if (id === "c-ml-active") {{
+        mlSyncActiveLegendDots(c.el, legendLayout, legendBaseY, w, drawH);
+    }}
 
     c.el.onmousemove = (e) => {{
         const x = e.offsetX, y = e.offsetY, dx = x - cx, dy = y - cy;
@@ -9842,7 +9916,7 @@ function render() {{
     setText("ml-kpi-active", active);
     setText("ml-kpi-total", data.length);
     const mlTotalSubEl = document.getElementById("ml-kpi-total-sub"); // change 2
-    if (mlTotalSubEl) mlTotalSubEl.textContent = `Incl. ${{Number(inactive).toLocaleString()}} inactive`;
+    if (mlTotalSubEl) mlTotalSubEl.innerHTML = `Incl. <span style="color:#B91C1C;font-weight:700;font-size:13px">${{Number(inactive).toLocaleString()}}</span> inactive`;
     setText("ml-kpi-departments", uniqueValues(data, "Department").length);
     const mlAvgTenureEl = document.getElementById("ml-kpi-avgtenure");
     if (mlAvgTenureEl) mlAvgTenureEl.innerHTML = `${{Number(masterlistKpis.avgTenure || 0).toLocaleString()}}<span style="font-size:14px;font-weight:400"> yrs</span>`;
