@@ -6352,7 +6352,9 @@ def main():
        themselves or to any element between them and this scroller, per Item
        3's compatibility note — sticky positioning still resolves against
        this element as the nearest scrolling ancestor. */
-    #masterlistPanel .ml-twrap {{ overflow-x: auto; max-height: 420px; overflow-y: auto; contain: paint; will-change: scroll-position; }}
+    /* min-height matches max-height so the card keeps its full size even when
+       a filter returns few or zero rows — the table area never collapses. */
+    #masterlistPanel .ml-twrap {{ overflow-x: auto; min-height: 420px; max-height: 420px; overflow-y: auto; contain: paint; will-change: scroll-position; }}
     #masterlistPanel table.ml-dt {{ width: 100%; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }}
     /* Change 3: header restyled to white bold on Pac-Biz blue (matches the QA
        detail table header convention) — was gray text (var(--muted)) on a
@@ -9706,7 +9708,7 @@ function mlCellHtml(r, col) {{
 }}
 function mlBuildRowsHtml(rows) {{
     if (!rows.length) {{
-        return `<tr><td colspan="${{ML_COLUMNS.length}}" style="text-align:center;color:var(--muted);padding:18px">No employees match the selected filters.</td></tr>`;
+        return `<tr><td colspan="${{ML_COLUMNS.length}}" style="text-align:center;color:var(--muted);padding:170px 0;border-bottom:none">No employees match the selected filters.</td></tr>`;
     }}
     return rows.map(r => "<tr>" + ML_COLUMNS.map(c => `<td class="${{c.cls || ""}}"><span class="ml-clip" title="${{escapeHtml(norm(c.key === "__mlTenureDays" ? r.__mlTenureLabel : r[c.key]))}}">${{mlCellHtml(r, c)}}</span></td>`).join("") + "</tr>").join("");
 }}
