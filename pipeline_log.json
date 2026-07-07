@@ -987,5 +987,25 @@
     "prev_count": 104,
     "new_count": 100,
     "error": "Source re-pull confirmed current Blueline count is 100 rows (previous baseline 104). Baseline accepted."
+  },
+  {
+    "run_id": "2026-07-07T15:00:02",
+    "date": "Jul 07, 2026 03:00 PM",
+    "account": "Hamilton",
+    "script": "Hamilton_pull.py",
+    "status": "count_drop",
+    "drop": 1,
+    "prev_count": 3771,
+    "new_count": 3770,
+    "error": "Dropped 1 rows (3,771 \u2192 3,770)"
+  },
+  {
+    "run_id": "2026-07-07T15:00:02",
+    "date": "Jul 07, 2026 03:00 PM",
+    "account": "bl_pull.py",
+    "script": "bl_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
   }
 ]
