@@ -105,6 +105,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 .log-empty{text-align:center;color:#4a3d7a;font-size:12px;padding:14px;background:rgba(40,10,90,0.25);border-radius:8px;border:1px solid rgba(80,0,180,0.18);}
 .drop-strip{background:rgba(50,30,0,0.35);border:1px solid rgba(255,170,0,0.32);border-radius:7px;padding:7px 12px;font-size:13px;color:#ffcc55;display:flex;align-items:flex-start;gap:6px;margin-top:7px;flex-wrap:wrap;position:relative;z-index:1;}
 .lp-d{background:rgba(255,170,0,0.1);color:#ffaa00;border:1px solid rgba(255,170,0,0.28);}
+.lp-s{background:rgba(14,165,233,0.1);color:#7dd3fc;border:1px solid rgba(14,165,233,0.28);}
 .lp-h{background:rgba(0,232,122,0.1);color:#00e87a;border:1px solid rgba(0,232,122,0.28);}
 .cnt-drop{background:rgba(232,69,0,0.15);color:#ff7040;border:1px solid rgba(232,69,0,0.38);font-weight:600;}
 .cnt-ok{background:rgba(0,232,122,0.06);color:#20a060;border:1px solid rgba(0,232,122,0.18);}
@@ -157,7 +158,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     </div>
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run 2026-07-07T11:00</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Built: Jul 07, 2026 11:13 AM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Built: Jul 07, 2026 12:41 PM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -459,14 +460,14 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">100 rows</span>
     <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-drop">&darr; 4</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
     </div>
   </div>
 
   
-  <div class="drop-strip">&#9660; Row count drop detected &mdash; <b>Blueline</b> &darr;&thinsp;4 rows <span style='opacity:0.65;font-size:11px;'>(104 &rarr; 100)</span></div>
+  
   <div class="vol-strip">&#9651; High volume datasets detected &mdash; <b>Skyline</b> &#9651;&thinsp;16,578 rows <span style='opacity:0.65;font-size:11px;'>(HIGH VOL)</span></div>
 
   <div class="divider" style="margin-top:12px;"></div>
@@ -475,7 +476,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div class="log-wrap">
       <table class="log-table">
         <thead><tr><th>Date</th><th>Dataset</th><th>Status</th></tr></thead>
-        <tbody><tr><td class="log-td-d">Jul 07, 2026 11:00 AM</td><td class="log-td-ds"><b>Blueline</b> <span class="log-sc">&middot; bl_pull.py</span><div class="log-err">Dropped 4 rows (104 → 100)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
+        <tbody><tr><td class="log-td-d">Jul 07, 2026 11:00 AM</td><td class="log-td-ds"><b>Blueline</b> <span class="log-sc">&middot; bl_pull.py</span><div class="log-err">Source re-pull confirmed current Blueline count is 100 rows (previous baseline 104). Baseline accepted.</div></td><td class="log-td-st"><span class="lp lp-s">SOURCE CONFIRMED</span></td></tr>
 <tr><td class="log-td-d">Jul 06, 2026 07:00 PM</td><td class="log-td-ds"><b>Ollies</b> <span class="log-sc">&middot; ol_pull.py</span><div class="log-err">Dropped 40 rows (2,003 → 1,963)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
 <tr><td class="log-td-d">Jul 06, 2026 11:00 AM</td><td class="log-td-ds"><b>Ridex_pull.py</b> <span class="log-sc">&middot; Ridex_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
 <tr><td class="log-td-d">Jul 06, 2026 11:00 AM</td><td class="log-td-ds"><b>britelift_pull.py</b> <span class="log-sc">&middot; britelift_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>

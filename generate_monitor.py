@@ -150,6 +150,7 @@ def render_log_table(log_entries):
         st  = e.get("status", "")
         pill = ('<span class="lp lp-f">FAILED</span>'          if st == "fail"
                 else '<span class="lp lp-d">COUNT DROP</span>'  if st == "count_drop"
+                else '<span class="lp lp-s">SOURCE CONFIRMED</span>' if st == "source_confirmed"
                 else '<span class="lp lp-h">SELF HEALED</span>' if st == "healed"
                 else '<span class="lp lp-v">HIGH VOLUME</span>' if st == "high_volume"
                 else '<span class="lp lp-g">GUARDIAN FIX</span>'  if st == "guardian_fix"
@@ -682,6 +683,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 .log-empty{{text-align:center;color:#4a3d7a;font-size:12px;padding:14px;background:rgba(40,10,90,0.25);border-radius:8px;border:1px solid rgba(80,0,180,0.18);}}
 .drop-strip{{background:rgba(50,30,0,0.35);border:1px solid rgba(255,170,0,0.32);border-radius:7px;padding:7px 12px;font-size:13px;color:#ffcc55;display:flex;align-items:flex-start;gap:6px;margin-top:7px;flex-wrap:wrap;position:relative;z-index:1;}}
 .lp-d{{background:rgba(255,170,0,0.1);color:#ffaa00;border:1px solid rgba(255,170,0,0.28);}}
+.lp-s{{background:rgba(14,165,233,0.1);color:#7dd3fc;border:1px solid rgba(14,165,233,0.28);}}
 .lp-h{{background:rgba(0,232,122,0.1);color:#00e87a;border:1px solid rgba(0,232,122,0.28);}}
 .cnt-drop{{background:rgba(232,69,0,0.15);color:#ff7040;border:1px solid rgba(232,69,0,0.38);font-weight:600;}}
 .cnt-ok{{background:rgba(0,232,122,0.06);color:#20a060;border:1px solid rgba(0,232,122,0.18);}}

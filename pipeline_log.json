@@ -982,10 +982,10 @@
     "date": "Jul 07, 2026 11:00 AM",
     "account": "Blueline",
     "script": "bl_pull.py",
-    "status": "count_drop",
+    "status": "source_confirmed",
     "drop": 4,
     "prev_count": 104,
     "new_count": 100,
-    "error": "Dropped 4 rows (104 \u2192 100)"
+    "error": "Source re-pull confirmed current Blueline count is 100 rows (previous baseline 104). Baseline accepted."
   }
 ]
