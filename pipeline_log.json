@@ -976,5 +976,16 @@
     "prev_count": 2003,
     "new_count": 1963,
     "error": "Dropped 40 rows (2,003 \u2192 1,963)"
+  },
+  {
+    "run_id": "2026-07-07T11:00:01",
+    "date": "Jul 07, 2026 11:00 AM",
+    "account": "Blueline",
+    "script": "bl_pull.py",
+    "status": "count_drop",
+    "drop": 4,
+    "prev_count": 104,
+    "new_count": 100,
+    "error": "Dropped 4 rows (104 \u2192 100)"
   }
 ]
