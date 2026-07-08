@@ -4399,27 +4399,29 @@ def notify_coaching_validation_alerts(errors):
             "</tr>"
         )
         rows_text.append(
-            f"Task GID: {cell_text(item.get('Task GID')) or '(blank)'}\n"
+            f"Coaching ID: {cell_text(item.get('Task GID')) or '(blank)'}\n"
             f"Task Name: {cell_text(item.get('Task Name')) or '(blank)'}\n"
             f"Error: {cell_text(item.get('Error'))}\n"
             f"Employee Email: {cell_text(item.get('Employee Email')) or '(blank)'}\n"
             f"Supervisor Email: {cell_text(item.get('Supervisor Email')) or '(blank)'}"
         )
 
-    subject = f"Report Monitoring — COACHING VALIDATION: {len(errors)} task(s) excluded"
+    session_word = "session" if len(errors) == 1 else "sessions"
+    subject = "PACE Validation Errors Detected in Coaching Entries"
     html_body = f"""
 <div style="font-family:Arial,sans-serif;max-width:760px;">
   <div style="background:#b45309;color:#fff;padding:14px 20px;border-radius:6px 6px 0 0;">
-    <b style="font-size:16px;">Coaching Email Validation Alert</b>
+    <b style="font-size:16px;">PACE Validation ALERT!!!</b>
   </div>
   <div style="border:1px solid #fcd34d;border-top:none;padding:18px 20px;background:#fffbeb;border-radius:0 0 6px 6px;">
+    <p style="margin:0 0 12px;font-size:14px;color:#374151;">Hi Mike,</p>
     <p style="margin:0 0 12px;font-size:14px;color:#374151;">
-      {len(errors)} coaching task(s) were excluded from the Coaching report because the employee or supervisor email could not be matched to the Masterlist.
+      PACE (Pac-Biz Automated Coaching Engine) has detected {len(errors)} coaching {session_word} that were excluded from the Coaching Report due to invalid or incorrect employee email addresses entered in Asana.
     </p>
     <table style="width:100%;font-size:13px;border-collapse:collapse;background:#fff;border:1px solid #e5e7eb;">
       <thead>
         <tr style="background:#004C97;color:#fff;text-align:left;">
-          <th style="padding:8px;">Task GID</th>
+          <th style="padding:8px;">Coaching ID</th>
           <th style="padding:8px;">Issue</th>
           <th style="padding:8px;">Employee Email</th>
           <th style="padding:8px;">Supervisor Email</th>
@@ -4435,6 +4437,9 @@ def notify_coaching_validation_alerts(errors):
     <p style="margin-top:8px;font-size:12px;color:#6b7280;">
       Validation details were saved locally to: {html.escape(str(COACHING_VALIDATION_ERRORS_FILE))}
     </p>
+    <p style="margin-top:8px;font-size:12px;color:#6b7280;">
+      PACE AI Email notification Activated as Watchers.. Report to Mike
+    </p>
     <p style="margin-top:12px;">
       <a href="https://mikewoocerna.github.io/Pac-Biz/pipeline_monitor.html"
          style="background:#004C97;color:#fff;padding:8px 16px;border-radius:4px;text-decoration:none;font-size:13px;">
@@ -4444,10 +4449,13 @@ def notify_coaching_validation_alerts(errors):
   </div>
 </div>"""
     text_body = (
-        f"COACHING EMAIL VALIDATION ALERT\n"
-        f"{len(errors)} task(s) excluded from the Coaching report until corrected.\n\n"
+        "PACE Validation ALERT!!!\n\n"
+        "Hi Mike,\n\n"
+        f"PACE (Pac-Biz Automated Coaching Engine) has detected {len(errors)} coaching {session_word} "
+        "that were excluded from the Coaching Report due to invalid or incorrect employee email addresses entered in Asana.\n\n"
         + "\n\n".join(rows_text)
         + f"\n\nValidation details: {COACHING_VALIDATION_ERRORS_FILE}"
+        + "\nPACE AI Email notification Activated as Watchers.. Report to Mike"
     )
 
     if notify.send(subject, html_body, body_text=text_body):
