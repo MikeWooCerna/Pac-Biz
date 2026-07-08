@@ -4,7 +4,7 @@ Reads movement_cache.csv (written by masterlist_fetch.py), compares Timestamps
 against movement_notified.json to find unseen rows, sends one email per movement,
 then saves the updated seen list.
 
-Filter criteria: Processed == "Yes" AND Void != "Yes" AND Timestamp not in seen list.
+Filter criteria: fully processed, not voided, and Timestamp not in seen list.
 """
 
 import json, sys
@@ -47,6 +47,34 @@ def na_or(val, fallback="No changes"):
     if not s or s.upper() in ("N/A", "NA", "NONE", "-", "N/A.", "N.A."):
         return fallback
     return s
+
+
+def clean_text(val):
+    if pd.isna(val):
+        return ""
+    return str(val).strip()
+
+
+def has_value(val):
+    text = clean_text(val)
+    return bool(text) and text.upper() not in ("N/A", "NA", "NONE", "-", "N/A.", "N.A.")
+
+
+def is_ready_to_notify(row):
+    """Only notify after the movement has complete processing details."""
+    required_fields = [
+        "Timestamp",
+        "Employee Name",
+        "Type of Movement",
+        "Email Address",
+        "Processed Date",
+        "Processed Note",
+    ]
+    return (
+        clean_text(row.get("Processed")).lower() == "yes"
+        and clean_text(row.get("Void")).lower() != "yes"
+        and all(has_value(row.get(field)) for field in required_fields)
+    )
 
 
 def format_date(val):
@@ -494,9 +522,7 @@ def main():
     eligible_timestamps = {
         str(row.get("Timestamp", "")).strip()
         for _, row in mv_df.iterrows()
-        if str(row.get("Processed", "")).strip().lower() == "yes"
-        and str(row.get("Void", "")).strip().lower() != "yes"
-        and str(row.get("Timestamp", "")).strip()
+        if is_ready_to_notify(row)
     }
 
     if seen is None:
@@ -509,8 +535,7 @@ def main():
 
     new_rows = [
         row for _, row in mv_df.iterrows()
-        if str(row.get("Processed", "")).strip().lower() == "yes"
-        and str(row.get("Void", "")).strip().lower() != "yes"
+        if is_ready_to_notify(row)
         and str(row.get("Timestamp", "")).strip() not in seen
     ]
 
