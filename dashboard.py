@@ -1,4 +1,6 @@
 import base64
+import hashlib
+import html
 import json
 import os
 import re
@@ -10,6 +12,7 @@ from zoneinfo import ZoneInfo
 
 import pandas as pd
 
+import notify
 from sheets_urls import MASTERLIST_CSV, HISTORY_CSV, MOVEMENT_CSV
 
 GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/18hKmm2SmlWqB23osiV3JTF0aWn86vvZ-YJSC-Rr3JcY/edit#gid=0"
@@ -804,6 +807,7 @@ BL_EXTRA_CRIT_MAP = {
 }
 
 COACHING_VALIDATION_ERRORS_FILE = COACHING_OUTPUT_FILE.parent / "coaching_validation_errors.csv"
+COACHING_VALIDATION_NOTIFY_FILE = COACHING_OUTPUT_FILE.parent / "coaching_validation_notified.json"
 COACHING_TIMEZONE = ZoneInfo("Asia/Manila")
 COACHING_TIMEZONE_NAME = "Asia/Manila"
 EXCLUDED_COACHING_GIDS = {
@@ -4334,6 +4338,126 @@ def print_coaching_validation_alerts(errors):
     print("========================================")
 
 
+def coaching_validation_signature(errors):
+    normalized = [
+        {
+            "task_gid": cell_text(item.get("Task GID")),
+            "error": cell_text(item.get("Error")),
+            "employee_email": normalize_email(item.get("Employee Email")),
+            "supervisor_email": normalize_email(item.get("Supervisor Email")),
+        }
+        for item in errors
+    ]
+    payload = json.dumps(sorted(normalized, key=lambda item: item["task_gid"]), sort_keys=True)
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def load_coaching_validation_notification_state():
+    try:
+        if COACHING_VALIDATION_NOTIFY_FILE.exists():
+            return json.loads(COACHING_VALIDATION_NOTIFY_FILE.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        pass
+    return {}
+
+
+def save_coaching_validation_notification_state(state):
+    try:
+        COACHING_VALIDATION_NOTIFY_FILE.parent.mkdir(parents=True, exist_ok=True)
+        COACHING_VALIDATION_NOTIFY_FILE.write_text(json.dumps(state, indent=2), encoding="utf-8")
+    except OSError as exc:
+        print(f"Unable to update Coaching validation notification state: {exc}")
+
+
+def notify_coaching_validation_alerts(errors):
+    state = load_coaching_validation_notification_state()
+
+    if not errors:
+        if state:
+            save_coaching_validation_notification_state({})
+        return
+
+    signature = coaching_validation_signature(errors)
+    if state.get("signature") == signature:
+        print("[notify] Coaching validation alert already sent for current error set.")
+        return
+
+    rows_html = []
+    rows_text = []
+    for item in errors:
+        task_gid = html.escape(cell_text(item.get("Task GID")) or "(blank)")
+        error = html.escape(cell_text(item.get("Error")))
+        employee_email = html.escape(cell_text(item.get("Employee Email")) or "(blank)")
+        supervisor_email = html.escape(cell_text(item.get("Supervisor Email")) or "(blank)")
+        task_name = html.escape(cell_text(item.get("Task Name")) or "(blank)")
+        rows_html.append(
+            "<tr>"
+            f"<td style='padding:8px;border-bottom:1px solid #e5e7eb;font-family:monospace;font-size:12px;'>{task_gid}</td>"
+            f"<td style='padding:8px;border-bottom:1px solid #e5e7eb;'>{error}</td>"
+            f"<td style='padding:8px;border-bottom:1px solid #e5e7eb;'>{employee_email}</td>"
+            f"<td style='padding:8px;border-bottom:1px solid #e5e7eb;'>{supervisor_email}</td>"
+            "</tr>"
+        )
+        rows_text.append(
+            f"Task GID: {cell_text(item.get('Task GID')) or '(blank)'}\n"
+            f"Task Name: {cell_text(item.get('Task Name')) or '(blank)'}\n"
+            f"Error: {cell_text(item.get('Error'))}\n"
+            f"Employee Email: {cell_text(item.get('Employee Email')) or '(blank)'}\n"
+            f"Supervisor Email: {cell_text(item.get('Supervisor Email')) or '(blank)'}"
+        )
+
+    subject = f"Report Monitoring — COACHING VALIDATION: {len(errors)} task(s) excluded"
+    html_body = f"""
+<div style="font-family:Arial,sans-serif;max-width:760px;">
+  <div style="background:#b45309;color:#fff;padding:14px 20px;border-radius:6px 6px 0 0;">
+    <b style="font-size:16px;">Coaching Email Validation Alert</b>
+  </div>
+  <div style="border:1px solid #fcd34d;border-top:none;padding:18px 20px;background:#fffbeb;border-radius:0 0 6px 6px;">
+    <p style="margin:0 0 12px;font-size:14px;color:#374151;">
+      {len(errors)} coaching task(s) were excluded from the Coaching report because the employee or supervisor email could not be matched to the Masterlist.
+    </p>
+    <table style="width:100%;font-size:13px;border-collapse:collapse;background:#fff;border:1px solid #e5e7eb;">
+      <thead>
+        <tr style="background:#004C97;color:#fff;text-align:left;">
+          <th style="padding:8px;">Task GID</th>
+          <th style="padding:8px;">Issue</th>
+          <th style="padding:8px;">Employee Email</th>
+          <th style="padding:8px;">Supervisor Email</th>
+        </tr>
+      </thead>
+      <tbody>
+        {''.join(rows_html)}
+      </tbody>
+    </table>
+    <p style="margin-top:14px;font-size:13px;color:#374151;">
+      Correct the email address in Asana or add the employee/supervisor email to the Masterlist, then rerun the dashboard pipeline.
+    </p>
+    <p style="margin-top:8px;font-size:12px;color:#6b7280;">
+      Validation details were saved locally to: {html.escape(str(COACHING_VALIDATION_ERRORS_FILE))}
+    </p>
+    <p style="margin-top:12px;">
+      <a href="https://mikewoocerna.github.io/Pac-Biz/pipeline_monitor.html"
+         style="background:#004C97;color:#fff;padding:8px 16px;border-radius:4px;text-decoration:none;font-size:13px;">
+        View Pipeline Monitor
+      </a>
+    </p>
+  </div>
+</div>"""
+    text_body = (
+        f"COACHING EMAIL VALIDATION ALERT\n"
+        f"{len(errors)} task(s) excluded from the Coaching report until corrected.\n\n"
+        + "\n\n".join(rows_text)
+        + f"\n\nValidation details: {COACHING_VALIDATION_ERRORS_FILE}"
+    )
+
+    if notify.send(subject, html_body, body_text=text_body):
+        save_coaching_validation_notification_state({
+            "signature": signature,
+            "count": len(errors),
+            "sent_at": datetime.now(COACHING_TIMEZONE).isoformat(timespec="seconds"),
+        })
+
+
 def parse_coaching_date_for_status(value):
     text = cell_text(value)
     if not text:
@@ -4470,6 +4594,7 @@ def transform_coaching_logs(source, masterlist):
 
     write_coaching_validation_errors(validation_errors)
     print_coaching_validation_alerts(validation_errors)
+    notify_coaching_validation_alerts(validation_errors)
     return clean_columns(assign_category_status(pd.DataFrame(records, columns=COACHING_OUTPUT_COLUMNS)))
 
 
