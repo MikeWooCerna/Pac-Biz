@@ -172,7 +172,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">0</div><div class="sc-lbl">Failed</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#E84500;">0</div><div class="sc-lbl">Not Reached</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">43,435</div><div class="sc-lbl">Rows Pulled</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#7060a0;">&mdash;</div><div class="sc-lbl">running</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#00e87a;">&#10003;</div><div class="sc-lbl">success</div></div>
   </div>
 
   <div class="divider"></div>
@@ -264,7 +264,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">3,370 rows</span>
     <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill cnt-drop">&darr; 424</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -284,7 +284,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">2,596 rows</span>
     <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill cnt-drop">&darr; 1,070</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -305,7 +305,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       </div>
       <div class="radar-label">
         <div class="radar-lbl-main">Pipeline / Container Monitoring</div>
-        <div class="radar-lbl-status"><div class="blink-a"></div><span style="color:#ffaa00;font-size:12px;">running</span></div>
+        <div class="radar-lbl-status"><div class="blink-g"></div><span style="color:#00e87a;font-size:12px;">complete</span></div>
       </div>
 
       <div class="connector"></div>
@@ -467,7 +467,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   </div>
 
   
-  
+  <div class="drop-strip">&#9660; Row count drop detected &mdash; <b>Hamilton</b> &darr;&thinsp;424 rows <span style='opacity:0.65;font-size:11px;'>(3,794 &rarr; 3,370)</span> &nbsp;&middot;&nbsp; <b>VIP</b> &darr;&thinsp;1,070 rows <span style='opacity:0.65;font-size:11px;'>(3,666 &rarr; 2,596)</span></div>
   <div class="vol-strip">&#9651; High volume datasets detected &mdash; <b>Skyline</b> &#9651;&thinsp;16,766 rows <span style='opacity:0.65;font-size:11px;'>(HIGH VOL)</span></div>
 
   <div class="divider" style="margin-top:12px;"></div>
@@ -476,7 +476,9 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div class="log-wrap">
       <table class="log-table">
         <thead><tr><th>Date</th><th>Dataset</th><th>Status</th></tr></thead>
-        <tbody><tr><td class="log-td-d">Jul 07, 2026 03:00 PM</td><td class="log-td-ds"><b>bl_pull.py</b> <span class="log-sc">&middot; bl_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
+        <tbody><tr><td class="log-td-d">Jul 08, 2026 10:00 PM</td><td class="log-td-ds"><b>VIP</b> <span class="log-sc">&middot; vip_pull.py</span><div class="log-err">Dropped 1,070 rows (3,666 → 2,596)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
+<tr><td class="log-td-d">Jul 08, 2026 10:00 PM</td><td class="log-td-ds"><b>Hamilton</b> <span class="log-sc">&middot; Hamilton_pull.py</span><div class="log-err">Dropped 424 rows (3,794 → 3,370)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
+<tr><td class="log-td-d">Jul 07, 2026 03:00 PM</td><td class="log-td-ds"><b>bl_pull.py</b> <span class="log-sc">&middot; bl_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
 <tr><td class="log-td-d">Jul 07, 2026 03:00 PM</td><td class="log-td-ds"><b>Hamilton</b> <span class="log-sc">&middot; Hamilton_pull.py</span><div class="log-err">Dropped 1 rows (3,771 → 3,770)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
 <tr><td class="log-td-d">Jul 07, 2026 11:00 AM</td><td class="log-td-ds"><b>Blueline</b> <span class="log-sc">&middot; bl_pull.py</span><div class="log-err">Source re-pull confirmed current Blueline count is 100 rows (previous baseline 104). Baseline accepted.</div></td><td class="log-td-st"><span class="lp lp-s">SOURCE CONFIRMED</span></td></tr>
 <tr><td class="log-td-d">Jul 06, 2026 07:00 PM</td><td class="log-td-ds"><b>Ollies</b> <span class="log-sc">&middot; ol_pull.py</span><div class="log-err">Dropped 40 rows (2,003 → 1,963)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
@@ -555,9 +557,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 <tr><td class="log-td-d">Jun 23, 2026 07:00 PM</td><td class="log-td-ds"><b>YCOV</b> <span class="log-sc">&middot; ycov_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
 <tr><td class="log-td-d">Jun 23, 2026 07:00 PM</td><td class="log-td-ds"><b>Circle Taxi</b> <span class="log-sc">&middot; ct_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
 <tr><td class="log-td-d">Jun 23, 2026 07:00 PM</td><td class="log-td-ds"><b>Ollies</b> <span class="log-sc">&middot; ol_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
-<tr><td class="log-td-d">Jun 23, 2026 07:00 PM</td><td class="log-td-ds"><b>Associated Cab</b> <span class="log-sc">&middot; ac_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
-<tr><td class="log-td-d">Jun 23, 2026 07:00 PM</td><td class="log-td-ds"><b>Data Carz</b> <span class="log-sc">&middot; dc_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
-<tr><td class="log-td-d">Jun 23, 2026 07:00 PM</td><td class="log-td-ds"><b>Trans Iowa</b> <span class="log-sc">&middot; ti_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr></tbody>
+<tr><td class="log-td-d">Jun 23, 2026 07:00 PM</td><td class="log-td-ds"><b>Associated Cab</b> <span class="log-sc">&middot; ac_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr></tbody>
       </table>
     </div>
   </div>
