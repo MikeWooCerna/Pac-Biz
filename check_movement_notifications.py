@@ -18,7 +18,7 @@ MASTERLIST_CACHE = BASE_DIR / "masterlist_cache.csv"
 NOTIFIED_FILE    = BASE_DIR / "movement_notified.json"
 LOGO_PATH        = BASE_DIR / "pacbiz_logo.png"
 
-CC_ALWAYS  = ["it-team@pac-biz.com", "hr@pac-biz.com"]
+CC_ALWAYS  = ["it-team@pac-biz.com", "hr@pac-biz.com", "gibson@pac-biz.com"]
 BCC_ALWAYS = ["reports@pac-biz.com"]
 
 
