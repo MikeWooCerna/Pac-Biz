@@ -158,7 +158,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     </div>
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run 2026-07-08T22:00</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Built: Jul 08, 2026 10:22 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Built: Jul 08, 2026 11:31 PM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -264,7 +264,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">3,370 rows</span>
     <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-drop">&darr; 424</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -284,7 +284,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">2,596 rows</span>
     <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-drop">&darr; 1,070</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -467,7 +467,6 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   </div>
 
   
-  <div class="drop-strip">&#9660; Row count drop detected &mdash; <b>Hamilton</b> &darr;&thinsp;424 rows <span style='opacity:0.65;font-size:11px;'>(3,794 &rarr; 3,370)</span> &nbsp;&middot;&nbsp; <b>VIP</b> &darr;&thinsp;1,070 rows <span style='opacity:0.65;font-size:11px;'>(3,666 &rarr; 2,596)</span></div>
   <div class="vol-strip">&#9651; High volume datasets detected &mdash; <b>Skyline</b> &#9651;&thinsp;16,766 rows <span style='opacity:0.65;font-size:11px;'>(HIGH VOL)</span></div>
 
   <div class="divider" style="margin-top:12px;"></div>
@@ -476,8 +475,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div class="log-wrap">
       <table class="log-table">
         <thead><tr><th>Date</th><th>Dataset</th><th>Status</th></tr></thead>
-        <tbody><tr><td class="log-td-d">Jul 08, 2026 10:00 PM</td><td class="log-td-ds"><b>VIP</b> <span class="log-sc">&middot; vip_pull.py</span><div class="log-err">Dropped 1,070 rows (3,666 → 2,596)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
-<tr><td class="log-td-d">Jul 08, 2026 10:00 PM</td><td class="log-td-ds"><b>Hamilton</b> <span class="log-sc">&middot; Hamilton_pull.py</span><div class="log-err">Dropped 424 rows (3,794 → 3,370)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
+        <tbody><tr><td class="log-td-d">Jul 08, 2026 10:00 PM</td><td class="log-td-ds"><b>VIP</b> <span class="log-sc">&middot; vip_pull.py</span><div class="log-err">Source re-pull confirmed current VIP count is 2,596 rows (previous baseline 3,666). Baseline accepted.</div></td><td class="log-td-st"><span class="lp lp-s">SOURCE CONFIRMED</span></td></tr>
+<tr><td class="log-td-d">Jul 08, 2026 10:00 PM</td><td class="log-td-ds"><b>Hamilton</b> <span class="log-sc">&middot; Hamilton_pull.py</span><div class="log-err">Source re-pull confirmed current Hamilton count is 3,370 rows (previous baseline 3,794). Baseline accepted.</div></td><td class="log-td-st"><span class="lp lp-s">SOURCE CONFIRMED</span></td></tr>
 <tr><td class="log-td-d">Jul 07, 2026 03:00 PM</td><td class="log-td-ds"><b>bl_pull.py</b> <span class="log-sc">&middot; bl_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
 <tr><td class="log-td-d">Jul 07, 2026 03:00 PM</td><td class="log-td-ds"><b>Hamilton</b> <span class="log-sc">&middot; Hamilton_pull.py</span><div class="log-err">Dropped 1 rows (3,771 → 3,770)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
 <tr><td class="log-td-d">Jul 07, 2026 11:00 AM</td><td class="log-td-ds"><b>Blueline</b> <span class="log-sc">&middot; bl_pull.py</span><div class="log-err">Source re-pull confirmed current Blueline count is 100 rows (previous baseline 104). Baseline accepted.</div></td><td class="log-td-st"><span class="lp lp-s">SOURCE CONFIRMED</span></td></tr>

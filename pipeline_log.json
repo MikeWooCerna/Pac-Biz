@@ -1013,21 +1013,21 @@
     "date": "Jul 08, 2026 10:00 PM",
     "account": "Hamilton",
     "script": "Hamilton_pull.py",
-    "status": "count_drop",
+    "status": "source_confirmed",
     "drop": 424,
     "prev_count": 3794,
     "new_count": 3370,
-    "error": "Dropped 424 rows (3,794 \u2192 3,370)"
+    "error": "Source re-pull confirmed current Hamilton count is 3,370 rows (previous baseline 3,794). Baseline accepted."
   },
   {
     "run_id": "2026-07-08T22:00:04",
     "date": "Jul 08, 2026 10:00 PM",
     "account": "VIP",
     "script": "vip_pull.py",
-    "status": "count_drop",
+    "status": "source_confirmed",
     "drop": 1070,
     "prev_count": 3666,
     "new_count": 2596,
-    "error": "Dropped 1,070 rows (3,666 \u2192 2,596)"
+    "error": "Source re-pull confirmed current VIP count is 2,596 rows (previous baseline 3,666). Baseline accepted."
   }
 ]
