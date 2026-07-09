@@ -1029,5 +1029,14 @@
     "prev_count": 3666,
     "new_count": 2596,
     "error": "Source re-pull confirmed current VIP count is 2,596 rows (previous baseline 3,666). Baseline accepted."
+  },
+  {
+    "run_id": "2026-07-09T19:00:03",
+    "date": "Jul 09, 2026 07:00 PM",
+    "account": "ch_pull.py",
+    "script": "ch_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
   }
 ]
