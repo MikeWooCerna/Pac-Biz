@@ -1047,5 +1047,14 @@
     "status": "healed",
     "action": "retry",
     "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-07-10T15:00:01",
+    "date": "Jul 10, 2026 03:00 PM",
+    "account": "bl_pull.py",
+    "script": "bl_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
   }
 ]
