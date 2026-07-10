@@ -1056,5 +1056,16 @@
     "status": "healed",
     "action": "retry",
     "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-07-10T22:00:02",
+    "date": "Jul 10, 2026 10:00 PM",
+    "account": "Hamilton",
+    "script": "Hamilton_pull.py",
+    "status": "count_drop",
+    "drop": 18,
+    "prev_count": 3860,
+    "new_count": 3842,
+    "error": "Dropped 18 rows (3,860 \u2192 3,842)"
   }
 ]
