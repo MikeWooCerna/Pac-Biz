@@ -7847,6 +7847,10 @@ function weekStartLabel(key) {{
     return parsed.toLocaleDateString("en-US");
 }}
 
+function coachingSummaryDate(row) {{
+    return norm(row["Coaching Date"]) || norm(row["Created Date"]);
+}}
+
 function formatShortDate(date) {{
     return `${{MONTH_LABELS[date.getMonth()]}} ${{date.getDate()}}, '${{String(date.getFullYear()).slice(-2)}}`;
 }}
@@ -8266,7 +8270,7 @@ function coachingConfidenceAverage(data) {{
 
 function coachingSummaryPivot(data) {{
     const completedRows = data.filter(r => isCompletedStatus(r["Coaching Status"]));
-    const weekKeys = [...new Set(completedRows.map(r => weekStartKey(r["Coaching Date"])).filter(Boolean))]
+    const weekKeys = [...new Set(completedRows.map(r => weekStartKey(coachingSummaryDate(r))).filter(Boolean))]
         .sort();
     const leaders = [...new Set(completedRows.map(r => norm(r["Coached by"]) || "Blank"))]
         .sort((a, b) => a.localeCompare(b, undefined, {{sensitivity: "base"}}));
@@ -8274,7 +8278,7 @@ function coachingSummaryPivot(data) {{
 
     completedRows.forEach(r => {{
         const leader = norm(r["Coached by"]) || "Blank";
-        const week = weekStartKey(r["Coaching Date"]);
+        const week = weekStartKey(coachingSummaryDate(r));
         if (!week) return;
         const key = `${{leader}}|${{week}}`;
         counts[key] = (counts[key] || 0) + 1;
