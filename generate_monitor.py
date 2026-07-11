@@ -621,7 +621,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 @keyframes blinkR{{0%,100%{{opacity:1;box-shadow:0 0 7px #ff3d3d;}}50%{{opacity:0.2;box-shadow:none;}}}}
 @keyframes blinkA{{0%,100%{{opacity:1;box-shadow:0 0 5px #ffaa00;}}50%{{opacity:0.3;box-shadow:none;}}}}
 @keyframes blinkO{{0%,100%{{opacity:1;box-shadow:0 0 6px #E84500;}}50%{{opacity:0.25;box-shadow:none;}}}}
-.main-layout{{display:grid;grid-template-columns:minmax(280px,0.95fr) minmax(328px,350px) minmax(280px,0.95fr);gap:8px;align-items:start;position:relative;z-index:1;}}
+.main-layout{{display:grid;grid-template-columns:minmax(280px,330px) minmax(328px,350px) minmax(280px,330px);gap:8px;justify-content:center;align-items:start;position:relative;z-index:1;}}
 .side-col{{display:flex;flex-direction:column;gap:4px;min-width:0;}}
 .center-col{{display:flex;flex-direction:column;align-items:center;gap:4px;}}
 /* --- Compact account nodes --- */
@@ -702,7 +702,23 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 .lp-v{{background:rgba(255,170,0,0.1);color:#ffaa00;border:1px solid rgba(255,170,0,0.28);}}
 .lp-g{{background:#0e7490;color:#fff;}}
 .lp-gw{{background:#92400e;color:#fff;}}
-@media(max-width:1180px){{
+/* Narrow-window behavior: modern browsers keep the FULL side-by-side layout
+   and auto-shrink it to fit via the CSS zoom set by fitEco() in <script>
+   below (Mike: quarter-screen FancyZones must show the same layout as
+   desktop, just smaller — never re-stack). The stacking media queries below
+   are kept ONLY as a fallback for old browsers without CSS zoom support. */
+/* Readability compensation: fitEco() adds .fit-sm to .eco whenever the
+   auto-fit zoom drops below 0.85 — small text is bumped up so the scaled
+   page stays readable. Desktop (zoom 1) is completely unaffected. */
+.fit-sm .node-title{{font-size:15px;}}
+.fit-sm .node-row{{font-size:13px;}}
+.fit-sm .meta-pill{{font-size:13px;padding:2px 8px;}}
+.fit-sm .section-hdr{{font-size:14px;}}
+.fit-sm .log-err{{font-size:13px;}}
+.fit-sm .sc-lbl{{font-size:14px;}}
+.fit-sm .legend{{font-size:13px;}}
+@supports not (zoom:1) {{
+@media(max-width:990px){{
   body{{padding:12px;}}
   .main-layout{{display:grid;grid-template-columns:repeat(2,minmax(280px,390px));gap:8px;justify-content:center;}}
   .center-col{{grid-column:1 / -1;grid-row:1;width:100%;}}
@@ -732,6 +748,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
   .node-row,.meta-pill,.log-err,.browser-url{{font-size:11px;}}
   .agg-val{{font-size:12px;}}
   .brand-name{{font-size:16px;}}
+}}
 }}
 @media(prefers-reduced-motion:reduce){{
   .blink-g,.blink-r,.blink-a{{animation:none;}}
@@ -1052,6 +1069,34 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
     s--; setTimeout(tick, 1000);
   }}
   tick();
+}})();
+
+// Auto-fit: keep the full side-by-side layout at ANY window width by
+// shrinking the whole page proportionally (CSS zoom) instead of re-stacking.
+// natural = min content width the 3-column layout needs (280+328+280 cols
+// + 16px gaps + 40px .eco padding ≈ 944, rounded up for breathing room).
+// Readability: when the fit zoom drops below 0.85 the .fit-sm class bumps
+// small text sizes up (see CSS above). Manual browser zoom (Ctrl +/-) is
+// RESPECTED — a devicePixelRatio change means the user zoomed, so the fit
+// zoom is left alone and the user's zoom multiplies on top of it.
+// Browsers without CSS zoom fall back to the stacking media queries above.
+(function () {{
+  var eco = document.querySelector('.eco');
+  if (!eco || !('zoom' in eco.style)) return;
+  var natural = 960;
+  var lastDpr = window.devicePixelRatio || 1;
+  function fitEco() {{
+    var avail = document.documentElement.clientWidth - 40; // body padding
+    var z = avail < natural ? (avail / natural) : 1;
+    eco.style.zoom = z < 1 ? z : '';
+    eco.classList.toggle('fit-sm', z < 0.85);
+  }}
+  window.addEventListener('resize', function () {{
+    var dpr = window.devicePixelRatio || 1;
+    if (Math.abs(dpr - lastDpr) > 0.001) {{ lastDpr = dpr; return; }} // user zoomed — don't fight it
+    fitEco();
+  }});
+  fitEco();
 }})();
 </script>
 </body>
