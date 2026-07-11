@@ -35,11 +35,11 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 @keyframes blinkR{0%,100%{opacity:1;box-shadow:0 0 7px #ff3d3d;}50%{opacity:0.2;box-shadow:none;}}
 @keyframes blinkA{0%,100%{opacity:1;box-shadow:0 0 5px #ffaa00;}50%{opacity:0.3;box-shadow:none;}}
 @keyframes blinkO{0%,100%{opacity:1;box-shadow:0 0 6px #E84500;}50%{opacity:0.25;box-shadow:none;}}
-.main-layout{display:grid;grid-template-columns:minmax(300px,1fr) minmax(328px,360px) minmax(300px,1fr);gap:10px;align-items:start;position:relative;z-index:1;}
-.side-col{display:flex;flex-direction:column;gap:5px;min-width:0;}
+.main-layout{display:grid;grid-template-columns:minmax(280px,0.95fr) minmax(328px,350px) minmax(280px,0.95fr);gap:8px;align-items:start;position:relative;z-index:1;}
+.side-col{display:flex;flex-direction:column;gap:4px;min-width:0;}
 .center-col{display:flex;flex-direction:column;align-items:center;gap:4px;}
 /* --- Compact account nodes --- */
-.node{border-radius:7px;border:1px solid;padding:5px 8px;min-height:57px;}
+.node{border-radius:7px;border:1px solid;padding:4px 7px;min-height:52px;}
 .node-title{font-size:12px;font-weight:500;margin-bottom:3px;display:flex;align-items:center;justify-content:space-between;gap:4px;}
 .node-title span{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .node-row{display:flex;align-items:center;gap:4px;font-size:10px;color:#9080b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -118,11 +118,11 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 .lp-gw{background:#92400e;color:#fff;}
 @media(max-width:1180px){
   body{padding:12px;}
-  .main-layout{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+  .main-layout{display:grid;grid-template-columns:repeat(2,minmax(280px,390px));gap:8px;justify-content:center;}
   .center-col{grid-column:1 / -1;grid-row:1;width:100%;}
   .radar-wrap{width:240px;height:240px;flex-shrink:1;align-self:center;}
   .radar-wrap canvas{width:240px!important;height:240px!important;}
-  .side-col{display:flex;flex-direction:column;gap:5px;width:100%;}
+  .side-col{display:flex;flex-direction:column;gap:4px;width:100%;}
   .side-col .section-hdr{display:block;}
   .stat-cards{flex-wrap:wrap;}
   .stat-card{flex:1 1 80px;min-width:70px;}
@@ -168,7 +168,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run 2026-07-11T22:00</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Dashboard: Jul 11, 2026 11:26 PM</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Jul 11, 2026 11:53 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Jul 12, 2026 12:03 AM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -343,7 +343,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
           </div>
           <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">10:00 PM</div><div class="agg-lbl">started</div></div>
           <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">11:26 PM</div><div class="agg-lbl">finished</div></div>
-          <div class="agg-item" style="grid-column:span 2;"><div class="agg-val" style="color:#ffaa00;font-size:12px;">3:00 AM +1d</div><div class="agg-lbl">next schedule</div></div>
+          <div class="agg-item" style="grid-column:span 2;"><div class="agg-val" style="color:#ffaa00;font-size:12px;">3:00 AM</div><div class="agg-lbl">next schedule</div></div>
         </div>
       </div>
 

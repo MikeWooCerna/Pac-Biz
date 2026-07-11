@@ -621,11 +621,11 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 @keyframes blinkR{{0%,100%{{opacity:1;box-shadow:0 0 7px #ff3d3d;}}50%{{opacity:0.2;box-shadow:none;}}}}
 @keyframes blinkA{{0%,100%{{opacity:1;box-shadow:0 0 5px #ffaa00;}}50%{{opacity:0.3;box-shadow:none;}}}}
 @keyframes blinkO{{0%,100%{{opacity:1;box-shadow:0 0 6px #E84500;}}50%{{opacity:0.25;box-shadow:none;}}}}
-.main-layout{{display:grid;grid-template-columns:minmax(300px,1fr) minmax(328px,360px) minmax(300px,1fr);gap:10px;align-items:start;position:relative;z-index:1;}}
-.side-col{{display:flex;flex-direction:column;gap:5px;min-width:0;}}
+.main-layout{{display:grid;grid-template-columns:minmax(280px,0.95fr) minmax(328px,350px) minmax(280px,0.95fr);gap:8px;align-items:start;position:relative;z-index:1;}}
+.side-col{{display:flex;flex-direction:column;gap:4px;min-width:0;}}
 .center-col{{display:flex;flex-direction:column;align-items:center;gap:4px;}}
 /* --- Compact account nodes --- */
-.node{{border-radius:7px;border:1px solid;padding:5px 8px;min-height:57px;}}
+.node{{border-radius:7px;border:1px solid;padding:4px 7px;min-height:52px;}}
 .node-title{{font-size:12px;font-weight:500;margin-bottom:3px;display:flex;align-items:center;justify-content:space-between;gap:4px;}}
 .node-title span{{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}}
 .node-row{{display:flex;align-items:center;gap:4px;font-size:10px;color:#9080b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}}
@@ -704,11 +704,11 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 .lp-gw{{background:#92400e;color:#fff;}}
 @media(max-width:1180px){{
   body{{padding:12px;}}
-  .main-layout{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}}
+  .main-layout{{display:grid;grid-template-columns:repeat(2,minmax(280px,390px));gap:8px;justify-content:center;}}
   .center-col{{grid-column:1 / -1;grid-row:1;width:100%;}}
   .radar-wrap{{width:240px;height:240px;flex-shrink:1;align-self:center;}}
   .radar-wrap canvas{{width:240px!important;height:240px!important;}}
-  .side-col{{display:flex;flex-direction:column;gap:5px;width:100%;}}
+  .side-col{{display:flex;flex-direction:column;gap:4px;width:100%;}}
   .side-col .section-hdr{{display:block;}}
   .stat-cards{{flex-wrap:wrap;}}
   .stat-card{{flex:1 1 80px;min-width:70px;}}
