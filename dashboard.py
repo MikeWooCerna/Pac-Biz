@@ -141,6 +141,7 @@ R4H_COLUMN_MAP = {
     "Rudeness - 20pts":                                      "rude",
     "Transaction Completion - 20pts":                        "trans",
     "Speech Clarify - 5pts":                                 "speech",
+    "Information Precision - 10pts":                         "info_prec",
     "QA_ID":                                                 "qa_id",
     "EMPLOYEE_ID":                                           "emp_id",
 }
@@ -1356,7 +1357,7 @@ def _transform_qa_source(source, column_map):
         "os_in", "os_out", "closing", "approp", "no_resp", "fillers",
         "ack", "hold", "ack_hold", "resp_eff", "empathy", "adjust",
         "mute", "active", "answered", "probing", "verif", "clarif",
-        "lost_sop", "rude", "trans", "speech",
+        "lost_sop", "rude", "trans", "speech", "info_prec",
     ]
     return df[[c for c in keep if c in df.columns]]
 
@@ -7523,10 +7524,10 @@ def main():
       <div class="qa-cbody" style="padding:6px 10px;display:flex;flex-direction:column"><div id="qa-aiqe-chart-host" style="position:relative;flex:1;min-height:90px"><canvas id="qa-aiqe-trend-chart"></canvas></div></div>
     </div>
     <div class="qa-card">
-      <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>Criteria pass rates</div><div class="qa-cs" id="qa-crit-sub">All 22 criteria &middot; sorted by pass rate</div></div><span class="qa-cb qa-cba">Score breakdown</span></div>
+      <div class="qa-ch"><div><div class="qa-ct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>Criteria pass rates</div><div class="qa-cs" id="qa-crit-sub">All 23 criteria &middot; sorted by pass rate</div></div><span class="qa-cb qa-cba">Score breakdown</span></div>
       <div style="padding:6px 10px;flex:1;display:flex;flex-direction:column;min-height:0">
         <div style="overflow-y:auto;flex:1 1 auto;min-height:0;padding-right:2px;border-bottom:1px solid #E2E8F0" id="qa-criteria-bars"></div>
-        <div style="padding:3px 0 4px;font-size:10px;color:#CBD5E1">&#9679; Scroll to see all 22 criteria</div>
+        <div style="padding:3px 0 4px;font-size:10px;color:#CBD5E1">&#9679; Scroll to see all 23 criteria</div>
       </div>
     </div>
     <div class="qa-card">
@@ -7643,6 +7644,7 @@ def main():
           <th style="min-width:70px">Cust. Verif.</th><th style="min-width:65px">Clarif.</th>
           <th style="min-width:65px">Lost SOP</th><th style="min-width:65px">Rudeness</th>
           <th style="min-width:75px">Transaction</th><th style="min-width:65px">Speech</th>
+          <th style="min-width:100px">Information Precision</th>
           <th class="vip-extra-col" style="min-width:75px">Opening Out 2</th>
           <th class="vip-extra-col" style="min-width:80px">Professionalism</th>
           <th class="vip-extra-col" style="min-width:70px">Verif. Other</th>
@@ -10350,6 +10352,7 @@ const QA_CRIT_META = [
     {{key:"rude",    name:"Rudeness",                    pts:"20pts", inverse:true}},
     {{key:"trans",   name:"Transaction Completion",      pts:"20pts", inverse:false}},
     {{key:"speech",  name:"Speech Clarity",              pts:"5pts",  inverse:false}},
+    {{key:"info_prec",name:"Information Precision",      pts:"10pts", inverse:false}},
 ];
 
 const QA_AV = {{
@@ -11125,7 +11128,7 @@ function qaRowHtml(r){{
         :`<span style="background:#FFF0F3;color:#9F1239;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Parentis</span>`;
     const critKeys=['os_in','os_out','closing','approp','no_resp','fillers','ack','hold','ack_hold',
                     'resp_eff','empathy','adjust','mute','active','gen_q','answered','probing','verif',
-                    'clarif','lost_sop','rude','trans','speech'];
+                    'clarif','lost_sop','rude','trans','speech','info_prec'];
     const critCells=critKeys.map(k=>{{
         const v=r[k];
         if(k==='rude'){{
