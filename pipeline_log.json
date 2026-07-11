@@ -1111,5 +1111,16 @@
     "prev_count": 292,
     "new_count": 155,
     "error": "Source confirmed after cleanup exclusions. Current R4H count is 155 rows; baseline accepted."
+  },
+  {
+    "run_id": "2026-07-12T03:00:02",
+    "date": "Jul 12, 2026 03:00 AM",
+    "account": "YCOV",
+    "script": "ycov_pull.py",
+    "status": "count_drop",
+    "drop": 962,
+    "prev_count": 979,
+    "new_count": 17,
+    "error": "Dropped 962 rows (979 \u2192 17)"
   }
 ]
