@@ -30,6 +30,14 @@ M7_DIR = Path(os.getenv("M7_DIR", r"C:\Users\Mike Woo Cerna\Documents\PB\Quality
 M7_SCRIPT = M7_DIR / "m7_pull.py"
 M7_OUTPUT_FILE = M7_DIR / "M7_RAW.xlsx"
 
+DMG_DIR = Path(os.getenv("DMG_DIR", r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\DMG"))
+DMG_SCRIPT = DMG_DIR / "dmg_pull.py"
+DMG_OUTPUT_FILE = DMG_DIR / "DMG_RAW.xlsx"
+
+R4H_DIR = Path(os.getenv("R4H_DIR", r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\R4H"))
+R4H_SCRIPT = R4H_DIR / "r4h_pull.py"
+R4H_OUTPUT_FILE = R4H_DIR / "R4H_RAW.xlsx"
+
 M7_COLUMN_MAP = {
     "Timestamp":                                              "ts",
     "Call Date:":                                            "date",
@@ -65,6 +73,41 @@ M7_COLUMN_MAP = {
     "QA_ID":                                                 "qa_id",
     "EMPLOYEE_ID":                                           "emp_id",
 }
+
+DMG_COLUMN_MAP = {
+    "Timestamp": "ts",
+    "Emp Name": "agent",
+    "Employee Name": "agent",
+    "Score": "score",
+    "Evaluation Type": "type",
+    "Reviewer": "coach",
+    "QA": "coach",
+    "Immediate Supervisor": "supervisor",
+    "Ticket ID": "invest",
+    "OVERALL FEEDBACK": "feedback",
+    "QA_ID": "qa_id",
+    "EMPLOYEE_ID": "emp_id",
+    "1.1 Ticket Claimed & Assigned (3 pts)\nThe ticket is claimed and the correct organization is assigned in the CRM.": "invest",
+    "1.2 Subject Line Edited (3 pts)\nThe subject clearly reflects the issue; chat labels preserved.": "clarif",
+    "1.3 Internal Edits (Live Chat) (4 pts)\nAgent removes their email and inputs org name on closure.": "hold",
+    "2.1 Professional Yet Personable Tone (5 pts)\nFriendly, natural tone that avoids robotic or curt replies.": "approp",
+    "2.2 Grammar & Clarity (5 pts)\nFree from grammar errors; easy to read.": "speech",
+    "2.3 Greeting & Sign-off Present (5 pts)\nOpening and polite closing included in reply.": "os_in",
+    "3.1 Clarifying Questions When Needed (5 pts)\nAgent seeks into when something is unclear.": "probing",
+    "3.2 No Speculation (5 pts)\nThe agent avoids overpromising or guessing.": "no_resp",
+    "3.3 Accurate Information (10 pts)\nThe agent provides correct answers per SOP/FYI.": "answered",
+    "4. Full Ticket Context (5 pts)\nThe customer knows the current step, next step, and flow.": "active",
+    "4.2 Follow-through Statements (5 pts)\nIndicates intent to follow up or update customers.": "resp_eff",
+    "4.3 Realistic Expectations (5 pts)\nNo unverified deadlines or pricing promises.": "adjust",
+    "5.1 Proper Escalation (5 pts)\nClear and complete internal escalation that includes supporting evidence, and replication steps.": "lost_sop",
+    "5.2 Offer of Further Help (5 pts)\nIf replies aren’t resolving the issue, offer alternate support.": "closing",
+    "5.3 Ticket Summary (5 pts)\nClear internal summary of the issue, actions taken, and final resolution.": "ack_hold",
+    "5.4 Resolution Clarity (5 pts)\nThe agent clearly communicates to the customer what was done and confirms the final outcome.": "trans",
+    "6.1 CRM Notes (10 pts)\nThe agent adds internal comments reflecting actions": "ack",
+    "6.2 Ticket Structure & Dupes (10 pts)\nRelated tickets merged; unrelated issues split.": "verif",
+}
+
+R4H_COLUMN_MAP = DMG_COLUMN_MAP
 
 PARENTIS_DIR = Path(os.getenv("PARENTIS_DIR", r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\Parentis Health"))
 PARENTIS_SCRIPT = PARENTIS_DIR / "parentis_pull.py"
@@ -1103,6 +1146,74 @@ def read_m7_workbook():
         return pd.DataFrame()
 
 
+def refresh_dmg_output():
+    if not DMG_SCRIPT.exists():
+        return False
+    try:
+        result = subprocess.run(
+            [sys.executable, str(DMG_SCRIPT)],
+            cwd=str(DMG_DIR),
+            capture_output=True,
+            text=True,
+            timeout=120,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        print(f"Skipping DMG pull: {exc}")
+        return False
+    if result.returncode != 0:
+        msg = result.stderr.strip() or result.stdout.strip() or "No details."
+        print(f"Skipping DMG pull: {msg}")
+        return False
+    if result.stdout.strip():
+        print(result.stdout.strip())
+    return True
+
+
+def read_dmg_workbook():
+    if not DMG_OUTPUT_FILE.exists():
+        return pd.DataFrame()
+    try:
+        return clean_columns(pd.read_excel(DMG_OUTPUT_FILE))
+    except Exception as exc:
+        print(f"Skipping DMG workbook load: {exc}")
+        return pd.DataFrame()
+
+
+def refresh_r4h_output():
+    if not R4H_SCRIPT.exists():
+        return False
+    try:
+        result = subprocess.run(
+            [sys.executable, str(R4H_SCRIPT)],
+            cwd=str(R4H_DIR),
+            capture_output=True,
+            text=True,
+            timeout=120,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        print(f"Skipping R4H pull: {exc}")
+        return False
+    if result.returncode != 0:
+        msg = result.stderr.strip() or result.stdout.strip() or "No details."
+        print(f"Skipping R4H pull: {msg}")
+        return False
+    if result.stdout.strip():
+        print(result.stdout.strip())
+    return True
+
+
+def read_r4h_workbook():
+    if not R4H_OUTPUT_FILE.exists():
+        return pd.DataFrame()
+    try:
+        return clean_columns(pd.read_excel(R4H_OUTPUT_FILE))
+    except Exception as exc:
+        print(f"Skipping R4H workbook load: {exc}")
+        return pd.DataFrame()
+
+
 # Canonical agent/supervisor name aliases (key = lowercase stripped variant)
 NAME_ALIASES = {
     "espeleta, kenneth b": "Espeleta, Kenneth B",
@@ -1117,6 +1228,7 @@ def _apply_name_aliases(series):
 
 def _transform_qa_source(source, column_map):
     df = source.rename(columns={k: v for k, v in column_map.items() if k in source.columns})
+    df = df.loc[:, ~df.columns.duplicated(keep="last")]
 
     def fmt_ts(v):
         try:
@@ -1154,7 +1266,24 @@ def _transform_qa_source(source, column_map):
     if "date" in df.columns:
         df["date"] = df["date"].apply(fmt_date)
     if "score" in df.columns:
-        df["score"] = pd.to_numeric(df["score"], errors="coerce").fillna(0).astype(int)
+        def parse_score(v):
+            s = clean_val(v)
+            if not s:
+                return 0
+            if "/" in s:
+                left, right = s.split("/", 1)
+                try:
+                    numerator = float(left.strip())
+                    denominator = float(right.strip())
+                    if denominator and denominator != 100:
+                        return numerator / denominator * 100
+                    return numerator
+                except ValueError:
+                    pass
+            match = re.search(r"-?\d+(?:\.\d+)?", s)
+            return float(match.group(0)) if match else 0
+
+        df["score"] = df["score"].apply(parse_score).round().astype(int)
     if "feedback" in df.columns:
         df["feedback"] = df["feedback"].apply(clean_val)
     if "agent" in df.columns:
@@ -1200,6 +1329,14 @@ def transform_m7_data(source):
     return _transform_qa_source(source, M7_COLUMN_MAP)
 
 
+def transform_dmg_data(source):
+    return _transform_qa_source(source, DMG_COLUMN_MAP)
+
+
+def transform_r4h_data(source):
+    return _transform_qa_source(source, R4H_COLUMN_MAP)
+
+
 def transform_parentis_data(source):
     return _transform_qa_source(source, PARENTIS_COLUMN_MAP)
 
@@ -1213,6 +1350,30 @@ def load_m7_data():
                                      "invest", "feedback"])
     result = transform_m7_data(source)
     print(f"M7 QA rows: {len(result)}")
+    return result
+
+
+def load_dmg_data():
+    refresh_dmg_output()
+    source = read_dmg_workbook()
+    if source.empty:
+        return pd.DataFrame(columns=["qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "date",
+                                     "agent", "score", "type", "coach", "supervisor",
+                                     "invest", "feedback"])
+    result = transform_dmg_data(source)
+    print(f"DMG QA rows: {len(result)}")
+    return result
+
+
+def load_r4h_data():
+    refresh_r4h_output()
+    source = read_r4h_workbook()
+    if source.empty:
+        return pd.DataFrame(columns=["qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "date",
+                                     "agent", "score", "type", "coach", "supervisor",
+                                     "invest", "feedback"])
+    result = transform_r4h_data(source)
+    print(f"R4H QA rows: {len(result)}")
     return result
 
 
@@ -4806,6 +4967,8 @@ def main():
     else:
         movement["Initiated by"] = ""
     m7 = load_m7_data()
+    dmg = load_dmg_data()
+    r4h = load_r4h_data()
     parentis = load_parentis_data()
     britelift = load_britelift_data()
     blc = load_blc_data()
@@ -7050,11 +7213,13 @@ def main():
       <option value="ch">C&amp;H</option>
       <option value="ct">Circle Taxi</option>
       <option value="dc">Data Carz</option>
+      <option value="dmg">DMG</option>
       <option value="hamilton">Hamilton</option>
       <option value="kel">Kelowna</option>
       <option value="m7">M7 &ndash; Ride-hailing support</option>
       <option value="ol">Ollies</option>
       <option value="parentis">Parentis Health</option>
+      <option value="r4h">R4H</option>
       <option value="rc">Reno Cab</option>
       <option value="ridex">RideX</option>
       <option value="skyline">Skyline</option>
@@ -7553,6 +7718,8 @@ const historyData = {to_records(history)};
 const movementData = {to_records(movement)};
 const coachingData = {to_records(coaching)};
 const qaRawData = {to_records(m7)};
+const dmgRawData = {to_records(dmg)};
+const r4hRawData = {to_records(r4h)};
 const parentisRawData = {to_records(parentis)};
 const briteliftRawData = {to_records(britelift)};
 const blcRawData = {to_records(blc)};
@@ -10092,6 +10259,8 @@ let qaCurrentFiltered = [];
 
 // Tag rows at init time
 qaRawData.forEach(r => r._acct = 'M7');
+dmgRawData.forEach(r => r._acct = 'DMG');
+r4hRawData.forEach(r => r._acct = 'R4H');
 parentisRawData.forEach(r => r._acct = 'Parentis');
 briteliftRawData.forEach(r => r._acct = 'Britelift');
 blcRawData.forEach(r => r._acct = 'Britelift Chat');
@@ -10194,6 +10363,8 @@ function qaYN(v) {{
 function qaGetActiveData() {{
     const acct = (document.getElementById('qa-sel-account')?.value||'').trim();
     if (acct === 'm7') return qaRawData;
+    if (acct === 'dmg') return dmgRawData;
+    if (acct === 'r4h') return r4hRawData;
     if (acct === 'parentis') return parentisRawData;
     if (acct === 'britelift') return briteliftRawData;
     if (acct === 'blc') return blcRawData;
@@ -10213,7 +10384,7 @@ function qaGetActiveData() {{
     if (acct === 'vt') return vtRawData;
     if (acct === 'ycdc') return ycdcRawData;
     if (acct === 'bl') return blRawData;
-    return [...qaRawData, ...parentisRawData, ...briteliftRawData, ...blcRawData, ...ridexRawData, ...hamiltonRawData, ...skylineRawData, ...vipRawData, ...chRawData, ...rcRawData, ...tiRawData, ...dcRawData, ...acRawData, ...olRawData, ...ctRawData, ...ycovRawData, ...kelRawData, ...vtRawData, ...ycdcRawData, ...blRawData];
+    return [...qaRawData, ...dmgRawData, ...r4hRawData, ...parentisRawData, ...briteliftRawData, ...blcRawData, ...ridexRawData, ...hamiltonRawData, ...skylineRawData, ...vipRawData, ...chRawData, ...rcRawData, ...tiRawData, ...dcRawData, ...acRawData, ...olRawData, ...ctRawData, ...ycovRawData, ...kelRawData, ...vtRawData, ...ycdcRawData, ...blRawData];
 }}
 
 // ─── Date Range Picker ────────────────────────────────────────────────────────
@@ -10415,6 +10586,8 @@ function qaUpdateKPIs(data) {{
     const badgeEl=document.getElementById('qa-badge-account');
     if(titleEl) {{
         if(acct==='m7') titleEl.textContent='M7 — Quality Assurance';
+        else if(acct==='dmg') titleEl.textContent='DMG — Quality Assurance';
+        else if(acct==='r4h') titleEl.textContent='R4H — Quality Assurance';
         else if(acct==='parentis') titleEl.textContent='Parentis Health — Quality Assurance';
         else if(acct==='britelift') titleEl.textContent='Britelift — Quality Assurance';
         else if(acct==='blc') titleEl.textContent='Britelift Chat — Quality Assurance';
@@ -10438,6 +10611,8 @@ function qaUpdateKPIs(data) {{
     }}
     if(badgeEl) {{
         if(acct==='m7') {{ badgeEl.textContent='M7 Account'; badgeEl.className='qa-badge qa-b-blue'; }}
+        else if(acct==='dmg') {{ badgeEl.textContent='DMG'; badgeEl.className='qa-badge qa-b-teal'; }}
+        else if(acct==='r4h') {{ badgeEl.textContent='R4H'; badgeEl.className='qa-badge qa-b-teal'; }}
         else if(acct==='parentis') {{ badgeEl.textContent='Parentis Health'; badgeEl.className='qa-badge qa-b-teal'; }}
         else if(acct==='britelift') {{ badgeEl.textContent='Britelift'; badgeEl.className='qa-badge qa-b-amber'; }}
         else if(acct==='blc') {{ badgeEl.textContent='Britelift Chat'; badgeEl.className='qa-badge qa-b-amber'; }}
@@ -10639,6 +10814,10 @@ function qaRenderLeaderboard(data) {{
         const chipCls=qaChipCls(a.avg);
         const acctPill=a.acct==='M7'
             ?`<span style="background:#EFF6FF;color:#1D4ED8;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">M7</span>`
+            :a.acct==='DMG'
+            ?`<span style="background:#ECFEFF;color:#0E7490;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">DMG</span>`
+            :a.acct==='R4H'
+            ?`<span style="background:#ECFEFF;color:#0E7490;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">R4H</span>`
             :a.acct==='Britelift'
             ?`<span style="background:#FFF7ED;color:#C2410C;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Britelift</span>`
             :a.acct==='Britelift Chat'
@@ -10867,7 +11046,11 @@ function qaRowHtml(r){{
     const av=QA_AV[r.agent]||{{bg:'#F1F5F9',tc:'#475569',ini:(r.agent||'?').split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase()}};
     const acctPill=r._acct==='M7'
         ?`<span style="background:#EFF6FF;color:#1D4ED8;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">M7</span>`
-        :r._acct==='Britelift'
+    :r._acct==='DMG'
+        ?`<span style="background:#ECFEFF;color:#0E7490;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">DMG</span>`
+    :r._acct==='R4H'
+        ?`<span style="background:#ECFEFF;color:#0E7490;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">R4H</span>`
+    :r._acct==='Britelift'
         ?`<span style="background:#FFF7ED;color:#C2410C;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Britelift</span>`
         :r._acct==='Britelift Chat'
         ?`<span style="background:#FFF7ED;color:#9A3412;border-radius:4px;padding:1px 6px;font-size:9px;font-weight:700">Britelift Chat</span>`
@@ -11127,6 +11310,8 @@ function qaUpdateEvalDist(data) {{
     if(!qaEvalDistChart) return;
     const accts=[
         {{key:'M7',color:'#4F81BD'}},
+        {{key:'DMG',color:'#0E7490'}},
+        {{key:'R4H',color:'#0F766E'}},
         {{key:'Parentis',color:'#2C3E8C'}},
         {{key:'Britelift',color:'#C0392B'}},
         {{key:'Britelift Chat',color:'#9A3412'}},
@@ -12075,7 +12260,7 @@ function initQualityCharts() {{
     qaUpdateDRPLabel();
 
     // Info pills
-    const qaAcctsLoaded=[qaRawData,parentisRawData,briteliftRawData,blcRawData,ridexRawData,hamiltonRawData,skylineRawData,vipRawData,chRawData,rcRawData,tiRawData,dcRawData,acRawData,olRawData,ctRawData,ycovRawData,kelRawData,vtRawData,ycdcRawData,blRawData].filter(d=>d.length>0).length;
+    const qaAcctsLoaded=[qaRawData,dmgRawData,r4hRawData,parentisRawData,briteliftRawData,blcRawData,ridexRawData,hamiltonRawData,skylineRawData,vipRawData,chRawData,rcRawData,tiRawData,dcRawData,acRawData,olRawData,ctRawData,ycovRawData,kelRawData,vtRawData,ycdcRawData,blRawData].filter(d=>d.length>0).length;
     const qaPillAccts=document.getElementById('qa-pill-qa-accounts');
     if(qaPillAccts)qaPillAccts.textContent=qaAcctsLoaded+' QA Account'+(qaAcctsLoaded===1?'':'s')+' Loaded';
     const qaPillTotal=document.getElementById('qa-pill-total-accounts');
@@ -12263,7 +12448,7 @@ function initQualityCharts() {{
         qaEvalDistChart=new Chart(evalDistCtx,{{
             type:'doughnut',
             plugins:[evalDistLabelPlugin],
-            data:{{labels:['M7','Parentis','Britelift','Britelift Chat','RideX','Hamilton','Skyline','VIP','C&H','Reno Cab','Trans Iowa','Data Carz','Associated Cab','Ollies','Circle Taxi','YCOV','Kelowna','Vermont','YCDC','Blueline'],datasets:[{{data:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],backgroundColor:['#4F81BD','#2C3E8C','#C0392B','#9A3412','#8E44AD','#065F46','#0EA5E9','#D97706','#0891B2','#16A34A','#7C3AED','#EA580C','#0E7490','#BE123C','#0E7490','#047857','#166534','#0F766E','#155E75','#1D4ED8'],borderWidth:2,borderColor:'#fff'}}]}},
+            data:{{labels:['M7','DMG','R4H','Parentis','Britelift','Britelift Chat','RideX','Hamilton','Skyline','VIP','C&H','Reno Cab','Trans Iowa','Data Carz','Associated Cab','Ollies','Circle Taxi','YCOV','Kelowna','Vermont','YCDC','Blueline'],datasets:[{{data:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],backgroundColor:['#4F81BD','#0E7490','#0F766E','#2C3E8C','#C0392B','#9A3412','#8E44AD','#065F46','#0EA5E9','#D97706','#0891B2','#16A34A','#7C3AED','#EA580C','#0E7490','#BE123C','#0E7490','#047857','#166534','#0F766E','#155E75','#1D4ED8'],borderWidth:2,borderColor:'#fff'}}]}},
             options:{{
                 responsive:true,maintainAspectRatio:false,cutout:'50%',
                 layout:{{padding:{{top:28,bottom:28,left:28,right:28}}}},

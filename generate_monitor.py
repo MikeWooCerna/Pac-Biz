@@ -22,6 +22,8 @@ ACCOUNTS = [
     ("Masterlist",      "masterlist_fetch.py", r"C:\Users\Mike Woo Cerna\Documents\PB\Masterlist\masterlist_cache.csv"),
     ("Coaching",        "asana_pull.py",    r"C:\Users\Mike Woo Cerna\Documents\PB\Coaching\Output\coaching_logs.xlsx"),
     ("M7",              "m7_pull.py",       r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\M7\M7_RAW.xlsx"),
+    ("DMG",             "dmg_pull.py",      r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\DMG\DMG_RAW.xlsx"),
+    ("R4H",             "r4h_pull.py",      r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\R4H\R4H_RAW.xlsx"),
     ("Parentis Health", "parentis_pull.py", r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\Parentis Health\PARENTIS_RAW.xlsx"),
     ("Britelift",       "britelift_pull.py",r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\Britelift\BRITELIFT_RAW.xlsx"),
     ("Britelift Chat",  "britelift_pull.py",r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\Britelift Chat\BLC_RAW.xlsx"),
@@ -536,7 +538,7 @@ def generate():
 
     # Build radar blips JS array
     SHORT_NAMES = {
-        "Coaching": "Coaching", "M7": "M7", "Parentis Health": "Parentis",
+        "Coaching": "Coaching", "M7": "M7", "DMG": "DMG", "R4H": "R4H", "Parentis Health": "Parentis",
         "Britelift": "Britelift", "Britelift Chat": "BLC", "RideX": "RideX",
         "Hamilton": "Hamilton", "Skyline": "Skyline", "VIP": "VIP", "C&H": "C&H",
         "Reno Cab": "Reno Cab", "Trans Iowa": "Trans Iowa", "Data Carz": "Data Carz",

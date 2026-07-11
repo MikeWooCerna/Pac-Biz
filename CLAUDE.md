@@ -42,17 +42,19 @@ If any step returns a non-zero exit code the entire pipeline aborts (`goto :fail
 ```
 1.  Coaching          — %COACHING_DIR%\asana_pull.py
 2.  M7                — %M7_DIR%\m7_pull.py
-3.  Parentis Health   — %PARENTIS_DIR%\parentis_pull.py
-4.  Britelift         — %BRITELIFT_DIR%\britelift_pull.py
-5.  Britelift Chat    — %BLC_DIR%\britelift_pull.py        ← SAME script name, different dir
-6.  RideX             — %RIDEX_DIR%\Ridex_pull.py
-7.  Hamilton          — %HAMILTON_DIR%\Hamilton_pull.py
-8.  Skyline           — %SKYLINE_DIR%\Skyline_pull.py
-9.  VIP               — %VIP_DIR%\vip_pull.py
-10. C&H               — %CH_DIR%\ch_pull.py
-11. Reno Cab          — %RC_DIR%\rc_pull.py
-12. Trans Iowa        — %TI_DIR%\ti_pull.py
-13. Data Carz         — %DC_DIR%\dc_pull.py
+3.  DMG               — %DMG_DIR%\dmg_pull.py
+4.  R4H               — %R4H_DIR%\r4h_pull.py
+5.  Parentis Health   — %PARENTIS_DIR%\parentis_pull.py
+6.  Britelift         — %BRITELIFT_DIR%\britelift_pull.py
+7.  Britelift Chat    — %BLC_DIR%\britelift_pull.py        ← SAME script name, different dir
+8.  RideX             — %RIDEX_DIR%\Ridex_pull.py
+8.  Hamilton          — %HAMILTON_DIR%\Hamilton_pull.py
+9.  Skyline           — %SKYLINE_DIR%\Skyline_pull.py
+10. VIP               — %VIP_DIR%\vip_pull.py
+11. C&H               — %CH_DIR%\ch_pull.py
+12. Reno Cab          — %RC_DIR%\rc_pull.py
+13. Trans Iowa        — %TI_DIR%\ti_pull.py
+14. Data Carz         — %DC_DIR%\dc_pull.py
 14. Associated Cab    — %AC_DIR%\ac_pull.py
 15. Ollies            — %OL_DIR%\ol_pull.py
 16. Circle Taxi       — %CT_DIR%\ct_pull.py
@@ -79,7 +81,7 @@ If any step returns a non-zero exit code the entire pipeline aborts (`goto :fail
   Parentis is the hardcoded final fallback — always insert before it.
 - **aivhAccts array** controls which accounts show the AI vs Human comparison card:
   `['hamilton','skyline','vip','ch','rc','ti','dc','ac','ol','ct','ycov','kel','vt','ycdc','bl']`
-  M7, Parentis, Britelift, Britelift Chat, and RideX are NOT in this list.
+  M7, DMG, R4H, Parentis, Britelift, Britelift Chat, and RideX are NOT in this list.
 - **Evaluation ID rules in the QA detail table:** AI accounts must display the
   raw `evaluation_id` value from the AI workbook. Non-AI accounts must display
   `QA_ID`/`qa_id`. Do not prefer generated `QA_ID` values for AI accounts
@@ -170,6 +172,55 @@ Pipeline monitoring system is fully live as of 2026-06-22. See `PIPELINE_MONITOR
 - **Auto-heal recommendation in drop emails** — when a count drop email is sent for an account that does NOT have an Apps Script trigger configured, `diagnose_drops.py` appends an HTML recommendation block: ✅ Recommended (RECURRING or large ISOLATED drop), ⚠ Investigate first (CLUSTER drop), or ❌ Not needed (MINOR drop or already recovered). Accounts that already have auto-heal configured are excluded from this block.
 - **Coaching validation email alerts** — `dashboard.py` sends `PACE Validation Errors Detected in Coaching Entries` when coaching tasks are excluded because employee/supervisor emails do not match the Masterlist. Details are written to `coaching_validation_errors.csv`; duplicate emails are prevented with a separate `coaching_validation_notified.json` signature file. This is intentionally separate from `movement_notified.json` and must not trigger movement re-notifications.
 - **Lightweight movement notifier** — `update_movement_notifications_auto.bat` refreshes Masterlist caches and runs only `check_movement_notifications.py`, so it can be scheduled more frequently than the full dashboard pipeline. Movement emails require `Processed = Yes`, not voided, plus nonblank `Timestamp`, `Employee Name`, `Type of Movement`, `Email Address`, `Processed Date`, and `Processed Note`. `movement_notified.json` still prevents duplicates.
+
+### Changes made 2026-07-11
+- **M7 upstream feed restored** (`Quality/M7/m7_appsscript_pull.gs`) — the Apps Script that fed the
+  destination RAW tab was lost, freezing RAW at 29 rows since 2026-06-08. `m7_pull.py` was never the
+  problem (it correctly reads dest spreadsheet `1Aq-IFsFS...` tab `RAW`). A new Apps Script
+  `pullM7ToRaw()` recreates the transfer AND the enrichment:
+  - **Source:** spreadsheet `1mAd86tsTts1xgPULyANMmgAYN0KUarLhrzJ-YWlTKNI`, tab selected by **gid 318886303** (never by name)
+  - **Destination:** spreadsheet `1Aq-IFsFSCOUHkfH32vJ1v1QtyakzEYCQP2Y80pIlYEI`, tab `RAW` (full replace)
+  - **Masterlist lookups:** spreadsheet `18hKmm2SmlWqB23osiV3JTF0aWn86vvZ-YJSC-Rr3JcY`, sheet `History`
+  - **44-column RAW layout:** 4 generated ID cols (`QA_ID`, `EMPLOYEE_ID`, `QA_COACH_ID`, `SUPERVISOR_ID`)
+    + 36 source cols verbatim + 4 generated trailing enrichment cols (`Emp Name`, `QA`,
+    `Immediate Supervisor`, `LOB / Account`). Trailing cols reuse the SAME masterlist matches as the IDs.
+  - **Coach resolution:** evaluator `Email Address` vs History `Company Email`, with a NAME fallback via
+    the source `QA Coach:` column (needed for evaluators whose form email ≠ Company Email, e.g.
+    Gina De Los Santos / ID 44, Nidalyn Mascardo / ID 574)
+  - **Safety:** fail-closed — clearContents only after ALL reads/validations pass; header-shape check vs
+    RAW's existing headers (this guard caught the missing 4 enrichment cols on the first live run);
+    25-row safety floor after blank-row filtering; LockService concurrency guard; post-write row+column
+    assertions; unmatched rows never dropped (`No match` + counters in the log summary)
+  - **Trigger:** `installM7Trigger()` = every 2 hours, duplicate-guarded; `removeM7Triggers()` to clear
+  - Any future `doGet()` web-app wrapper must call the FULL pull (Kelowna lesson — never a rolling-window variant)
+
+- **QA_ID house pattern (documented for all non-AI accounts):**
+  `QA_ID = "<ACCOUNT>-" + yyyyMMddHHmmss(evaluation Timestamp) + "-" + EMPLOYEE_ID`
+  e.g. `M7-20260508040339-639`, `PARENTIS-20260507033119-487`, `BRITELIFT-20260409172331-488`.
+  The numeric IDs (EMPLOYEE_ID / QA_COACH_ID / SUPERVISOR_ID) are masterlist History lookups
+  (agent name match / evaluator email or QA Coach name match / employee's supervisor), NOT source data.
+
+- **DMG non-AI QA account added** (`Quality/DMG/dmg_pull.py`, `Quality/DMG/dmg_appsscript_pull.gs`)
+  follows the M7 pattern with a source feed into a destination RAW tab:
+  - **Source:** spreadsheet `1i4CtBIXsdmpOwgbBLu0dQekSB4fxjGwUAgrUfiRexeU`, gid `919687516`, tab `Form Responses 1`
+  - **Destination:** spreadsheet `1XGW2y3uz9sAEXkT-4qm1LvgcW5HolhttT28FyTsRYxc`, tab `RAW`
+  - **Reviewer mapping:** source `Reviewer = Supervisor` becomes `Jamito, Frodel M.`;
+    source `Reviewer = QA Evaluator` becomes `Burton, Gladys P`
+  - **Local fallback:** `dmg_pull.py` reads destination `RAW` when present; if `RAW` is not present yet,
+    it reads the source tab directly, applies Reviewer mapping, generates `QA_ID`, and writes `DMG_RAW.xlsx`
+    so the scheduled pipeline does not fail while the Apps Script feed is being installed.
+- **R4H non-AI QA account added** (`Quality/R4H/r4h_pull.py`, `Quality/R4H/r4h_appsscript_pull.gs`)
+  follows the same source-feed/fallback pattern as DMG:
+  - **Source:** spreadsheet `1i4CtBIXsdmpOwgbBLu0dQekSB4fxjGwUAgrUfiRexeU`, gid `919687516`,
+    tab `Form Responses 1`
+  - **Destination:** spreadsheet `1d3w61WWQgVDuFlfUnVwQyTPnNdyIrmc0M7xdf5C8cRw`, tab `RAW`
+  - **Reviewer mapping:** source `Reviewer = Supervisor` becomes `Jamito, Frodel M.`;
+    source `Reviewer = QA Evaluator` becomes `Burton, Gladys P`
+  - **Safety rules:** blank `Employee Name` rows are excluded; generated bad IDs such as
+    `R4H-INVALIDTS-NOEMPLOYEE` must never be written.
+  - **Pipeline integration:** add R4H everywhere an account source is registered:
+    `dashboard.py`, `update_coaching_dashboard_auto.bat`, `update_coaching_dashboard.bat`,
+    `self_heal.py`, `generate_monitor.py`, `pipeline_rowcount_baseline.json`, and the QA account dropdown.
 
 ### Pending / future work
 - **Apps Script Monitoring** — Add a new section to `pipeline_monitor.html` (before the incident log) showing per-account Apps Script health: last run time, row count, duration, stale/fail badges. Implementation: `logRunToMasterlist_()` helper in each Apps Script → writes to `GAS_Heartbeat` tab in Masterlist spreadsheet → `check_gas_heartbeat.py` reads it → `pipeline_gas_status.json` → `generate_monitor.py` renders the section. Build when 5+ upsert functions are active and manually checking the Apps Script UI becomes painful.

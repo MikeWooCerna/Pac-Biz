@@ -3,6 +3,8 @@ setlocal
 
 set "COACHING_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Coaching"
 set "M7_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\M7"
+set "DMG_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\DMG"
+set "R4H_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\R4H"
 set "PARENTIS_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Parentis Health"
 set "BRITELIFT_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Britelift"
 set "BLC_DIR=C:\Users\Mike Woo Cerna\Documents\PB\Quality\Britelift Chat"
@@ -78,6 +80,34 @@ if errorlevel 1 (
     echo [WARN] M7 failed -- continuing
 ) else (
     py -3 "%MASTERLIST_DIR%\log_step.py" step "M7" "m7_pull.py" 0
+)
+
+echo.
+echo ========================================
+echo Updating DMG QA data from Google Sheets
+echo ========================================
+cd /d "%DMG_DIR%"
+py -3 "%MASTERLIST_DIR%\self_heal.py" run-step dmg_pull.py
+if errorlevel 1 (
+    py -3 "%MASTERLIST_DIR%\log_step.py" step "DMG" "dmg_pull.py" 1
+    set "ANY_ACCOUNT_FAILED=1"
+    echo [WARN] DMG failed -- continuing
+) else (
+    py -3 "%MASTERLIST_DIR%\log_step.py" step "DMG" "dmg_pull.py" 0
+)
+
+echo.
+echo ========================================
+echo Updating R4H QA data from Google Sheets
+echo ========================================
+cd /d "%R4H_DIR%"
+py -3 "%MASTERLIST_DIR%\self_heal.py" run-step r4h_pull.py
+if errorlevel 1 (
+    py -3 "%MASTERLIST_DIR%\log_step.py" step "R4H" "r4h_pull.py" 1
+    set "ANY_ACCOUNT_FAILED=1"
+    echo [WARN] R4H failed -- continuing
+) else (
+    py -3 "%MASTERLIST_DIR%\log_step.py" step "R4H" "r4h_pull.py" 0
 )
 
 echo.
