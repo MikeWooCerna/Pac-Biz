@@ -210,17 +210,45 @@ Pipeline monitoring system is fully live as of 2026-06-22. See `PIPELINE_MONITOR
     it reads the source tab directly, applies Reviewer mapping, generates `QA_ID`, and writes `DMG_RAW.xlsx`
     so the scheduled pipeline does not fail while the Apps Script feed is being installed.
 - **R4H non-AI QA account added** (`Quality/R4H/r4h_pull.py`, `Quality/R4H/r4h_appsscript_pull.gs`)
-  follows the same source-feed/fallback pattern as DMG:
-  - **Source:** spreadsheet `1i4CtBIXsdmpOwgbBLu0dQekSB4fxjGwUAgrUfiRexeU`, gid `919687516`,
-    tab `Form Responses 1`
+  is a non-AI QA account with its OWN source form and destination RAW tab — it does NOT share
+  DMG's source or DMG's Reviewer-mapping logic. (An earlier draft of this note described R4H as
+  sharing DMG's source spreadsheet and Reviewer mapping — that design was superseded; the values
+  below reflect the actual live pipeline.)
+  - **Source:** spreadsheet `13W-ij2u3PLVzt028Ih10fMFJ7bg4WgODs_UBRBHtUrk`, gid `62485887`
+    (a distinct R4H form, NOT DMG's `1i4CtBIX...` sheet)
   - **Destination:** spreadsheet `1d3w61WWQgVDuFlfUnVwQyTPnNdyIrmc0M7xdf5C8cRw`, tab `RAW`
-  - **Reviewer mapping:** source `Reviewer = Supervisor` becomes `Jamito, Frodel M.`;
-    source `Reviewer = QA Evaluator` becomes `Burton, Gladys P`
+  - **No Reviewer mapping:** R4H's form carries its own `QA Coach:` / `Supervisor:` columns
+    directly — there is no `Reviewer = Supervisor/QA Evaluator` remap step (that is DMG-only).
+    `r4h_appsscript_pull.gs` even guards against consuming DMG's shape: it throws
+    `"R4H pull aborted: source has Reviewer but no QA Coach column. This looks like a DMG source, not R4H."`
+  - **Column map (`dashboard.py`):** R4H has its OWN dedicated `R4H_COLUMN_MAP` (~line 114) built
+    from R4H's real headers. It must NOT be aliased to `M7_COLUMN_MAP` or `DMG_COLUMN_MAP` — R4H's
+    criterion questions use different wording and point values (e.g. `Opening Spiel (Inbound Calls) - 2pts`
+    vs M7's `- 1pt`), so an alias silently drops criterion data. See the 2026-07-11 fix note below.
   - **Safety rules:** blank `Employee Name` rows are excluded; generated bad IDs such as
     `R4H-INVALIDTS-NOEMPLOYEE` must never be written.
   - **Pipeline integration:** add R4H everywhere an account source is registered:
     `dashboard.py`, `update_coaching_dashboard_auto.bat`, `update_coaching_dashboard.bat`,
     `self_heal.py`, `generate_monitor.py`, `pipeline_rowcount_baseline.json`, and the QA account dropdown.
+
+- **DMG + R4H live on the Quality tab as non-AI accounts (integration verified 2026-07-11)** —
+  both accounts are fully wired into `dashboard.py` following the M7/Parentis non-AI pattern:
+  NOT in `aivhAccts` (no AI vs Human card), NOT in `QA_AI_ACCOUNTS`, `sumStripMain` stays visible,
+  QA detail table shows the house-pattern `QA_ID` (`DMG-yyyyMMddHHmmss-EMPID` / `R4H-...`). All 16
+  new-account checklist sites present for both (dropdown, rawData const, `_acct` tag, `qaGetActiveData`
+  case, all-accounts spread, both `acctPill` ternaries inserted before the Parentis fallback,
+  KPI title/badge, eval-dist entry, chart labels/colors, `qaAcctsLoaded`).
+  - **`R4H_COLUMN_MAP` defect found and fixed** — it was aliased as `R4H_COLUMN_MAP = M7_COLUMN_MAP`,
+    which silently dropped every R4H criterion whose header/point-value differed from M7's form.
+    Replaced with a dedicated 31-entry map built from `R4H_RAW.xlsx`'s actual columns
+    (verified: no duplicate keys/values, every mapped value retained by `_transform_qa_source()`'s
+    `keep` list, every key present verbatim in the RAW file). `DMG_COLUMN_MAP` verified correct — untouched.
+  - **Known follow-up (not yet fixed):** R4H's real `Information Precision - 10pts` criterion column is
+    currently UNMAPPED in `R4H_COLUMN_MAP` — it has no canonical key, so this criterion does not surface
+    in the QA detail table or coaching breakdown. Adding it requires a new canonical key in both
+    `R4H_COLUMN_MAP` and the `_transform_qa_source()` `keep` list plus the JS `critKeys` array.
+  - **Cosmetic note:** DMG's donut color `#0E7490` is shared with Associated Cab / Circle Taxi, and
+    R4H's `#0F766E` with Vermont — legend/tooltips still disambiguate by name; not a data issue.
 
 ### Pending / future work
 - **Apps Script Monitoring** — Add a new section to `pipeline_monitor.html` (before the incident log) showing per-account Apps Script health: last run time, row count, duration, stale/fail badges. Implementation: `logRunToMasterlist_()` helper in each Apps Script → writes to `GAS_Heartbeat` tab in Masterlist spreadsheet → `check_gas_heartbeat.py` reads it → `pipeline_gas_status.json` → `generate_monitor.py` renders the section. Build when 5+ upsert functions are active and manually checking the Apps Script UI becomes painful.
