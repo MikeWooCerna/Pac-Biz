@@ -315,6 +315,12 @@ def generate():
             build_finish_iso = build_step.get("timestamp", raw.get("finished_at", "")) or ""
         elif run_status == "success":
             build_finish_iso = raw.get("finished_at", "") or ""
+    dash_built_str = "&mdash;"
+    if build_finish_iso:
+        try:
+            dash_built_str = datetime.fromisoformat(build_finish_iso).strftime("%b %d, %Y %I:%M %p")
+        except Exception:
+            dash_built_str = str(build_finish_iso)[:16]
 
     failed_idx = next((i for i, (n, _, _) in enumerate(ACCOUNTS) if n == failed_at), None)
 
@@ -516,8 +522,8 @@ def generate():
                    or build_st == "fail" or git_st == "fail")
     radar_fail_js = "true" if has_failure else "false"
 
-    n_left      = 11
     n_total     = len(account_states)
+    n_left      = (n_total + 1) // 2
     left_label  = f"Data Sources 1&ndash;{n_left}"
     right_label = f"Data Sources {n_left + 1}&ndash;{n_total}"
     left_html   = "\n".join(render_node(a["name"], a["script"], a["status"], a["ts"], a["rows"], a.get("error"), drop_by_account.get(a["name"]), high_vol_by_account.get(a["name"])) for a in account_states[:n_left])
@@ -615,11 +621,11 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 @keyframes blinkR{{0%,100%{{opacity:1;box-shadow:0 0 7px #ff3d3d;}}50%{{opacity:0.2;box-shadow:none;}}}}
 @keyframes blinkA{{0%,100%{{opacity:1;box-shadow:0 0 5px #ffaa00;}}50%{{opacity:0.3;box-shadow:none;}}}}
 @keyframes blinkO{{0%,100%{{opacity:1;box-shadow:0 0 6px #E84500;}}50%{{opacity:0.25;box-shadow:none;}}}}
-.main-layout{{display:grid;grid-template-columns:1fr 348px 1fr;gap:7px;align-items:start;position:relative;z-index:1;}}
-.side-col{{display:flex;flex-direction:column;gap:3px;}}
+.main-layout{{display:grid;grid-template-columns:minmax(360px,1fr) minmax(328px,360px) minmax(360px,1fr);gap:10px;align-items:start;position:relative;z-index:1;}}
+.side-col{{display:flex;flex-direction:column;gap:5px;min-width:0;}}
 .center-col{{display:flex;flex-direction:column;align-items:center;gap:4px;}}
 /* --- Compact account nodes --- */
-.node{{border-radius:7px;border:1px solid;padding:5px 8px;}}
+.node{{border-radius:7px;border:1px solid;padding:5px 8px;min-height:57px;}}
 .node-title{{font-size:12px;font-weight:500;margin-bottom:3px;display:flex;align-items:center;justify-content:space-between;gap:4px;}}
 .node-title span{{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}}
 .node-row{{display:flex;align-items:center;gap:4px;font-size:10px;color:#9080b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}}
@@ -666,10 +672,10 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 .sig{{text-align:center;font-size:12px;font-weight:600;letter-spacing:0.08em;background:linear-gradient(90deg,#9050ff,#c090ff 35%,#00e87a 70%,#80ffcc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;padding:6px 0 2px;position:relative;z-index:1;}}
 .log-section{{margin-top:14px;position:relative;z-index:1;}}
 .log-hdr{{font-size:11px;color:#5000b4;letter-spacing:0.07em;text-transform:uppercase;margin-bottom:7px;}}
-.log-wrap{{overflow-x:auto;border-radius:8px;border:1px solid rgba(80,0,180,0.22);}}
+.log-wrap{{overflow:auto;max-height:240px;border-radius:8px;border:1px solid rgba(80,0,180,0.22);}}
 .log-table{{width:100%;border-collapse:collapse;font-size:11px;}}
 .log-table thead tr{{background:rgba(40,10,90,0.6);}}
-.log-table th{{text-align:left;color:#7060a0;font-weight:600;padding:6px 10px;border-bottom:1px solid rgba(80,0,180,0.25);white-space:nowrap;}}
+.log-table th{{position:sticky;top:0;z-index:2;text-align:left;color:#7060a0;font-weight:600;padding:6px 10px;border-bottom:1px solid rgba(80,0,180,0.25);white-space:nowrap;background:#12062a;}}
 .log-table td{{padding:5px 10px;border-bottom:1px solid rgba(80,0,180,0.1);vertical-align:top;}}
 .log-table tr:last-child td{{border-bottom:none;}}
 .log-table tbody tr:hover td{{background:rgba(80,0,180,0.07);}}
@@ -696,22 +702,25 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 .lp-v{{background:rgba(255,170,0,0.1);color:#ffaa00;border:1px solid rgba(255,170,0,0.28);}}
 .lp-g{{background:#0e7490;color:#fff;}}
 .lp-gw{{background:#92400e;color:#fff;}}
-@media(max-width:600px){{
+@media(max-width:900px){{
   body{{padding:12px;}}
   .main-layout{{display:flex;flex-direction:column;gap:4px;}}
   .center-col{{order:-1;width:100%;}}
   .radar-wrap{{width:240px;height:240px;flex-shrink:1;align-self:center;}}
   .radar-wrap canvas{{width:240px!important;height:240px!important;}}
-  .side-col{{display:grid;grid-template-columns:1fr 1fr;gap:4px;}}
+  .side-col{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;width:100%;}}
   .side-col .section-hdr{{display:none;}}
   .main-layout>.side-col:first-child::before{{content:'Data Sources';display:block;grid-column:span 2;font-size:11px;color:#5000b4;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:3px;}}
   .stat-cards{{flex-wrap:wrap;}}
   .stat-card{{flex:1 1 80px;min-width:70px;}}
+  .log-wrap{{max-height:220px;}}
 }}
 @media(max-width:480px){{
   body{{padding:8px;}}
   .eco{{padding:0.75rem 0.75rem 0.6rem;}}
   .page-title h1{{font-size:19px;}}
+  .side-col{{grid-template-columns:1fr;}}
+  .main-layout>.side-col:first-child::before{{grid-column:span 1;}}
   .radar-wrap{{width:200px;height:200px;}}
   .radar-wrap canvas{{width:200px!important;height:200px!important;}}
   .node-row,.meta-pill,.log-err,.browser-url{{font-size:11px;}}
@@ -738,7 +747,8 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
     </div>
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run {run_id}</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Built: {now_str}</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Dashboard: {dash_built_str}</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: {now_str}</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>

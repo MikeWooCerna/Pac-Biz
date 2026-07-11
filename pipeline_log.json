@@ -1067,5 +1067,27 @@
     "prev_count": 3860,
     "new_count": 3842,
     "error": "Dropped 18 rows (3,860 \u2192 3,842)"
+  },
+  {
+    "run_id": "2026-07-11T22:00:01",
+    "date": "Jul 11, 2026 10:00 PM",
+    "account": "DMG",
+    "script": "dmg_pull.py",
+    "status": "count_drop",
+    "drop": 1,
+    "prev_count": 292,
+    "new_count": 291,
+    "error": "Dropped 1 rows (292 \u2192 291)"
+  },
+  {
+    "run_id": "2026-07-11T22:00:01",
+    "date": "Jul 11, 2026 10:00 PM",
+    "account": "R4H",
+    "script": "r4h_pull.py",
+    "status": "count_drop",
+    "drop": 137,
+    "prev_count": 292,
+    "new_count": 155,
+    "error": "Dropped 137 rows (292 \u2192 155)"
   }
 ]

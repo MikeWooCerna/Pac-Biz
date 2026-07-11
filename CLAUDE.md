@@ -1,6 +1,6 @@
 # PB Dashboard — project context
 # This file is read by Claude Code (auto) and Codex (manual).
-# Last updated: 2026-06-27
+# Last updated: 2026-07-11
 
 ## What this is
 
@@ -209,6 +209,8 @@ Pipeline monitoring system is fully live as of 2026-06-22. See `PIPELINE_MONITOR
   - **Local fallback:** `dmg_pull.py` reads destination `RAW` when present; if `RAW` is not present yet,
     it reads the source tab directly, applies Reviewer mapping, generates `QA_ID`, and writes `DMG_RAW.xlsx`
     so the scheduled pipeline does not fail while the Apps Script feed is being installed.
+  - **Important distinction:** DMG is the only new account that uses the `Reviewer` remap. Do not copy this
+    Reviewer logic into R4H.
 - **R4H non-AI QA account added** (`Quality/R4H/r4h_pull.py`, `Quality/R4H/r4h_appsscript_pull.gs`)
   is a non-AI QA account with its OWN source form and destination RAW tab — it does NOT share
   DMG's source or DMG's Reviewer-mapping logic. (An earlier draft of this note described R4H as
@@ -230,6 +232,10 @@ Pipeline monitoring system is fully live as of 2026-06-22. See `PIPELINE_MONITOR
   - **Pipeline integration:** add R4H everywhere an account source is registered:
     `dashboard.py`, `update_coaching_dashboard_auto.bat`, `update_coaching_dashboard.bat`,
     `self_heal.py`, `generate_monitor.py`, `pipeline_rowcount_baseline.json`, and the QA account dropdown.
+  - **Name resolution:** R4H trailing enrichment fields (`Emp Name`, `QA`, `Immediate Supervisor`,
+    `LOB / Account`) must be normalized from Masterlist/History lookups, not copied directly from
+    raw form display names. Example same-person match: `Kenneth Espeleta` must resolve to
+    `Espeleta, Kenneth B` when that is the Masterlist name.
 
 - **DMG + R4H live on the Quality tab as non-AI accounts (integration verified 2026-07-11)** —
   both accounts are fully wired into `dashboard.py` following the M7/Parentis non-AI pattern:

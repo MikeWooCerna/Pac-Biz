@@ -1,7 +1,7 @@
 # Pipeline Monitor — Technical Reference
 
 **Live URL:** https://mikewoocerna.github.io/Pac-Biz/pipeline_monitor.html  
-**Last updated:** 2026-06-23  
+**Last updated:** 2026-07-11  
 **Version signature:** `v26.06.22`
 
 ---
@@ -71,30 +71,32 @@ Matches pipeline execution order. Masterlist is **first** (step 1) because it ru
 1.  Masterlist       masterlist_fetch.py   (CSV — Google Sheets)
 2.  Coaching         asana_pull.py
 3.  M7               m7_pull.py
-4.  Parentis Health  parentis_pull.py
-5.  Britelift        britelift_pull.py
-6.  Britelift Chat   britelift_pull.py     (same script name, different dir)
-7.  RideX            Ridex_pull.py
-8.  Hamilton         Hamilton_pull.py
-9.  Skyline          Skyline_pull.py
-10. VIP              vip_pull.py
-11. C&H              ch_pull.py
-12. Reno Cab         rc_pull.py
-13. Trans Iowa       ti_pull.py
-14. Data Carz        dc_pull.py
-15. Associated Cab   ac_pull.py
-16. Ollies           ol_pull.py
-17. Circle Taxi      ct_pull.py
-18. YCOV             ycov_pull.py
-19. Kelowna          kel_pull.py
-20. Vermont          vt_pull.py
-21. YCDC             ycdc_pull.py
-22. Blueline         bl_pull.py
+4.  DMG              dmg_pull.py
+5.  R4H              r4h_pull.py
+6.  Parentis Health  parentis_pull.py
+7.  Britelift        britelift_pull.py
+8.  Britelift Chat   britelift_pull.py     (same script name, different dir)
+9.  RideX            Ridex_pull.py
+10. Hamilton         Hamilton_pull.py
+11. Skyline          Skyline_pull.py
+12. VIP              vip_pull.py
+13. C&H              ch_pull.py
+14. Reno Cab         rc_pull.py
+15. Trans Iowa       ti_pull.py
+16. Data Carz        dc_pull.py
+17. Associated Cab   ac_pull.py
+18. Ollies           ol_pull.py
+19. Circle Taxi      ct_pull.py
+20. YCOV             ycov_pull.py
+21. Kelowna          kel_pull.py
+22. Vermont          vt_pull.py
+23. YCDC             ycdc_pull.py
+24. Blueline         bl_pull.py
     Build            dashboard.py
     Git Push         git push
 ```
 
-Left panel = Data Sources 1–11. Right panel = Data Sources 12–22. Numbers are dynamic — auto-adjusts if accounts are added.
+Left/right panel balance is dynamic. With the current 24 sources, the monitor renders Data Sources 1–12 on the left and 13–24 on the right. If accounts are added later, the split is recalculated from the source count instead of being hardcoded.
 
 ---
 
@@ -116,6 +118,7 @@ Both `blocked` and `pending` display as **"NOT REACHED"** in the UI. Internally 
 - **Data Engine / Processing** (agg node) — shows total rows, sources ok (blinking green/red), started, finished, next scheduled refresh
 - **Dashboard** (browser card) — shows Live Data / Stale Data using same `schedTimes` logic as main dashboard
 - **Git Repository** — `queued…` (amber) during run, `pushed` (green) on success, `not reached` (orange) if pipeline failed before git step
+- **Header times** — the monitor header intentionally shows both `Dashboard:` and `Monitor:` timestamps. `Dashboard:` is sourced from the Build step/dashboard freshness timestamp; `Monitor:` is when `pipeline_monitor.html` itself was generated. This avoids a false mismatch when the monitor is regenerated after the dashboard build.
 
 ---
 
