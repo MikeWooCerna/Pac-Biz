@@ -1089,5 +1089,27 @@
     "prev_count": 292,
     "new_count": 155,
     "error": "Dropped 137 rows (292 \u2192 155)"
+  },
+  {
+    "run_id": "2026-07-11T22:00:01",
+    "date": "Jul 11, 2026 11:30 PM",
+    "account": "DMG",
+    "script": "dmg_pull.py",
+    "status": "source_confirmed",
+    "drop": 1,
+    "prev_count": 292,
+    "new_count": 291,
+    "error": "Source confirmed after cleanup exclusions. Current DMG count is 291 rows; baseline accepted."
+  },
+  {
+    "run_id": "2026-07-11T22:00:01",
+    "date": "Jul 11, 2026 11:30 PM",
+    "account": "R4H",
+    "script": "r4h_pull.py",
+    "status": "source_confirmed",
+    "drop": 137,
+    "prev_count": 292,
+    "new_count": 155,
+    "error": "Source confirmed after cleanup exclusions. Current R4H count is 155 rows; baseline accepted."
   }
 ]

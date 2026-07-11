@@ -35,7 +35,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 @keyframes blinkR{0%,100%{opacity:1;box-shadow:0 0 7px #ff3d3d;}50%{opacity:0.2;box-shadow:none;}}
 @keyframes blinkA{0%,100%{opacity:1;box-shadow:0 0 5px #ffaa00;}50%{opacity:0.3;box-shadow:none;}}
 @keyframes blinkO{0%,100%{opacity:1;box-shadow:0 0 6px #E84500;}50%{opacity:0.25;box-shadow:none;}}
-.main-layout{display:grid;grid-template-columns:minmax(360px,1fr) minmax(328px,360px) minmax(360px,1fr);gap:10px;align-items:start;position:relative;z-index:1;}
+.main-layout{display:grid;grid-template-columns:minmax(300px,1fr) minmax(328px,360px) minmax(300px,1fr);gap:10px;align-items:start;position:relative;z-index:1;}
 .side-col{display:flex;flex-direction:column;gap:5px;min-width:0;}
 .center-col{display:flex;flex-direction:column;align-items:center;gap:4px;}
 /* --- Compact account nodes --- */
@@ -116,18 +116,24 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 .lp-v{background:rgba(255,170,0,0.1);color:#ffaa00;border:1px solid rgba(255,170,0,0.28);}
 .lp-g{background:#0e7490;color:#fff;}
 .lp-gw{background:#92400e;color:#fff;}
-@media(max-width:900px){
+@media(max-width:1180px){
   body{padding:12px;}
-  .main-layout{display:flex;flex-direction:column;gap:4px;}
-  .center-col{order:-1;width:100%;}
+  .main-layout{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+  .center-col{grid-column:1 / -1;grid-row:1;width:100%;}
   .radar-wrap{width:240px;height:240px;flex-shrink:1;align-self:center;}
   .radar-wrap canvas{width:240px!important;height:240px!important;}
-  .side-col{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;width:100%;}
-  .side-col .section-hdr{display:none;}
-  .main-layout>.side-col:first-child::before{content:'Data Sources';display:block;grid-column:span 2;font-size:11px;color:#5000b4;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:3px;}
+  .side-col{display:flex;flex-direction:column;gap:5px;width:100%;}
+  .side-col .section-hdr{display:block;}
   .stat-cards{flex-wrap:wrap;}
   .stat-card{flex:1 1 80px;min-width:70px;}
   .log-wrap{max-height:220px;}
+}
+@media(max-width:720px){
+  .main-layout{display:flex;flex-direction:column;gap:5px;}
+  .center-col{order:-1;width:100%;}
+  .side-col{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;}
+  .side-col .section-hdr{display:none;}
+  .main-layout>.side-col:first-child::before{content:'Data Sources';display:block;grid-column:span 2;font-size:11px;color:#5000b4;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:3px;}
 }
 @media(max-width:480px){
   body{padding:8px;}
@@ -161,8 +167,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     </div>
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run 2026-07-11T22:00</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Dashboard: Jul 11, 2026 10:14 PM</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Jul 11, 2026 11:16 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Dashboard: Jul 11, 2026 11:26 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Jul 11, 2026 11:53 PM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -228,7 +234,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">291 rows</span>
     <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-drop">&darr; 1</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -238,7 +244,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-meta">
     <span class="meta-pill g">155 rows</span>
     <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-drop">&darr; 137</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -336,7 +342,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
             <div class="agg-lbl">sources ok</div>
           </div>
           <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">10:00 PM</div><div class="agg-lbl">started</div></div>
-          <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">10:14 PM</div><div class="agg-lbl">finished</div></div>
+          <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">11:26 PM</div><div class="agg-lbl">finished</div></div>
           <div class="agg-item" style="grid-column:span 2;"><div class="agg-val" style="color:#ffaa00;font-size:12px;">3:00 AM +1d</div><div class="agg-lbl">next schedule</div></div>
         </div>
       </div>
@@ -491,7 +497,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   </div>
 
   
-  <div class="drop-strip">&#9660; Row count drop detected &mdash; <b>DMG</b> &darr;&thinsp;1 rows <span style='opacity:0.65;font-size:11px;'>(292 &rarr; 291)</span> &nbsp;&middot;&nbsp; <b>R4H</b> &darr;&thinsp;137 rows <span style='opacity:0.65;font-size:11px;'>(292 &rarr; 155)</span></div>
+  
   <div class="vol-strip">&#9651; High volume datasets detected &mdash; <b>Skyline</b> &#9651;&thinsp;17,207 rows <span style='opacity:0.65;font-size:11px;'>(HIGH VOL)</span></div>
 
   <div class="divider" style="margin-top:12px;"></div>
@@ -500,7 +506,9 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div class="log-wrap">
       <table class="log-table">
         <thead><tr><th>Date</th><th>Dataset</th><th>Status</th></tr></thead>
-        <tbody><tr><td class="log-td-d">Jul 11, 2026 10:00 PM</td><td class="log-td-ds"><b>R4H</b> <span class="log-sc">&middot; r4h_pull.py</span><div class="log-err">Dropped 137 rows (292 → 155)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
+        <tbody><tr><td class="log-td-d">Jul 11, 2026 11:30 PM</td><td class="log-td-ds"><b>R4H</b> <span class="log-sc">&middot; r4h_pull.py</span><div class="log-err">Source confirmed after cleanup exclusions. Current R4H count is 155 rows; baseline accepted.</div></td><td class="log-td-st"><span class="lp lp-s">SOURCE CONFIRMED</span></td></tr>
+<tr><td class="log-td-d">Jul 11, 2026 11:30 PM</td><td class="log-td-ds"><b>DMG</b> <span class="log-sc">&middot; dmg_pull.py</span><div class="log-err">Source confirmed after cleanup exclusions. Current DMG count is 291 rows; baseline accepted.</div></td><td class="log-td-st"><span class="lp lp-s">SOURCE CONFIRMED</span></td></tr>
+<tr><td class="log-td-d">Jul 11, 2026 10:00 PM</td><td class="log-td-ds"><b>R4H</b> <span class="log-sc">&middot; r4h_pull.py</span><div class="log-err">Dropped 137 rows (292 → 155)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
 <tr><td class="log-td-d">Jul 11, 2026 10:00 PM</td><td class="log-td-ds"><b>DMG</b> <span class="log-sc">&middot; dmg_pull.py</span><div class="log-err">Dropped 1 rows (292 → 291)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
 <tr><td class="log-td-d">Jul 10, 2026 10:00 PM</td><td class="log-td-ds"><b>Hamilton</b> <span class="log-sc">&middot; Hamilton_pull.py</span><div class="log-err">Dropped 18 rows (3,860 → 3,842)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
 <tr><td class="log-td-d">Jul 10, 2026 03:00 PM</td><td class="log-td-ds"><b>bl_pull.py</b> <span class="log-sc">&middot; bl_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
@@ -579,9 +587,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 <tr><td class="log-td-d">Jun 24, 2026 03:00 AM</td><td class="log-td-ds"><b>Circle Taxi</b> <span class="log-sc">&middot; ct_pull.py</span><div class="log-err">Dropped 23 rows (523 → 500)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
 <tr><td class="log-td-d">Jun 24, 2026 03:00 AM</td><td class="log-td-ds"><b>Skyline</b> <span class="log-sc">&middot; Skyline_pull.py</span><div class="log-err">Dropped 6,530 rows (14,447 → 7,917)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
 <tr><td class="log-td-d">Jun 23, 2026 08:11 PM</td><td class="log-td-ds"><b>Reno Cab</b> <span class="log-sc">&middot; rc_pull.py</span><div class="log-err">Count dropped 2,487 → 1,712. Re-pull recovered 2,487 rows.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
-<tr><td class="log-td-d">Jun 23, 2026 07:23 PM</td><td class="log-td-ds"><b>Skyline</b> <span class="log-sc">&middot; Skyline_pull.py</span><div class="log-err">Warning: 14,297 rows (threshold 10,000)</div></td><td class="log-td-st"><span class="lp lp-v">HIGH VOLUME</span></td></tr>
-<tr><td class="log-td-d">Jun 23, 2026 07:00 PM</td><td class="log-td-ds"><b>Blueline</b> <span class="log-sc">&middot; bl_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
-<tr><td class="log-td-d">Jun 23, 2026 07:00 PM</td><td class="log-td-ds"><b>YCDC</b> <span class="log-sc">&middot; ycdc_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr></tbody>
+<tr><td class="log-td-d">Jun 23, 2026 07:23 PM</td><td class="log-td-ds"><b>Skyline</b> <span class="log-sc">&middot; Skyline_pull.py</span><div class="log-err">Warning: 14,297 rows (threshold 10,000)</div></td><td class="log-td-st"><span class="lp lp-v">HIGH VOLUME</span></td></tr></tbody>
       </table>
     </div>
   </div>
@@ -754,7 +760,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 
 // ── Dashboard freshness ───────────────────────────────────────────────────────
 (function() {
-  var BUILD_ISO = "2026-07-11T22:14:32.651591";
+  var BUILD_ISO = "2026-07-11T23:26:47.602455";
   var el = document.getElementById('dash-freshness');
   if (!el || !BUILD_ISO) return;
   var buildTs = new Date(BUILD_ISO);

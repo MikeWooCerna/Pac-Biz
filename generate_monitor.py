@@ -410,15 +410,15 @@ def generate():
                        if e.get("run_id") == run_id_full and e.get("status") == "count_drop"]
     drop_by_account = {d["account"]: d for d in count_drops}
 
-    # Remove drops that have already been healed — if a healed entry exists for
-    # the account with a later run_id (ISO string sort), clear the badge.
+    # Remove drops that have already been healed or source-confirmed. Same-run
+    # source confirmations are valid when a cleanup intentionally lowers rows.
     for e in log_entries:
-        if e.get("status") == "healed":
+        if e.get("status") in ("healed", "source_confirmed"):
             acct = e.get("account")
             if acct in drop_by_account:
                 drop_run = drop_by_account[acct].get("run_id", "")
                 heal_run = e.get("run_id", "")
-                if heal_run > drop_run:
+                if heal_run >= drop_run:
                     drop_by_account.pop(acct)
     count_drops = [d for d in count_drops if d["account"] in drop_by_account]
 
@@ -621,7 +621,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 @keyframes blinkR{{0%,100%{{opacity:1;box-shadow:0 0 7px #ff3d3d;}}50%{{opacity:0.2;box-shadow:none;}}}}
 @keyframes blinkA{{0%,100%{{opacity:1;box-shadow:0 0 5px #ffaa00;}}50%{{opacity:0.3;box-shadow:none;}}}}
 @keyframes blinkO{{0%,100%{{opacity:1;box-shadow:0 0 6px #E84500;}}50%{{opacity:0.25;box-shadow:none;}}}}
-.main-layout{{display:grid;grid-template-columns:minmax(360px,1fr) minmax(328px,360px) minmax(360px,1fr);gap:10px;align-items:start;position:relative;z-index:1;}}
+.main-layout{{display:grid;grid-template-columns:minmax(300px,1fr) minmax(328px,360px) minmax(300px,1fr);gap:10px;align-items:start;position:relative;z-index:1;}}
 .side-col{{display:flex;flex-direction:column;gap:5px;min-width:0;}}
 .center-col{{display:flex;flex-direction:column;align-items:center;gap:4px;}}
 /* --- Compact account nodes --- */
@@ -702,18 +702,24 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 .lp-v{{background:rgba(255,170,0,0.1);color:#ffaa00;border:1px solid rgba(255,170,0,0.28);}}
 .lp-g{{background:#0e7490;color:#fff;}}
 .lp-gw{{background:#92400e;color:#fff;}}
-@media(max-width:900px){{
+@media(max-width:1180px){{
   body{{padding:12px;}}
-  .main-layout{{display:flex;flex-direction:column;gap:4px;}}
-  .center-col{{order:-1;width:100%;}}
+  .main-layout{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}}
+  .center-col{{grid-column:1 / -1;grid-row:1;width:100%;}}
   .radar-wrap{{width:240px;height:240px;flex-shrink:1;align-self:center;}}
   .radar-wrap canvas{{width:240px!important;height:240px!important;}}
-  .side-col{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;width:100%;}}
-  .side-col .section-hdr{{display:none;}}
-  .main-layout>.side-col:first-child::before{{content:'Data Sources';display:block;grid-column:span 2;font-size:11px;color:#5000b4;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:3px;}}
+  .side-col{{display:flex;flex-direction:column;gap:5px;width:100%;}}
+  .side-col .section-hdr{{display:block;}}
   .stat-cards{{flex-wrap:wrap;}}
   .stat-card{{flex:1 1 80px;min-width:70px;}}
   .log-wrap{{max-height:220px;}}
+}}
+@media(max-width:720px){{
+  .main-layout{{display:flex;flex-direction:column;gap:5px;}}
+  .center-col{{order:-1;width:100%;}}
+  .side-col{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;}}
+  .side-col .section-hdr{{display:none;}}
+  .main-layout>.side-col:first-child::before{{content:'Data Sources';display:block;grid-column:span 2;font-size:11px;color:#5000b4;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:3px;}}
 }}
 @media(max-width:480px){{
   body{{padding:8px;}}
