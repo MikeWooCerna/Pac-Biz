@@ -107,7 +107,43 @@ DMG_COLUMN_MAP = {
     "6.2 Ticket Structure & Dupes (10 pts)\nRelated tickets merged; unrelated issues split.": "verif",
 }
 
-R4H_COLUMN_MAP = DMG_COLUMN_MAP
+# R4H pulls from its own source form (not M7's) — several criterion headers share
+# the same wording as M7's but with different point values ("- 1pt" vs "- 2pts"),
+# so reusing M7_COLUMN_MAP silently dropped those criteria for R4H. Dedicated map
+# built from R4H_RAW.xlsx's real headers (2026-07-11).
+R4H_COLUMN_MAP = {
+    "Timestamp":                                              "ts",
+    "Call Date:":                                            "date",
+    "Emp Name":                                              "agent",
+    "Score":                                                 "score",
+    "Evaluation Type:":                                      "type",
+    "QA":                                                    "coach",
+    "Immediate Supervisor":                                  "supervisor",
+    "Conducted Thorough Investigation:":                     "invest",
+    "Feedback Summary:":                                     "feedback",
+    "Opening Spiel (Inbound Calls) - 2pts":                  "os_in",
+    "Opening Spiel (Outbound Calls) - 1pt":                  "os_out",
+    "Closing Spiel - 1pt":                                   "closing",
+    "Appropriate Response - 2pts":                           "approp",
+    "No Response - 2pts":                                    "no_resp",
+    "Fillers / Slang Words - 1pt":                           "fillers",
+    "Acknowledgement / Ownsership - 1pt":                    "ack",
+    "Proper Handling of Pauses or Hold Requests - 2pts":     "hold",
+    "Acknowledges and Thank the Customer for Waiting - 1pt": "ack_hold",
+    "Response Efficiency - 2pts":                            "resp_eff",
+    "Empathy / Sympathy - 3pts":                             "empathy",
+    "Adjust to Customer's Level - 3pts":                     "adjust",
+    "Mute Button Usage - 1pt":                               "mute",
+    "Active Listening - 5pts":                               "active",
+    "Answered Customer's Questions - 4pts":                  "answered",
+    "Probing Questions - 4pts":                              "probing",
+    "Customer Verification - 10pts":                         "verif",
+    "Rudeness - 20pts":                                      "rude",
+    "Transaction Completion - 20pts":                        "trans",
+    "Speech Clarify - 5pts":                                 "speech",
+    "QA_ID":                                                 "qa_id",
+    "EMPLOYEE_ID":                                           "emp_id",
+}
 
 PARENTIS_DIR = Path(os.getenv("PARENTIS_DIR", r"C:\Users\Mike Woo Cerna\Documents\PB\Quality\Parentis Health"))
 PARENTIS_SCRIPT = PARENTIS_DIR / "parentis_pull.py"
