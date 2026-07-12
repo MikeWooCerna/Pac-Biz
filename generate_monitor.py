@@ -724,7 +724,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 .fit-sm .sc-lbl{{font-size:14px;}}
 .fit-sm .legend{{font-size:13px;}}
 @supports not (zoom:1) {{
-@media(max-width:990px){{
+@media(max-width:420px){{
   body{{padding:12px;}}
   .main-layout{{display:grid;grid-template-columns:repeat(2,minmax(280px,390px));gap:8px;justify-content:center;}}
   .center-col{{grid-column:1 / -1;grid-row:1;width:100%;}}
@@ -736,7 +736,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
   .stat-card{{flex:1 1 80px;min-width:70px;}}
   .log-wrap{{max-height:220px;}}
 }}
-@media(max-width:720px){{
+@media(max-width:380px){{
   .main-layout{{display:flex;flex-direction:column;gap:5px;}}
   .center-col{{order:-1;width:100%;}}
   .side-col{{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;}}

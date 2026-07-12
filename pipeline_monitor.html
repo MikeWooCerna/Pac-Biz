@@ -132,7 +132,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 .fit-sm .sc-lbl{font-size:14px;}
 .fit-sm .legend{font-size:13px;}
 @supports not (zoom:1) {
-@media(max-width:990px){
+@media(max-width:420px){
   body{padding:12px;}
   .main-layout{display:grid;grid-template-columns:repeat(2,minmax(280px,390px));gap:8px;justify-content:center;}
   .center-col{grid-column:1 / -1;grid-row:1;width:100%;}
@@ -144,7 +144,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   .stat-card{flex:1 1 80px;min-width:70px;}
   .log-wrap{max-height:220px;}
 }
-@media(max-width:720px){
+@media(max-width:380px){
   .main-layout{display:flex;flex-direction:column;gap:5px;}
   .center-col{order:-1;width:100%;}
   .side-col{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;}
@@ -184,8 +184,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     </div>
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run 2026-07-12T15:00</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Dashboard: Jul 12, 2026 03:13 PM</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Jul 12, 2026 03:13 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Dashboard: Jul 12, 2026 04:47 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Jul 12, 2026 04:47 PM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -359,7 +359,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
             <div class="agg-lbl">sources ok</div>
           </div>
           <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">03:00 PM</div><div class="agg-lbl">started</div></div>
-          <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">03:13 PM</div><div class="agg-lbl">finished</div></div>
+          <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">04:47 PM</div><div class="agg-lbl">finished</div></div>
           <div class="agg-item" style="grid-column:span 2;"><div class="agg-val" style="color:#ffaa00;font-size:12px;">7:00 PM</div><div class="agg-lbl">next schedule</div></div>
         </div>
       </div>
@@ -777,7 +777,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 
 // ── Dashboard freshness ───────────────────────────────────────────────────────
 (function() {
-  var BUILD_ISO = "2026-07-12T15:13:15.248991";
+  var BUILD_ISO = "2026-07-12T16:47:00.347372";
   var el = document.getElementById('dash-freshness');
   if (!el || !BUILD_ISO) return;
   var buildTs = new Date(BUILD_ISO);

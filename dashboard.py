@@ -8237,7 +8237,7 @@ function populateCoachingFilters() {{
         renderCoaching
     );
 
-    const monthValues = [...new Set(coachingData.map(r => coachingMonthKey(r["Coaching Date"])).filter(Boolean))]
+    const monthValues = [...new Set(coachingData.map(r => coachingMonthKey(coachingSummaryDate(r))).filter(Boolean))]
         .sort()
         .map(value => ({{value, label: coachingMonthLabelFromKey(value)}}));
     populateMultiFilter(
@@ -8383,7 +8383,7 @@ function filteredMasterlist() {{
 
 function filteredCoachingData() {{
     const baseFiltered = coachingData.filter(r => {{
-        const monthKey = coachingMonthKey(r["Coaching Date"]);
+        const monthKey = coachingMonthKey(coachingSummaryDate(r));
         return (
             filterMatches(COACHING_FILTERS.emp, norm(r["Emp Name"])) &&
             filterMatches(COACHING_FILTERS.leader, norm(r["Coached by"])) &&
