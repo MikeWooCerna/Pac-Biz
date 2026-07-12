@@ -14,6 +14,9 @@ OUTPUT_FILE  = BASE / "pipeline_monitor.html"
 HIGH_VOLUME_WARN = 10_000   # amber badge + strip
 HIGH_VOLUME_CRIT = 20_000   # red badge + strip + email
 LOGO_FILE    = BASE / "pacbiz_logo.png"
+# Dark-theme logo (same rendering the Scheduler uses) — preferred for the
+# monitor's dark UI; logo_b64() falls back to the white logo if missing.
+DARK_LOGO_FILE = BASE / "pacbiz_logo_dark.png"
 FAVICON_FILE = BASE / "pacbiz_favicon.png"
 
 DASHBOARD_URL = "https://mikewoocerna.github.io/Pac-Biz/masterlist_dashboard.html"
@@ -64,9 +67,12 @@ def get_row_count(file_path):
 
 def logo_b64():
     try:
-        return base64.b64encode(LOGO_FILE.read_bytes()).decode()
+        return base64.b64encode(DARK_LOGO_FILE.read_bytes()).decode()
     except Exception:
-        return ""
+        try:
+            return base64.b64encode(LOGO_FILE.read_bytes()).decode()
+        except Exception:
+            return ""
 
 def favicon_b64():
     try:
@@ -601,7 +607,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 .grid-bg{{position:absolute;inset:0;background-image:linear-gradient(rgba(80,0,180,0.07) 1px,transparent 1px),linear-gradient(90deg,rgba(80,0,180,0.07) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;}}
 .top-bar{{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.3rem;position:relative;z-index:1;}}
 .logo-box{{display:flex;align-items:center;gap:10px;}}
-.logo-img{{width:46px;height:46px;border-radius:6px;object-fit:contain;mix-blend-mode:screen;filter:brightness(1.15) saturate(1.1);}}
+.logo-img{{width:46px;height:46px;border-radius:6px;object-fit:contain;}}
 .logo-fallback{{width:46px;height:46px;border-radius:6px;background:linear-gradient(135deg,#1a0050,#5000b4);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#c0a0ff;flex-shrink:0;}}
 .brand-name{{font-size:19px;font-weight:500;color:#c0a0ff;letter-spacing:0.04em;}}
 .brand-tag{{font-size:13px;color:#7060a0;margin-top:2px;}}
