@@ -1,8 +1,8 @@
 {
   "run_id": "2026-07-12T15:00:01",
   "started_at": "2026-07-12T15:00:01.958095",
-  "finished_at": "2026-07-12T15:13:15.248991",
-  "status": "running",
+  "finished_at": "2026-07-12T15:13:31.295814",
+  "status": "success",
   "failed_at": null,
   "steps": [
     {
