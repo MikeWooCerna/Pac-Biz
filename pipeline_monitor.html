@@ -199,7 +199,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">0</div><div class="sc-lbl">Failed</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#E84500;">0</div><div class="sc-lbl">Not Reached</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">46,990</div><div class="sc-lbl">Rows Pulled</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#7060a0;">&mdash;</div><div class="sc-lbl">running</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#00e87a;">&#10003;</div><div class="sc-lbl">success</div></div>
   </div>
 
   <div class="divider"></div>
@@ -342,7 +342,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       </div>
       <div class="radar-label">
         <div class="radar-lbl-main">Pipeline / Container Monitoring</div>
-        <div class="radar-lbl-status"><div class="blink-a"></div><span style="color:#ffaa00;font-size:12px;">running</span></div>
+        <div class="radar-lbl-status"><div class="blink-g"></div><span style="color:#00e87a;font-size:12px;">complete</span></div>
       </div>
 
       <div class="connector"></div>
@@ -523,7 +523,9 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div class="log-wrap">
       <table class="log-table">
         <thead><tr><th>Date</th><th>Dataset</th><th>Status</th></tr></thead>
-        <tbody><tr><td class="log-td-d">Jul 12, 2026 03:00 AM</td><td class="log-td-ds"><b>YCOV</b> <span class="log-sc">&middot; ycov_pull.py</span><div class="log-err">Dropped 962 rows (979 → 17)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
+        <tbody><tr><td class="log-td-d">Jul 12, 2026 10:00 PM</td><td class="log-td-ds"><b>kel_pull.py</b> <span class="log-sc">&middot; kel_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
+<tr><td class="log-td-d">Jul 12, 2026 10:00 PM</td><td class="log-td-ds"><b>rc_pull.py</b> <span class="log-sc">&middot; rc_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
+<tr><td class="log-td-d">Jul 12, 2026 03:00 AM</td><td class="log-td-ds"><b>YCOV</b> <span class="log-sc">&middot; ycov_pull.py</span><div class="log-err">Dropped 962 rows (979 → 17)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
 <tr><td class="log-td-d">Jul 11, 2026 11:30 PM</td><td class="log-td-ds"><b>R4H</b> <span class="log-sc">&middot; r4h_pull.py</span><div class="log-err">Source confirmed after cleanup exclusions. Current R4H count is 155 rows; baseline accepted.</div></td><td class="log-td-st"><span class="lp lp-s">SOURCE CONFIRMED</span></td></tr>
 <tr><td class="log-td-d">Jul 11, 2026 11:30 PM</td><td class="log-td-ds"><b>DMG</b> <span class="log-sc">&middot; dmg_pull.py</span><div class="log-err">Source confirmed after cleanup exclusions. Current DMG count is 291 rows; baseline accepted.</div></td><td class="log-td-st"><span class="lp lp-s">SOURCE CONFIRMED</span></td></tr>
 <tr><td class="log-td-d">Jul 11, 2026 10:00 PM</td><td class="log-td-ds"><b>R4H</b> <span class="log-sc">&middot; r4h_pull.py</span><div class="log-err">Dropped 137 rows (292 → 155)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
@@ -602,9 +604,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 <tr><td class="log-td-d">Jun 24, 2026 11:48 AM</td><td class="log-td-ds"><b>Ridex_pull.py</b> <span class="log-sc">&middot; Ridex_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
 <tr><td class="log-td-d">Jun 24, 2026 11:00 AM</td><td class="log-td-ds"><b>Circle Taxi</b> <span class="log-sc">&middot; ct_pull.py</span><div class="log-err">Dropped 771 rows (1,283 → 512)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
 <tr><td class="log-td-d">Jun 24, 2026 08:45 AM</td><td class="log-td-ds"><b>kel_pull.py</b> <span class="log-sc">&middot; kel_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
-<tr><td class="log-td-d">Jun 24, 2026 03:00 AM</td><td class="log-td-ds"><b>Circle Taxi</b> <span class="log-sc">&middot; ct_pull.py</span><div class="log-err">Dropped 23 rows (523 → 500)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
-<tr><td class="log-td-d">Jun 24, 2026 03:00 AM</td><td class="log-td-ds"><b>Skyline</b> <span class="log-sc">&middot; Skyline_pull.py</span><div class="log-err">Dropped 6,530 rows (14,447 → 7,917)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
-<tr><td class="log-td-d">Jun 23, 2026 08:11 PM</td><td class="log-td-ds"><b>Reno Cab</b> <span class="log-sc">&middot; rc_pull.py</span><div class="log-err">Count dropped 2,487 → 1,712. Re-pull recovered 2,487 rows.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr></tbody>
+<tr><td class="log-td-d">Jun 24, 2026 03:00 AM</td><td class="log-td-ds"><b>Circle Taxi</b> <span class="log-sc">&middot; ct_pull.py</span><div class="log-err">Dropped 23 rows (523 → 500)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr></tbody>
       </table>
     </div>
   </div>

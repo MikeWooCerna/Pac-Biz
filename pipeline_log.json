@@ -1122,5 +1122,23 @@
     "prev_count": 979,
     "new_count": 17,
     "error": "Dropped 962 rows (979 \u2192 17)"
+  },
+  {
+    "run_id": "2026-07-12T22:00:02",
+    "date": "Jul 12, 2026 10:00 PM",
+    "account": "rc_pull.py",
+    "script": "rc_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-07-12T22:00:02",
+    "date": "Jul 12, 2026 10:00 PM",
+    "account": "kel_pull.py",
+    "script": "kel_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
   }
 ]
