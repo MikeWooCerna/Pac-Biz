@@ -597,7 +597,7 @@ def generate():
 <style>
 *{{box-sizing:border-box;margin:0;padding:0;}}
 body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sans-serif;padding:20px;}}
-.eco{{background:#05001a;border-radius:12px;padding:1.25rem 1.25rem 1rem;color:#fff;position:relative;overflow:hidden;max-width:1390px;margin:0 auto;}}
+.eco{{background:#05001a;border-radius:12px;padding:1.25rem 1.25rem 1rem;color:#fff;position:relative;overflow:hidden;max-width:1070px;margin:0 auto;}}
 .grid-bg{{position:absolute;inset:0;background-image:linear-gradient(rgba(80,0,180,0.07) 1px,transparent 1px),linear-gradient(90deg,rgba(80,0,180,0.07) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;}}
 .top-bar{{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.3rem;position:relative;z-index:1;}}
 .logo-box{{display:flex;align-items:center;gap:10px;}}
@@ -1083,7 +1083,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 (function () {{
   var eco = document.querySelector('.eco');
   if (!eco || !('zoom' in eco.style)) return;
-  var natural = 960;
+  var natural = 1070; // matches .eco max-width — scale starts the moment the container would have to shrink
   var lastDpr = window.devicePixelRatio || 1;
   function fitEco() {{
     var avail = document.documentElement.clientWidth - 40; // body padding
