@@ -289,6 +289,47 @@ The notification script is intentionally not logged as a formal `pipeline_status
 
 ---
 
+## Layout — LOCKED design decisions (settled 2026-07-12, do not redesign)
+
+These were settled with Mike through several preview rounds. Any future change to
+monitor layout must respect these rules — do NOT re-litigate them:
+
+1. **Three-column flanked layout IS the design.** Account cards in a LEFT column
+   (Data Sources 1–12) and a RIGHT column (13–24) flanking the center hub
+   (radar → Data Engine → Dashboard → Git Repository). Mike explicitly rejected
+   a merged tile-wall layout with the hub promoted on top. Never re-stack on
+   desktop.
+2. **Side columns are capped at 330px** (`minmax(280px,330px)`), center column
+   `minmax(328px,350px)`, `justify-content:center`. Mike rejected wide
+   (`0.95fr`) stretchy cards.
+3. **`.eco` container max-width is 1070px** — it must HUG the card block. Mike
+   rejected empty grid-pattern background flanking the cards (the old 1390px).
+4. **Narrow windows AUTO-SCALE, never re-stack.** `fitEco()` (bottom `<script>`)
+   applies CSS `zoom` when viewport < `natural` px so quarter-screen FancyZones
+   shows the full desktop layout, just smaller. Mike explicitly rejected the
+   old stacking breakpoints as primary behavior — they survive only inside
+   `@supports not (zoom:1)` as an old-browser fallback.
+5. **`natural` (in fitEco) and `.eco` max-width are COUPLED — both 1070.** If
+   column widths ever change, update BOTH or scaling starts at the wrong width.
+6. **Readability compensation:** when fit zoom < 0.85, `.fit-sm` class bumps
+   small text (node titles 15px, rows 13px, pills 13px, section headers 14px).
+   Desktop (zoom 1) must stay unaffected.
+7. **Manual browser zoom (Ctrl +/−) must be respected** — fitEco skips refits
+   when devicePixelRatio changes (that's a user zoom, don't fight it).
+8. **KPI/stat-card row is untouchable** — original flex layout. Mike explicitly
+   said not to change it when it was accidentally restyled once.
+9. **Header logo = `pacbiz_logo_dark.png`** (dark rendering, same as the
+   Scheduler login), plain `<img>`, no blend/filter hacks. Falls back to the
+   white `pacbiz_logo.png` if the dark file is missing (`logo_b64()`).
+
+**Previewing safely:** never run `generate_monitor.py` just to preview CSS — it
+writes state files and can send emails / trigger auto-heal. Instead copy the
+live `pipeline_monitor.html`, patch the CSS strings in the copy, and open that
+(`pipeline_monitor_preview.html` convention; delete after). Also remember the
+scheduled pipeline runs `generate_monitor.py` from the LOCAL working copy — any
+uncommitted local edit ships on the next run, so never leave experiments in the
+file between runs.
+
 ## Color reference
 
 | Token | Hex | Usage |
