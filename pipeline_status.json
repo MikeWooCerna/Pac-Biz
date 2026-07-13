@@ -12,6 +12,14 @@
       "status": "pass",
       "timestamp": "2026-07-14T06:00:11.384269",
       "error": null
+    },
+    {
+      "account": "Coaching",
+      "script": "asana_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-07-14T06:00:20.293229",
+      "error": null
     }
   ]
 }
