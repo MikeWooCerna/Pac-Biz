@@ -1,17 +1,17 @@
 {
   "run_id": "2026-07-13T15:00:06",
   "started_at": "2026-07-13T15:00:06.069072",
-  "finished_at": "2026-07-13T15:25:04.565107",
-  "status": "failed",
-  "failed_at": "Masterlist",
+  "finished_at": "2026-07-13T17:25:50",
+  "status": "success",
+  "failed_at": null,
   "steps": [
     {
       "account": "Masterlist",
       "script": "masterlist_fetch.py",
-      "exit_code": 1,
-      "status": "fail",
-      "timestamp": "2026-07-13T15:02:08.476070",
-      "error": "ERROR fetching Movement: HTTPSConnectionPool(host='docs.google.com', port=443): Max retries exceeded with url: /spreadsheets/d/e/2PACX-1vS82OdHh0VFVA9K6P3b7Y8pjPmdeJSOQxj1KQ_4ts5HYL4YgUHwKjpFymrPCJdfMK0Rox6fnSTG3rKf/pub?gid=693236738&single=true&output=csv (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)')))"
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-07-13T17:25:50",
+      "error": null
     },
     {
       "account": "Coaching",
@@ -74,7 +74,7 @@
       "script": "Ridex_pull.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-07-13T15:06:23.594210",
+      "timestamp": "2026-07-13T15:06:23.59421",
       "error": null
     },
     {
@@ -154,7 +154,7 @@
       "script": "ct_pull.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-07-13T15:12:35.761530",
+      "timestamp": "2026-07-13T15:12:35.76153",
       "error": null
     },
     {
@@ -162,7 +162,7 @@
       "script": "ycov_pull.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-07-13T15:13:06.269690",
+      "timestamp": "2026-07-13T15:13:06.26969",
       "error": null
     },
     {

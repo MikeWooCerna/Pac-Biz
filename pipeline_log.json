@@ -1340,5 +1340,13 @@
     "script": "Skyline_pull.py",
     "status": "high_volume",
     "error": "Warning: 17,548 rows (threshold 10,000)"
+  },
+  {
+    "run_id": "2026-07-13T15:00:06",
+    "date": "Jul 13, 2026 05:25 PM",
+    "account": "Masterlist",
+    "script": "masterlist_fetch.py",
+    "status": "healed",
+    "error": "Masterlist source recovered on manual retry after transient Google Sheets SSL EOF while fetching Movement."
   }
 ]

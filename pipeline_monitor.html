@@ -185,7 +185,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run 2026-07-13T15:00</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Dashboard: Jul 13, 2026 03:24 PM</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Jul 13, 2026 03:25 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Jul 13, 2026 05:27 PM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -195,11 +195,11 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   </div>
 
   <div class="stat-cards">
-    <div class="stat-card"><div class="sc-val" style="color:#00e87a;">23</div><div class="sc-lbl">Passed</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">1</div><div class="sc-lbl">Failed</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#00e87a;">24</div><div class="sc-lbl">Passed</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">0</div><div class="sc-lbl">Failed</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#E84500;">0</div><div class="sc-lbl">Not Reached</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">47,261</div><div class="sc-lbl">Rows Pulled</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">&#10007;</div><div class="sc-lbl">failed</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">47,469</div><div class="sc-lbl">Rows Pulled</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#00e87a;">&#10003;</div><div class="sc-lbl">success</div></div>
   </div>
 
   <div class="divider"></div>
@@ -214,14 +214,14 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="main-layout">
     <div class="side-col">
       <div class="section-hdr">Data Sources 1&ndash;12</div>
-      <div class="node n-fail">
-  <div class="node-title" style="color:#ff6060;"><span>Masterlist</span><div class="blink-r"></div></div>
-  <div class="node-row"><b class="b-r"></b>masterlist_fetch.py &middot; 03:02 PM</div>
-  <div class="node-err">ERROR fetching Movement: HTTPSConnectionPool(host='docs.google.com', port=443): Max retries exceeded with url: /spreadsheets/d/e/2PACX-1vS82OdHh0VFVA9K6P3b7Y8pjPmdeJSOQxj1KQ_4ts5HYL4YgUHwKjpFymrPCJdfMK0Rox6fnSTG3rKf/pub?gid=693236738&amp;single=true&amp;output=csv (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)')))</div>
+      <div class="node n-pass">
+  <div class="node-title" style="color:#00e87a;"><span>Masterlist</span><div class="blink-g"></div></div>
+  <div class="node-row"><b class="b-g"></b>masterlist_fetch.py &middot; 05:25 PM</div>
+  
   <div class="node-meta">
-    <span class="meta-pill r">&mdash; rows</span>
-    <span class="meta-pill r">FAIL</span>
-    
+    <span class="meta-pill g">208 rows</span>
+    <span class="meta-pill g">PASS</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -342,7 +342,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       </div>
       <div class="radar-label">
         <div class="radar-lbl-main">Pipeline / Container Monitoring</div>
-        <div class="radar-lbl-status"><div class="blink-r"></div><span style="color:#ff3d3d;font-size:12px;">stopped</span></div>
+        <div class="radar-lbl-status"><div class="blink-g"></div><span style="color:#00e87a;font-size:12px;">complete</span></div>
       </div>
 
       <div class="connector"></div>
@@ -350,16 +350,16 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       <div class="agg-node">
         <div class="agg-title">Data Engine / Processing</div>
         <div class="agg-grid">
-          <div class="agg-item"><div class="agg-val" style="color:#00e87a;">47,261</div><div class="agg-lbl">total rows</div></div>
+          <div class="agg-item"><div class="agg-val" style="color:#00e87a;">47,469</div><div class="agg-lbl">total rows</div></div>
           <div class="agg-item">
             <div class="agg-val" style="display:flex;align-items:center;justify-content:center;gap:5px;">
-              <div class="blink-r"></div>
-              <span style="color:#ff9090;">23/24</span>
+              <div class="blink-g"></div>
+              <span style="color:#00e87a;">24/24</span>
             </div>
             <div class="agg-lbl">sources ok</div>
           </div>
           <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">03:00 PM</div><div class="agg-lbl">started</div></div>
-          <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">03:25 PM</div><div class="agg-lbl">finished</div></div>
+          <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">05:25 PM</div><div class="agg-lbl">finished</div></div>
           <div class="agg-item" style="grid-column:span 2;"><div class="agg-val" style="color:#ffaa00;font-size:12px;">7:00 PM</div><div class="agg-lbl">next schedule</div></div>
         </div>
       </div>
@@ -513,7 +513,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     </div>
   </div>
 
-  <div class="warn-strip">&#9888; Pipeline stopped at <b>Masterlist</b> &middot; Exit code 1 &middot; 0 steps not reached</div>
+  
   
   <div class="vol-strip">&#9651; High volume datasets detected &mdash; <b>Skyline</b> &#9651;&thinsp;17,548 rows <span style='opacity:0.65;font-size:11px;'>(HIGH VOL)</span></div>
 
@@ -523,7 +523,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div class="log-wrap">
       <table class="log-table">
         <thead><tr><th>Date</th><th>Dataset</th><th>Status</th></tr></thead>
-        <tbody><tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>Skyline</b> <span class="log-sc">&middot; Skyline_pull.py</span><div class="log-err">Warning: 17,548 rows (threshold 10,000)</div></td><td class="log-td-st"><span class="lp lp-v">HIGH VOLUME</span></td></tr>
+        <tbody><tr><td class="log-td-d">Jul 13, 2026 05:25 PM</td><td class="log-td-ds"><b>Masterlist</b> <span class="log-sc">&middot; masterlist_fetch.py</span><div class="log-err">Masterlist source recovered on manual retry after transient Google Sheets SSL EOF while fetching Movement.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
+<tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>Skyline</b> <span class="log-sc">&middot; Skyline_pull.py</span><div class="log-err">Warning: 17,548 rows (threshold 10,000)</div></td><td class="log-td-st"><span class="lp lp-v">HIGH VOLUME</span></td></tr>
 <tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>Blueline</b> <span class="log-sc">&middot; bl_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
 <tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>YCDC</b> <span class="log-sc">&middot; ycdc_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
 <tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>Vermont</b> <span class="log-sc">&middot; vt_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
@@ -602,8 +603,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 <tr><td class="log-td-d">Jun 28, 2026 10:00 PM</td><td class="log-td-ds"><b>YCDC</b> <span class="log-sc">&middot; ycdc_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
 <tr><td class="log-td-d">Jun 28, 2026 10:00 PM</td><td class="log-td-ds"><b>Vermont</b> <span class="log-sc">&middot; vt_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
 <tr><td class="log-td-d">Jun 28, 2026 10:00 PM</td><td class="log-td-ds"><b>Kelowna</b> <span class="log-sc">&middot; kel_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
-<tr><td class="log-td-d">Jun 28, 2026 10:00 PM</td><td class="log-td-ds"><b>YCOV</b> <span class="log-sc">&middot; ycov_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
-<tr><td class="log-td-d">Jun 28, 2026 10:00 PM</td><td class="log-td-ds"><b>Circle Taxi</b> <span class="log-sc">&middot; ct_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr></tbody>
+<tr><td class="log-td-d">Jun 28, 2026 10:00 PM</td><td class="log-td-ds"><b>YCOV</b> <span class="log-sc">&middot; ycov_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr></tbody>
       </table>
     </div>
   </div>
@@ -625,10 +625,10 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   var ang = -Math.PI/2;
   var TRAIL = Math.PI * 1.35;
   var time = 0;
-  var FAIL = true;
+  var FAIL = false;
 
   var blips = [
-    {ang:-90.00,r:0.63,st:"fail",nm:"Masterlist"},
+    {ang:-90.00,r:0.63,st:"pass",nm:"Masterlist"},
     {ang:-75.00,r:0.44,st:"pass",nm:"Coaching"},
     {ang:-60.00,r:0.63,st:"pass",nm:"M7"},
     {ang:-45.00,r:0.44,st:"pass",nm:"DMG"},
