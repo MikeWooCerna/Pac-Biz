@@ -12,6 +12,14 @@
       "status": "fail",
       "timestamp": "2026-07-13T15:02:08.476070",
       "error": "ERROR fetching Movement: HTTPSConnectionPool(host='docs.google.com', port=443): Max retries exceeded with url: /spreadsheets/d/e/2PACX-1vS82OdHh0VFVA9K6P3b7Y8pjPmdeJSOQxj1KQ_4ts5HYL4YgUHwKjpFymrPCJdfMK0Rox6fnSTG3rKf/pub?gid=693236738&single=true&output=csv (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)')))"
+    },
+    {
+      "account": "Coaching",
+      "script": "asana_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-07-13T15:03:15.862567",
+      "error": null
     }
   ]
 }
