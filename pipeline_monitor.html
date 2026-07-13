@@ -183,9 +183,9 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       </div>
     </div>
     <div style="text-align:right;">
-      <div style="font-size:13px;color:#7060a0;">Run 2026-07-13T11:00</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Dashboard: Jul 13, 2026 11:24 AM</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Jul 13, 2026 11:25 AM</div>
+      <div style="font-size:13px;color:#7060a0;">Run 2026-07-13T15:00</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Dashboard: &mdash;</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Jul 13, 2026 03:02 PM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -195,11 +195,11 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   </div>
 
   <div class="stat-cards">
-    <div class="stat-card"><div class="sc-val" style="color:#00e87a;">24</div><div class="sc-lbl">Passed</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">0</div><div class="sc-lbl">Failed</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#E84500;">0</div><div class="sc-lbl">Not Reached</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">47,300</div><div class="sc-lbl">Rows Pulled</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#00e87a;">&#10003;</div><div class="sc-lbl">success</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#00e87a;">0</div><div class="sc-lbl">Passed</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">1</div><div class="sc-lbl">Failed</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#E84500;">23</div><div class="sc-lbl">Not Reached</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">0</div><div class="sc-lbl">Rows Pulled</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">&#10007;</div><div class="sc-lbl">failed</div></div>
   </div>
 
   <div class="divider"></div>
@@ -214,124 +214,124 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="main-layout">
     <div class="side-col">
       <div class="section-hdr">Data Sources 1&ndash;12</div>
-      <div class="node n-pass">
-  <div class="node-title" style="color:#00e87a;"><span>Masterlist</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>masterlist_fetch.py &middot; 11:00 AM</div>
-  
+      <div class="node n-fail">
+  <div class="node-title" style="color:#ff6060;"><span>Masterlist</span><div class="blink-r"></div></div>
+  <div class="node-row"><b class="b-r"></b>masterlist_fetch.py &middot; 03:02 PM</div>
+  <div class="node-err">ERROR fetching Movement: HTTPSConnectionPool(host='docs.google.com', port=443): Max retries exceeded with url: /spreadsheets/d/e/2PACX-1vS82OdHh0VFVA9K6P3b7Y8pjPmdeJSOQxj1KQ_4ts5HYL4YgUHwKjpFymrPCJdfMK0Rox6fnSTG3rKf/pub?gid=693236738&amp;single=true&amp;output=csv (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)')))</div>
   <div class="node-meta">
-    <span class="meta-pill g">208 rows</span>
-    <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill r">&mdash; rows</span>
+    <span class="meta-pill r">FAIL</span>
+    
   </div>
 </div>
-<div class="node n-pass">
-  <div class="node-title" style="color:#00e87a;"><span>Coaching</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>asana_pull.py &middot; 11:00 AM</div>
+<div class="node n-blocked">
+  <div class="node-title" style="color:#E84500;"><span>Coaching</span><div class="blink-n"></div></div>
+  <div class="node-row"><b class="b-n"></b>asana_pull.py &middot; &mdash;</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">107 rows</span>
-    <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill o">&mdash; rows</span>
+    <span class="meta-pill o">NOT REACHED</span>
+    
   </div>
 </div>
-<div class="node n-pass">
-  <div class="node-title" style="color:#00e87a;"><span>M7</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>m7_pull.py &middot; 11:01 AM</div>
+<div class="node n-blocked">
+  <div class="node-title" style="color:#E84500;"><span>M7</span><div class="blink-n"></div></div>
+  <div class="node-row"><b class="b-n"></b>m7_pull.py &middot; &mdash;</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">68 rows</span>
-    <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill o">&mdash; rows</span>
+    <span class="meta-pill o">NOT REACHED</span>
+    
   </div>
 </div>
-<div class="node n-pass">
-  <div class="node-title" style="color:#00e87a;"><span>DMG</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>dmg_pull.py &middot; 11:01 AM</div>
+<div class="node n-blocked">
+  <div class="node-title" style="color:#E84500;"><span>DMG</span><div class="blink-n"></div></div>
+  <div class="node-row"><b class="b-n"></b>dmg_pull.py &middot; &mdash;</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">291 rows</span>
-    <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill o">&mdash; rows</span>
+    <span class="meta-pill o">NOT REACHED</span>
+    
   </div>
 </div>
-<div class="node n-pass">
-  <div class="node-title" style="color:#00e87a;"><span>R4H</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>r4h_pull.py &middot; 11:01 AM</div>
+<div class="node n-blocked">
+  <div class="node-title" style="color:#E84500;"><span>R4H</span><div class="blink-n"></div></div>
+  <div class="node-row"><b class="b-n"></b>r4h_pull.py &middot; &mdash;</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">157 rows</span>
-    <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill o">&mdash; rows</span>
+    <span class="meta-pill o">NOT REACHED</span>
+    
   </div>
 </div>
-<div class="node n-pass">
-  <div class="node-title" style="color:#00e87a;"><span>Parentis Health</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>parentis_pull.py &middot; 11:02 AM</div>
+<div class="node n-blocked">
+  <div class="node-title" style="color:#E84500;"><span>Parentis Health</span><div class="blink-n"></div></div>
+  <div class="node-row"><b class="b-n"></b>parentis_pull.py &middot; &mdash;</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">19 rows</span>
-    <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill o">&mdash; rows</span>
+    <span class="meta-pill o">NOT REACHED</span>
+    
   </div>
 </div>
-<div class="node n-pass">
-  <div class="node-title" style="color:#00e87a;"><span>Britelift</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>britelift_pull.py &middot; 11:02 AM</div>
+<div class="node n-blocked">
+  <div class="node-title" style="color:#E84500;"><span>Britelift</span><div class="blink-n"></div></div>
+  <div class="node-row"><b class="b-n"></b>britelift_pull.py &middot; &mdash;</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">83 rows</span>
-    <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill o">&mdash; rows</span>
+    <span class="meta-pill o">NOT REACHED</span>
+    
   </div>
 </div>
-<div class="node n-pass">
-  <div class="node-title" style="color:#00e87a;"><span>Britelift Chat</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>britelift_pull.py &middot; 11:02 AM</div>
+<div class="node n-blocked">
+  <div class="node-title" style="color:#E84500;"><span>Britelift Chat</span><div class="blink-n"></div></div>
+  <div class="node-row"><b class="b-n"></b>britelift_pull.py &middot; &mdash;</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">277 rows</span>
-    <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill o">&mdash; rows</span>
+    <span class="meta-pill o">NOT REACHED</span>
+    
   </div>
 </div>
-<div class="node n-pass">
-  <div class="node-title" style="color:#00e87a;"><span>RideX</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>Ridex_pull.py &middot; 11:03 AM</div>
+<div class="node n-blocked">
+  <div class="node-title" style="color:#E84500;"><span>RideX</span><div class="blink-n"></div></div>
+  <div class="node-row"><b class="b-n"></b>Ridex_pull.py &middot; &mdash;</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">89 rows</span>
-    <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill o">&mdash; rows</span>
+    <span class="meta-pill o">NOT REACHED</span>
+    
   </div>
 </div>
-<div class="node n-pass">
-  <div class="node-title" style="color:#00e87a;"><span>Hamilton</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>Hamilton_pull.py &middot; 11:04 AM</div>
+<div class="node n-blocked">
+  <div class="node-title" style="color:#E84500;"><span>Hamilton</span><div class="blink-n"></div></div>
+  <div class="node-row"><b class="b-n"></b>Hamilton_pull.py &middot; &mdash;</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">3,961 rows</span>
-    <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill o">&mdash; rows</span>
+    <span class="meta-pill o">NOT REACHED</span>
+    
   </div>
 </div>
-<div class="node n-pass">
-  <div class="node-title" style="color:#00e87a;"><span>Skyline</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>Skyline_pull.py &middot; 11:06 AM</div>
+<div class="node n-blocked">
+  <div class="node-title" style="color:#E84500;"><span>Skyline</span><div class="blink-n"></div></div>
+  <div class="node-row"><b class="b-n"></b>Skyline_pull.py &middot; &mdash;</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">17,489 rows</span>
-    <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span><span class="meta-pill cnt-vol">&#9651; HIGH VOL</span>
+    <span class="meta-pill o">&mdash; rows</span>
+    <span class="meta-pill o">NOT REACHED</span>
+    
   </div>
 </div>
-<div class="node n-pass">
-  <div class="node-title" style="color:#00e87a;"><span>VIP</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>vip_pull.py &middot; 11:06 AM</div>
+<div class="node n-blocked">
+  <div class="node-title" style="color:#E84500;"><span>VIP</span><div class="blink-n"></div></div>
+  <div class="node-row"><b class="b-n"></b>vip_pull.py &middot; &mdash;</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">3,808 rows</span>
-    <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill o">&mdash; rows</span>
+    <span class="meta-pill o">NOT REACHED</span>
+    
   </div>
 </div>
     </div>
@@ -342,7 +342,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       </div>
       <div class="radar-label">
         <div class="radar-lbl-main">Pipeline / Container Monitoring</div>
-        <div class="radar-lbl-status"><div class="blink-g"></div><span style="color:#00e87a;font-size:12px;">complete</span></div>
+        <div class="radar-lbl-status"><div class="blink-r"></div><span style="color:#ff3d3d;font-size:12px;">stopped</span></div>
       </div>
 
       <div class="connector"></div>
@@ -350,17 +350,17 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       <div class="agg-node">
         <div class="agg-title">Data Engine / Processing</div>
         <div class="agg-grid">
-          <div class="agg-item"><div class="agg-val" style="color:#00e87a;">47,300</div><div class="agg-lbl">total rows</div></div>
+          <div class="agg-item"><div class="agg-val" style="color:#00e87a;">0</div><div class="agg-lbl">total rows</div></div>
           <div class="agg-item">
             <div class="agg-val" style="display:flex;align-items:center;justify-content:center;gap:5px;">
-              <div class="blink-g"></div>
-              <span style="color:#00e87a;">24/24</span>
+              <div class="blink-r"></div>
+              <span style="color:#ff9090;">0/24</span>
             </div>
             <div class="agg-lbl">sources ok</div>
           </div>
-          <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">11:00 AM</div><div class="agg-lbl">started</div></div>
-          <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">11:25 AM</div><div class="agg-lbl">finished</div></div>
-          <div class="agg-item" style="grid-column:span 2;"><div class="agg-val" style="color:#ffaa00;font-size:12px;">3:00 PM</div><div class="agg-lbl">next schedule</div></div>
+          <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">03:00 PM</div><div class="agg-lbl">started</div></div>
+          <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">&mdash;</div><div class="agg-lbl">finished</div></div>
+          <div class="agg-item" style="grid-column:span 2;"><div class="agg-val" style="color:#ffaa00;font-size:12px;">7:00 PM</div><div class="agg-lbl">next schedule</div></div>
         </div>
       </div>
 
@@ -374,7 +374,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
         </div>
         <div class="dash-body">
           <div class="stage-title">Dashboard</div>
-          <div id="dash-freshness" style="margin:5px 0 3px;min-height:20px;display:flex;justify-content:center;align-items:center;font-size:12px;"></div>
+          <div class="stage-status"><div class="blink-n"></div></div>
+          <div class="stage-detail">not reached</div>
         </div>
       </a>
 
@@ -382,140 +383,140 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 
       <div class="stage-node">
         <div class="stage-title">Git Repository</div>
-        <div class="stage-status"><div class="blink-g"></div></div>
-        <div class="stage-detail">pushed</div>
+        <div class="stage-status"><div class="blink-n"></div></div>
+        <div class="stage-detail">not reached</div>
         
       </div>
     </div>
 
     <div class="side-col">
       <div class="section-hdr">Data Sources 13&ndash;24</div>
-      <div class="node n-pass">
-  <div class="node-title" style="color:#00e87a;"><span>C&H</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>ch_pull.py &middot; 11:07 AM</div>
+      <div class="node n-blocked">
+  <div class="node-title" style="color:#E84500;"><span>C&H</span><div class="blink-n"></div></div>
+  <div class="node-row"><b class="b-n"></b>ch_pull.py &middot; &mdash;</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">418 rows</span>
-    <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill o">&mdash; rows</span>
+    <span class="meta-pill o">NOT REACHED</span>
+    
   </div>
 </div>
-<div class="node n-pass">
-  <div class="node-title" style="color:#00e87a;"><span>Reno Cab</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>rc_pull.py &middot; 11:07 AM</div>
+<div class="node n-blocked">
+  <div class="node-title" style="color:#E84500;"><span>Reno Cab</span><div class="blink-n"></div></div>
+  <div class="node-row"><b class="b-n"></b>rc_pull.py &middot; &mdash;</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">3,094 rows</span>
-    <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill o">&mdash; rows</span>
+    <span class="meta-pill o">NOT REACHED</span>
+    
   </div>
 </div>
-<div class="node n-pass">
-  <div class="node-title" style="color:#00e87a;"><span>Trans Iowa</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>ti_pull.py &middot; 11:08 AM</div>
+<div class="node n-blocked">
+  <div class="node-title" style="color:#E84500;"><span>Trans Iowa</span><div class="blink-n"></div></div>
+  <div class="node-row"><b class="b-n"></b>ti_pull.py &middot; &mdash;</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">72 rows</span>
-    <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill o">&mdash; rows</span>
+    <span class="meta-pill o">NOT REACHED</span>
+    
   </div>
 </div>
-<div class="node n-pass">
-  <div class="node-title" style="color:#00e87a;"><span>Data Carz</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>dc_pull.py &middot; 11:08 AM</div>
+<div class="node n-blocked">
+  <div class="node-title" style="color:#E84500;"><span>Data Carz</span><div class="blink-n"></div></div>
+  <div class="node-row"><b class="b-n"></b>dc_pull.py &middot; &mdash;</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">3,165 rows</span>
-    <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill o">&mdash; rows</span>
+    <span class="meta-pill o">NOT REACHED</span>
+    
   </div>
 </div>
-<div class="node n-pass">
-  <div class="node-title" style="color:#00e87a;"><span>Associated Cab</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>ac_pull.py &middot; 11:09 AM</div>
+<div class="node n-blocked">
+  <div class="node-title" style="color:#E84500;"><span>Associated Cab</span><div class="blink-n"></div></div>
+  <div class="node-row"><b class="b-n"></b>ac_pull.py &middot; &mdash;</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">2,849 rows</span>
-    <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill o">&mdash; rows</span>
+    <span class="meta-pill o">NOT REACHED</span>
+    
   </div>
 </div>
-<div class="node n-pass">
-  <div class="node-title" style="color:#00e87a;"><span>Ollies</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>ol_pull.py &middot; 11:10 AM</div>
+<div class="node n-blocked">
+  <div class="node-title" style="color:#E84500;"><span>Ollies</span><div class="blink-n"></div></div>
+  <div class="node-row"><b class="b-n"></b>ol_pull.py &middot; &mdash;</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">2,106 rows</span>
-    <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill o">&mdash; rows</span>
+    <span class="meta-pill o">NOT REACHED</span>
+    
   </div>
 </div>
-<div class="node n-pass">
-  <div class="node-title" style="color:#00e87a;"><span>Circle Taxi</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>ct_pull.py &middot; 11:10 AM</div>
+<div class="node n-blocked">
+  <div class="node-title" style="color:#E84500;"><span>Circle Taxi</span><div class="blink-n"></div></div>
+  <div class="node-row"><b class="b-n"></b>ct_pull.py &middot; &mdash;</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">1,610 rows</span>
-    <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill o">&mdash; rows</span>
+    <span class="meta-pill o">NOT REACHED</span>
+    
   </div>
 </div>
-<div class="node n-pass">
-  <div class="node-title" style="color:#00e87a;"><span>YCOV</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>ycov_pull.py &middot; 11:10 AM</div>
+<div class="node n-blocked">
+  <div class="node-title" style="color:#E84500;"><span>YCOV</span><div class="blink-n"></div></div>
+  <div class="node-row"><b class="b-n"></b>ycov_pull.py &middot; &mdash;</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">1,008 rows</span>
-    <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill o">&mdash; rows</span>
+    <span class="meta-pill o">NOT REACHED</span>
+    
   </div>
 </div>
-<div class="node n-pass">
-  <div class="node-title" style="color:#00e87a;"><span>Kelowna</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>kel_pull.py &middot; 11:11 AM</div>
+<div class="node n-blocked">
+  <div class="node-title" style="color:#E84500;"><span>Kelowna</span><div class="blink-n"></div></div>
+  <div class="node-row"><b class="b-n"></b>kel_pull.py &middot; &mdash;</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">2,638 rows</span>
-    <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill o">&mdash; rows</span>
+    <span class="meta-pill o">NOT REACHED</span>
+    
   </div>
 </div>
-<div class="node n-pass">
-  <div class="node-title" style="color:#00e87a;"><span>Vermont</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>vt_pull.py &middot; 11:12 AM</div>
+<div class="node n-blocked">
+  <div class="node-title" style="color:#E84500;"><span>Vermont</span><div class="blink-n"></div></div>
+  <div class="node-row"><b class="b-n"></b>vt_pull.py &middot; &mdash;</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">691 rows</span>
-    <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill o">&mdash; rows</span>
+    <span class="meta-pill o">NOT REACHED</span>
+    
   </div>
 </div>
-<div class="node n-pass">
-  <div class="node-title" style="color:#00e87a;"><span>YCDC</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>ycdc_pull.py &middot; 11:12 AM</div>
+<div class="node n-blocked">
+  <div class="node-title" style="color:#E84500;"><span>YCDC</span><div class="blink-n"></div></div>
+  <div class="node-row"><b class="b-n"></b>ycdc_pull.py &middot; &mdash;</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">2,944 rows</span>
-    <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill o">&mdash; rows</span>
+    <span class="meta-pill o">NOT REACHED</span>
+    
   </div>
 </div>
-<div class="node n-pass">
-  <div class="node-title" style="color:#00e87a;"><span>Blueline</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>bl_pull.py &middot; 11:13 AM</div>
+<div class="node n-blocked">
+  <div class="node-title" style="color:#E84500;"><span>Blueline</span><div class="blink-n"></div></div>
+  <div class="node-row"><b class="b-n"></b>bl_pull.py &middot; &mdash;</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">148 rows</span>
-    <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill o">&mdash; rows</span>
+    <span class="meta-pill o">NOT REACHED</span>
+    
   </div>
 </div>
     </div>
   </div>
 
+  <div class="warn-strip">&#9888; Pipeline stopped at <b>Masterlist</b> &middot; Exit code 1 &middot; 23 steps not reached</div>
   
   
-  <div class="vol-strip">&#9651; High volume datasets detected &mdash; <b>Skyline</b> &#9651;&thinsp;17,489 rows <span style='opacity:0.65;font-size:11px;'>(HIGH VOL)</span></div>
 
   <div class="divider" style="margin-top:12px;"></div>
   <div class="log-section">
@@ -523,7 +524,31 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div class="log-wrap">
       <table class="log-table">
         <thead><tr><th>Date</th><th>Dataset</th><th>Status</th></tr></thead>
-        <tbody><tr><td class="log-td-d">Jul 12, 2026 10:00 PM</td><td class="log-td-ds"><b>kel_pull.py</b> <span class="log-sc">&middot; kel_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
+        <tbody><tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>Blueline</b> <span class="log-sc">&middot; bl_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>YCDC</b> <span class="log-sc">&middot; ycdc_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>Vermont</b> <span class="log-sc">&middot; vt_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>Kelowna</b> <span class="log-sc">&middot; kel_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>YCOV</b> <span class="log-sc">&middot; ycov_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>Circle Taxi</b> <span class="log-sc">&middot; ct_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>Ollies</b> <span class="log-sc">&middot; ol_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>Associated Cab</b> <span class="log-sc">&middot; ac_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>Data Carz</b> <span class="log-sc">&middot; dc_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>Trans Iowa</b> <span class="log-sc">&middot; ti_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>Reno Cab</b> <span class="log-sc">&middot; rc_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>C&H</b> <span class="log-sc">&middot; ch_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>VIP</b> <span class="log-sc">&middot; vip_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>Skyline</b> <span class="log-sc">&middot; Skyline_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>Hamilton</b> <span class="log-sc">&middot; Hamilton_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>RideX</b> <span class="log-sc">&middot; Ridex_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>Britelift Chat</b> <span class="log-sc">&middot; britelift_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>Britelift</b> <span class="log-sc">&middot; britelift_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>Parentis Health</b> <span class="log-sc">&middot; parentis_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>R4H</b> <span class="log-sc">&middot; r4h_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>DMG</b> <span class="log-sc">&middot; dmg_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>M7</b> <span class="log-sc">&middot; m7_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>Coaching</b> <span class="log-sc">&middot; asana_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jul 13, 2026 03:00 PM</td><td class="log-td-ds"><b>Masterlist</b> <span class="log-sc">&middot; masterlist_fetch.py</span><div class="log-err">ERROR fetching Movement: HTTPSConnectionPool(host='docs.google.com', port=443): Max retries exceeded with url: /spreadsh</div></td><td class="log-td-st"><span class="lp lp-f">FAILED</span></td></tr>
+<tr><td class="log-td-d">Jul 12, 2026 10:00 PM</td><td class="log-td-ds"><b>kel_pull.py</b> <span class="log-sc">&middot; kel_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
 <tr><td class="log-td-d">Jul 12, 2026 10:00 PM</td><td class="log-td-ds"><b>rc_pull.py</b> <span class="log-sc">&middot; rc_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
 <tr><td class="log-td-d">Jul 12, 2026 03:00 AM</td><td class="log-td-ds"><b>YCOV</b> <span class="log-sc">&middot; ycov_pull.py</span><div class="log-err">Dropped 962 rows (979 → 17)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
 <tr><td class="log-td-d">Jul 11, 2026 11:30 PM</td><td class="log-td-ds"><b>R4H</b> <span class="log-sc">&middot; r4h_pull.py</span><div class="log-err">Source confirmed after cleanup exclusions. Current R4H count is 155 rows; baseline accepted.</div></td><td class="log-td-st"><span class="lp lp-s">SOURCE CONFIRMED</span></td></tr>
@@ -579,32 +604,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 <tr><td class="log-td-d">Jun 28, 2026 10:00 PM</td><td class="log-td-ds"><b>Kelowna</b> <span class="log-sc">&middot; kel_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
 <tr><td class="log-td-d">Jun 28, 2026 10:00 PM</td><td class="log-td-ds"><b>YCOV</b> <span class="log-sc">&middot; ycov_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
 <tr><td class="log-td-d">Jun 28, 2026 10:00 PM</td><td class="log-td-ds"><b>Circle Taxi</b> <span class="log-sc">&middot; ct_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
-<tr><td class="log-td-d">Jun 28, 2026 10:00 PM</td><td class="log-td-ds"><b>Ollies</b> <span class="log-sc">&middot; ol_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
-<tr><td class="log-td-d">Jun 28, 2026 10:00 PM</td><td class="log-td-ds"><b>Associated Cab</b> <span class="log-sc">&middot; ac_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
-<tr><td class="log-td-d">Jun 28, 2026 10:00 PM</td><td class="log-td-ds"><b>Data Carz</b> <span class="log-sc">&middot; dc_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
-<tr><td class="log-td-d">Jun 28, 2026 10:00 PM</td><td class="log-td-ds"><b>Trans Iowa</b> <span class="log-sc">&middot; ti_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
-<tr><td class="log-td-d">Jun 28, 2026 10:00 PM</td><td class="log-td-ds"><b>Reno Cab</b> <span class="log-sc">&middot; rc_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
-<tr><td class="log-td-d">Jun 28, 2026 10:00 PM</td><td class="log-td-ds"><b>C&H</b> <span class="log-sc">&middot; ch_pull.py</span><div class="log-err">r = self.request("get", url, params=params)
-  File "C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\</div></td><td class="log-td-st"><span class="lp lp-f">FAILED</span></td></tr>
-<tr><td class="log-td-d">Jun 27, 2026 09:56 PM</td><td class="log-td-ds"><b>Ollies</b> <span class="log-sc">&middot; C:\Users\Mike Woo Cerna\Documents\PB\Quality\Ollies\ol_pull.py</span><div class="log-err">Count drop auto-recovered. Apps Script re-triggered, dashboard rebuilt and pushed. Rows before drop: 1,891 → rows after </div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
-<tr><td class="log-td-d">Jun 27, 2026 09:49 PM</td><td class="log-td-ds"><b>Data Carz</b> <span class="log-sc">&middot; C:\Users\Mike Woo Cerna\Documents\PB\Quality\Data Carz\dc_pull.py</span><div class="log-err">Count drop auto-recovered. Apps Script re-triggered, dashboard rebuilt and pushed. Rows before drop: 2,825 → rows after </div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
-<tr><td class="log-td-d">Jun 27, 2026 09:42 PM</td><td class="log-td-ds"><b>Hamilton</b> <span class="log-sc">&middot; C:\Users\Mike Woo Cerna\Documents\PB\Quality\Hamilton\Hamilton_pull.py</span><div class="log-err">Count drop auto-recovered. Apps Script re-triggered, dashboard rebuilt and pushed. Rows before drop: 3,423 → rows after </div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
-<tr><td class="log-td-d">Jun 27, 2026 07:00 PM</td><td class="log-td-ds"><b>Ollies</b> <span class="log-sc">&middot; ol_pull.py</span><div class="log-err">Dropped 455 rows (1,891 → 1,436)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
-<tr><td class="log-td-d">Jun 27, 2026 07:00 PM</td><td class="log-td-ds"><b>Data Carz</b> <span class="log-sc">&middot; dc_pull.py</span><div class="log-err">Dropped 801 rows (2,825 → 2,024)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
-<tr><td class="log-td-d">Jun 27, 2026 07:00 PM</td><td class="log-td-ds"><b>Hamilton</b> <span class="log-sc">&middot; Hamilton_pull.py</span><div class="log-err">Dropped 1,032 rows (3,423 → 2,391)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
-<tr><td class="log-td-d">Jun 27, 2026 11:00 AM</td><td class="log-td-ds"><b>ol_pull.py</b> <span class="log-sc">&middot; ol_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
-<tr><td class="log-td-d">Jun 27, 2026 03:00 AM</td><td class="log-td-ds"><b>parentis_pull.py</b> <span class="log-sc">&middot; parentis_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
-<tr><td class="log-td-d">Jun 26, 2026 11:41 PM</td><td class="log-td-ds"><b>Kelowna</b> <span class="log-sc">&middot; C:\Users\Mike Woo Cerna\Documents\PB\Quality\Kelowna\kel_pull.py</span><div class="log-err">Count drop auto-recovered. Apps Script re-triggered, dashboard rebuilt and pushed. Rows before drop: 2,332 → rows after </div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
-<tr><td class="log-td-d">Jun 26, 2026 11:06 PM</td><td class="log-td-ds"><b>Kelowna</b> <span class="log-sc">&middot; C:\Users\Mike Woo Cerna\Documents\PB\Quality\Kelowna\kel_pull.py</span><div class="log-err">Count drop auto-recovered. Apps Script re-triggered, dashboard rebuilt and pushed.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
-<tr><td class="log-td-d">Jun 26, 2026 10:00 PM</td><td class="log-td-ds"><b>Kelowna</b> <span class="log-sc">&middot; kel_pull.py</span><div class="log-err">Dropped 21 rows (2,353 → 2,332)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
-<tr><td class="log-td-d">Jun 26, 2026 07:00 PM</td><td class="log-td-ds"><b>dc_pull.py</b> <span class="log-sc">&middot; dc_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
-<tr><td class="log-td-d">Jun 26, 2026 11:00 AM</td><td class="log-td-ds"><b>britelift_pull.py</b> <span class="log-sc">&middot; britelift_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
-<tr><td class="log-td-d">Jun 26, 2026 03:00 AM</td><td class="log-td-ds"><b>parentis_pull.py</b> <span class="log-sc">&middot; parentis_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
-<tr><td class="log-td-d">Jun 25, 2026 03:00 PM</td><td class="log-td-ds"><b>britelift_pull.py</b> <span class="log-sc">&middot; britelift_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
-<tr><td class="log-td-d">Jun 24, 2026 11:48 AM</td><td class="log-td-ds"><b>Ridex_pull.py</b> <span class="log-sc">&middot; Ridex_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
-<tr><td class="log-td-d">Jun 24, 2026 11:00 AM</td><td class="log-td-ds"><b>Circle Taxi</b> <span class="log-sc">&middot; ct_pull.py</span><div class="log-err">Dropped 771 rows (1,283 → 512)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
-<tr><td class="log-td-d">Jun 24, 2026 08:45 AM</td><td class="log-td-ds"><b>kel_pull.py</b> <span class="log-sc">&middot; kel_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
-<tr><td class="log-td-d">Jun 24, 2026 03:00 AM</td><td class="log-td-ds"><b>Circle Taxi</b> <span class="log-sc">&middot; ct_pull.py</span><div class="log-err">Dropped 23 rows (523 → 500)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr></tbody>
+<tr><td class="log-td-d">Jun 28, 2026 10:00 PM</td><td class="log-td-ds"><b>Ollies</b> <span class="log-sc">&middot; ol_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr></tbody>
       </table>
     </div>
   </div>
@@ -626,33 +626,33 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   var ang = -Math.PI/2;
   var TRAIL = Math.PI * 1.35;
   var time = 0;
-  var FAIL = false;
+  var FAIL = true;
 
   var blips = [
-    {ang:-90.00,r:0.63,st:"pass",nm:"Masterlist"},
-    {ang:-75.00,r:0.44,st:"pass",nm:"Coaching"},
-    {ang:-60.00,r:0.63,st:"pass",nm:"M7"},
-    {ang:-45.00,r:0.44,st:"pass",nm:"DMG"},
-    {ang:-30.00,r:0.63,st:"pass",nm:"R4H"},
-    {ang:-15.00,r:0.44,st:"pass",nm:"Parentis"},
-    {ang:0.00,r:0.63,st:"pass",nm:"Britelift"},
-    {ang:15.00,r:0.44,st:"pass",nm:"BLC"},
-    {ang:30.00,r:0.63,st:"pass",nm:"RideX"},
-    {ang:45.00,r:0.44,st:"pass",nm:"Hamilton"},
-    {ang:60.00,r:0.63,st:"pass",nm:"Skyline"},
-    {ang:75.00,r:0.44,st:"pass",nm:"VIP"},
-    {ang:90.00,r:0.63,st:"pass",nm:"C&H"},
-    {ang:105.00,r:0.44,st:"pass",nm:"Reno Cab"},
-    {ang:120.00,r:0.63,st:"pass",nm:"Trans Iowa"},
-    {ang:135.00,r:0.44,st:"pass",nm:"Data Carz"},
-    {ang:150.00,r:0.63,st:"pass",nm:"Assoc.Cab"},
-    {ang:165.00,r:0.44,st:"pass",nm:"Ollies"},
-    {ang:180.00,r:0.63,st:"pass",nm:"Cir.Taxi"},
-    {ang:195.00,r:0.44,st:"pass",nm:"YCOV"},
-    {ang:210.00,r:0.63,st:"pass",nm:"Kelowna"},
-    {ang:225.00,r:0.44,st:"pass",nm:"Vermont"},
-    {ang:240.00,r:0.63,st:"pass",nm:"YCDC"},
-    {ang:255.00,r:0.44,st:"pass",nm:"Blueline"},
+    {ang:-90.00,r:0.63,st:"fail",nm:"Masterlist"},
+    {ang:-75.00,r:0.44,st:"blocked",nm:"Coaching"},
+    {ang:-60.00,r:0.63,st:"blocked",nm:"M7"},
+    {ang:-45.00,r:0.44,st:"blocked",nm:"DMG"},
+    {ang:-30.00,r:0.63,st:"blocked",nm:"R4H"},
+    {ang:-15.00,r:0.44,st:"blocked",nm:"Parentis"},
+    {ang:0.00,r:0.63,st:"blocked",nm:"Britelift"},
+    {ang:15.00,r:0.44,st:"blocked",nm:"BLC"},
+    {ang:30.00,r:0.63,st:"blocked",nm:"RideX"},
+    {ang:45.00,r:0.44,st:"blocked",nm:"Hamilton"},
+    {ang:60.00,r:0.63,st:"blocked",nm:"Skyline"},
+    {ang:75.00,r:0.44,st:"blocked",nm:"VIP"},
+    {ang:90.00,r:0.63,st:"blocked",nm:"C&H"},
+    {ang:105.00,r:0.44,st:"blocked",nm:"Reno Cab"},
+    {ang:120.00,r:0.63,st:"blocked",nm:"Trans Iowa"},
+    {ang:135.00,r:0.44,st:"blocked",nm:"Data Carz"},
+    {ang:150.00,r:0.63,st:"blocked",nm:"Assoc.Cab"},
+    {ang:165.00,r:0.44,st:"blocked",nm:"Ollies"},
+    {ang:180.00,r:0.63,st:"blocked",nm:"Cir.Taxi"},
+    {ang:195.00,r:0.44,st:"blocked",nm:"YCOV"},
+    {ang:210.00,r:0.63,st:"blocked",nm:"Kelowna"},
+    {ang:225.00,r:0.44,st:"blocked",nm:"Vermont"},
+    {ang:240.00,r:0.63,st:"blocked",nm:"YCDC"},
+    {ang:255.00,r:0.44,st:"blocked",nm:"Blueline"},
   ];
 
   function draw() {
@@ -777,7 +777,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 
 // ── Dashboard freshness ───────────────────────────────────────────────────────
 (function() {
-  var BUILD_ISO = "2026-07-13T11:24:25.102619";
+  var BUILD_ISO = "";
   var el = document.getElementById('dash-freshness');
   if (!el || !BUILD_ISO) return;
   var buildTs = new Date(BUILD_ISO);
