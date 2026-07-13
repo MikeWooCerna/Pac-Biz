@@ -1140,5 +1140,205 @@
     "status": "healed",
     "action": "retry",
     "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-07-13T15:00:06",
+    "date": "Jul 13, 2026 03:00 PM",
+    "account": "Masterlist",
+    "script": "masterlist_fetch.py",
+    "status": "fail",
+    "error": "ERROR fetching Movement: HTTPSConnectionPool(host='docs.google.com', port=443): Max retries exceeded with url: /spreadsheets/d/e/2PACX-1vS82OdHh0VFVA9K6P3b7Y8pjPmdeJSOQxj1KQ_4ts5HYL4YgUHwKjpFymrPCJdfMK0Rox6fnSTG3rKf/pub?gid=693236738&single=true&output=csv (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)')))"
+  },
+  {
+    "run_id": "2026-07-13T15:00:06",
+    "date": "Jul 13, 2026 03:00 PM",
+    "account": "Coaching",
+    "script": "asana_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-13T15:00:06",
+    "date": "Jul 13, 2026 03:00 PM",
+    "account": "M7",
+    "script": "m7_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-13T15:00:06",
+    "date": "Jul 13, 2026 03:00 PM",
+    "account": "DMG",
+    "script": "dmg_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-13T15:00:06",
+    "date": "Jul 13, 2026 03:00 PM",
+    "account": "R4H",
+    "script": "r4h_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-13T15:00:06",
+    "date": "Jul 13, 2026 03:00 PM",
+    "account": "Parentis Health",
+    "script": "parentis_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-13T15:00:06",
+    "date": "Jul 13, 2026 03:00 PM",
+    "account": "Britelift",
+    "script": "britelift_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-13T15:00:06",
+    "date": "Jul 13, 2026 03:00 PM",
+    "account": "Britelift Chat",
+    "script": "britelift_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-13T15:00:06",
+    "date": "Jul 13, 2026 03:00 PM",
+    "account": "RideX",
+    "script": "Ridex_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-13T15:00:06",
+    "date": "Jul 13, 2026 03:00 PM",
+    "account": "Hamilton",
+    "script": "Hamilton_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-13T15:00:06",
+    "date": "Jul 13, 2026 03:00 PM",
+    "account": "Skyline",
+    "script": "Skyline_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-13T15:00:06",
+    "date": "Jul 13, 2026 03:00 PM",
+    "account": "VIP",
+    "script": "vip_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-13T15:00:06",
+    "date": "Jul 13, 2026 03:00 PM",
+    "account": "C&H",
+    "script": "ch_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-13T15:00:06",
+    "date": "Jul 13, 2026 03:00 PM",
+    "account": "Reno Cab",
+    "script": "rc_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-13T15:00:06",
+    "date": "Jul 13, 2026 03:00 PM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-13T15:00:06",
+    "date": "Jul 13, 2026 03:00 PM",
+    "account": "Data Carz",
+    "script": "dc_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-13T15:00:06",
+    "date": "Jul 13, 2026 03:00 PM",
+    "account": "Associated Cab",
+    "script": "ac_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-13T15:00:06",
+    "date": "Jul 13, 2026 03:00 PM",
+    "account": "Ollies",
+    "script": "ol_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-13T15:00:06",
+    "date": "Jul 13, 2026 03:00 PM",
+    "account": "Circle Taxi",
+    "script": "ct_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-13T15:00:06",
+    "date": "Jul 13, 2026 03:00 PM",
+    "account": "YCOV",
+    "script": "ycov_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-13T15:00:06",
+    "date": "Jul 13, 2026 03:00 PM",
+    "account": "Kelowna",
+    "script": "kel_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-13T15:00:06",
+    "date": "Jul 13, 2026 03:00 PM",
+    "account": "Vermont",
+    "script": "vt_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-13T15:00:06",
+    "date": "Jul 13, 2026 03:00 PM",
+    "account": "YCDC",
+    "script": "ycdc_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-13T15:00:06",
+    "date": "Jul 13, 2026 03:00 PM",
+    "account": "Blueline",
+    "script": "bl_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-13T15:00:06",
+    "date": "Jul 13, 2026 03:00 PM",
+    "account": "Skyline",
+    "script": "Skyline_pull.py",
+    "status": "high_volume",
+    "error": "Warning: 17,548 rows (threshold 10,000)"
   }
 ]
