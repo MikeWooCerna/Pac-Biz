@@ -26,5 +26,35 @@ if errorlevel 1 (
 )
 
 echo.
+echo ========================================
+echo Reconciling movement notification ledger and dashboard snapshot
+echo ========================================
+py -3 "%MASTERLIST_DIR%\movement_reconcile.py"
+if errorlevel 1 (
+    echo [ERROR] Movement reconciliation failed.
+    exit /b 1
+)
+
+echo.
+echo ========================================
+echo Publishing reconciled movement snapshot if changed
+echo ========================================
+git pull --rebase --autostash
+if errorlevel 1 exit /b 1
+
+git add masterlist_dashboard.html update_movement_notifications_auto.bat movement_reconcile.py
+git diff --cached --quiet
+if errorlevel 1 (
+    git commit -m "Reconcile movement dashboard snapshot"
+    if errorlevel 1 exit /b 1
+    git pull --rebase --autostash
+    if errorlevel 1 exit /b 1
+    git push
+    if errorlevel 1 exit /b 1
+) else (
+    echo No movement dashboard changes to publish.
+)
+
+echo.
 echo Done.
 exit /b 0

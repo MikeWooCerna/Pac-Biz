@@ -278,6 +278,12 @@ Employment status display in movement emails:
 
 The notification script is intentionally not logged as a formal `pipeline_status.json` step today; it prints its own `[movement_notify]` messages and the pipeline continues with a warning if the notification step exits non-zero.
 
+`movement_reconcile.py` is the post-run safety net for this flow. It reads the same three local caches (`masterlist_cache.csv`, `history_cache.csv`, `movement_cache.csv`) and verifies that processed/non-void Movement rows are represented in both the notification ledger and the generated dashboard snapshot. It delegates missing emails back to `check_movement_notifications.py`, then refreshes the embedded `masterlist`, `historyData`, `movementData`, and `masterlistKpis` constants in `masterlist_dashboard.html` from cache so a processed movement cannot remain stale in the published dashboard after a successful build.
+
+Where it runs:
+- After `dashboard.py` in both `update_coaching_dashboard_auto.bat` and `update_coaching_dashboard.bat`, before Git publish.
+- After `check_movement_notifications.py` in `update_movement_notifications_auto.bat`, for movement-only reconciliation. If this patches `masterlist_dashboard.html`, the movement-only batch commits and pushes that dashboard snapshot so the live Movement table catches up without waiting for the full QA pipeline.
+
 ---
 
 ## Adding a new account

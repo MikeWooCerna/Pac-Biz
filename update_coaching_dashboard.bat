@@ -401,9 +401,19 @@ py -3 "%MASTERLIST_DIR%\log_step.py" step "Build" "dashboard.py" 0
 
 echo.
 echo ========================================
+echo Reconciling processed movement notifications and dashboard snapshot
+echo ========================================
+py -3 "%MASTERLIST_DIR%\movement_reconcile.py"
+if errorlevel 1 (
+    echo [WARN] Movement reconciliation found an issue -- continuing so monitor can publish
+    set "ANY_ACCOUNT_FAILED=1"
+)
+
+echo.
+echo ========================================
 echo Publishing to GitHub
 echo ========================================
-git add masterlist_dashboard.html update_coaching_dashboard.bat update_coaching_dashboard_auto.bat
+git add masterlist_dashboard.html update_coaching_dashboard.bat update_coaching_dashboard_auto.bat movement_reconcile.py
 if errorlevel 1 goto :fail
 
 git diff --cached --quiet
