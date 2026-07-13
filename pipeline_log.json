@@ -1348,5 +1348,14 @@
     "script": "masterlist_fetch.py",
     "status": "healed",
     "error": "Masterlist source recovered on manual retry after transient Google Sheets SSL EOF while fetching Movement."
+  },
+  {
+    "run_id": "2026-07-13T22:00:05",
+    "date": "Jul 13, 2026 10:00 PM",
+    "account": "masterlist_fetch.py",
+    "script": "masterlist_fetch.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
   }
 ]
