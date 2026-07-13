@@ -36,6 +36,14 @@
       "status": "pass",
       "timestamp": "2026-07-13T11:01:31.763254",
       "error": null
+    },
+    {
+      "account": "R4H",
+      "script": "r4h_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-07-13T11:01:51.647539",
+      "error": null
     }
   ]
 }
