@@ -188,6 +188,14 @@
       "status": "pass",
       "timestamp": "2026-07-13T15:14:32.813096",
       "error": null
+    },
+    {
+      "account": "Blueline",
+      "script": "bl_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-07-13T15:14:53.061529",
+      "error": null
     }
   ]
 }
