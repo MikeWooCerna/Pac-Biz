@@ -1357,5 +1357,27 @@
     "status": "healed",
     "action": "retry",
     "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-07-14T15:00:03",
+    "date": "Jul 14, 2026 03:00 PM",
+    "account": "Hamilton",
+    "script": "Hamilton_pull.py",
+    "status": "count_drop",
+    "drop": 1,
+    "prev_count": 4003,
+    "new_count": 4002,
+    "error": "Dropped 1 rows (4,003 \u2192 4,002)"
+  },
+  {
+    "run_id": "2026-07-14T15:00:03",
+    "date": "Jul 14, 2026 03:00 PM",
+    "account": "Data Carz",
+    "script": "dc_pull.py",
+    "status": "count_drop",
+    "drop": 1,
+    "prev_count": 3184,
+    "new_count": 3183,
+    "error": "Dropped 1 rows (3,184 \u2192 3,183)"
   }
 ]
