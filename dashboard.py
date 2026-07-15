@@ -6049,15 +6049,24 @@ def main():
         outline-offset: 2px;
     }}
 
+    /* Bulletproof flex scroll: the body is itself a flex column and the inner
+       .table-scroll flexes to fill it (flex:1 + min-height:0). The previous
+       height:100% approach silently failed to resolve inside the flex modal,
+       so the table grew to content height and got clipped with NO scrollbar. */
     #cl-ovl .cl-modal-body {{
-        flex: 1;
+        flex: 1 1 auto;
         min-height: 0;
         overflow: hidden;
+        display: flex;
+        flex-direction: column;
     }}
 
     #cl-ovl .cl-modal-body .table-scroll {{
+        flex: 1 1 auto;
+        min-height: 0;
         max-height: none;
-        height: 100%;
+        height: auto;
+        overflow: auto;
         border: none;
         border-radius: 0;
     }}
