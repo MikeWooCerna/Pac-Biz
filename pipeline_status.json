@@ -28,6 +28,14 @@
       "status": "pass",
       "timestamp": "2026-07-15T22:00:37.279878",
       "error": null
+    },
+    {
+      "account": "DMG",
+      "script": "dmg_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-07-15T22:00:47.611041",
+      "error": null
     }
   ]
 }
