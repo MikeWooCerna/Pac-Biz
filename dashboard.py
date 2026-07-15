@@ -5767,6 +5767,10 @@ def main():
 
     .cl-logs-table td {{
         line-height: 1.35;
+        /* Long unbroken strings (URLs, IDs) must break inside the cell —
+           without this they overflow and overlap the neighboring column. */
+        overflow-wrap: anywhere;
+        word-break: break-word;
     }}
 
     .cl-logs-table .long-text {{
@@ -6079,6 +6083,8 @@ def main():
         -webkit-box-orient: unset;
         overflow: visible;
         white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        word-break: break-word;
     }}
 
     @media (prefers-reduced-motion: reduce) {{
