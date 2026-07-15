@@ -5679,47 +5679,6 @@ def main():
         border-color: var(--blue);
     }}
 
-    .logs-focus-icon {{
-        position: relative;
-        display: inline-block;
-        width: 15px;
-        height: 15px;
-    }}
-
-    .logs-focus-icon::before,
-    .logs-focus-icon::after {{
-        content: "";
-        position: absolute;
-        width: 6px;
-        height: 6px;
-        border-color: currentColor;
-        border-style: solid;
-    }}
-
-    .logs-focus-icon::before {{
-        top: 0;
-        right: 0;
-        border-width: 2px 2px 0 0;
-    }}
-
-    .logs-focus-icon::after {{
-        left: 0;
-        bottom: 0;
-        border-width: 0 0 2px 2px;
-    }}
-
-    .logs-focus-mode .logs-focus-icon::before {{
-        top: 2px;
-        right: 2px;
-        border-width: 0 0 2px 2px;
-    }}
-
-    .logs-focus-mode .logs-focus-icon::after {{
-        left: 2px;
-        bottom: 2px;
-        border-width: 2px 2px 0 0;
-    }}
-
     .full {{
         grid-column: 1 / -1;
     }}
@@ -5796,34 +5755,39 @@ def main():
         line-height: 1.35;
     }}
 
-    #coachingTable table {{
+    /* Coaching Logs table layout — class-scoped (.cl-logs-table) rather than
+       ID-scoped so the SAME rules apply to both the inline card table
+       (#coachingTable) and the expand-modal table (#cl-modal-body) without
+       duplicating ~20 rules. #coachingSummaryTable rules below are untouched
+       (locked Coaching Summary tile — do not scope those to .cl-logs-table). */
+    .cl-logs-table table {{
         table-layout: fixed;
         min-width: 2280px;
     }}
 
-    #coachingTable td {{
+    .cl-logs-table td {{
         line-height: 1.35;
     }}
 
-    #coachingTable .long-text {{
+    .cl-logs-table .long-text {{
         min-width: 0;
         max-width: none;
     }}
 
-    #coachingTable .coaching-detail-col {{
+    .cl-logs-table .coaching-detail-col {{
         width: 300px;
     }}
 
-    #coachingTable .title-concern-col {{
+    .cl-logs-table .title-concern-col {{
         width: 210px;
     }}
 
-    #coachingTable .incident-col,
-    #coachingTable .explanation-col {{
+    .cl-logs-table .incident-col,
+    .cl-logs-table .explanation-col {{
         width: 255px;
     }}
 
-    #coachingTable .remarks-col {{
+    .cl-logs-table .remarks-col {{
         width: 260px;
     }}
 
@@ -5853,56 +5817,109 @@ def main():
         color: #fff;
     }}
 
-    #coachingTable .reason-col {{
+    .cl-logs-table .reason-col {{
         width: 210px;
     }}
 
-    #coachingTable .compact-col {{
+    .cl-logs-table .compact-col {{
         width: 116px;
         white-space: nowrap;
     }}
 
-    #coachingTable .status-col {{
+    .cl-logs-table .status-col {{
         width: 142px;
         white-space: nowrap;
     }}
 
-    #coachingTable .name-col {{
+    .cl-logs-table .name-col {{
         width: 170px;
         white-space: nowrap;
     }}
 
-    #coachingTable .category-col {{
+    .cl-logs-table .category-col {{
         width: 170px;
         white-space: nowrap;
     }}
 
-    #coachingTable .category-status-col {{
+    .cl-logs-table .category-status-col {{
         width: 170px;
         white-space: nowrap;
     }}
 
-    #coachingTable td.category-status-new {{
+    .cl-logs-table td.category-status-new {{
         background: #DCFCE7;
         color: #166534;
         font-weight: 900;
     }}
 
-    #coachingTable td.category-status-recurring {{
+    .cl-logs-table td.category-status-recurring {{
         background: #FFEDD5;
         color: #9A3412;
         font-weight: 900;
     }}
 
-    #coachingTable td.category-status-historical {{
+    .cl-logs-table td.category-status-historical {{
         background: #DBEAFE;
         color: #1E3A8A;
         font-weight: 900;
     }}
 
-    #coachingTable .id-col {{
+    .cl-logs-table .id-col {{
         width: 135px;
         white-space: nowrap;
+    }}
+
+    /* Coaching Logs modernization — header, row hover, ID pill and long-text
+       clamp treatment. Scoped to .cl-logs-table so it applies identically
+       inside the inline card AND the expand modal. */
+    .cl-logs-table table thead th {{
+        background: var(--blue);
+        color: #fff;
+        font-weight: 700;
+        font-size: 11px;
+        letter-spacing: .03em;
+        padding: 9px 10px;
+    }}
+
+    .cl-logs-table tbody tr:hover td {{
+        background: #F8FAFC;
+    }}
+
+    .cl-logs-table .cl-id-pill {{
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 6px;
+        background: #EFF6FF;
+        color: var(--blue);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .01em;
+        white-space: nowrap;
+    }}
+
+    /* Long-text columns (Title/Concern, Incident Overview, Employee
+       Explanation, Agreed Action Steps, Remarks/Comment, Reason) clamp to 2
+       lines in the compact card view; full text is always available via the
+       native title tooltip. The modal below removes this clamp entirely for
+       generous reading room (see #cl-ovl .cl-clamp override further down). */
+    .cl-logs-table .cl-clamp {{
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        white-space: normal;
+        line-height: 1.35;
+    }}
+
+    .cl-logs-table .cl-dash {{
+        color: #94A3B8;
+    }}
+
+    .cl-logs-table .cl-empty-row td {{
+        color: var(--muted);
+        font-style: italic;
+        text-align: center;
+        padding: 18px 8px;
     }}
 
     #coachingLogsCard {{
@@ -5914,28 +5931,161 @@ def main():
         min-height: 0;
     }}
 
-    body.logs-focus-mode #summarySection,
-    body.logs-focus-mode #summarySpacer {{
-        display: none;
+    /* ─── Coaching Logs expand modal (cl-*) ──────────────────────────────
+       Modeled on the TGS Timekeeping app's modal pattern (.modal-overlay /
+       .modal / .modal::before / .modal-head), adapted to Pac-Biz branding
+       (blue -> green top accent) and this dashboard's existing class-toggle
+       open/close mechanics (compare #ml-ovl on the Masterlist tab — the
+       MECHANICS are intentionally similar, but every id/class here is
+       cl-prefixed and wholly separate; Coaching never shares DOM with
+       Masterlist). */
+    #cl-ovl {{
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(15,23,42,.45);
+        -webkit-backdrop-filter: blur(3px);
+        backdrop-filter: blur(3px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .2s ease;
     }}
 
-    body.logs-focus-mode #coachingLogsCard {{
+    #cl-ovl.cl-open {{
+        opacity: 1;
+        pointer-events: all;
+    }}
+
+    #cl-ovl .cl-modal {{
+        position: relative;
+        background: #fff;
+        width: min(96vw, 1760px);
+        max-height: 82vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border-radius: 12px;
+        box-shadow: 0 28px 70px rgba(0,0,0,.28), 0 4px 12px rgba(0,0,0,.08);
+        transform: scale(.97) translateY(14px);
+        opacity: 0;
+        transition: transform .25s cubic-bezier(.16,1,.3,1), opacity .25s cubic-bezier(.16,1,.3,1);
+    }}
+
+    #cl-ovl.cl-open .cl-modal {{
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }}
+
+    #cl-ovl .cl-modal::before {{
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--blue), var(--green));
+    }}
+
+    #cl-ovl .cl-modal-head {{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 16px 20px;
+        border-bottom: 1px solid #E5E7EB;
+        flex-shrink: 0;
+    }}
+
+    #cl-ovl .cl-modal-head-text {{
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+    }}
+
+    #cl-ovl .cl-modal-title {{
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--blue);
+    }}
+
+    #cl-ovl .cl-modal-sub {{
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--muted);
+    }}
+
+    #cl-ovl .cl-modal-close {{
+        width: 32px;
+        height: 32px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #E5E7EB;
+        background: #fff;
+        border-radius: 8px;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1;
+        cursor: pointer;
+        font-family: Arial, sans-serif;
+        transition: border-color .15s ease, color .15s ease, background .15s ease;
+    }}
+
+    #cl-ovl .cl-modal-close:hover {{
+        border-color: #DC2626;
+        color: #DC2626;
+        background: #FEF2F2;
+    }}
+
+    #cl-ovl .cl-modal-close:focus-visible {{
+        outline: 2px solid var(--blue);
+        outline-offset: 2px;
+    }}
+
+    #cl-ovl .cl-modal-body {{
+        flex: 1;
         min-height: 0;
-        height: calc(100vh - 330px);
+        overflow: hidden;
     }}
 
-    body.logs-focus-mode #coachingLogsCard .table-scroll {{
+    #cl-ovl .cl-modal-body .table-scroll {{
         max-height: none;
         height: 100%;
+        border: none;
+        border-radius: 0;
     }}
 
-    body.logs-focus-mode #coachingTable {{
-        flex: 1 1 auto;
-        min-height: 0;
+    /* Looser wrapping inside the modal — full text, no clamp, since the
+       modal already offers generous vertical + horizontal scroll room. */
+    #cl-ovl .cl-clamp {{
+        display: block;
+        -webkit-line-clamp: unset;
+        -webkit-box-orient: unset;
+        overflow: visible;
+        white-space: pre-wrap;
     }}
 
-    body.logs-focus-mode #coachingPanel .coaching-grid {{
-        grid-template-rows: auto 1fr;
+    @media (prefers-reduced-motion: reduce) {{
+        #cl-ovl,
+        #cl-ovl .cl-modal {{
+            transition: none;
+        }}
+    }}
+
+    @media (max-width: 480px) {{
+        #cl-ovl {{
+            padding: 8px;
+        }}
+        #cl-ovl .cl-modal {{
+            max-height: 92vh;
+        }}
     }}
 
     #masterlistCard {{
@@ -7218,6 +7368,23 @@ def main():
 </div>
 <div id="ml-cv-tt" aria-hidden="true"></div>
 
+<!-- Coaching Logs expand modal (top-level; cl-* ids/classes are unique
+     dashboard-wide and fully separate from the Masterlist tab's ml-ovl —
+     same open/close/Esc/focus-return mechanics, restyled after the TGS
+     Timekeeping app's modal treatment with Pac-Biz blue/green branding). -->
+<div id="cl-ovl" role="dialog" aria-modal="true" aria-labelledby="cl-modal-title">
+  <div class="cl-modal" role="document">
+    <div class="cl-modal-head">
+      <div class="cl-modal-head-text">
+        <h3 class="cl-modal-title" id="cl-modal-title">Coaching Logs</h3>
+        <div class="cl-modal-sub" id="cl-modal-sub">0 records</div>
+      </div>
+      <button class="cl-modal-close" type="button" id="cl-modal-close" aria-label="Close Coaching Logs expanded view">&#10005;</button>
+    </div>
+    <div class="cl-modal-body cl-logs-table" id="cl-modal-body"></div>
+  </div>
+</div>
+
 <div class="tab-panel" id="coachingPanel" data-tab="coaching" role="tabpanel">
 <div class="grid coaching-grid">
     <div class="coaching-chart-row" id="coaching-chart-row">
@@ -7255,13 +7422,13 @@ def main():
             <div class="table-actions">
                 <button class="table-action" type="button" id="downloadCoachingExcel">Download Excel</button>
                 <button class="table-action secondary" type="button" id="openCoachingSheets">Copy to Sheets</button>
-                <button class="table-action icon-action" type="button" id="logsFocusToggle" aria-label="Expand Coaching Logs" title="Expand Coaching Logs">
-                    <span class="logs-focus-icon" aria-hidden="true"></span>
+                <button class="table-action icon-action" type="button" id="coachingLogsExpandBtn" aria-label="Expand Coaching Logs" title="Expand Coaching Logs">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
                 </button>
                 <span class="table-meta" id="coachingLoadedMeta">{len(coaching):,} records loaded</span>
             </div>
         </div>
-        <div id="coachingTable"></div>
+        <div id="coachingTable" class="cl-logs-table"></div>
     </div>
 </div>
 </div>
@@ -8852,9 +9019,70 @@ function coachingConfidenceGauge(data) {{
     `;
 }}
 
+// Coaching Logs table renderer — dedicated to the Coaching tab only (kept
+// separate from the shared renderDataTable() used by the locked Coaching
+// Summary and Recent Employee Movements tables) so the long-text line-clamp
+// + tooltip + Coaching ID pill treatment below can never affect those tables.
+// Used for BOTH the inline card (#coachingTable) and the expand modal
+// (#cl-modal-body) via the shared .cl-logs-table CSS class.
+function renderCoachingLogsTable(id, rows, columns, sortState) {{
+    let html = "<div class='table-scroll'><table><thead><tr>";
+    columns.forEach(c => {{
+        const thClasses = [];
+        if (c.sortable) thClasses.push("sortable");
+        if (c.className) thClasses.push(c.className);
+        const classAttr = thClasses.length ? ` class="${{escapeHtml(thClasses.join(" "))}}"` : "";
+        const sortField = c.sortable ? ` data-sort-field="${{escapeHtml(c.sortField || c.field)}}"` : "";
+        const active = sortState && sortState.field === (c.sortField || c.field);
+        const indicator = c.sortable ? `<span class="sort-indicator">${{active ? (sortState.direction === "asc" ? "^" : "v") : ""}}</span>` : "";
+        html += `<th${{classAttr}}${{sortField}}><span class="th-content"><span class="th-label">${{escapeHtml(c.label)}}</span>${{indicator}}</span></th>`;
+    }});
+    html += "</tr></thead><tbody>";
+
+    if (rows.length === 0) {{
+        html += `<tr class="cl-empty-row"><td colspan="${{columns.length}}">No coaching log records found for the current filters.</td></tr>`;
+    }} else {{
+        rows.forEach(r => {{
+            html += "<tr>";
+            columns.forEach(c => {{
+                const classes = [];
+                if (c.className) classes.push(c.className);
+                if (c.field === "Category Status") classes.push(categoryStatusClass(r[c.field]));
+                const classAttr = classes.filter(Boolean).length ? ` class="${{escapeHtml(classes.filter(Boolean).join(" "))}}"` : "";
+                const value = norm(r[c.field]);
+                let cell;
+                if (c.field === "Coaching ID") {{
+                    cell = value ? `<span class="cl-id-pill">${{escapeHtml(value)}}</span>` : "";
+                }} else if ((c.className || "").includes("long-text")) {{
+                    cell = value ? `<span class="cl-clamp" title="${{escapeHtml(value)}}">${{escapeHtml(value)}}</span>` : `<span class="cl-dash">&mdash;</span>`;
+                }} else {{
+                    cell = escapeHtml(value);
+                }}
+                html += `<td${{classAttr}}>${{cell}}</td>`;
+            }});
+            html += "</tr>";
+        }});
+    }}
+
+    html += "</tbody></table></div>";
+    document.getElementById(id).innerHTML = html;
+}}
+
 function coachingTable(data) {{
-    renderDataTable("coachingTable", sortedTableRows(data, COACHING_COLUMNS, coachingSortState), COACHING_COLUMNS, coachingSortState);
+    const sorted = sortedTableRows(data, COACHING_COLUMNS, coachingSortState);
+    renderCoachingLogsTable("coachingTable", sorted, COACHING_COLUMNS, coachingSortState);
     bindTableSorting("coachingTable", COACHING_COLUMNS, coachingSortState, renderCoaching);
+
+    // Keep the expand modal's table in sync whenever it's open (filter
+    // changes, sort clicks inside the modal, etc. all flow back through
+    // renderCoaching() -> coachingTable()).
+    const modalOpen = document.getElementById("cl-ovl")?.classList.contains("cl-open");
+    if (modalOpen) {{
+        renderCoachingLogsTable("cl-modal-body", sorted, COACHING_COLUMNS, coachingSortState);
+        bindTableSorting("cl-modal-body", COACHING_COLUMNS, coachingSortState, renderCoaching);
+        const sub = document.getElementById("cl-modal-sub");
+        if (sub) sub.textContent = `${{data.length.toLocaleString()}} of ${{coachingData.length.toLocaleString()}} records shown`;
+    }}
 }}
 
 function coachingExportRows() {{
@@ -9083,18 +9311,45 @@ function reflowDashboard() {{
     }}
 }}
 
-function setLogsFocusMode(active) {{
-    document.body.classList.toggle("logs-focus-mode", active);
-    const button = document.getElementById("logsFocusToggle");
-    if (button) {{
-        button.setAttribute("aria-label", active ? "Collapse Coaching Logs" : "Expand Coaching Logs");
-        button.setAttribute("title", active ? "Collapse Coaching Logs" : "Expand Coaching Logs");
-    }}
-    setTimeout(reflowDashboard, 0);
+// ─── COACHING LOGS TAB — EXPAND MODAL (cl-* prefixed; isolated from the
+// Masterlist tab's ml-ovl/mlOpenExpand — same open/close/Esc/focus-return
+// mechanics, restyled after the TGS Timekeeping app's modal treatment). ────
+let clLastTrigger = null;
+
+function clOpenExpand(triggerEl) {{
+    const ovl = document.getElementById("cl-ovl");
+    if (!ovl) return;
+    clLastTrigger = triggerEl || null;
+    ovl.classList.add("cl-open");
+    document.body.style.overflow = "hidden";
+
+    const data = filteredCoachingData();
+    const sorted = sortedTableRows(data, COACHING_COLUMNS, coachingSortState);
+    renderCoachingLogsTable("cl-modal-body", sorted, COACHING_COLUMNS, coachingSortState);
+    bindTableSorting("cl-modal-body", COACHING_COLUMNS, coachingSortState, renderCoaching);
+    const sub = document.getElementById("cl-modal-sub");
+    if (sub) sub.textContent = `${{data.length.toLocaleString()}} of ${{coachingData.length.toLocaleString()}} records shown`;
+
+    const closeBtn = document.getElementById("cl-modal-close");
+    if (closeBtn) closeBtn.focus();
 }}
 
-function toggleLogsFocusMode() {{
-    setLogsFocusMode(!document.body.classList.contains("logs-focus-mode"));
+function clCloseExpand() {{
+    const ovl = document.getElementById("cl-ovl");
+    if (!ovl || !ovl.classList.contains("cl-open")) return;
+    ovl.classList.remove("cl-open");
+    document.body.style.overflow = "";
+    if (clLastTrigger) {{ clLastTrigger.focus(); clLastTrigger = null; }}
+}}
+
+function clWireExpandModal() {{
+    const ovl = document.getElementById("cl-ovl");
+    const closeBtn = document.getElementById("cl-modal-close");
+    if (closeBtn) closeBtn.addEventListener("click", clCloseExpand);
+    if (ovl) ovl.addEventListener("click", (e) => {{ if (e.target === ovl) clCloseExpand(); }});
+    document.addEventListener("keydown", (e) => {{
+        if (e.key === "Escape" && ovl && ovl.classList.contains("cl-open")) clCloseExpand();
+    }});
 }}
 
 // ─── MASTERLIST TAB — CANVAS CHART SYSTEM ──────────────────────────────────
@@ -12769,7 +13024,10 @@ function switchTab(tabName) {{
     coachingControls.classList.toggle("hidden", !isCoaching);
 
     if (!isCoaching) {{
-        setLogsFocusMode(false);
+        // Close a stray Coaching Logs expand modal if the user navigates away
+        // while it's open (same rationale as mlCloseExpand() below for the
+        // Masterlist tab's expand modal).
+        clCloseExpand();
     }}
     if (!isMasterlist) {{
         // Close a stray Masterlist expand modal if the user navigates away
@@ -12799,7 +13057,7 @@ populateCoachingFilters();
 initMultiFilterBehavior();
 document.getElementById("downloadCoachingExcel")?.addEventListener("click", downloadCoachingExcel);
 document.getElementById("openCoachingSheets")?.addEventListener("click", openCoachingSheets);
-document.getElementById("logsFocusToggle")?.addEventListener("click", toggleLogsFocusMode);
+document.getElementById("coachingLogsExpandBtn")?.addEventListener("click", (e) => clOpenExpand(e.currentTarget));
 // Master List "expand" button now opens the ml* expand modal (replaces the old
 // masterlist-focus-mode toggle so the button isn't fought over by two mechanisms).
 document.getElementById("masterlistFocusToggle")?.addEventListener("click", (e) => {{
@@ -12807,6 +13065,7 @@ document.getElementById("masterlistFocusToggle")?.addEventListener("click", (e) 
 }});
 mlWireTable();
 mlWireExpandModal();
+clWireExpandModal();
 document.getElementById("mlClearFiltersBtn")?.addEventListener("click", mlClearFilters);
 {{
     const mainHdr = document.querySelector(".sticky-dashboard-header");
