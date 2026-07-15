@@ -1433,5 +1433,21 @@
     "script": "bl_pull.py",
     "status": "not_reached",
     "error": null
+  },
+  {
+    "run_id": "2026-07-15T21:00:53",
+    "date": "Jul 15, 2026 09:00 PM",
+    "account": "Guardian",
+    "script": "pipeline_guardian.py",
+    "status": "guardian_warn",
+    "error": "failed mismatch: status=1, monitor=10007"
+  },
+  {
+    "run_id": "2026-07-15T21:16:09",
+    "date": "Jul 15, 2026 09:16 PM",
+    "account": "Guardian",
+    "script": "pipeline_guardian.py",
+    "status": "guardian_warn",
+    "error": "failed mismatch: status=1, monitor=10007"
   }
 ]
