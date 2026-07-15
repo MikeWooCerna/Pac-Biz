@@ -1390,5 +1390,16 @@
     "prev_count": 691,
     "new_count": 643,
     "error": "Dropped 48 rows (691 \u2192 643)"
+  },
+  {
+    "run_id": "2026-07-15T20:22:08",
+    "date": "Jul 15, 2026 08:22 PM",
+    "account": "Ollies",
+    "script": "ol_pull.py",
+    "status": "count_drop",
+    "drop": 267,
+    "prev_count": 2138,
+    "new_count": 1871,
+    "error": "Dropped 267 rows (2,138 \u2192 1,871)"
   }
 ]
