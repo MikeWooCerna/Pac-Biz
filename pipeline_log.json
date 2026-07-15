@@ -1379,5 +1379,16 @@
     "prev_count": 3184,
     "new_count": 3183,
     "error": "Dropped 1 rows (3,184 \u2192 3,183)"
+  },
+  {
+    "run_id": "2026-07-15T11:00:01",
+    "date": "Jul 15, 2026 11:00 AM",
+    "account": "Vermont",
+    "script": "vt_pull.py",
+    "status": "count_drop",
+    "drop": 48,
+    "prev_count": 691,
+    "new_count": 643,
+    "error": "Dropped 48 rows (691 \u2192 643)"
   }
 ]
