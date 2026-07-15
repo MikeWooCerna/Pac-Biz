@@ -292,6 +292,30 @@ Pipeline monitoring system is fully live as of 2026-06-22. See `PIPELINE_MONITOR
   supports horizontal scrolling, freezes the `Team Leader` column, and shows the latest 6 running
   week columns when Month Yr is `All`. When Month Yr is filtered, it follows the filtered month.
 
+### Changes made 2026-07-16
+- **Coaching Logs table modernized + TGS-style expand modal** (commits `406e79fb`, `b9434b92`, `05def082`) —
+  presentation-layer only; `transform_coaching_logs()` / `refresh_coaching_output()` and the locked
+  column order were NOT touched.
+  - **Inline table** (`.cl-logs-table`): white-on-blue header (house convention), Coaching ID pill,
+    refined hover/density, long-text columns (Incident Overview / Employee Explanation / Agreed
+    Action Steps) clamped to 2 lines with full text on hover (`.cl-clamp`).
+  - **Expand modal** (`#cl-ovl`): replaced the old `body.logs-focus-mode` toggle entirely. TGS
+    Timekeeping modal MECHANICS (blur scrim `rgba(15,23,42,.45)`, rise-up animation
+    `cubic-bezier(.16,1,.3,1)`, 4px top accent strip, head with title + live record-count subtitle,
+    Esc/✕/backdrop close, focus-return, body scroll lock, reduced-motion respected) with STRICT
+    Pac-Biz branding — accent strip is `var(--blue)`→`var(--green)` gradient; zero TGS colors.
+    Design reference: `C:\Users\Mike Woo Cerna\Documents\Claude\wfm-timekeeping\src\Timekeeping_App.html`.
+  - **Modal scroll fix** — the modal body uses the bulletproof flex-scroll pattern
+    (`.cl-modal-body` is `display:flex;flex-direction:column;min-height:0` and `.table-scroll`
+    inside it is `flex:1;min-height:0;overflow:auto`). Do NOT revert to `height:100%` on the inner
+    scroller — browsers silently fail to resolve it inside the flex modal, the table grows to
+    content height, gets clipped, and there is no scrollbar (this shipped broken once).
+  - **Cell overflow fix** — `.cl-logs-table td` and `#cl-ovl .cl-clamp` carry
+    `overflow-wrap:anywhere; word-break:break-word` so long unbroken strings (storage URLs, IDs)
+    break inside their own column instead of overlapping the neighbor. Keep these rules.
+  - Known follow-up (non-blocking): the modal has no Tab focus-trap — same gap exists in the
+    Masterlist `#ml-ovl` modal; fix both together if addressed.
+
 ### Pending / future work
 - **Apps Script Monitoring** — Add a new section to `pipeline_monitor.html` (before the incident log) showing per-account Apps Script health: last run time, row count, duration, stale/fail badges. Implementation: `logRunToMasterlist_()` helper in each Apps Script → writes to `GAS_Heartbeat` tab in Masterlist spreadsheet → `check_gas_heartbeat.py` reads it → `pipeline_gas_status.json` → `generate_monitor.py` renders the section. Build when 5+ upsert functions are active and manually checking the Apps Script UI becomes painful.
 - **Storage migration to Google Drive** — Move `PB` folder to Google Drive for Desktop. Only 3 bat files + Task Scheduler need path updates. See memory for details.
