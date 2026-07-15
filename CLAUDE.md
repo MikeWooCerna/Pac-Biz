@@ -1,6 +1,6 @@
 # PB Dashboard — project context
 # This file is read by Claude Code (auto) and Codex (manual).
-# Last updated: 2026-07-11
+# Last updated: 2026-07-15
 
 ## What this is
 
@@ -256,6 +256,27 @@ Pipeline monitoring system is fully live as of 2026-06-22. See `PIPELINE_MONITOR
     `R4H_COLUMN_MAP` and the `_transform_qa_source()` `keep` list plus the JS `critKeys` array.
   - **Cosmetic note:** DMG's donut color `#0E7490` is shared with Associated Cab / Circle Taxi, and
     R4H's `#0F766E` with Vermont — legend/tooltips still disambiguate by name; not a data issue.
+
+### Changes made 2026-07-15
+- **Masterlist Apps Script timeout-safe movement processing** — `masterlist_appsscript_enhanced.gs`
+  documents the replacement `runMasterlistProcess()` flow used in the Google Apps Script project.
+  This was added after past-effective Movement rows, especially Attrition rows, could remain
+  unprocessed when Apps Script hit Google's ~30-minute execution limit during the heavier
+  Masterlist/History refresh work.
+  - Movement processing now runs before the daily History snapshot.
+  - A `LockService` script lock prevents overlapping scheduled runs.
+  - A 25-minute runtime guard stops work before the hard timeout and lets the next trigger resume.
+  - If movement work completes but runtime is low, the script skips the daily History snapshot
+    instead of failing the whole run.
+  - Health check warnings include overdue effective Movement rows whose effective date is today
+    or earlier and `Processed` is not `Yes`.
+  - Movement notification emails are still handled by `check_movement_notifications.py` /
+    `update_movement_notifications_auto.bat`; the Apps Script only marks Movement rows processed
+    and updates Masterlist/History. Do not add email sending inside the Apps Script.
+- **Movement timing rule clarified** — if a Movement row has an effective date in the past
+  (example: `07/07/2026` when today is `07/15/2026`), it is eligible for processing immediately.
+  If it is still blank under `Processed`, investigate Apps Script execution failures/timeouts first,
+  not the Python dashboard build.
 
 ### Pending / future work
 - **Apps Script Monitoring** — Add a new section to `pipeline_monitor.html` (before the incident log) showing per-account Apps Script health: last run time, row count, duration, stale/fail badges. Implementation: `logRunToMasterlist_()` helper in each Apps Script → writes to `GAS_Heartbeat` tab in Masterlist spreadsheet → `check_gas_heartbeat.py` reads it → `pipeline_gas_status.json` → `generate_monitor.py` renders the section. Build when 5+ upsert functions are active and manually checking the Apps Script UI becomes painful.

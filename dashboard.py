@@ -9811,6 +9811,7 @@ function mlBuildWeeklyStacked() {{
     const seen = new Set();
     const deduped = [];
     historyData.forEach(r => {{
+        if (norm(r["Employment Status"]).toUpperCase() !== "ACTIVE") return;
         const week = norm(r["Week"]);
         const empId = norm(r["ID No."]);
         if (week && empId && !seen.has(`${{week}}|${{empId}}`)) {{

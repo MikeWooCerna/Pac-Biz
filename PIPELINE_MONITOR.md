@@ -1,7 +1,7 @@
 # Pipeline Monitor — Technical Reference
 
 **Live URL:** https://mikewoocerna.github.io/Pac-Biz/pipeline_monitor.html  
-**Last updated:** 2026-07-11  
+**Last updated:** 2026-07-15  
 **Version signature:** `v26.06.22`
 
 ---
@@ -257,6 +257,24 @@ The Git Repository stage node also surfaces the most recent Guardian run, source
 ## Employee Movement Notifications
 
 `check_movement_notifications.py` runs immediately after `masterlist_fetch.py`, before the account QA pulls. It reads `movement_cache.csv`, compares each processed movement against `movement_notified.json`, and sends one HTML email per newly processed movement.
+
+Movement processing itself happens upstream in the Masterlist Google Apps Script
+`runMasterlistProcess()`, not in Python. The timeout-safe Apps Script replacement is documented
+locally as `masterlist_appsscript_enhanced.gs`. It processes eligible Movement rows before the
+heavier daily History snapshot, uses a script lock, and stops before Google's hard runtime limit
+so past-effective movements do not get stranded by `DEADLINE_EXCEEDED` / maximum execution time
+failures.
+
+Important behavior:
+- Past-effective rows are eligible immediately when `Effective Date <= today`.
+- Attrition rows should set Masterlist `Employment Status` to `Inactive` and backfill History
+  from the effective date.
+- If Apps Script is low on runtime after movement processing, it may skip the daily History
+  snapshot and let the next scheduled run retry. This is safer than timing out before Movement
+  rows are marked processed.
+- Python notification scripts must only send emails after Apps Script has set `Processed = Yes`.
+  Do not make Python mark Movement rows processed, and do not add movement email sending to
+  the Apps Script.
 
 Notification eligibility:
 - `Processed` must be `Yes`
