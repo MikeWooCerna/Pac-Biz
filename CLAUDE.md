@@ -277,6 +277,20 @@ Pipeline monitoring system is fully live as of 2026-06-22. See `PIPELINE_MONITOR
   (example: `07/07/2026` when today is `07/15/2026`), it is eligible for processing immediately.
   If it is still blank under `Processed`, investigate Apps Script execution failures/timeouts first,
   not the Python dashboard build.
+- **Coaching Logs new Asana fields** — the active external pull script
+  `C:\Users\Mike Woo Cerna\Documents\PB\Coaching\asana_pull.py` now exports three additional
+  Asana custom fields into `Output\coaching_logs.xlsx`: `Title/Concern`, `Incident Overview`,
+  and `Employee Explanation`. `dashboard.py` also has matching fallback Asana-pull logic.
+  - Coaching Logs table order is locked as:
+    `Coaching ID | Emp Name | Coached by | Title/Concern | Incident Overview | Employee Explanation | Agreed Action Steps | Remarks/Comment | ...rest`
+  - The old dashboard label `Coaching Details` was renamed to `Agreed Action Steps`.
+  - Backward compatibility: if older cached/dashboard records still contain `Coaching Details`,
+    `transform_coaching_logs()` maps it into `Agreed Action Steps`.
+  - The `Incident Overview` pull includes a typo-safe alias for `Indicent Overview` because the
+    user screenshot/request used that spelling once.
+- **Coaching Summary table behavior** — the Summary table now keeps a fixed-height scroll frame,
+  supports horizontal scrolling, freezes the `Team Leader` column, and shows the latest 6 running
+  week columns when Month Yr is `All`. When Month Yr is filtered, it follows the filtered month.
 
 ### Pending / future work
 - **Apps Script Monitoring** — Add a new section to `pipeline_monitor.html` (before the incident log) showing per-account Apps Script health: last run time, row count, duration, stale/fail badges. Implementation: `logRunToMasterlist_()` helper in each Apps Script → writes to `GAS_Heartbeat` tab in Masterlist spreadsheet → `check_gas_heartbeat.py` reads it → `pipeline_gas_status.json` → `generate_monitor.py` renders the section. Build when 5+ upsert functions are active and manually checking the Apps Script UI becomes painful.
@@ -321,6 +335,9 @@ Pipeline monitoring system is fully live as of 2026-06-22. See `PIPELINE_MONITOR
 
 - **Coaching summary tile** — do not change column order or row structure
   in `transform_coaching_logs()` or `refresh_coaching_output()`.
+  Current Coaching Logs table order is explicitly locked as:
+  `Coaching ID | Emp Name | Coached by | Title/Concern | Incident Overview | Employee Explanation | Agreed Action Steps | Remarks/Comment | ...rest`.
+  Do not reintroduce the old `Coaching Details` label.
 - **QA scorecard frame** — layout locked; only data and account-specific
   mappings should change. Do not restructure `qaRowHtml()`.
 - **QA detail table column resizing** — the evaluation table uses a generated

@@ -982,6 +982,14 @@ def get_asana_custom_value(field):
     )
 
 
+def get_asana_custom_field(custom_fields, *names):
+    for name in names:
+        value = custom_fields.get(name, "")
+        if value:
+            return value
+    return ""
+
+
 def get_coaching_asana_config():
     token = os.getenv("ASANA_TOKEN", "").strip()
     project_id = (
@@ -1079,6 +1087,9 @@ def pull_coaching_from_asana():
                 "Coaching Time": coaching_time,
                 "Status": custom_fields.get("Status", ""),
                 "Employee Email": custom_fields.get("Employee Email", ""),
+                "Title/Concern": get_asana_custom_field(custom_fields, "Title/Concern", "Title / Concern", "Title Concern"),
+                "Incident Overview": get_asana_custom_field(custom_fields, "Incident Overview", "Indicent Overview"),
+                "Employee Explanation": get_asana_custom_field(custom_fields, "Employee Explanation"),
                 "Supervisor Email": (
                     custom_fields.get("Supervisors Email", "")
                     or custom_fields.get("Supervisor Email", "")
@@ -4393,7 +4404,10 @@ COACHING_OUTPUT_COLUMNS = [
     "Coaching ID",
     "Emp Name",
     "Coached by",
-    "Coaching Details",
+    "Title/Concern",
+    "Incident Overview",
+    "Employee Explanation",
+    "Agreed Action Steps",
     "Remarks/Comment",
     "Coaching Category",
     "Category Status",
@@ -4744,6 +4758,13 @@ def transform_coaching_logs(source, masterlist):
     if source.empty:
         return pd.DataFrame(columns=COACHING_OUTPUT_COLUMNS)
 
+    source = source.copy()
+    if "Agreed Action Steps" not in source.columns and "Coaching Details" in source.columns:
+        source["Agreed Action Steps"] = source["Coaching Details"]
+    for optional_column in ["Title/Concern", "Incident Overview", "Employee Explanation"]:
+        if optional_column not in source.columns:
+            source[optional_column] = ""
+
     if all(column in source.columns for column in COACHING_OUTPUT_COLUMNS):
         return assign_category_status(source)[COACHING_OUTPUT_COLUMNS]
 
@@ -4787,7 +4808,10 @@ def transform_coaching_logs(source, masterlist):
                 row.get("Employee Name"),
             ),
             "Coached by": resolve_name(email_lookup, supervisor_email),
-            "Coaching Details": details,
+            "Title/Concern": cell_text(row.get("Title/Concern")),
+            "Incident Overview": cell_text(row.get("Incident Overview")),
+            "Employee Explanation": cell_text(row.get("Employee Explanation")),
+            "Agreed Action Steps": details,
             "Remarks/Comment": cell_text(row.get("Improvement Timeline / Follow-Up Date")),
             "Coaching Category": category,
             "Category Status": "",
@@ -5774,7 +5798,7 @@ def main():
 
     #coachingTable table {{
         table-layout: fixed;
-        min-width: 1680px;
+        min-width: 2280px;
     }}
 
     #coachingTable td {{
@@ -5790,8 +5814,43 @@ def main():
         width: 300px;
     }}
 
+    #coachingTable .title-concern-col {{
+        width: 210px;
+    }}
+
+    #coachingTable .incident-col,
+    #coachingTable .explanation-col {{
+        width: 255px;
+    }}
+
     #coachingTable .remarks-col {{
         width: 260px;
+    }}
+
+    #coachingSummaryTable .table-scroll {{
+        max-height: 220px;
+        overflow: auto;
+    }}
+
+    #coachingSummaryTable table {{
+        min-width: 760px;
+    }}
+
+    #coachingSummaryTable th:first-child,
+    #coachingSummaryTable td:first-child {{
+        position: sticky;
+        left: 0;
+        z-index: 2;
+        min-width: 190px;
+        max-width: 190px;
+        background: #fff;
+        box-shadow: 1px 0 0 #D1D5DB;
+    }}
+
+    #coachingSummaryTable th:first-child {{
+        z-index: 3;
+        background: var(--blue);
+        color: #fff;
     }}
 
     #coachingTable .reason-col {{
@@ -7805,7 +7864,10 @@ const COACHING_COLUMNS = [
     {{label: "Coaching ID", field: "Coaching ID", className: "id-col nowrap"}},
     {{label: "Emp Name", field: "Emp Name", className: "name-col nowrap", sortable: true}},
     {{label: "Coached by", field: "Coached by", className: "name-col nowrap", sortable: true}},
-    {{label: "Coaching Details", field: "Coaching Details", className: "long-text coaching-detail-col"}},
+    {{label: "Title/Concern", field: "Title/Concern", className: "long-text title-concern-col"}},
+    {{label: "Incident Overview", field: "Incident Overview", className: "long-text incident-col"}},
+    {{label: "Employee Explanation", field: "Employee Explanation", className: "long-text explanation-col"}},
+    {{label: "Agreed Action Steps", field: "Agreed Action Steps", className: "long-text coaching-detail-col"}},
     {{label: "Remarks/Comment", field: "Remarks/Comment", className: "long-text remarks-col"}},
     {{label: "Coaching Category", field: "Coaching Category", className: "category-col nowrap", sortable: true}},
     {{label: "Category Status", field: "Category Status", className: "category-status-col nowrap", sortable: true}},
@@ -8476,8 +8538,11 @@ function coachingConfidenceAverage(data) {{
 
 function coachingSummaryPivot(data) {{
     const completedRows = data.filter(r => isCompletedStatus(r["Coaching Status"]));
-    const weekKeys = [...new Set(completedRows.map(r => weekStartKey(coachingSummaryDate(r))).filter(Boolean))]
+    let weekKeys = [...new Set(completedRows.map(r => weekStartKey(coachingSummaryDate(r))).filter(Boolean))]
         .sort();
+    if (COACHING_FILTERS.month.size === 0) {{
+        weekKeys = weekKeys.slice(-6);
+    }}
     const leaders = [...new Set(completedRows.map(r => norm(r["Coached by"]) || "Blank"))]
         .sort((a, b) => a.localeCompare(b, undefined, {{sensitivity: "base"}}));
     const counts = {{}};
