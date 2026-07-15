@@ -1401,5 +1401,37 @@
     "prev_count": 2138,
     "new_count": 1871,
     "error": "Dropped 267 rows (2,138 \u2192 1,871)"
+  },
+  {
+    "run_id": "2026-07-15T20:48:38",
+    "date": "Jul 15, 2026 08:48 PM",
+    "account": "Kelowna",
+    "script": "kel_pull.py",
+    "status": "fail",
+    "error": "  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\ssl.py\", line 1138, in read\n    return self._sslobj.read(len, buffer)\n           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^\nTimeoutError: The read operation timed out"
+  },
+  {
+    "run_id": "2026-07-15T20:48:38",
+    "date": "Jul 15, 2026 08:48 PM",
+    "account": "Vermont",
+    "script": "vt_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-15T20:48:38",
+    "date": "Jul 15, 2026 08:48 PM",
+    "account": "YCDC",
+    "script": "ycdc_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-15T20:48:38",
+    "date": "Jul 15, 2026 08:48 PM",
+    "account": "Blueline",
+    "script": "bl_pull.py",
+    "status": "not_reached",
+    "error": null
   }
 ]
