@@ -185,7 +185,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run 2026-07-15T20:48</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Dashboard: &mdash;</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Jul 15, 2026 08:52 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Jul 15, 2026 08:56 PM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -196,10 +196,10 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 
   <div class="stat-cards">
     <div class="stat-card"><div class="sc-val" style="color:#00e87a;">20</div><div class="sc-lbl">Passed</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">0</div><div class="sc-lbl">Failed</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#E84500;">4</div><div class="sc-lbl">Not Reached</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">1</div><div class="sc-lbl">Failed</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#E84500;">3</div><div class="sc-lbl">Not Reached</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">41,739</div><div class="sc-lbl">Rows Pulled</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#7060a0;">&mdash;</div><div class="sc-lbl">running</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">&#10007;</div><div class="sc-lbl">failed</div></div>
   </div>
 
   <div class="divider"></div>
@@ -342,7 +342,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       </div>
       <div class="radar-label">
         <div class="radar-lbl-main">Pipeline / Container Monitoring</div>
-        <div class="radar-lbl-status"><div class="blink-a"></div><span style="color:#ffaa00;font-size:12px;">running</span></div>
+        <div class="radar-lbl-status"><div class="blink-r"></div><span style="color:#ff3d3d;font-size:12px;">stopped</span></div>
       </div>
 
       <div class="connector"></div>
@@ -353,8 +353,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
           <div class="agg-item"><div class="agg-val" style="color:#00e87a;">41,739</div><div class="agg-lbl">total rows</div></div>
           <div class="agg-item">
             <div class="agg-val" style="display:flex;align-items:center;justify-content:center;gap:5px;">
-              <div class="blink-g"></div>
-              <span style="color:#00e87a;">20/24</span>
+              <div class="blink-r"></div>
+              <span style="color:#ff9090;">20/24</span>
             </div>
             <div class="agg-lbl">sources ok</div>
           </div>
@@ -383,8 +383,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 
       <div class="stage-node">
         <div class="stage-title">Git Repository</div>
-        <div class="stage-status"><div class="blink-a"></div></div>
-        <div class="stage-detail">queued…</div>
+        <div class="stage-status"><div class="blink-n"></div></div>
+        <div class="stage-detail">not reached</div>
         
       </div>
     </div>
@@ -471,13 +471,16 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
-<div class="node n-blocked">
-  <div class="node-title" style="color:#E84500;"><span>Kelowna</span><div class="blink-n"></div></div>
-  <div class="node-row"><b class="b-n"></b>kel_pull.py &middot; &mdash;</div>
-  
+<div class="node n-fail">
+  <div class="node-title" style="color:#ff6060;"><span>Kelowna</span><div class="blink-r"></div></div>
+  <div class="node-row"><b class="b-r"></b>kel_pull.py &middot; 08:56 PM</div>
+  <div class="node-err">  File "C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1138, in read
+    return self._sslobj.read(len, buffer)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+TimeoutError: The read operation timed out</div>
   <div class="node-meta">
-    <span class="meta-pill o">&mdash; rows</span>
-    <span class="meta-pill o">NOT REACHED</span>
+    <span class="meta-pill r">&mdash; rows</span>
+    <span class="meta-pill r">FAIL</span>
     
   </div>
 </div>
@@ -514,7 +517,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     </div>
   </div>
 
-  
+  <div class="warn-strip">&#9888; Pipeline stopped at <b>Kelowna</b> &middot; Exit code 1 &middot; 3 steps not reached</div>
   
   <div class="vol-strip">&#9651; High volume datasets detected &mdash; <b>Skyline</b> &#9651;&thinsp;17,797 rows <span style='opacity:0.65;font-size:11px;'>(HIGH VOL)</span></div>
 
@@ -524,7 +527,12 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div class="log-wrap">
       <table class="log-table">
         <thead><tr><th>Date</th><th>Dataset</th><th>Status</th></tr></thead>
-        <tbody><tr><td class="log-td-d">Jul 15, 2026 08:22 PM</td><td class="log-td-ds"><b>Ollies</b> <span class="log-sc">&middot; ol_pull.py</span><div class="log-err">Dropped 267 rows (2,138 → 1,871)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
+        <tbody><tr><td class="log-td-d">Jul 15, 2026 08:48 PM</td><td class="log-td-ds"><b>Blueline</b> <span class="log-sc">&middot; bl_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jul 15, 2026 08:48 PM</td><td class="log-td-ds"><b>YCDC</b> <span class="log-sc">&middot; ycdc_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jul 15, 2026 08:48 PM</td><td class="log-td-ds"><b>Vermont</b> <span class="log-sc">&middot; vt_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+<tr><td class="log-td-d">Jul 15, 2026 08:48 PM</td><td class="log-td-ds"><b>Kelowna</b> <span class="log-sc">&middot; kel_pull.py</span><div class="log-err">File "C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\ssl.py", line 1138, in read
+    return self._s</div></td><td class="log-td-st"><span class="lp lp-f">FAILED</span></td></tr>
+<tr><td class="log-td-d">Jul 15, 2026 08:22 PM</td><td class="log-td-ds"><b>Ollies</b> <span class="log-sc">&middot; ol_pull.py</span><div class="log-err">Dropped 267 rows (2,138 → 1,871)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
 <tr><td class="log-td-d">Jul 15, 2026 11:00 AM</td><td class="log-td-ds"><b>Vermont</b> <span class="log-sc">&middot; vt_pull.py</span><div class="log-err">Dropped 48 rows (691 → 643)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
 <tr><td class="log-td-d">Jul 14, 2026 03:00 PM</td><td class="log-td-ds"><b>Data Carz</b> <span class="log-sc">&middot; dc_pull.py</span><div class="log-err">Dropped 1 rows (3,184 → 3,183)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
 <tr><td class="log-td-d">Jul 14, 2026 03:00 PM</td><td class="log-td-ds"><b>Hamilton</b> <span class="log-sc">&middot; Hamilton_pull.py</span><div class="log-err">Dropped 1 rows (4,003 → 4,002)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
@@ -600,11 +608,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 <tr><td class="log-td-d">Jul 02, 2026 03:22 AM</td><td class="log-td-ds"><b>Hamilton</b> <span class="log-sc">&middot; C:\Users\Mike Woo Cerna\Documents\PB\Quality\Hamilton\Hamilton_pull.py</span><div class="log-err">Count drop auto-recovered. Apps Script re-triggered, dashboard rebuilt and pushed. Rows before drop: 3,555 → rows after </div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
 <tr><td class="log-td-d">Jul 02, 2026 03:00 AM</td><td class="log-td-ds"><b>ycdc_pull.py</b> <span class="log-sc">&middot; ycdc_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
 <tr><td class="log-td-d">Jul 02, 2026 03:00 AM</td><td class="log-td-ds"><b>Hamilton</b> <span class="log-sc">&middot; Hamilton_pull.py</span><div class="log-err">Dropped 889 rows (3,555 → 2,666)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
-<tr><td class="log-td-d">Jul 01, 2026 03:00 PM</td><td class="log-td-ds"><b>rc_pull.py</b> <span class="log-sc">&middot; rc_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
-<tr><td class="log-td-d">Jul 01, 2026 06:18 AM</td><td class="log-td-ds"><b>Hamilton</b> <span class="log-sc">&middot; C:\Users\Mike Woo Cerna\Documents\PB\Quality\Hamilton\Hamilton_pull.py</span><div class="log-err">Count drop auto-recovered. Apps Script re-triggered, dashboard rebuilt and pushed. Rows before drop: 3,531 → rows after </div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
-<tr><td class="log-td-d">Jul 01, 2026 06:00 AM</td><td class="log-td-ds"><b>Hamilton</b> <span class="log-sc">&middot; Hamilton_pull.py</span><div class="log-err">Dropped 1,892 rows (3,531 → 1,639)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
-<tr><td class="log-td-d">Jun 30, 2026 11:00 AM</td><td class="log-td-ds"><b>Ridex_pull.py</b> <span class="log-sc">&middot; Ridex_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
-<tr><td class="log-td-d">Jun 29, 2026 06:00 AM</td><td class="log-td-ds"><b>ac_pull.py</b> <span class="log-sc">&middot; ac_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr></tbody>
+<tr><td class="log-td-d">Jul 01, 2026 03:00 PM</td><td class="log-td-ds"><b>rc_pull.py</b> <span class="log-sc">&middot; rc_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr></tbody>
       </table>
     </div>
   </div>
@@ -626,7 +630,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   var ang = -Math.PI/2;
   var TRAIL = Math.PI * 1.35;
   var time = 0;
-  var FAIL = false;
+  var FAIL = true;
 
   var blips = [
     {ang:-90.00,r:0.63,st:"pass",nm:"Masterlist"},
@@ -649,10 +653,10 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     {ang:165.00,r:0.44,st:"pass",nm:"Ollies"},
     {ang:180.00,r:0.63,st:"pass",nm:"Cir.Taxi"},
     {ang:195.00,r:0.44,st:"pass",nm:"YCOV"},
-    {ang:210.00,r:0.63,st:"pending",nm:"Kelowna"},
-    {ang:225.00,r:0.44,st:"pending",nm:"Vermont"},
-    {ang:240.00,r:0.63,st:"pending",nm:"YCDC"},
-    {ang:255.00,r:0.44,st:"pending",nm:"Blueline"},
+    {ang:210.00,r:0.63,st:"fail",nm:"Kelowna"},
+    {ang:225.00,r:0.44,st:"blocked",nm:"Vermont"},
+    {ang:240.00,r:0.63,st:"blocked",nm:"YCDC"},
+    {ang:255.00,r:0.44,st:"blocked",nm:"Blueline"},
   ];
 
   function draw() {

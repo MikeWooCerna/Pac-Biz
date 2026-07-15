@@ -2,8 +2,8 @@
   "run_id": "2026-07-15T20:48:38",
   "started_at": "2026-07-15T20:48:38.167474",
   "finished_at": null,
-  "status": "running",
-  "failed_at": null,
+  "status": "failed",
+  "failed_at": "Kelowna",
   "steps": [
     {
       "account": "Masterlist",
@@ -164,6 +164,14 @@
       "status": "pass",
       "timestamp": "2026-07-15T20:52:57.110570",
       "error": null
+    },
+    {
+      "account": "Kelowna",
+      "script": "kel_pull.py",
+      "exit_code": 1,
+      "status": "fail",
+      "timestamp": "2026-07-15T20:56:13.711281",
+      "error": "  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\ssl.py\", line 1138, in read\n    return self._sslobj.read(len, buffer)\n           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^\nTimeoutError: The read operation timed out"
     }
   ]
 }
