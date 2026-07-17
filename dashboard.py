@@ -1780,6 +1780,7 @@ def load_hamilton_data():
             "coach", "supervisor",
         ])
     result = transform_hamilton_data(source)
+    result = protect_qa_drop(result, "hamiltonRawData", "Hamilton")
     print(f"Hamilton QA rows: {len(result)}")
     return result
 
@@ -2311,6 +2312,7 @@ def load_ch_data():
             "coach", "supervisor",
         ])
     result = transform_ch_data(source)
+    result = protect_qa_drop(result, "chRawData", "C&H")
     print(f"C&H QA rows: {len(result)}")
     return result
 
@@ -2483,6 +2485,7 @@ def load_rc_data():
             "coach", "supervisor",
         ])
     result = transform_rc_data(source)
+    result = protect_qa_drop(result, "rcRawData", "Reno Cab")
     print(f"Reno Cab QA rows: {len(result)}")
     return result
 
@@ -2828,6 +2831,7 @@ def load_dc_data():
             "coach", "supervisor",
         ])
     result = transform_dc_data(source)
+    result = protect_qa_drop(result, "dcRawData", "Data Carz")
     print(f"Data Carz QA rows: {len(result)}")
     return result
 
@@ -3696,6 +3700,7 @@ def load_kel_data():
             "coach", "supervisor",
         ])
     result = transform_kel_data(source)
+    result = protect_qa_drop(result, "kelRawData", "Kelowna")
     print(f"Kelowna QA rows: {len(result)}")
     return result
 
@@ -4255,6 +4260,23 @@ def load_existing_records_from_html(variable_name):
         return clean_columns(pd.DataFrame(json.loads(html[start:end])))
     except (json.JSONDecodeError, ValueError):
         return pd.DataFrame()
+
+
+def protect_qa_drop(result, variable_name, account_name, min_ratio=0.95):
+    existing = load_existing_records_from_html(variable_name)
+    if existing.empty:
+        return result
+
+    current_count = len(result)
+    previous_count = len(existing)
+    if previous_count and current_count < int(previous_count * min_ratio):
+        print(
+            f"{account_name} QA rows protected: fresh pull {current_count:,} "
+            f"< prior dashboard {previous_count:,}; keeping prior dashboard rows"
+        )
+        return existing
+
+    return result
 
 
 COACHING_CATEGORY_RULES = {
