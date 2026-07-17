@@ -1487,5 +1487,16 @@
     "status": "healed",
     "action": "retry",
     "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-07-17T19:00:01",
+    "date": "Jul 17, 2026 07:00 PM",
+    "account": "YCDC",
+    "script": "ycdc_pull.py",
+    "status": "count_drop",
+    "drop": 2,
+    "prev_count": 3053,
+    "new_count": 3051,
+    "error": "Dropped 2 rows (3,053 \u2192 3,051)"
   }
 ]
