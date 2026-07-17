@@ -1498,5 +1498,60 @@
     "prev_count": 3053,
     "new_count": 3051,
     "error": "Dropped 2 rows (3,053 \u2192 3,051)"
+  },
+  {
+    "run_id": "2026-07-18T03:00:02",
+    "date": "Jul 18, 2026 03:00 AM",
+    "account": "Hamilton",
+    "script": "Hamilton_pull.py",
+    "status": "count_drop",
+    "drop": 487,
+    "prev_count": 4100,
+    "new_count": 3613,
+    "error": "Dropped 487 rows (4,100 \u2192 3,613)"
+  },
+  {
+    "run_id": "2026-07-18T03:00:02",
+    "date": "Jul 18, 2026 03:00 AM",
+    "account": "C&H",
+    "script": "ch_pull.py",
+    "status": "count_drop",
+    "drop": 252,
+    "prev_count": 425,
+    "new_count": 173,
+    "error": "Dropped 252 rows (425 \u2192 173)"
+  },
+  {
+    "run_id": "2026-07-18T03:00:02",
+    "date": "Jul 18, 2026 03:00 AM",
+    "account": "Reno Cab",
+    "script": "rc_pull.py",
+    "status": "count_drop",
+    "drop": 210,
+    "prev_count": 3257,
+    "new_count": 3047,
+    "error": "Dropped 210 rows (3,257 \u2192 3,047)"
+  },
+  {
+    "run_id": "2026-07-18T03:00:02",
+    "date": "Jul 18, 2026 03:00 AM",
+    "account": "Data Carz",
+    "script": "dc_pull.py",
+    "status": "count_drop",
+    "drop": 2482,
+    "prev_count": 3246,
+    "new_count": 764,
+    "error": "Dropped 2,482 rows (3,246 \u2192 764)"
+  },
+  {
+    "run_id": "2026-07-18T03:00:02",
+    "date": "Jul 18, 2026 03:00 AM",
+    "account": "Kelowna",
+    "script": "kel_pull.py",
+    "status": "count_drop",
+    "drop": 513,
+    "prev_count": 2729,
+    "new_count": 2216,
+    "error": "Dropped 513 rows (2,729 \u2192 2,216)"
   }
 ]
