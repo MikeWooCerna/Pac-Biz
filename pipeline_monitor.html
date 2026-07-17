@@ -184,8 +184,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     </div>
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run 2026-07-17T19:00</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Dashboard: &mdash;</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Jul 17, 2026 07:08 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Dashboard: Jul 17, 2026 07:16 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Jul 17, 2026 07:16 PM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -374,8 +374,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
         </div>
         <div class="dash-body">
           <div class="stage-title">Dashboard</div>
-          <div class="stage-status"><div class="blink-n"></div></div>
-          <div class="stage-detail">not reached</div>
+          <div id="dash-freshness" style="margin:5px 0 3px;min-height:20px;display:flex;justify-content:center;align-items:center;font-size:12px;"></div>
         </div>
       </a>
 
@@ -778,7 +777,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 
 // ── Dashboard freshness ───────────────────────────────────────────────────────
 (function() {
-  var BUILD_ISO = "";
+  var BUILD_ISO = "2026-07-17T19:16:39.345851";
   var el = document.getElementById('dash-freshness');
   if (!el || !BUILD_ISO) return;
   var buildTs = new Date(BUILD_ISO);
