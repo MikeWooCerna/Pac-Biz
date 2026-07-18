@@ -1553,5 +1553,14 @@
     "prev_count": 2729,
     "new_count": 2216,
     "error": "Dropped 513 rows (2,729 \u2192 2,216)"
+  },
+  {
+    "run_id": "2026-07-18T15:00:01",
+    "date": "Jul 18, 2026 03:00 PM",
+    "account": "ch_pull.py",
+    "script": "ch_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
   }
 ]
