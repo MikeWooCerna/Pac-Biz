@@ -19,6 +19,7 @@ NOTIFIED_FILE    = BASE_DIR / "movement_notified.json"
 LOGO_PATH        = BASE_DIR / "pacbiz_logo.png"
 
 CC_ALWAYS  = ["it-team@pac-biz.com", "hr@pac-biz.com", "gibson@pac-biz.com"]
+ATTRITION_CC = ["hadhassah@pac-biz.com"]
 BCC_ALWAYS = ["reports@pac-biz.com"]
 
 
@@ -563,7 +564,8 @@ def main():
 
         to_email  = submitter_email or ""
         sup_email = get_supervisor_email(row, ml_df, n2e)
-        cc_list   = [e for e in ([sup_email] + CC_ALWAYS) if e]
+        extra_cc  = ATTRITION_CC if mov_type.strip().lower() == "attrition" else []
+        cc_list   = [e for e in ([sup_email] + CC_ALWAYS + extra_cc) if e]
 
         subject   = f"Employee Movement {mov_type} - {emp_name}"
         html_body = build_html(row, ref_num, submitted_by, processed_on, ml_df=ml_df)
