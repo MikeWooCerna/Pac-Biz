@@ -13,6 +13,7 @@ OUTPUT_FILE  = BASE / "pipeline_monitor.html"
 
 HIGH_VOLUME_WARN = 10_000   # amber badge + strip
 HIGH_VOLUME_CRIT = 20_000   # red badge + strip + email
+DROP_ALERT_MIN_PCT = 5.0    # align with self_heal.py; ignore tiny row drift
 LOGO_FILE    = BASE / "pacbiz_logo.png"
 # Dark-theme logo (same rendering the Scheduler uses) — preferred for the
 # monitor's dark UI; logo_b64() falls back to the white logo if missing.
@@ -116,6 +117,14 @@ def save_baseline(data):
         BASELINE_FILE.write_text(json.dumps(data, indent=2, default=str), encoding="utf-8")
     except Exception:
         pass
+
+def is_significant_drop(prev_count, new_count):
+    if prev_count is None or new_count is None:
+        return False
+    if prev_count <= 0 or new_count >= prev_count:
+        return False
+    drop_pct = (prev_count - new_count) / prev_count * 100
+    return drop_pct >= DROP_ALERT_MIN_PCT
 
 def load_highvol_notified():
     try:
@@ -375,7 +384,7 @@ def generate():
             for a in account_states:
                 if a["rows"] is not None:
                     prev = baseline.get(a["name"])
-                    if prev is not None and a["rows"] < prev:
+                    if is_significant_drop(prev, a["rows"]):
                         drop = prev - a["rows"]
                         log_entries.append({"run_id": run_id_full, "date": run_date,
                                             "account": a["name"], "script": a["script"],
@@ -412,8 +421,12 @@ def generate():
     count_drops = []
     if raw:
         run_id_full = raw.get("run_id", "")
-        count_drops = [e for e in log_entries
-                       if e.get("run_id") == run_id_full and e.get("status") == "count_drop"]
+        count_drops = [
+            e for e in log_entries
+            if e.get("run_id") == run_id_full
+            and e.get("status") == "count_drop"
+            and is_significant_drop(e.get("prev_count"), e.get("new_count"))
+        ]
     drop_by_account = {d["account"]: d for d in count_drops}
 
     # Remove drops that have already been healed or source-confirmed. Same-run
