@@ -124,6 +124,14 @@
       "status": "pass",
       "timestamp": "2026-07-20T11:12:43.382023",
       "error": null
+    },
+    {
+      "account": "Data Carz",
+      "script": "dc_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-07-20T11:13:52.392595",
+      "error": null
     }
   ]
 }
