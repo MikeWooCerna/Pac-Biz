@@ -1636,5 +1636,13 @@
     "status": "healed",
     "action": "retry",
     "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-07-21T19:00:03",
+    "date": "Jul 21, 2026 07:00 PM",
+    "account": "Skyline",
+    "script": "Skyline_pull.py",
+    "status": "high_volume",
+    "error": "Warning: 18,684 rows (threshold 10,000)"
   }
 ]
