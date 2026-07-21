@@ -148,6 +148,14 @@
       "status": "pass",
       "timestamp": "2026-07-21T15:11:09.596432",
       "error": null
+    },
+    {
+      "account": "Circle Taxi",
+      "script": "ct_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-07-21T15:11:41.377970",
+      "error": null
     }
   ]
 }
