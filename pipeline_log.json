@@ -1607,5 +1607,25 @@
     "status": "healed",
     "action": "retry",
     "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-07-21T11:00:04",
+    "date": "Jul 21, 2026 11:00 AM",
+    "account": "YCOV",
+    "script": "ycov_pull.py",
+    "status": "count_drop",
+    "drop": 438,
+    "prev_count": 1080,
+    "new_count": 642,
+    "error": "Dropped 438 rows (1,080 \u2192 642)"
+  },
+  {
+    "run_id": "2026-07-21T11:00:04",
+    "date": "Jul 21, 2026 11:00 AM",
+    "account": "vt_pull.py",
+    "script": "vt_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
   }
 ]
