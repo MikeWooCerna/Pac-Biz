@@ -188,6 +188,14 @@
       "status": "fail",
       "timestamp": "2026-07-23T03:11:06.288187",
       "error": "    raise RuntimeError(\n    ...<3 lines>...\n    )\nRuntimeError: YCDC source row count below safety floor: 88 < 2500. Existing RAW file was not overwritten."
+    },
+    {
+      "account": "Blueline",
+      "script": "bl_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-07-23T03:11:28.560459",
+      "error": null
     }
   ]
 }
