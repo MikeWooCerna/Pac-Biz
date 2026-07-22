@@ -391,6 +391,7 @@ def generate():
                                             "status": "count_drop", "drop": drop,
                                             "prev_count": prev, "new_count": a["rows"],
                                             "error": f"Dropped {drop:,} rows ({prev:,} → {a['rows']:,})"})
+                        continue
                     new_baseline[a["name"]] = a["rows"]
             # Build and Git Push step failures
             build_s = steps_map.get("Build")
@@ -421,12 +422,34 @@ def generate():
     count_drops = []
     if raw:
         run_id_full = raw.get("run_id", "")
+        run_date_display = fmt_log_date(raw.get("started_at", ""))
         count_drops = [
             e for e in log_entries
             if e.get("run_id") == run_id_full
             and e.get("status") == "count_drop"
             and is_significant_drop(e.get("prev_count"), e.get("new_count"))
         ]
+        baseline = load_baseline()
+        logged_accounts = {e.get("account") for e in count_drops}
+        for a in account_states:
+            prev = baseline.get(a["name"])
+            rows = a.get("rows")
+            if (
+                rows is not None
+                and a["name"] not in logged_accounts
+                and is_significant_drop(prev, rows)
+            ):
+                count_drops.append({
+                    "run_id": run_id_full,
+                    "date": run_date_display,
+                    "account": a["name"],
+                    "script": a["script"],
+                    "status": "count_drop",
+                    "drop": prev - rows,
+                    "prev_count": prev,
+                    "new_count": rows,
+                    "error": f"Dropped {prev - rows:,} rows ({prev:,} → {rows:,})",
+                })
     drop_by_account = {d["account"]: d for d in count_drops}
 
     # Remove drops that have already been healed or source-confirmed. Same-run

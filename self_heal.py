@@ -168,7 +168,7 @@ def run_step(script):
                     action="retry",
                     detail="Failed on attempt 1, recovered automatically on retry."
                 )
-                print(f"[self-heal] {label} recovered on retry. ✓", flush=True)
+                print(f"[self-heal] {label} recovered on retry. OK", flush=True)
             sys.exit(0)
 
         if result.stderr:
@@ -215,7 +215,7 @@ def heal_drops():
             continue
 
         script, directory = pull_info
-        print(f"[self-heal] {account}: dropped {prev_count:,} → {current:,} ({drop_pct:.1f}%). Re-pulling...", flush=True)
+        print(f"[self-heal] {account}: dropped {prev_count:,} -> {current:,} ({drop_pct:.1f}%). Re-pulling...", flush=True)
 
         result = subprocess.run(
             [sys.executable, script],
@@ -234,7 +234,7 @@ def heal_drops():
             detail = f"Count dropped {prev_count:,} → {current:,}. Re-pull recovered {new_count:,} rows."
             log_heal_event(account=account, script=script, action="repull", detail=detail)
             _notify.notify_healed(account=account, script=script, action="repull", detail=detail)
-            print(f"[self-heal] {account}: recovered — {new_count:,} rows. ✓", flush=True)
+            print(f"[self-heal] {account}: recovered - {new_count:,} rows. OK", flush=True)
         else:
             recovered = new_count if new_count is not None else current
             detail = f"Count dropped {prev_count:,} → {current:,}. Re-pull still low: {recovered:,} rows. Likely a source-side issue."

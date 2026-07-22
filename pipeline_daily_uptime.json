@@ -465,18 +465,18 @@
   },
   {
     "date": "2026-07-22",
-    "runs": 1,
-    "successful_runs": 1,
+    "runs": 2,
+    "successful_runs": 2,
     "partial_runs": 0,
     "failed_runs": 0,
     "uptime_pct": 100.0,
-    "steps": 26,
-    "passed_steps": 26,
+    "steps": 52,
+    "passed_steps": 52,
     "failed_steps": 0,
     "step_uptime_pct": 100.0,
-    "incident_count": 1,
+    "incident_count": 3,
     "count_drop_count": 0,
-    "self_healed_count": 1,
-    "high_volume_count": 0
+    "self_healed_count": 2,
+    "high_volume_count": 1
   }
 ]
