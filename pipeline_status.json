@@ -2,8 +2,8 @@
   "run_id": "2026-07-23T03:00:01",
   "started_at": "2026-07-23T03:00:01.767776",
   "finished_at": null,
-  "status": "running",
-  "failed_at": null,
+  "status": "failed",
+  "failed_at": "YCDC",
   "steps": [
     {
       "account": "Masterlist",
@@ -180,6 +180,14 @@
       "status": "pass",
       "timestamp": "2026-07-23T03:09:36.940265",
       "error": null
+    },
+    {
+      "account": "YCDC",
+      "script": "ycdc_pull.py",
+      "exit_code": 1,
+      "status": "fail",
+      "timestamp": "2026-07-23T03:11:06.288187",
+      "error": "    raise RuntimeError(\n    ...<3 lines>...\n    )\nRuntimeError: YCDC source row count below safety floor: 88 < 2500. Existing RAW file was not overwritten."
     }
   ]
 }
