@@ -34,6 +34,12 @@ MOVEMENT_CACHE = BASE_DIR / "movement_cache.csv"
 DASHBOARD_HTML = BASE_DIR / "masterlist_dashboard.html"
 
 
+def _text(value: object) -> str:
+    if pd.isna(value):
+        return ""
+    return str(value).strip()
+
+
 def _read_csv(path: Path) -> pd.DataFrame:
     if not path.exists():
         raise FileNotFoundError(f"Missing required cache: {path.name}")
@@ -80,6 +86,54 @@ def _eligible_processed_rows(movement: pd.DataFrame) -> list[pd.Series]:
         for _, row in movement.iterrows()
         if movement_notify.is_ready_to_notify(row)
     ]
+
+
+def _parse_date(value: object) -> pd.Timestamp | None:
+    text = _text(value)
+    if not text:
+        return None
+    parsed = pd.to_datetime(text, errors="coerce")
+    if pd.isna(parsed):
+        return None
+    return parsed.normalize()
+
+
+def _is_yes(value: object) -> bool:
+    return _text(value).lower() == "yes"
+
+
+def verify_no_overdue_unprocessed_movements(movement: pd.DataFrame) -> int:
+    """Fail loudly when Apps Script left due Movement rows unprocessed.
+
+    Movement emails intentionally require Processed = Yes. If an overdue row is
+    still unprocessed, the email sender must not fire yet; this guard makes the
+    pipeline surface the real upstream issue instead of passing silently.
+    """
+    today = pd.Timestamp.today().normalize()
+    issues = 0
+
+    for idx, row in movement.iterrows():
+        if _is_yes(row.get("Void")) or _is_yes(row.get("Processed")):
+            continue
+
+        effective = _parse_date(row.get("Effective Date"))
+        if effective is None or effective > today:
+            continue
+
+        emp_name = _text(row.get("Employee Name")) or "(blank employee)"
+        mov_type = _text(row.get("Type of Movement")) or "(blank movement type)"
+        timestamp = _text(row.get("Timestamp")) or "(blank timestamp)"
+        note = _text(row.get("Processed Note")) or "no processed note"
+        print(
+            "[movement_reconcile][WARN] Overdue movement still unprocessed: "
+            f"row {idx + 2}, {emp_name}, {mov_type}, effective "
+            f"{effective.strftime('%m/%d/%Y')}, timestamp {timestamp}, {note}"
+        )
+        issues += 1
+
+    if issues == 0:
+        print("[movement_reconcile] No overdue unprocessed movements found.")
+    return issues
 
 
 def notify_missing_processed_movements(movement: pd.DataFrame) -> int:
@@ -228,7 +282,8 @@ def main(argv: list[str] | None = None) -> int:
     if notify_rc != 0:
         return notify_rc
 
-    issues = verify_processed_movements(masterlist, history, movement)
+    issues = verify_no_overdue_unprocessed_movements(movement)
+    issues += verify_processed_movements(masterlist, history, movement)
 
     if not args.no_dashboard_patch:
         try:

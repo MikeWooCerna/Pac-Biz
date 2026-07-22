@@ -275,6 +275,9 @@ Important behavior:
 - Python notification scripts must only send emails after Apps Script has set `Processed = Yes`.
   Do not make Python mark Movement rows processed, and do not add movement email sending to
   the Apps Script.
+- `movement_reconcile.py` now fails with a clear warning when a non-void Movement row has
+  `Effective Date <= today` but is still not marked `Processed = Yes`. This makes missed
+  Apps Script processing visible in the pipeline monitor without sending premature emails.
 
 Notification eligibility:
 - `Processed` must be `Yes`
