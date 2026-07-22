@@ -274,6 +274,12 @@ Pipeline monitoring system is fully live as of 2026-06-22. See `PIPELINE_MONITOR
   - Movement notification emails are still handled by `check_movement_notifications.py` /
     `update_movement_notifications_auto.bat`; the Apps Script only marks Movement rows processed
     and updates Masterlist/History. Do not add email sending inside the Apps Script.
+- **Movement-only Apps Script trigger** — `masterlist_appsscript_enhanced.gs` now also includes
+  `runMovementProcessOnly()`, `installMovementProcessingTrigger()`, and
+  `removeMovementProcessingTriggers()`. After copying the Apps Script into Google Apps Script,
+  run `installMovementProcessingTrigger()` once to create a 15-minute trigger dedicated to
+  overdue Movement rows. This reduces misses where the full Masterlist/History run has not
+  processed a Movement row before `update_movement_notifications_auto.bat` checks for emails.
 - **Movement timing rule clarified** — if a Movement row has an effective date in the past
   (example: `07/07/2026` when today is `07/15/2026`), it is eligible for processing immediately.
   If it is still blank under `Processed`, investigate Apps Script execution failures/timeouts first,

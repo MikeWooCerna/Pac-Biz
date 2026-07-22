@@ -265,6 +265,11 @@ heavier daily History snapshot, uses a script lock, and stops before Google's ha
 so past-effective movements do not get stranded by `DEADLINE_EXCEEDED` / maximum execution time
 failures.
 
+For more reliable same-day movement emails, the Apps Script also has a movement-only path:
+`runMovementProcessOnly()`. Run `installMovementProcessingTrigger()` once in the Apps Script UI
+to create a 15-minute trigger for that lightweight processor. The trigger marks due Movement rows
+processed and backfills History; Python still sends emails only after the row is processed.
+
 Important behavior:
 - Past-effective rows are eligible immediately when `Effective Date <= today`.
 - Attrition rows should set Masterlist `Employment Status` to `Inactive` and backfill History

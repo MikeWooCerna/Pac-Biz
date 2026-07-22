@@ -8,6 +8,7 @@ const LOG_ACCOUNT_NAME   = 'Masterlist';
 // Stop before Google's 30-minute hard timeout so Movement rows can finish cleanly.
 const MAX_RUNTIME_MS = 25 * 60 * 1000;
 const HISTORY_REFRESH_MIN_REMAINING_MS = 4 * 60 * 1000;
+const MOVEMENT_TRIGGER_INTERVAL_MINUTES = 15;
 
 // Required columns per sheet — health check will flag any that are missing.
 const REQUIRED_MASTER_COLS   = ['Emp Name', 'Department', 'LOB / Account', 'Immediate Supervisor', 'Manager', 'Job Title', 'Employment Status', 'Attrition Date'];
@@ -100,6 +101,97 @@ function runMasterlistProcess() {
     logPipelineRun(rowsProcessed, historyRowsWritten, durationSec, status, notes);
     lock.releaseLock();
   }
+}
+
+
+// ============================================================
+//  MOVEMENT-ONLY ENTRY POINT  — use this for frequent triggers
+// ============================================================
+
+function runMovementProcessOnly() {
+  const startTime = Date.now();
+  const lock = LockService.getScriptLock();
+
+  if (!lock.tryLock(30000)) {
+    Logger.log('runMovementProcessOnly skipped: another run is still active.');
+    return;
+  }
+
+  let rowsProcessed      = 0;
+  let historyRowsWritten = 0;
+  let status             = 'ok';
+  let notes              = '';
+
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+    const master   = ss.getSheetByName('Masterlist');
+    const movement = ss.getSheetByName('Movement');
+    let   history  = ss.getSheetByName('History');
+    if (!history) history = ss.insertSheet('History');
+
+    const health = runHealthCheck(ss, master, movement, history);
+
+    if (health.blocking) {
+      status = 'error';
+      notes  = 'Blocked by health check: ' + health.errors.slice(0, 3).join(' | ');
+      Logger.log('runMovementProcessOnly BLOCKED: ' + notes);
+      return;
+    }
+
+    if (health.warnings.length > 0) {
+      status = 'warn';
+      notes  = health.warnings.slice(0, 3).join(' | ');
+    }
+
+    const today     = new Date();
+    const todayText = Utilities.formatDate(today, ss.getSpreadsheetTimeZone(), 'MM/dd/yyyy');
+
+    setupMovementTrackingColumns(movement);
+    setupHistorySheet(master, history);
+
+    const result = processMovements(master, movement, history, today, todayText, startTime);
+    rowsProcessed = result.movementsApplied;
+
+    if (result.warnings.length > 0) {
+      status = 'warn';
+      notes  = appendNote(notes, result.warnings.slice(0, 3).join(' | '));
+    }
+
+    if (result.partial) {
+      status = 'warn';
+      notes = appendNote(notes, 'Movement-only processing paused before timeout; next trigger will resume.');
+    } else if (rowsProcessed === 0) {
+      notes = appendNote(notes, 'No eligible movements to process.');
+    }
+
+  } catch (e) {
+    status = 'error';
+    notes  = e.message;
+    Logger.log('runMovementProcessOnly ERROR: ' + e.message);
+  } finally {
+    const durationSec = Math.round((Date.now() - startTime) / 1000);
+    logPipelineRun(rowsProcessed, historyRowsWritten, durationSec, status, notes);
+    lock.releaseLock();
+  }
+}
+
+
+function installMovementProcessingTrigger() {
+  removeMovementProcessingTriggers();
+  ScriptApp.newTrigger('runMovementProcessOnly')
+    .timeBased()
+    .everyMinutes(MOVEMENT_TRIGGER_INTERVAL_MINUTES)
+    .create();
+}
+
+
+function removeMovementProcessingTriggers() {
+  ScriptApp.getProjectTriggers().forEach(trigger => {
+    if (trigger.getHandlerFunction() === 'runMovementProcessOnly') {
+      ScriptApp.deleteTrigger(trigger);
+    }
+  });
 }
 
 
