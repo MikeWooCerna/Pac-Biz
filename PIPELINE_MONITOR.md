@@ -270,6 +270,13 @@ For more reliable same-day movement emails, the Apps Script also has a movement-
 to create a 15-minute trigger for that lightweight processor. The trigger marks due Movement rows
 processed and backfills History; Python still sends emails only after the row is processed.
 
+Mike also added a Windows Task Scheduler watcher on 2026-07-22 for:
+`C:\Users\Mike Woo Cerna\Documents\PB\Masterlist\update_movement_notifications_auto.bat`.
+Recommended cadence is every 15 minutes. Configure the action as `cmd.exe` with arguments
+`/c ""C:\Users\Mike Woo Cerna\Documents\PB\Masterlist\update_movement_notifications_auto.bat""`
+and Start in `C:\Users\Mike Woo Cerna\Documents\PB\Masterlist`. This local watcher is what fetches
+the processed Movement rows and sends notification emails.
+
 Important behavior:
 - Past-effective rows are eligible immediately when `Effective Date <= today`.
 - Attrition rows should set Masterlist `Employment Status` to `Inactive` and backfill History
