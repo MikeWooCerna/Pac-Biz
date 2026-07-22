@@ -254,6 +254,26 @@ The Git Repository stage node also surfaces the most recent Guardian run, source
 
 ---
 
+## Daily Status History / Uptime
+
+`pipeline_status_history.py` runs automatically from `generate_monitor.py` after every pipeline
+monitor generation. It converts the latest `pipeline_status.json` into dashboard-ready history
+files:
+
+- `pipeline_run_history.json` — one record per pipeline run, including run date, start/finish,
+  duration, overall status, and step counts.
+- `pipeline_step_history.csv` — one row per account/stage per run, useful for account-level
+  uptime charts.
+- `pipeline_daily_uptime.csv` / `pipeline_daily_uptime.json` — daily rollup with run uptime,
+  step uptime, failed step counts, incident counts, count drops, self-healed events, and high
+  volume warnings.
+
+Historical uptime starts on 2026-07-22, when this ledger was introduced. Older days may show
+incident counts from `pipeline_log.json` with blank uptime fields because complete run history
+was not retained before this file existed.
+
+---
+
 ## Employee Movement Notifications
 
 `check_movement_notifications.py` runs immediately after `masterlist_fetch.py`, before the account QA pulls. It reads `movement_cache.csv`, compares each processed movement against `movement_notified.json`, and sends one HTML email per newly processed movement.

@@ -1126,6 +1126,13 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 
 generate()
 
+# Persist every pipeline run for daily uptime dashboards.
+try:
+    import pipeline_status_history
+    pipeline_status_history.run()
+except Exception as _hist_err:
+    print(f"[status_history] Error: {_hist_err}")
+
 # Run drop investigation — sends email only when new drops are found
 try:
     import diagnose_drops

@@ -29,6 +29,7 @@ at build time — it has no pull script and no local Excel file.
 | `test_connection.py` | Google Sheets API connectivity test |
 | `pacbiz_logo.png` / `pacbiz_favicon.png` | Branding assets embedded in the HTML at build time |
 | `diagnose_drops.py` | Count drop investigation agent — runs after every build, sends email report, auto-triggers Apps Script heal |
+| `pipeline_status_history.py` | Appends run/step status history and daily uptime rollups for dashboarding |
 | `appsscript_triggers.json` | Maps account name → Apps Script web app URL for auto-heal (currently: Kelowna) |
 | `pipeline_drops_notified.json` | Tracks which drop events have already been reported — prevents duplicate emails |
 
@@ -175,6 +176,7 @@ Pipeline monitoring system is fully live as of 2026-06-22. See `PIPELINE_MONITOR
 - **Windows Task Scheduler movement watcher** — Mike created a local Task Scheduler entry for `C:\Users\Mike Woo Cerna\Documents\PB\Masterlist\update_movement_notifications_auto.bat` on 2026-07-22. It should run every 15 minutes, using `cmd.exe /c ""C:\Users\Mike Woo Cerna\Documents\PB\Masterlist\update_movement_notifications_auto.bat""`, with Start in set to `C:\Users\Mike Woo Cerna\Documents\PB\Masterlist`. This pairs with the Apps Script `runMovementProcessOnly()` 15-minute trigger: Apps Script marks due rows processed; the Windows watcher fetches the cache and sends emails.
 - **Movement reconciliation guard** — `movement_reconcile.py` prevents the repeat issue where a Movement row is processed but the email/dashboard snapshot stays stale. It checks processed/non-void Movement rows against `movement_notified.json`, delegates any missing emails to `check_movement_notifications.py`, verifies processed movement cache state, and patches `masterlist_dashboard.html` constants (`masterlist`, `historyData`, `movementData`, `masterlistKpis`) from cache. It runs after `dashboard.py` in both full bat files before Git publish, and after the notifier in `update_movement_notifications_auto.bat`; the movement-only batch now commits/pushes the reconciled dashboard snapshot when that patch changes the HTML.
 - **Overdue Movement processing guard** — `movement_reconcile.py` also fails with a clear warning when a non-void Movement row has an `Effective Date` today or earlier but is still not marked `Processed = Yes`. This does **not** send an email or edit Google Sheets; it surfaces the upstream Apps Script processing miss so the pipeline cannot silently pass while movement emails are correctly blocked by the `Processed = Yes` requirement.
+- **Daily pipeline status history / uptime files** — `pipeline_status_history.py` is called by `generate_monitor.py` after each monitor build. It writes `pipeline_run_history.json`, `pipeline_step_history.csv`, and `pipeline_daily_uptime.csv/json`. Use these files for future uptime/status dashboards instead of scraping `pipeline_monitor.html`. Full run uptime starts from 2026-07-22; older dates may only have incident counts from `pipeline_log.json`.
 
 ### Changes made 2026-07-11
 - **M7 upstream feed restored** (`Quality/M7/m7_appsscript_pull.gs`) — the Apps Script that fed the

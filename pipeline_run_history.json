@@ -1,0 +1,15 @@
+[
+  {
+    "run_id": "2026-07-22T19:00:01",
+    "run_date": "2026-07-22",
+    "started_at": "2026-07-22T19:00:01.881525",
+    "finished_at": "2026-07-22T19:24:31.167808",
+    "duration_sec": 1469.286,
+    "status": "success",
+    "step_count": 26,
+    "passed_steps": 26,
+    "failed_steps": 0,
+    "not_reached_steps": 0,
+    "failed_at": null
+  }
+]
