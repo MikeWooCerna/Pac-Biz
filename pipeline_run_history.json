@@ -24,5 +24,57 @@
     "failed_steps": 0,
     "not_reached_steps": 0,
     "failed_at": null
+  },
+  {
+    "run_id": "2026-07-23T03:00:01",
+    "run_date": "2026-07-23",
+    "started_at": "2026-07-23T03:00:01.767776",
+    "finished_at": "2026-07-23T03:21:28.626182",
+    "duration_sec": 1286.858,
+    "status": "failed",
+    "step_count": 26,
+    "passed_steps": 25,
+    "failed_steps": 1,
+    "not_reached_steps": 0,
+    "failed_at": "YCDC"
+  },
+  {
+    "run_id": "2026-07-23T06:00:01",
+    "run_date": "2026-07-23",
+    "started_at": "2026-07-23T06:00:01.925485",
+    "finished_at": "2026-07-23T06:21:52.847067",
+    "duration_sec": 1310.922,
+    "status": "success",
+    "step_count": 26,
+    "passed_steps": 26,
+    "failed_steps": 0,
+    "not_reached_steps": 0,
+    "failed_at": null
+  },
+  {
+    "run_id": "2026-07-23T11:00:02",
+    "run_date": "2026-07-23",
+    "started_at": "2026-07-23T11:00:02.078418",
+    "finished_at": "2026-07-23T11:27:39.468039",
+    "duration_sec": 1657.39,
+    "status": "success",
+    "step_count": 26,
+    "passed_steps": 26,
+    "failed_steps": 0,
+    "not_reached_steps": 0,
+    "failed_at": null
+  },
+  {
+    "run_id": "2026-07-23T15:00:02",
+    "run_date": "2026-07-23",
+    "started_at": "2026-07-23T15:00:02.229391",
+    "finished_at": "2026-07-23T15:56:57.465719",
+    "duration_sec": 3415.236,
+    "status": "success",
+    "step_count": 26,
+    "passed_steps": 26,
+    "failed_steps": 0,
+    "not_reached_steps": 0,
+    "failed_at": null
   }
 ]
