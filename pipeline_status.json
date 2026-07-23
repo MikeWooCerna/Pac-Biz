@@ -44,6 +44,14 @@
       "status": "pass",
       "timestamp": "2026-07-23T19:04:03.099107",
       "error": null
+    },
+    {
+      "account": "Parentis Health",
+      "script": "parentis_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-07-23T19:04:24.002080",
+      "error": null
     }
   ]
 }
