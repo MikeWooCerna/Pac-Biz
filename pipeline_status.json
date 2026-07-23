@@ -1,8 +1,8 @@
 {
   "run_id": "2026-07-23T22:00:03",
   "started_at": "2026-07-23T22:00:03.918820",
-  "finished_at": null,
-  "status": "running",
+  "finished_at": "2026-07-23T22:30:36.778900",
+  "status": "success",
   "failed_at": null,
   "steps": [
     {
@@ -202,7 +202,7 @@
       "script": "dashboard.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-07-23T22:30:28.142459",
+      "timestamp": "2026-07-23T22:30:36.778900",
       "error": null
     }
   ]
