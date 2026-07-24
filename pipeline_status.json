@@ -2,8 +2,8 @@
   "run_id": "2026-07-24T15:00:02",
   "started_at": "2026-07-24T15:00:02.737219",
   "finished_at": null,
-  "status": "running",
-  "failed_at": null,
+  "status": "failed",
+  "failed_at": "VIP",
   "steps": [
     {
       "account": "Masterlist",
@@ -92,6 +92,14 @@
       "status": "pass",
       "timestamp": "2026-07-24T15:05:23.962677",
       "error": null
+    },
+    {
+      "account": "VIP",
+      "script": "vip_pull.py",
+      "exit_code": 1,
+      "status": "fail",
+      "timestamp": "2026-07-24T15:06:57.798679",
+      "error": "    raise RuntimeError(\n    ...<3 lines>...\n    )\nRuntimeError: VIP source row count below safety floor: 2596 < 3500. Existing RAW file was not overwritten."
     }
   ]
 }
