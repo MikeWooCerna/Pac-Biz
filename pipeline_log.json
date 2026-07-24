@@ -1713,5 +1713,14 @@
     "prev_count": 4149,
     "new_count": 2373,
     "error": "Dropped 1,776 rows (4,149 \u2192 2,373)"
+  },
+  {
+    "run_id": "2026-07-24T11:00:07",
+    "date": "Jul 24, 2026 11:00 AM",
+    "account": "dc_pull.py",
+    "script": "dc_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
   }
 ]
