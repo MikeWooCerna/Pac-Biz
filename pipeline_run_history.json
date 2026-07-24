@@ -102,5 +102,57 @@
     "failed_steps": 0,
     "not_reached_steps": 0,
     "failed_at": null
+  },
+  {
+    "run_id": "2026-07-24T03:00:03",
+    "run_date": "2026-07-24",
+    "started_at": "2026-07-24T03:00:03.257973",
+    "finished_at": "2026-07-24T03:25:40.134502",
+    "duration_sec": 1536.877,
+    "status": "success",
+    "step_count": 26,
+    "passed_steps": 26,
+    "failed_steps": 0,
+    "not_reached_steps": 0,
+    "failed_at": null
+  },
+  {
+    "run_id": "2026-07-24T06:00:03",
+    "run_date": "2026-07-24",
+    "started_at": "2026-07-24T06:00:03.931051",
+    "finished_at": "2026-07-24T06:25:02.474514",
+    "duration_sec": 1498.543,
+    "status": "success",
+    "step_count": 26,
+    "passed_steps": 26,
+    "failed_steps": 0,
+    "not_reached_steps": 0,
+    "failed_at": null
+  },
+  {
+    "run_id": "2026-07-24T11:00:07",
+    "run_date": "2026-07-24",
+    "started_at": "2026-07-24T11:00:07.541282",
+    "finished_at": "2026-07-24T11:35:09.581576",
+    "duration_sec": 2102.04,
+    "status": "success",
+    "step_count": 26,
+    "passed_steps": 26,
+    "failed_steps": 0,
+    "not_reached_steps": 0,
+    "failed_at": null
+  },
+  {
+    "run_id": "2026-07-24T15:00:02",
+    "run_date": "2026-07-24",
+    "started_at": "2026-07-24T15:00:02.737219",
+    "finished_at": "2026-07-24T17:47:23",
+    "duration_sec": 10040.263,
+    "status": "success",
+    "step_count": 26,
+    "passed_steps": 26,
+    "failed_steps": 0,
+    "not_reached_steps": 0,
+    "failed_at": null
   }
 ]

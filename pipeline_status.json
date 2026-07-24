@@ -1,9 +1,9 @@
 {
   "run_id": "2026-07-24T15:00:02",
   "started_at": "2026-07-24T15:00:02.737219",
-  "finished_at": "2026-07-24T15:25:23.771916",
-  "status": "failed",
-  "failed_at": "VIP",
+  "finished_at": "2026-07-24T17:47:23",
+  "status": "success",
+  "failed_at": null,
   "steps": [
     {
       "account": "Masterlist",
@@ -96,10 +96,10 @@
     {
       "account": "VIP",
       "script": "vip_pull.py",
-      "exit_code": 1,
-      "status": "fail",
-      "timestamp": "2026-07-24T15:06:57.798679",
-      "error": "    raise RuntimeError(\n    ...<3 lines>...\n    )\nRuntimeError: VIP source row count below safety floor: 2596 < 3500. Existing RAW file was not overwritten."
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-07-24T17:47:23",
+      "error": null
     },
     {
       "account": "C&H",
@@ -184,10 +184,10 @@
     {
       "account": "YCDC",
       "script": "ycdc_pull.py",
-      "exit_code": 1,
-      "status": "fail",
-      "timestamp": "2026-07-24T15:12:27.103891",
-      "error": "    raise RuntimeError(\n    ...<3 lines>...\n    )\nRuntimeError: YCDC source row count below safety floor: 1739 < 2500. Existing RAW file was not overwritten."
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-07-24T17:47:23",
+      "error": null
     },
     {
       "account": "Blueline",
@@ -202,7 +202,7 @@
       "script": "dashboard.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-07-24T15:25:00.743457",
+      "timestamp": "2026-07-24T16:45:30.791673",
       "error": null
     },
     {
