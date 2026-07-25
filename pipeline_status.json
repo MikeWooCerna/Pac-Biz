@@ -156,6 +156,14 @@
       "status": "pass",
       "timestamp": "2026-07-25T11:06:50.649134",
       "error": null
+    },
+    {
+      "account": "YCOV",
+      "script": "ycov_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-07-25T11:07:09.624729",
+      "error": null
     }
   ]
 }
