@@ -1773,5 +1773,14 @@
     "prev_count": 3174,
     "new_count": 1109,
     "error": "Dropped 2,065 rows (3,174 -> 1,109). Source AC_Evaluations currently has 1,109 data rows."
+  },
+  {
+    "run_id": "2026-07-26T15:00:01",
+    "date": "Jul 26, 2026 03:00 PM",
+    "account": "dc_pull.py",
+    "script": "dc_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
   }
 ]
