@@ -2,8 +2,8 @@
   "run_id": "2026-07-28T15:00:01",
   "started_at": "2026-07-28T15:00:01.883944",
   "finished_at": null,
-  "status": "running",
-  "failed_at": null,
+  "status": "failed",
+  "failed_at": "Hamilton",
   "steps": [
     {
       "account": "Masterlist",
@@ -76,6 +76,14 @@
       "status": "pass",
       "timestamp": "2026-07-28T15:03:47.350110",
       "error": null
+    },
+    {
+      "account": "Hamilton",
+      "script": "Hamilton_pull.py",
+      "exit_code": 1,
+      "status": "fail",
+      "timestamp": "2026-07-28T15:05:13.085557",
+      "error": "    raise RuntimeError(\n    ...<3 lines>...\n    )\nRuntimeError: Hamilton source row count below safety floor: 2920 < 3500. Existing RAW file was not overwritten."
     }
   ]
 }
