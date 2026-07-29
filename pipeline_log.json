@@ -2176,5 +2176,25 @@
     "script": "pipeline_guardian.py",
     "status": "guardian_warn",
     "error": "failed mismatch: status=1, monitor=10007"
+  },
+  {
+    "run_id": "2026-07-29T23:39:14",
+    "date": "Jul 29, 2026 11:39 PM",
+    "account": "YCDC",
+    "script": "ycdc_pull.py",
+    "status": "count_drop",
+    "drop": 192,
+    "prev_count": 3293,
+    "new_count": 3101,
+    "error": "Dropped 192 rows (3,293 \u2192 3,101)"
+  },
+  {
+    "run_id": "2026-07-29T23:39:14",
+    "date": "Jul 29, 2026 11:39 PM",
+    "account": "VIP",
+    "script": "vip_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 4,261 rows vs baseline 4,261; pipeline continued using the last healthy file."
   }
 ]
