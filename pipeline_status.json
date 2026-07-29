@@ -100,6 +100,14 @@
       "status": "fail",
       "timestamp": "2026-07-29T19:06:55.211851",
       "error": "    raise RuntimeError(\n    ...<3 lines>...\n    )\nRuntimeError: VIP source row count below safety floor: 3324 < 3500. Existing RAW file was not overwritten."
+    },
+    {
+      "account": "C&H",
+      "script": "ch_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-07-29T19:07:20.033864",
+      "error": null
     }
   ]
 }
