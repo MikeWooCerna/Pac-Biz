@@ -8,6 +8,7 @@ the finished pipeline status and generated monitor disagree. Use --push with
 from __future__ import annotations
 
 import argparse
+import html as html_lib
 import json
 import re
 import subprocess
@@ -33,6 +34,10 @@ APPROVED_PUSH_FILES = {
     "pipeline_highvol_notified.json",
     "pipeline_drops_notified.json",
     "pipeline_heal_events.json",
+    "pipeline_daily_uptime.csv",
+    "pipeline_daily_uptime.json",
+    "pipeline_run_history.json",
+    "pipeline_step_history.csv",
 }
 
 IGNORABLE_UNTRACKED = {
@@ -79,9 +84,11 @@ def short_run_id(run_id: str | None) -> str | None:
     return str(run_id)[:16]
 
 
-def parse_int(text: str) -> int | None:
-    cleaned = re.sub(r"[^0-9]", "", text or "")
-    return int(cleaned) if cleaned else None
+def parse_stat_int(text: str) -> int | None:
+    cleaned = html_lib.unescape(text or "").strip().replace(",", "")
+    if not re.fullmatch(r"\d+", cleaned):
+        return None
+    return int(cleaned)
 
 
 def parse_monitor(html: str) -> MonitorStats:
@@ -92,8 +99,10 @@ def parse_monitor(html: str) -> MonitorStats:
         html,
         flags=re.IGNORECASE,
     ):
-        value = parse_int(match.group(1))
-        label = match.group(2).strip().lower()
+        value = parse_stat_int(match.group(1))
+        label = html_lib.unescape(match.group(2)).strip().lower()
+        if value is None:
+            continue
         if label == "passed":
             stats.passed = value
         elif label == "failed":

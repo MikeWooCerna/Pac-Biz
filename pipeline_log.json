@@ -2152,5 +2152,29 @@
     "script": "bl_pull.py",
     "status": "not_reached",
     "error": null
+  },
+  {
+    "run_id": "2026-07-29T22:24:39",
+    "date": "Jul 29, 2026 10:24 PM",
+    "account": "Guardian",
+    "script": "pipeline_guardian.py",
+    "status": "guardian_warn",
+    "error": "failed mismatch: status=1, monitor=10007"
+  },
+  {
+    "run_id": "2026-07-29T22:52:16",
+    "date": "Jul 29, 2026 10:52 PM",
+    "account": "Guardian",
+    "script": "pipeline_guardian.py",
+    "status": "guardian_warn",
+    "error": "failed mismatch: status=1, monitor=10007"
+  },
+  {
+    "run_id": "2026-07-29T22:58:47",
+    "date": "Jul 29, 2026 10:58 PM",
+    "account": "Guardian",
+    "script": "pipeline_guardian.py",
+    "status": "guardian_warn",
+    "error": "failed mismatch: status=1, monitor=10007"
   }
 ]
