@@ -185,7 +185,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run 2026-07-29T19:00</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Dashboard: &mdash;</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Jul 29, 2026 07:08 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Jul 29, 2026 07:10 PM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -196,8 +196,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 
   <div class="stat-cards">
     <div class="stat-card"><div class="sc-val" style="color:#00e87a;">15</div><div class="sc-lbl">Passed</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">1</div><div class="sc-lbl">Failed</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#E84500;">8</div><div class="sc-lbl">Not Reached</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">2</div><div class="sc-lbl">Failed</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#E84500;">7</div><div class="sc-lbl">Not Reached</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">32,903</div><div class="sc-lbl">Rows Pulled</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">&#10007;</div><div class="sc-lbl">failed</div></div>
   </div>
@@ -434,13 +434,16 @@ RuntimeError: VIP source row count below safety floor: 3324 &lt; 3500. Existing 
     <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
-<div class="node n-blocked">
-  <div class="node-title" style="color:#E84500;"><span>Associated Cab</span><div class="blink-n"></div></div>
-  <div class="node-row"><b class="b-n"></b>ac_pull.py &middot; &mdash;</div>
-  
+<div class="node n-fail">
+  <div class="node-title" style="color:#ff6060;"><span>Associated Cab</span><div class="blink-r"></div></div>
+  <div class="node-row"><b class="b-r"></b>ac_pull.py &middot; 07:10 PM</div>
+  <div class="node-err">    raise RuntimeError(
+    ...&lt;3 lines&gt;...
+    )
+RuntimeError: Associated Cab source row count below safety floor: 2303 &lt; 2500. Existing RAW file was not overwritten.</div>
   <div class="node-meta">
-    <span class="meta-pill o">&mdash; rows</span>
-    <span class="meta-pill o">NOT REACHED</span>
+    <span class="meta-pill r">&mdash; rows</span>
+    <span class="meta-pill r">FAIL</span>
     
   </div>
 </div>
@@ -517,7 +520,7 @@ RuntimeError: VIP source row count below safety floor: 3324 &lt; 3500. Existing 
     </div>
   </div>
 
-  <div class="warn-strip">&#9888; Pipeline stopped at <b>VIP</b> &middot; Exit code 1 &middot; 8 steps not reached</div>
+  <div class="warn-strip">&#9888; Pipeline stopped at <b>VIP</b> &middot; Exit code 1 &middot; 7 steps not reached</div>
   
   <div class="vol-strip">&#9651; High volume datasets detected &mdash; <b>Skyline</b> &#9651;&thinsp;19,398 rows <span style='opacity:0.65;font-size:11px;'>(HIGH VOL)</span></div>
 
@@ -657,7 +660,7 @@ RuntimeError: YCDC source row count below safety floor: 88 < 2500. Existin</div>
     {ang:105.00,r:0.44,st:"pass",nm:"Reno Cab"},
     {ang:120.00,r:0.63,st:"pass",nm:"Trans Iowa"},
     {ang:135.00,r:0.44,st:"pass",nm:"Data Carz"},
-    {ang:150.00,r:0.63,st:"blocked",nm:"Assoc.Cab"},
+    {ang:150.00,r:0.63,st:"fail",nm:"Assoc.Cab"},
     {ang:165.00,r:0.44,st:"blocked",nm:"Ollies"},
     {ang:180.00,r:0.63,st:"blocked",nm:"Cir.Taxi"},
     {ang:195.00,r:0.44,st:"blocked",nm:"YCOV"},
