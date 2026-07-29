@@ -140,6 +140,14 @@
       "status": "fail",
       "timestamp": "2026-07-29T19:10:22.467279",
       "error": "    raise RuntimeError(\n    ...<3 lines>...\n    )\nRuntimeError: Associated Cab source row count below safety floor: 2303 < 2500. Existing RAW file was not overwritten."
+    },
+    {
+      "account": "Ollies",
+      "script": "ol_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-07-29T19:10:51.129128",
+      "error": null
     }
   ]
 }
