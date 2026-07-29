@@ -570,5 +570,18 @@
     "failed_steps": 1,
     "not_reached_steps": 0,
     "failed_at": "VIP"
+  },
+  {
+    "run_id": "2026-07-29T23:39:14",
+    "run_date": "2026-07-29",
+    "started_at": "2026-07-29T23:39:14.869477",
+    "finished_at": "2026-07-30T00:04:26.434093",
+    "duration_sec": 1511.565,
+    "status": "success",
+    "step_count": 26,
+    "passed_steps": 26,
+    "failed_steps": 0,
+    "not_reached_steps": 0,
+    "failed_at": null
   }
 ]

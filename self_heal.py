@@ -136,6 +136,70 @@ def load_baseline():
         pass
     return {}
 
+def resolve_account_for_script(script):
+    script_key = Path(script).name.lower()
+    cwd = str(Path.cwd()).lower()
+    matches = [
+        (account, directory)
+        for account, (mapped_script, directory) in ACCOUNT_PULL_MAP.items()
+        if mapped_script.lower() == script_key
+    ]
+    if len(matches) == 1:
+        return matches[0][0]
+    for account, directory in matches:
+        try:
+            if str(Path(directory)).lower() == cwd:
+                return account
+        except Exception:
+            continue
+    return None
+
+def is_safety_floor_failure(error_text):
+    text = (error_text or "").lower()
+    return (
+        "source row count below safety floor" in text
+        and "existing raw file was not overwritten" in text
+    )
+
+def preserved_raw_is_healthy(account):
+    if not account:
+        return False, None, None
+    file_path = ACCOUNT_FILES.get(account)
+    local_rows = get_row_count(file_path) if file_path else None
+    baseline_rows = load_baseline().get(account)
+    if local_rows is None or baseline_rows is None:
+        return False, local_rows, baseline_rows
+    return local_rows >= int(baseline_rows * 0.95), local_rows, baseline_rows
+
+def handle_guarded_source_failure(script, error_text):
+    if not is_safety_floor_failure(error_text):
+        return False
+
+    account = resolve_account_for_script(script)
+    healthy, local_rows, baseline_rows = preserved_raw_is_healthy(account)
+    if not healthy:
+        return False
+
+    detail = (
+        "Source safety-floor failure protected the RAW file. "
+        f"Preserved local RAW has {local_rows:,} rows vs baseline {baseline_rows:,}; "
+        "pipeline continued using the last healthy file."
+    )
+    log_heal_event(
+        account=account or script,
+        script=script,
+        action="guarded-preserve",
+        detail=detail,
+    )
+    _notify.notify_healed(
+        account=account or script,
+        script=script,
+        action="guarded-preserve",
+        detail=detail,
+    )
+    print(f"[self-heal] {account or script}: guarded source failure. {detail}", flush=True)
+    return True
+
 # ── Mode: run-step ─────────────────────────────────────────────────────────────
 
 def run_step(script):
@@ -179,11 +243,14 @@ def run_step(script):
             print(f"[self-heal] {label} failed — retrying in {wait}s...", flush=True)
             time.sleep(wait)
         else:
-            STEP_ERR.write_text(result.stderr or "", encoding="utf-8", errors="replace")
+            error_text = result.stderr or ""
+            STEP_ERR.write_text(error_text, encoding="utf-8", errors="replace")
+            if handle_guarded_source_failure(script, error_text):
+                sys.exit(0)
             _notify.notify_failure(
                 account=script,
                 script=script,
-                error=result.stderr or ""
+                error=error_text
             )
             sys.exit(1)
 
