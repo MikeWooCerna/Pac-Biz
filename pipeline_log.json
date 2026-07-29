@@ -1936,5 +1936,109 @@
     "script": "pipeline_guardian.py",
     "status": "guardian_warn",
     "error": "failed mismatch: status=1, monitor=10007"
+  },
+  {
+    "run_id": "2026-07-29T19:00:02",
+    "date": "Jul 29, 2026 07:00 PM",
+    "account": "VIP",
+    "script": "vip_pull.py",
+    "status": "fail",
+    "error": "    raise RuntimeError(\n    ...<3 lines>...\n    )\nRuntimeError: VIP source row count below safety floor: 3324 < 3500. Existing RAW file was not overwritten."
+  },
+  {
+    "run_id": "2026-07-29T19:00:02",
+    "date": "Jul 29, 2026 07:00 PM",
+    "account": "C&H",
+    "script": "ch_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-29T19:00:02",
+    "date": "Jul 29, 2026 07:00 PM",
+    "account": "Reno Cab",
+    "script": "rc_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-29T19:00:02",
+    "date": "Jul 29, 2026 07:00 PM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-29T19:00:02",
+    "date": "Jul 29, 2026 07:00 PM",
+    "account": "Data Carz",
+    "script": "dc_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-29T19:00:02",
+    "date": "Jul 29, 2026 07:00 PM",
+    "account": "Associated Cab",
+    "script": "ac_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-29T19:00:02",
+    "date": "Jul 29, 2026 07:00 PM",
+    "account": "Ollies",
+    "script": "ol_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-29T19:00:02",
+    "date": "Jul 29, 2026 07:00 PM",
+    "account": "Circle Taxi",
+    "script": "ct_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-29T19:00:02",
+    "date": "Jul 29, 2026 07:00 PM",
+    "account": "YCOV",
+    "script": "ycov_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-29T19:00:02",
+    "date": "Jul 29, 2026 07:00 PM",
+    "account": "Kelowna",
+    "script": "kel_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-29T19:00:02",
+    "date": "Jul 29, 2026 07:00 PM",
+    "account": "Vermont",
+    "script": "vt_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-29T19:00:02",
+    "date": "Jul 29, 2026 07:00 PM",
+    "account": "YCDC",
+    "script": "ycdc_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-07-29T19:00:02",
+    "date": "Jul 29, 2026 07:00 PM",
+    "account": "Blueline",
+    "script": "bl_pull.py",
+    "status": "not_reached",
+    "error": null
   }
 ]
