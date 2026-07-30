@@ -132,6 +132,14 @@
       "status": "pass",
       "timestamp": "2026-07-30T11:06:55.048407",
       "error": null
+    },
+    {
+      "account": "Associated Cab",
+      "script": "ac_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-07-30T11:07:22.291697",
+      "error": null
     }
   ]
 }
