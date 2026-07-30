@@ -2205,5 +2205,14 @@
     "status": "healed",
     "action": "guarded-preserve",
     "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 4,264 rows vs baseline 4,264; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-07-30T19:00:01",
+    "date": "Jul 30, 2026 07:00 PM",
+    "account": "vip_pull.py",
+    "script": "vip_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
   }
 ]
