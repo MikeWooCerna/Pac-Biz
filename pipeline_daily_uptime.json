@@ -593,18 +593,18 @@
   },
   {
     "date": "2026-07-30",
-    "runs": 4,
-    "successful_runs": 4,
+    "runs": 5,
+    "successful_runs": 5,
     "partial_runs": 0,
     "failed_runs": 0,
     "uptime_pct": 100.0,
-    "steps": 104,
-    "passed_steps": 104,
+    "steps": 130,
+    "passed_steps": 130,
     "failed_steps": 0,
     "step_uptime_pct": 100.0,
-    "incident_count": 1,
+    "incident_count": 2,
     "count_drop_count": 0,
-    "self_healed_count": 1,
+    "self_healed_count": 2,
     "high_volume_count": 0
   }
 ]
