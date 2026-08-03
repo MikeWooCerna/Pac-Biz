@@ -1833,3 +1833,122 @@ RuntimeError: VIP source row count below safety floor: 3324 < 3500. Existing RAW
 2026-08-03T15:00:02,2026-08-03,2026-08-03T15:00:02.028627,2026-08-03T15:26:04.432906,success,Vermont,vt_pull.py,pass,0,2026-08-03T15:10:56.988755,
 2026-08-03T15:00:02,2026-08-03,2026-08-03T15:00:02.028627,2026-08-03T15:26:04.432906,success,YCDC,ycdc_pull.py,pass,0,2026-08-03T15:11:37.258681,
 2026-08-03T15:00:02,2026-08-03,2026-08-03T15:00:02.028627,2026-08-03T15:26:04.432906,success,YCOV,ycov_pull.py,pass,0,2026-08-03T15:09:51.742349,
+2026-08-03T19:00:03,2026-08-03,2026-08-03T19:00:03.112313,2026-08-03T19:30:37.756097,failed,Associated Cab,ac_pull.py,fail,1,2026-08-03T19:21:25.146771,"    )
+  File ""C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\auth\transport\requests.py"", line 195, in __call__
+    raise new_exc from caught_exc
+google.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleapis.com', port=443): Max retries exceeded with url: /token (Caused by NameResolutionError(""HTTPSConnection(host='oauth2.googleapis.com', port=443): Failed to resolve 'oauth2.googleapis.com' ([Errno 11001] getaddrinfo failed)""))"
+2026-08-03T19:00:03,2026-08-03,2026-08-03T19:00:03.112313,2026-08-03T19:30:37.756097,failed,Blueline,bl_pull.py,fail,1,2026-08-03T19:30:28.276794,"    )
+  File ""C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\auth\transport\requests.py"", line 195, in __call__
+    raise new_exc from caught_exc
+google.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleapis.com', port=443): Max retries exceeded with url: /token (Caused by NameResolutionError(""HTTPSConnection(host='oauth2.googleapis.com', port=443): Failed to resolve 'oauth2.googleapis.com' ([Errno 11001] getaddrinfo failed)""))"
+2026-08-03T19:00:03,2026-08-03,2026-08-03T19:00:03.112313,2026-08-03T19:30:37.756097,failed,Britelift,britelift_pull.py,fail,1,2026-08-03T19:09:11.130216,"    )
+  File ""C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\auth\transport\requests.py"", line 195, in __call__
+    raise new_exc from caught_exc
+google.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleapis.com', port=443): Max retries exceeded with url: /token (Caused by NameResolutionError(""HTTPSConnection(host='oauth2.googleapis.com', port=443): Failed to resolve 'oauth2.googleapis.com' ([Errno 11001] getaddrinfo failed)""))"
+2026-08-03T19:00:03,2026-08-03,2026-08-03T19:00:03.112313,2026-08-03T19:30:37.756097,failed,Britelift Chat,britelift_pull.py,fail,1,2026-08-03T19:10:29.644333,"    )
+  File ""C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\auth\transport\requests.py"", line 195, in __call__
+    raise new_exc from caught_exc
+google.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleapis.com', port=443): Max retries exceeded with url: /token (Caused by NameResolutionError(""HTTPSConnection(host='oauth2.googleapis.com', port=443): Failed to resolve 'oauth2.googleapis.com' ([Errno 11001] getaddrinfo failed)""))"
+2026-08-03T19:00:03,2026-08-03,2026-08-03T19:00:03.112313,2026-08-03T19:30:37.756097,failed,C&H,ch_pull.py,fail,1,2026-08-03T19:16:52.032963,"    )
+  File ""C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\auth\transport\requests.py"", line 195, in __call__
+    raise new_exc from caught_exc
+google.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleapis.com', port=443): Max retries exceeded with url: /token (Caused by NameResolutionError(""HTTPSConnection(host='oauth2.googleapis.com', port=443): Failed to resolve 'oauth2.googleapis.com' ([Errno 11001] getaddrinfo failed)""))"
+2026-08-03T19:00:03,2026-08-03,2026-08-03T19:00:03.112313,2026-08-03T19:30:37.756097,failed,Circle Taxi,ct_pull.py,fail,1,2026-08-03T19:24:03.545485,"    )
+  File ""C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\auth\transport\requests.py"", line 195, in __call__
+    raise new_exc from caught_exc
+google.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleapis.com', port=443): Max retries exceeded with url: /token (Caused by NameResolutionError(""HTTPSConnection(host='oauth2.googleapis.com', port=443): Failed to resolve 'oauth2.googleapis.com' ([Errno 11001] getaddrinfo failed)""))"
+2026-08-03T19:00:03,2026-08-03,2026-08-03T19:00:03.112313,2026-08-03T19:30:37.756097,failed,Coaching,asana_pull.py,fail,1,2026-08-03T19:03:06.929090,"    r = adapter.send(request, **kwargs)
+  File ""C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\requests\adapters.py"", line 729, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPSConnectionPool(host='app.asana.com', port=443): Max retries exceeded with url: /api/1.0/tasks?project=1215274371374729&limit=100&opt_fields=gid%2Cname%2Ccompleted%2Ccreated_at%2Cmodified_at%2Ccreated_by.name%2Ccreated_by.email%2Ccustom_fields.name%2Ccustom_fields.display_value%2Ccustom_fields.text_value%2Ccustom_fields.date_value%2Ccustom_fields.enum_value.name (Caused by NameResolutionError(""HTTPSConnection(host='app.asana.com', port=443): Failed to resolve 'app.asana.com' ([Errno 11001] getaddrinfo failed)""))"
+2026-08-03T19:00:03,2026-08-03,2026-08-03T19:00:03.112313,2026-08-03T19:30:37.756097,failed,DMG,dmg_pull.py,fail,1,2026-08-03T19:05:38.484134,"    )
+  File ""C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\auth\transport\requests.py"", line 195, in __call__
+    raise new_exc from caught_exc
+google.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleapis.com', port=443): Max retries exceeded with url: /token (Caused by NameResolutionError(""HTTPSConnection(host='oauth2.googleapis.com', port=443): Failed to resolve 'oauth2.googleapis.com' ([Errno 11001] getaddrinfo failed)""))"
+2026-08-03T19:00:03,2026-08-03,2026-08-03T19:00:03.112313,2026-08-03T19:30:37.756097,failed,Data Carz,dc_pull.py,fail,1,2026-08-03T19:20:18.784005,"    )
+  File ""C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\auth\transport\requests.py"", line 195, in __call__
+    raise new_exc from caught_exc
+google.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleapis.com', port=443): Max retries exceeded with url: /token (Caused by NameResolutionError(""HTTPSConnection(host='oauth2.googleapis.com', port=443): Failed to resolve 'oauth2.googleapis.com' ([Errno 11001] getaddrinfo failed)""))"
+2026-08-03T19:00:03,2026-08-03,2026-08-03T19:00:03.112313,2026-08-03T19:30:37.756097,failed,Hamilton,Hamilton_pull.py,fail,1,2026-08-03T19:12:55.122368,"    )
+  File ""C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\auth\transport\requests.py"", line 195, in __call__
+    raise new_exc from caught_exc
+google.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleapis.com', port=443): Max retries exceeded with url: /token (Caused by NameResolutionError(""HTTPSConnection(host='oauth2.googleapis.com', port=443): Failed to resolve 'oauth2.googleapis.com' ([Errno 11001] getaddrinfo failed)""))"
+2026-08-03T19:00:03,2026-08-03,2026-08-03T19:00:03.112313,2026-08-03T19:30:37.756097,failed,Kelowna,kel_pull.py,fail,1,2026-08-03T19:26:29.426601,"    )
+  File ""C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\auth\transport\requests.py"", line 195, in __call__
+    raise new_exc from caught_exc
+google.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleapis.com', port=443): Max retries exceeded with url: /token (Caused by NameResolutionError(""HTTPSConnection(host='oauth2.googleapis.com', port=443): Failed to resolve 'oauth2.googleapis.com' ([Errno 11001] getaddrinfo failed)""))"
+2026-08-03T19:00:03,2026-08-03,2026-08-03T19:00:03.112313,2026-08-03T19:30:37.756097,failed,M7,m7_pull.py,fail,1,2026-08-03T19:04:20.122012,"    )
+  File ""C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\auth\transport\requests.py"", line 195, in __call__
+    raise new_exc from caught_exc
+google.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleapis.com', port=443): Max retries exceeded with url: /token (Caused by NameResolutionError(""HTTPSConnection(host='oauth2.googleapis.com', port=443): Failed to resolve 'oauth2.googleapis.com' ([Errno 11001] getaddrinfo failed)""))"
+2026-08-03T19:00:03,2026-08-03,2026-08-03T19:00:03.112313,2026-08-03T19:30:37.756097,failed,Masterlist,masterlist_fetch.py,fail,1,2026-08-03T19:01:28.546646,"ERROR fetching Masterlist: HTTPSConnectionPool(host='docs.google.com', port=443): Max retries exceeded with url: /spreadsheets/d/e/2PACX-1vS82OdHh0VFVA9K6P3b7Y8pjPmdeJSOQxj1KQ_4ts5HYL4YgUHwKjpFymrPCJdfMK0Rox6fnSTG3rKf/pub?gid=0&single=true&output=csv (Caused by NameResolutionError(""HTTPSConnection(host='docs.google.com', port=443): Failed to resolve 'docs.google.com' ([Errno 11001] getaddrinfo failed)""))"
+2026-08-03T19:00:03,2026-08-03,2026-08-03T19:00:03.112313,2026-08-03T19:30:37.756097,failed,Ollies,ol_pull.py,fail,1,2026-08-03T19:22:45.560917,"    )
+  File ""C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\auth\transport\requests.py"", line 195, in __call__
+    raise new_exc from caught_exc
+google.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleapis.com', port=443): Max retries exceeded with url: /token (Caused by NameResolutionError(""HTTPSConnection(host='oauth2.googleapis.com', port=443): Failed to resolve 'oauth2.googleapis.com' ([Errno 11001] getaddrinfo failed)""))"
+2026-08-03T19:00:03,2026-08-03,2026-08-03T19:00:03.112313,2026-08-03T19:30:37.756097,failed,Parentis Health,parentis_pull.py,fail,1,2026-08-03T19:07:51.405603,"    )
+  File ""C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\auth\transport\requests.py"", line 195, in __call__
+    raise new_exc from caught_exc
+google.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleapis.com', port=443): Max retries exceeded with url: /token (Caused by NameResolutionError(""HTTPSConnection(host='oauth2.googleapis.com', port=443): Failed to resolve 'oauth2.googleapis.com' ([Errno 11001] getaddrinfo failed)""))"
+2026-08-03T19:00:03,2026-08-03,2026-08-03T19:00:03.112313,2026-08-03T19:30:37.756097,failed,R4H,r4h_pull.py,fail,1,2026-08-03T19:06:44.682022,"    )
+  File ""C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\auth\transport\requests.py"", line 195, in __call__
+    raise new_exc from caught_exc
+google.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleapis.com', port=443): Max retries exceeded with url: /token (Caused by NameResolutionError(""HTTPSConnection(host='oauth2.googleapis.com', port=443): Failed to resolve 'oauth2.googleapis.com' ([Errno 11001] getaddrinfo failed)""))"
+2026-08-03T19:00:03,2026-08-03,2026-08-03T19:00:03.112313,2026-08-03T19:30:37.756097,failed,Reno Cab,rc_pull.py,fail,1,2026-08-03T19:17:59.605670,"    )
+  File ""C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\auth\transport\requests.py"", line 195, in __call__
+    raise new_exc from caught_exc
+google.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleapis.com', port=443): Max retries exceeded with url: /token (Caused by NameResolutionError(""HTTPSConnection(host='oauth2.googleapis.com', port=443): Failed to resolve 'oauth2.googleapis.com' ([Errno 11001] getaddrinfo failed)""))"
+2026-08-03T19:00:03,2026-08-03,2026-08-03T19:00:03.112313,2026-08-03T19:30:37.756097,failed,RideX,Ridex_pull.py,fail,1,2026-08-03T19:11:47.929628,"    )
+  File ""C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\auth\transport\requests.py"", line 195, in __call__
+    raise new_exc from caught_exc
+google.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleapis.com', port=443): Max retries exceeded with url: /token (Caused by NameResolutionError(""HTTPSConnection(host='oauth2.googleapis.com', port=443): Failed to resolve 'oauth2.googleapis.com' ([Errno 11001] getaddrinfo failed)""))"
+2026-08-03T19:00:03,2026-08-03,2026-08-03T19:00:03.112313,2026-08-03T19:30:37.756097,failed,Skyline,Skyline_pull.py,fail,1,2026-08-03T19:14:06.975304,"    )
+  File ""C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\auth\transport\requests.py"", line 195, in __call__
+    raise new_exc from caught_exc
+google.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleapis.com', port=443): Max retries exceeded with url: /token (Caused by NameResolutionError(""HTTPSConnection(host='oauth2.googleapis.com', port=443): Failed to resolve 'oauth2.googleapis.com' ([Errno 11001] getaddrinfo failed)""))"
+2026-08-03T19:00:03,2026-08-03,2026-08-03T19:00:03.112313,2026-08-03T19:30:37.756097,failed,Trans Iowa,ti_pull.py,fail,1,2026-08-03T19:19:09.723349,"    )
+  File ""C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\auth\transport\requests.py"", line 195, in __call__
+    raise new_exc from caught_exc
+google.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleapis.com', port=443): Max retries exceeded with url: /token (Caused by NameResolutionError(""HTTPSConnection(host='oauth2.googleapis.com', port=443): Failed to resolve 'oauth2.googleapis.com' ([Errno 11001] getaddrinfo failed)""))"
+2026-08-03T19:00:03,2026-08-03,2026-08-03T19:00:03.112313,2026-08-03T19:30:37.756097,failed,VIP,vip_pull.py,fail,1,2026-08-03T19:15:34.840323,"    )
+  File ""C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\auth\transport\requests.py"", line 195, in __call__
+    raise new_exc from caught_exc
+google.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleapis.com', port=443): Max retries exceeded with url: /token (Caused by NameResolutionError(""HTTPSConnection(host='oauth2.googleapis.com', port=443): Failed to resolve 'oauth2.googleapis.com' ([Errno 11001] getaddrinfo failed)""))"
+2026-08-03T19:00:03,2026-08-03,2026-08-03T19:00:03.112313,2026-08-03T19:30:37.756097,failed,Vermont,vt_pull.py,fail,1,2026-08-03T19:27:48.129066,"    )
+  File ""C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\auth\transport\requests.py"", line 195, in __call__
+    raise new_exc from caught_exc
+google.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleapis.com', port=443): Max retries exceeded with url: /token (Caused by NameResolutionError(""HTTPSConnection(host='oauth2.googleapis.com', port=443): Failed to resolve 'oauth2.googleapis.com' ([Errno 11001] getaddrinfo failed)""))"
+2026-08-03T19:00:03,2026-08-03,2026-08-03T19:00:03.112313,2026-08-03T19:30:37.756097,failed,YCDC,ycdc_pull.py,fail,1,2026-08-03T19:28:54.597641,"    )
+  File ""C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\auth\transport\requests.py"", line 195, in __call__
+    raise new_exc from caught_exc
+google.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleapis.com', port=443): Max retries exceeded with url: /token (Caused by NameResolutionError(""HTTPSConnection(host='oauth2.googleapis.com', port=443): Failed to resolve 'oauth2.googleapis.com' ([Errno 11001] getaddrinfo failed)""))"
+2026-08-03T19:00:03,2026-08-03,2026-08-03T19:00:03.112313,2026-08-03T19:30:37.756097,failed,YCOV,ycov_pull.py,fail,1,2026-08-03T19:25:10.697543,"    )
+  File ""C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\auth\transport\requests.py"", line 195, in __call__
+    raise new_exc from caught_exc
+google.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleapis.com', port=443): Max retries exceeded with url: /token (Caused by NameResolutionError(""HTTPSConnection(host='oauth2.googleapis.com', port=443): Failed to resolve 'oauth2.googleapis.com' ([Errno 11001] getaddrinfo failed)""))"
+2026-08-03T22:00:04,2026-08-03,2026-08-03T22:00:04.260627,2026-08-03T22:28:17.806545,success,Associated Cab,ac_pull.py,pass,0,2026-08-03T22:11:33.177579,
+2026-08-03T22:00:04,2026-08-03,2026-08-03T22:00:04.260627,2026-08-03T22:28:17.806545,success,Blueline,bl_pull.py,pass,0,2026-08-03T22:16:11.196716,
+2026-08-03T22:00:04,2026-08-03,2026-08-03T22:00:04.260627,2026-08-03T22:28:17.806545,success,Britelift,britelift_pull.py,pass,0,2026-08-03T22:03:55.457778,
+2026-08-03T22:00:04,2026-08-03,2026-08-03T22:00:04.260627,2026-08-03T22:28:17.806545,success,Britelift Chat,britelift_pull.py,pass,0,2026-08-03T22:04:09.364535,
+2026-08-03T22:00:04,2026-08-03,2026-08-03T22:00:04.260627,2026-08-03T22:28:17.806545,success,Build,dashboard.py,pass,0,2026-08-03T22:27:56.855053,
+2026-08-03T22:00:04,2026-08-03,2026-08-03T22:00:04.260627,2026-08-03T22:28:17.806545,success,C&H,ch_pull.py,pass,0,2026-08-03T22:09:08.114499,
+2026-08-03T22:00:04,2026-08-03,2026-08-03T22:00:04.260627,2026-08-03T22:28:17.806545,success,Circle Taxi,ct_pull.py,pass,0,2026-08-03T22:13:14.659229,
+2026-08-03T22:00:04,2026-08-03,2026-08-03T22:00:04.260627,2026-08-03T22:28:17.806545,success,Coaching,asana_pull.py,pass,0,2026-08-03T22:01:05.993521,
+2026-08-03T22:00:04,2026-08-03,2026-08-03T22:00:04.260627,2026-08-03T22:28:17.806545,success,DMG,dmg_pull.py,pass,0,2026-08-03T22:01:49.467169,
+2026-08-03T22:00:04,2026-08-03,2026-08-03T22:00:04.260627,2026-08-03T22:28:17.806545,success,Data Carz,dc_pull.py,pass,0,2026-08-03T22:10:45.368580,
+2026-08-03T22:00:04,2026-08-03,2026-08-03T22:00:04.260627,2026-08-03T22:28:17.806545,success,Git Push,git push,pass,0,2026-08-03T22:28:08.853381,
+2026-08-03T22:00:04,2026-08-03,2026-08-03T22:00:04.260627,2026-08-03T22:28:17.806545,success,Hamilton,Hamilton_pull.py,pass,0,2026-08-03T22:05:22.725252,
+2026-08-03T22:00:04,2026-08-03,2026-08-03T22:00:04.260627,2026-08-03T22:28:17.806545,success,Kelowna,kel_pull.py,pass,0,2026-08-03T22:14:14.307156,
+2026-08-03T22:00:04,2026-08-03,2026-08-03T22:00:04.260627,2026-08-03T22:28:17.806545,success,M7,m7_pull.py,pass,0,2026-08-03T22:01:23.393420,
+2026-08-03T22:00:04,2026-08-03,2026-08-03T22:00:04.260627,2026-08-03T22:28:17.806545,success,Masterlist,masterlist_fetch.py,pass,0,2026-08-03T22:00:26.639914,
+2026-08-03T22:00:04,2026-08-03,2026-08-03T22:00:04.260627,2026-08-03T22:28:17.806545,success,Ollies,ol_pull.py,pass,0,2026-08-03T22:12:38.996415,
+2026-08-03T22:00:04,2026-08-03,2026-08-03T22:00:04.260627,2026-08-03T22:28:17.806545,success,Parentis Health,parentis_pull.py,pass,0,2026-08-03T22:02:30.276434,
+2026-08-03T22:00:04,2026-08-03,2026-08-03T22:00:04.260627,2026-08-03T22:28:17.806545,success,R4H,r4h_pull.py,pass,0,2026-08-03T22:02:14.403115,
+2026-08-03T22:00:04,2026-08-03,2026-08-03T22:00:04.260627,2026-08-03T22:28:17.806545,success,Reno Cab,rc_pull.py,pass,0,2026-08-03T22:09:39.758813,
+2026-08-03T22:00:04,2026-08-03,2026-08-03T22:00:04.260627,2026-08-03T22:28:17.806545,success,RideX,Ridex_pull.py,pass,0,2026-08-03T22:04:27.123409,
+2026-08-03T22:00:04,2026-08-03,2026-08-03T22:00:04.260627,2026-08-03T22:28:17.806545,success,Skyline,Skyline_pull.py,pass,0,2026-08-03T22:08:02.766513,
+2026-08-03T22:00:04,2026-08-03,2026-08-03T22:00:04.260627,2026-08-03T22:28:17.806545,success,Trans Iowa,ti_pull.py,pass,0,2026-08-03T22:09:56.109954,
+2026-08-03T22:00:04,2026-08-03,2026-08-03T22:00:04.260627,2026-08-03T22:28:17.806545,success,VIP,vip_pull.py,pass,0,2026-08-03T22:08:47.931069,
+2026-08-03T22:00:04,2026-08-03,2026-08-03T22:00:04.260627,2026-08-03T22:28:17.806545,success,Vermont,vt_pull.py,pass,0,2026-08-03T22:14:41.947056,
+2026-08-03T22:00:04,2026-08-03,2026-08-03T22:00:04.260627,2026-08-03T22:28:17.806545,success,YCDC,ycdc_pull.py,pass,0,2026-08-03T22:15:55.845772,
+2026-08-03T22:00:04,2026-08-03,2026-08-03T22:00:04.260627,2026-08-03T22:28:17.806545,success,YCOV,ycov_pull.py,pass,0,2026-08-03T22:13:39.807273,

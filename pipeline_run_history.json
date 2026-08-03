@@ -908,5 +908,31 @@
     "failed_steps": 0,
     "not_reached_steps": 0,
     "failed_at": null
+  },
+  {
+    "run_id": "2026-08-03T19:00:03",
+    "run_date": "2026-08-03",
+    "started_at": "2026-08-03T19:00:03.112313",
+    "finished_at": "2026-08-03T19:30:37.756097",
+    "duration_sec": 1834.644,
+    "status": "failed",
+    "step_count": 24,
+    "passed_steps": 0,
+    "failed_steps": 24,
+    "not_reached_steps": 0,
+    "failed_at": "Masterlist"
+  },
+  {
+    "run_id": "2026-08-03T22:00:04",
+    "run_date": "2026-08-03",
+    "started_at": "2026-08-03T22:00:04.260627",
+    "finished_at": "2026-08-03T22:28:17.806545",
+    "duration_sec": 1693.546,
+    "status": "success",
+    "step_count": 26,
+    "passed_steps": 26,
+    "failed_steps": 0,
+    "not_reached_steps": 0,
+    "failed_at": null
   }
 ]
