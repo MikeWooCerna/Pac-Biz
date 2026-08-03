@@ -20,6 +20,14 @@
       "status": "fail",
       "timestamp": "2026-08-03T19:03:06.929090",
       "error": "    r = adapter.send(request, **kwargs)\n  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\adapters.py\", line 729, in send\n    raise ConnectionError(e, request=request)\nrequests.exceptions.ConnectionError: HTTPSConnectionPool(host='app.asana.com', port=443): Max retries exceeded with url: /api/1.0/tasks?project=1215274371374729&limit=100&opt_fields=gid%2Cname%2Ccompleted%2Ccreated_at%2Cmodified_at%2Ccreated_by.name%2Ccreated_by.email%2Ccustom_fields.name%2Ccustom_fields.display_value%2Ccustom_fields.text_value%2Ccustom_fields.date_value%2Ccustom_fields.enum_value.name (Caused by NameResolutionError(\"HTTPSConnection(host='app.asana.com', port=443): Failed to resolve 'app.asana.com' ([Errno 11001] getaddrinfo failed)\"))"
+    },
+    {
+      "account": "M7",
+      "script": "m7_pull.py",
+      "exit_code": 1,
+      "status": "fail",
+      "timestamp": "2026-08-03T19:04:20.122012",
+      "error": "    )\n  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\google\\auth\\transport\\requests.py\", line 195, in __call__\n    raise new_exc from caught_exc\ngoogle.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleapis.com', port=443): Max retries exceeded with url: /token (Caused by NameResolutionError(\"HTTPSConnection(host='oauth2.googleapis.com', port=443): Failed to resolve 'oauth2.googleapis.com' ([Errno 11001] getaddrinfo failed)\"))"
     }
   ]
 }
