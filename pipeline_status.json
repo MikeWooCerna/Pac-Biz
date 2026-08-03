@@ -76,6 +76,14 @@
       "status": "fail",
       "timestamp": "2026-08-03T19:11:47.929628",
       "error": "    )\n  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\google\\auth\\transport\\requests.py\", line 195, in __call__\n    raise new_exc from caught_exc\ngoogle.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleapis.com', port=443): Max retries exceeded with url: /token (Caused by NameResolutionError(\"HTTPSConnection(host='oauth2.googleapis.com', port=443): Failed to resolve 'oauth2.googleapis.com' ([Errno 11001] getaddrinfo failed)\"))"
+    },
+    {
+      "account": "Hamilton",
+      "script": "Hamilton_pull.py",
+      "exit_code": 1,
+      "status": "fail",
+      "timestamp": "2026-08-03T19:12:55.122368",
+      "error": "    )\n  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\google\\auth\\transport\\requests.py\", line 195, in __call__\n    raise new_exc from caught_exc\ngoogle.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleapis.com', port=443): Max retries exceeded with url: /token (Caused by NameResolutionError(\"HTTPSConnection(host='oauth2.googleapis.com', port=443): Failed to resolve 'oauth2.googleapis.com' ([Errno 11001] getaddrinfo failed)\"))"
     }
   ]
 }
