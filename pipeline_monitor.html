@@ -185,7 +185,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run 2026-08-03T19:00</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Dashboard: &mdash;</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Aug 03, 2026 07:15 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Aug 03, 2026 07:16 PM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -196,8 +196,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 
   <div class="stat-cards">
     <div class="stat-card"><div class="sc-val" style="color:#00e87a;">0</div><div class="sc-lbl">Passed</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">12</div><div class="sc-lbl">Failed</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#E84500;">12</div><div class="sc-lbl">Not Reached</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">13</div><div class="sc-lbl">Failed</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#E84500;">11</div><div class="sc-lbl">Not Reached</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">0</div><div class="sc-lbl">Rows Pulled</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">&#10007;</div><div class="sc-lbl">failed</div></div>
   </div>
@@ -424,13 +424,16 @@ google.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleap
 
     <div class="side-col">
       <div class="section-hdr">Data Sources 13&ndash;24</div>
-      <div class="node n-blocked">
-  <div class="node-title" style="color:#E84500;"><span>C&H</span><div class="blink-n"></div></div>
-  <div class="node-row"><b class="b-n"></b>ch_pull.py &middot; &mdash;</div>
-  
+      <div class="node n-fail">
+  <div class="node-title" style="color:#ff6060;"><span>C&H</span><div class="blink-r"></div></div>
+  <div class="node-row"><b class="b-r"></b>ch_pull.py &middot; 07:16 PM</div>
+  <div class="node-err">    )
+  File "C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\auth\transport\requests.py", line 195, in __call__
+    raise new_exc from caught_exc
+google.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleapis.com', port=443): Max retries exceeded with url: /token (Caused by NameResolutionError("HTTPSConnection(host='oauth2.googleapis.com', port=443): Failed to resolve 'oauth2.googleapis.com' ([Errno 11001] getaddrinfo failed)"))</div>
   <div class="node-meta">
-    <span class="meta-pill o">&mdash; rows</span>
-    <span class="meta-pill o">NOT REACHED</span>
+    <span class="meta-pill r">&mdash; rows</span>
+    <span class="meta-pill r">FAIL</span>
     
   </div>
 </div>
@@ -547,7 +550,7 @@ google.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleap
     </div>
   </div>
 
-  <div class="warn-strip">&#9888; Pipeline stopped at <b>Masterlist</b> &middot; Exit code 1 &middot; 12 steps not reached</div>
+  <div class="warn-strip">&#9888; Pipeline stopped at <b>Masterlist</b> &middot; Exit code 1 &middot; 11 steps not reached</div>
   
   
 
@@ -682,7 +685,7 @@ RuntimeError: Hamilton source row count below safety floor: 2920 < 3500. E</div>
     {ang:45.00,r:0.44,st:"fail",nm:"Hamilton"},
     {ang:60.00,r:0.63,st:"fail",nm:"Skyline"},
     {ang:75.00,r:0.44,st:"fail",nm:"VIP"},
-    {ang:90.00,r:0.63,st:"blocked",nm:"C&H"},
+    {ang:90.00,r:0.63,st:"fail",nm:"C&H"},
     {ang:105.00,r:0.44,st:"blocked",nm:"Reno Cab"},
     {ang:120.00,r:0.63,st:"blocked",nm:"Trans Iowa"},
     {ang:135.00,r:0.44,st:"blocked",nm:"Data Carz"},
