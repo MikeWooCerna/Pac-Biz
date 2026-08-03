@@ -2442,5 +2442,14 @@
     "script": "bl_pull.py",
     "status": "not_reached",
     "error": null
+  },
+  {
+    "run_id": "2026-08-03T22:00:04",
+    "date": "Aug 03, 2026 10:00 PM",
+    "account": "britelift_pull.py",
+    "script": "britelift_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
   }
 ]
