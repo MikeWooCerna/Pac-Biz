@@ -164,6 +164,14 @@
       "status": "pass",
       "timestamp": "2026-08-06T06:12:04.835682",
       "error": null
+    },
+    {
+      "account": "Kelowna",
+      "script": "kel_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-06T06:12:30.549869",
+      "error": null
     }
   ]
 }
