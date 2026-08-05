@@ -301,6 +301,9 @@ Important behavior:
 - Past-effective rows are eligible immediately when `Effective Date <= today`.
 - Attrition rows should set Masterlist `Employment Status` to `Inactive` and backfill History
   from the effective date.
+- Processed movements must also have a History row on the exact effective date. The Apps Script
+  repair path appends that missing row when the daily active snapshot skipped the employee before
+  backfill could update an existing row.
 - If Apps Script is low on runtime after movement processing, it may skip the daily History
   snapshot and let the next scheduled run retry. This is safer than timing out before Movement
   rows are marked processed.
@@ -310,6 +313,9 @@ Important behavior:
 - `movement_reconcile.py` now fails with a clear warning when a non-void Movement row has
   `Effective Date <= today` but is still not marked `Processed = Yes`. This makes missed
   Apps Script processing visible in the pipeline monitor without sending premature emails.
+- `movement_reconcile.py` also fails when a processed movement is missing its exact effective-date
+  History row. That means the Apps Script repair needs to be copied to Apps Script and
+  `runMovementProcessOnly()` should be run once to repair the source History tab.
 
 Notification eligibility:
 - `Processed` must be `Yes`

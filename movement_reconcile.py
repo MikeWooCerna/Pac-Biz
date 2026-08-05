@@ -98,6 +98,19 @@ def _parse_date(value: object) -> pd.Timestamp | None:
     return parsed.normalize()
 
 
+def _date_series(values: pd.Series) -> pd.Series:
+    return pd.to_datetime(values, errors="coerce").dt.normalize()
+
+
+def _history_start_date(history: pd.DataFrame) -> pd.Timestamp | None:
+    if "Date Generated" not in history.columns or history.empty:
+        return None
+    dates = _date_series(history["Date Generated"]).dropna()
+    if dates.empty:
+        return None
+    return dates.min()
+
+
 def _is_yes(value: object) -> bool:
     return _text(value).lower() == "yes"
 
@@ -224,6 +237,7 @@ def patch_dashboard_from_cache(
 
 def verify_processed_movements(masterlist: pd.DataFrame, history: pd.DataFrame, movement: pd.DataFrame) -> int:
     issues = 0
+    history_start = _history_start_date(history)
     master_by_name = {
         str(row.get("Emp Name", "")).strip().lower(): row
         for _, row in masterlist.iterrows()
@@ -255,6 +269,31 @@ def verify_processed_movements(masterlist: pd.DataFrame, history: pd.DataFrame, 
             if emp_history.empty:
                 print(f"[movement_reconcile][WARN] No history rows found for processed movement: {emp_name}")
                 issues += 1
+                continue
+
+            effective_date = _parse_date(effective)
+            if effective_date is not None:
+                if history_start is not None and effective_date < history_start:
+                    continue
+                effective_history = emp_history[
+                    _date_series(emp_history["Date Generated"]).eq(effective_date)
+                ]
+                if effective_history.empty:
+                    print(
+                        "[movement_reconcile][WARN] No effective-date history row "
+                        f"for processed movement: {emp_name} ({effective_date.strftime('%m/%d/%Y')})"
+                    )
+                    issues += 1
+                elif mov_type == "attrition":
+                    inactive_rows = effective_history[
+                        effective_history["Employment Status"].str.strip().str.lower().eq("inactive")
+                    ]
+                    if inactive_rows.empty:
+                        print(
+                            "[movement_reconcile][WARN] Attrition effective-date history row "
+                            f"is not Inactive: {emp_name} ({effective_date.strftime('%m/%d/%Y')})"
+                        )
+                        issues += 1
 
     if issues == 0:
         print("[movement_reconcile] Processed movement cache verification passed.")

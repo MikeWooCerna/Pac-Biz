@@ -67,6 +67,7 @@ function runMasterlistProcess() {
     // This prevents past-effective attritions from being stranded when the script is close to timeout.
     const result  = processMovements(master, movement, history, today, todayText, startTime);
     rowsProcessed = result.movementsApplied;
+    historyRowsWritten += result.historyRowsRepaired || 0;
 
     if (result.warnings.length > 0) {
       status = 'warn';
@@ -152,6 +153,7 @@ function runMovementProcessOnly() {
 
     const result = processMovements(master, movement, history, today, todayText, startTime);
     rowsProcessed = result.movementsApplied;
+    historyRowsWritten += result.historyRowsRepaired || 0;
 
     if (result.warnings.length > 0) {
       status = 'warn';
@@ -552,10 +554,11 @@ function processMovements(master, movement, history, today, todayText, startTime
   const appliedChanges   = {};
   const warnings         = [];
   let   movementsApplied = 0;
+  let   historyRowsRepaired = 0;
   let   partial          = false;
 
   if (masterLastRow < 2 || movementLastRow < 2) {
-    return { appliedChanges, movementsApplied, warnings, partial };
+    return { appliedChanges, movementsApplied, historyRowsRepaired, warnings, partial };
   }
 
   const masterData   = master.getRange(2, 1, masterLastRow - 1, master.getLastColumn()).getValues();
@@ -673,8 +676,12 @@ function processMovements(master, movement, history, today, todayText, startTime
   });
 
   movement.getRange(2, 1, movementLastRow - 1, movement.getLastColumn()).setValues(movementTrackingOut);
+  historyRowsRepaired = repairProcessedMovementHistory(
+    history, movementData, movementHeaders, movementTrackingOut,
+    master, masterHeaders, processedCol, voidCol, today, startTime
+  );
 
-  return { appliedChanges, movementsApplied, warnings, partial };
+  return { appliedChanges, movementsApplied, historyRowsRepaired, warnings, partial };
 }
 
 
@@ -743,6 +750,7 @@ function backfillHistoryForMovement(history, movement, movementData, movementHea
   if (Object.keys(updates).length === 0 && !changeTypeText) return;
 
   const rowUpdates = [];
+  let hasEffectiveHistoryRow = false;
   historyData.forEach((historyRow, index) => {
     if (remainingRuntimeMs(startTime) < 90 * 1000) return;
 
@@ -756,6 +764,7 @@ function backfillHistoryForMovement(history, movement, movementData, movementHea
     const historyDateOnly = stripTime(historyDate);
     if (historyDateOnly < startDate) return;
     if (endDate && historyDateOnly >= endDate) return;
+    if (isSameDate(historyDateOnly, startDate)) hasEffectiveHistoryRow = true;
 
     const colUpdates = [];
     Object.keys(updates).forEach(headerName => {
@@ -771,6 +780,101 @@ function backfillHistoryForMovement(history, movement, movementData, movementHea
   rowUpdates.forEach(({ rowNumber, colUpdates }) => {
     colUpdates.forEach(({ col, value }) => history.getRange(rowNumber, col).setValue(value));
   });
+
+  if (!hasEffectiveHistoryRow && remainingRuntimeMs(startTime) >= 90 * 1000) {
+    appendMissingEffectiveHistoryRow(history, historyHeaders, master, masterHeaders, movementItem, updates, changeTypeText);
+  }
+}
+
+function appendMissingEffectiveHistoryRow(history, historyHeaders, master, masterHeaders, movementItem, updates, changeTypeText) {
+  const masterNameCol = getCol(masterHeaders, 'Emp Name');
+  if (masterNameCol === -1) return;
+
+  const masterLastRow = master.getLastRow();
+  if (masterLastRow < 2) return;
+
+  const masterData = master.getRange(2, 1, masterLastRow - 1, master.getLastColumn()).getValues();
+  const masterRow = masterData.find(row => normalize(row[masterNameCol]) === movementItem.empName);
+  if (!masterRow) return;
+
+  const dateText = Utilities.formatDate(
+    movementItem.effectiveDate,
+    SpreadsheetApp.getActiveSpreadsheet().getSpreadsheetTimeZone(),
+    'MM/dd/yyyy'
+  );
+  const weekStart = getWeekStart(dateText);
+
+  const historyRow = historyHeaders.map(header => {
+    if (normalize(header) === normalize('Date Generated')) return dateText;
+    if (normalize(header) === normalize('Change Type')) return changeTypeText || 'No Change';
+    if (normalize(header) === normalize('Week')) return weekStart;
+
+    const updateValue = updates[header];
+    if (updateValue !== undefined) return updateValue;
+
+    const masterCol = getCol(masterHeaders, header);
+    return masterCol === -1 ? '' : masterRow[masterCol];
+  });
+
+  history.getRange(history.getLastRow() + 1, 1, 1, historyRow.length).setValues([historyRow]);
+}
+
+function repairProcessedMovementHistory(history, movementData, movementHeaders, movementTrackingData, master, masterHeaders, processedCol, voidCol, today, startTime) {
+  if (remainingRuntimeMs(startTime) < 90 * 1000) return 0;
+
+  const historyHeaders = getHeaders(history);
+  const historyNameCol = getCol(historyHeaders, 'Emp Name');
+  const historyDateCol = getCol(historyHeaders, 'Date Generated');
+  const movementNameCol = getCol(movementHeaders, 'Employee Name');
+  const effectiveDateCol = getCol(movementHeaders, 'Effective Date');
+  const processedNoteCol = getCol(movementHeaders, 'Processed Note');
+
+  if (historyNameCol === -1 || historyDateCol === -1 || movementNameCol === -1 || effectiveDateCol === -1) return 0;
+
+  const historyLastRow = history.getLastRow();
+  const historyData = historyLastRow < 2
+    ? []
+    : history.getRange(2, 1, historyLastRow - 1, history.getLastColumn()).getValues();
+
+  const existing = {};
+  historyData.forEach(row => {
+    const empName = normalize(row[historyNameCol]);
+    const date = parseSheetDate(row[historyDateCol]);
+    if (empName && date) existing[empName + '|' + formatDateKey(date)] = true;
+  });
+
+  let repaired = 0;
+  for (let i = 0; i < movementData.length; i++) {
+    if (remainingRuntimeMs(startTime) < 90 * 1000) break;
+
+    const trackingRow = movementTrackingData[i] || [];
+    if (normalize(trackingRow[processedCol] || '') !== 'YES') continue;
+    if (normalize(trackingRow[voidCol] || '') === 'YES') continue;
+
+    const row = movementData[i];
+    const empName = normalize(row[movementNameCol]);
+    const effectiveDate = parseSheetDate(row[effectiveDateCol]);
+    if (!empName || !effectiveDate) continue;
+    if (stripTime(effectiveDate) > stripTime(today)) continue;
+
+    const key = empName + '|' + formatDateKey(effectiveDate);
+    if (existing[key]) continue;
+
+    const note = processedNoteCol === -1 ? '' : String(trackingRow[processedNoteCol] || '');
+    const changesText = note.split('|')[0].trim();
+    const movementItem = {
+      row,
+      empName,
+      effectiveDate,
+      changes: changesText ? changesText.split(',').map(s => s.trim()).filter(Boolean) : []
+    };
+    const updates = buildHistoryBackfillUpdates(row, movementHeaders, master, masterHeaders);
+    appendMissingEffectiveHistoryRow(history, historyHeaders, master, masterHeaders, movementItem, updates, changesText);
+    existing[key] = true;
+    repaired++;
+  }
+
+  return repaired;
 }
 
 
