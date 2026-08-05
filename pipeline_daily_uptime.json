@@ -686,5 +686,21 @@
     "count_drop_count": 0,
     "self_healed_count": 0,
     "high_volume_count": 0
+  },
+  {
+    "date": "2026-08-05",
+    "runs": 3,
+    "successful_runs": 1,
+    "partial_runs": 0,
+    "failed_runs": 2,
+    "uptime_pct": 33.33,
+    "steps": 75,
+    "passed_steps": 75,
+    "failed_steps": 0,
+    "step_uptime_pct": 100.0,
+    "incident_count": 0,
+    "count_drop_count": 0,
+    "self_healed_count": 0,
+    "high_volume_count": 0
   }
 ]

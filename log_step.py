@@ -108,6 +108,8 @@ elif cmd == "finish":
         data["finished_at"] = datetime.now().isoformat()
         if outcome == "success":
             data["status"] = "success"
+        elif outcome == "partial":
+            data["status"] = "partial"
         elif data.get("status") != "failed":
             data["status"] = "failed"
         save(data)

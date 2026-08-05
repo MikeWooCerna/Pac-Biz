@@ -314,6 +314,17 @@ def generate():
                 except Exception:
                     pass
 
+    # A completed run with no failed steps can be marked failed if the batch
+    # finished with a warning before older log_step.py learned "partial".
+    if raw and raw.get("status") == "failed" and not raw.get("failed_at"):
+        failed_steps = [s for s in raw.get("steps", []) if s.get("status") == "fail"]
+        if not failed_steps and raw.get("finished_at"):
+            raw["status"] = "success"
+            try:
+                STATUS_FILE.write_text(json.dumps(raw, indent=2, default=str), encoding="utf-8")
+            except Exception:
+                pass
+
     now_str     = datetime.now().strftime("%b %d, %Y %I:%M %p")
     run_status  = raw.get("status", "unknown") if raw else "unknown"
     steps_map   = {s["account"]: s for s in raw.get("steps", [])} if raw else {}
