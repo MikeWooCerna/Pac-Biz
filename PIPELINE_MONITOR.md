@@ -313,9 +313,10 @@ Important behavior:
 - `movement_reconcile.py` now fails with a clear warning when a non-void Movement row has
   `Effective Date <= today` but is still not marked `Processed = Yes`. This makes missed
   Apps Script processing visible in the pipeline monitor without sending premature emails.
-- `movement_reconcile.py` also fails when a processed movement is missing its exact effective-date
-  History row. That means the Apps Script repair needs to be copied to Apps Script and
-  `runMovementProcessOnly()` should be run once to repair the source History tab.
+- `movement_reconcile.py` self-heals the local `history_cache.csv` when a processed movement is
+  missing its exact effective-date History row, then refreshes the dashboard snapshot from that
+  repaired cache. If it cannot repair the row because the employee is missing from Masterlist,
+  it fails with a clear warning.
 
 Notification eligibility:
 - `Processed` must be `Yes`

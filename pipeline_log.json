@@ -2451,5 +2451,36 @@
     "status": "healed",
     "action": "retry",
     "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-08-06T22:00:01",
+    "date": "Aug 06, 2026 10:00 PM",
+    "account": "Hamilton",
+    "script": "Hamilton_pull.py",
+    "status": "count_drop",
+    "drop": 488,
+    "prev_count": 4554,
+    "new_count": 4066,
+    "error": "Dropped 488 rows (4,554 \u2192 4,066)"
+  },
+  {
+    "run_id": "2026-08-07T06:00:01",
+    "date": "Aug 07, 2026 06:00 AM",
+    "account": "Ollies",
+    "script": "ol_pull.py",
+    "status": "count_drop",
+    "drop": 419,
+    "prev_count": 2473,
+    "new_count": 2054,
+    "error": "Dropped 419 rows (2,473 \u2192 2,054)"
+  },
+  {
+    "run_id": "2026-08-07T11:00:03",
+    "date": "Aug 07, 2026 11:00 AM",
+    "account": "dmg_pull.py",
+    "script": "dmg_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
   }
 ]

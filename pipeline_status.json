@@ -1,8 +1,8 @@
 {
-  "run_id": "2026-08-06T11:00:01",
-  "started_at": "2026-08-06T11:00:01.683134",
-  "finished_at": null,
-  "status": "running",
+  "run_id": "2026-08-09T22:00:02",
+  "started_at": "2026-08-09T22:00:02.430219",
+  "finished_at": "2026-08-09T22:10:04.226948",
+  "status": "success",
   "failed_at": null,
   "steps": [
     {
@@ -10,7 +10,191 @@
       "script": "masterlist_fetch.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-08-06T11:00:12.268096",
+      "timestamp": "2026-08-09T22:00:21.022324",
+      "error": null
+    },
+    {
+      "account": "Coaching",
+      "script": "asana_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-09T22:00:39.882953",
+      "error": null
+    },
+    {
+      "account": "M7",
+      "script": "m7_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-09T22:00:49.110015",
+      "error": null
+    },
+    {
+      "account": "DMG",
+      "script": "dmg_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-09T22:00:58.918988",
+      "error": null
+    },
+    {
+      "account": "R4H",
+      "script": "r4h_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-09T22:01:10.867072",
+      "error": null
+    },
+    {
+      "account": "Parentis Health",
+      "script": "parentis_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-09T22:01:21.881384",
+      "error": null
+    },
+    {
+      "account": "Britelift",
+      "script": "britelift_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-09T22:01:34.853027",
+      "error": null
+    },
+    {
+      "account": "Britelift Chat",
+      "script": "britelift_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-09T22:01:44.343006",
+      "error": null
+    },
+    {
+      "account": "RideX",
+      "script": "Ridex_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-09T22:01:55.063633",
+      "error": null
+    },
+    {
+      "account": "Hamilton",
+      "script": "Hamilton_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-09T22:02:42.993675",
+      "error": null
+    },
+    {
+      "account": "Skyline",
+      "script": "Skyline_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-09T22:04:36.818772",
+      "error": null
+    },
+    {
+      "account": "VIP",
+      "script": "vip_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-09T22:05:10.650753",
+      "error": null
+    },
+    {
+      "account": "C&H",
+      "script": "ch_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-09T22:05:24.560212",
+      "error": null
+    },
+    {
+      "account": "Reno Cab",
+      "script": "rc_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-09T22:05:50.919438",
+      "error": null
+    },
+    {
+      "account": "Trans Iowa",
+      "script": "ti_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-09T22:06:06.239216",
+      "error": null
+    },
+    {
+      "account": "Data Carz",
+      "script": "dc_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-09T22:06:38.129197",
+      "error": null
+    },
+    {
+      "account": "Associated Cab",
+      "script": "ac_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-09T22:07:13.411191",
+      "error": null
+    },
+    {
+      "account": "Ollies",
+      "script": "ol_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-09T22:07:36.525792",
+      "error": null
+    },
+    {
+      "account": "Circle Taxi",
+      "script": "ct_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-09T22:08:04.083803",
+      "error": null
+    },
+    {
+      "account": "YCOV",
+      "script": "ycov_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-09T22:08:25.848487",
+      "error": null
+    },
+    {
+      "account": "Kelowna",
+      "script": "kel_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-09T22:08:51.985626",
+      "error": null
+    },
+    {
+      "account": "Vermont",
+      "script": "vt_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-09T22:09:07.100981",
+      "error": null
+    },
+    {
+      "account": "YCDC",
+      "script": "ycdc_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-09T22:09:33.388048",
+      "error": null
+    },
+    {
+      "account": "Blueline",
+      "script": "bl_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-09T22:09:53.284583",
       "error": null
     }
   ]

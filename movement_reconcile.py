@@ -115,6 +115,97 @@ def _is_yes(value: object) -> bool:
     return _text(value).lower() == "yes"
 
 
+def _change_type_from_processed_note(value: object) -> str:
+    note = _text(value)
+    if not note:
+        return "Change of Employment Status"
+    change_type = note.split("|", 1)[0].strip()
+    return change_type or "Change of Employment Status"
+
+
+def _week_start_text(date: pd.Timestamp) -> str:
+    week_start = date - pd.Timedelta(days=int(date.weekday()))
+    return week_start.strftime("%m/%d/%Y")
+
+
+def repair_missing_effective_history_rows(
+    masterlist: pd.DataFrame,
+    history: pd.DataFrame,
+    movement: pd.DataFrame,
+) -> pd.DataFrame:
+    """Append local History cache rows for processed movements missing their effective date.
+
+    Apps Script is still the source-of-truth writer for Google Sheets. This local repair keeps
+    the generated dashboard and pipeline validation coherent after a fetch when Apps Script
+    marked a Movement row processed but the daily active History snapshot skipped the employee.
+    """
+    required_history = {"Emp Name", "Date Generated", "Employment Status"}
+    if not required_history.issubset(history.columns):
+        return history
+
+    history_start = _history_start_date(history)
+    if history_start is None:
+        return history
+
+    master_by_name = {
+        str(row.get("Emp Name", "")).strip().lower(): row
+        for _, row in masterlist.iterrows()
+        if str(row.get("Emp Name", "")).strip()
+    }
+
+    repaired_rows: list[dict[str, object]] = []
+    existing_keys = set()
+    history_dates = _date_series(history["Date Generated"])
+    for idx, row in history.iterrows():
+        emp_name = _text(row.get("Emp Name")).lower()
+        date = history_dates.loc[idx]
+        if emp_name and not pd.isna(date):
+            existing_keys.add((emp_name, date))
+
+    for row in _eligible_processed_rows(movement):
+        emp_name = _text(row.get("Employee Name"))
+        effective_date = _parse_date(row.get("Effective Date"))
+        if not emp_name or effective_date is None or effective_date < history_start:
+            continue
+
+        key = (emp_name.lower(), effective_date)
+        if key in existing_keys:
+            continue
+
+        master_row = master_by_name.get(emp_name.lower())
+        if master_row is None:
+            continue
+
+        repaired = {}
+        for header in history.columns:
+            if header == "Date Generated":
+                repaired[header] = effective_date.strftime("%m/%d/%Y")
+            elif header == "Change Type":
+                repaired[header] = _change_type_from_processed_note(row.get("Processed Note"))
+            elif header == "Week":
+                repaired[header] = _week_start_text(effective_date)
+            else:
+                repaired[header] = master_row.get(header, "")
+
+        repaired_rows.append(repaired)
+        existing_keys.add(key)
+        print(
+            "[movement_reconcile] Repaired local History effective-date row: "
+            f"{emp_name} ({effective_date.strftime('%m/%d/%Y')})"
+        )
+
+    if not repaired_rows:
+        return history
+
+    repaired_history = pd.concat(
+        [history, pd.DataFrame(repaired_rows, columns=history.columns)],
+        ignore_index=True,
+    )
+    repaired_history.to_csv(HISTORY_CACHE, index=False)
+    print(f"[movement_reconcile] Added {len(repaired_rows)} local History repair row(s).")
+    return repaired_history
+
+
 def verify_no_overdue_unprocessed_movements(movement: pd.DataFrame) -> int:
     """Fail loudly when Apps Script left due Movement rows unprocessed.
 
@@ -320,6 +411,8 @@ def main(argv: list[str] | None = None) -> int:
     notify_rc = notify_missing_processed_movements(movement)
     if notify_rc != 0:
         return notify_rc
+
+    history = repair_missing_effective_history_rows(masterlist, history, movement)
 
     issues = verify_no_overdue_unprocessed_movements(movement)
     issues += verify_processed_movements(masterlist, history, movement)
