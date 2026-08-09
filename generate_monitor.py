@@ -333,12 +333,17 @@ def generate():
     failed_at   = raw.get("failed_at")             if raw else None
     run_id      = (raw.get("run_id", "")[:16])     if raw else "&mdash;"
 
-    # ISO timestamp for the freshness JS (use Build step timestamp if available)
+    dashboard_html = BASE / "masterlist_dashboard.html"
+
+    # ISO timestamp for the freshness JS (use Build step timestamp if available;
+    # otherwise fall back to the actual generated dashboard file timestamp).
     build_finish_iso = ""
     if raw:
         build_step = steps_map.get("Build")
         if build_step and build_step.get("status") == "pass":
             build_finish_iso = build_step.get("timestamp", raw.get("finished_at", "")) or ""
+        elif dashboard_html.exists():
+            build_finish_iso = datetime.fromtimestamp(dashboard_html.stat().st_mtime).isoformat()
         elif run_status == "success":
             build_finish_iso = raw.get("finished_at", "") or ""
     dash_built_str = "&mdash;"
@@ -560,7 +565,10 @@ def generate():
 
     build_step_data = steps_map.get("Build")
     git_step        = steps_map.get("Git Push")
-    build_st  = build_step_data["status"] if build_step_data else ("blocked" if run_status in ("failed", "unknown") else "pending")
+    build_st  = build_step_data["status"] if build_step_data else (
+        "pass" if run_status == "success" and dashboard_html.exists() else
+        "blocked" if run_status in ("failed", "unknown") else "pending"
+    )
     git_st    = (git_step["status"] if git_step
                  else ("pass"    if run_status == "success"
                        else "running" if run_status == "running"
