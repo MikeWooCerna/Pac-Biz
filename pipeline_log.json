@@ -2482,5 +2482,14 @@
     "status": "healed",
     "action": "retry",
     "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-08-10T19:00:01",
+    "date": "Aug 10, 2026 07:00 PM",
+    "account": "YCDC",
+    "script": "ycdc_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 3,431 rows vs baseline 3,431; pipeline continued using the last healthy file."
   }
 ]
