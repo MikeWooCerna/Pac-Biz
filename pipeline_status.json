@@ -116,6 +116,14 @@
       "status": "pass",
       "timestamp": "2026-08-10T19:05:56.877383",
       "error": null
+    },
+    {
+      "account": "Trans Iowa",
+      "script": "ti_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-10T19:06:11.649819",
+      "error": null
     }
   ]
 }
