@@ -2491,5 +2491,16 @@
     "status": "healed",
     "action": "guarded-preserve",
     "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 3,431 rows vs baseline 3,431; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-08-11T03:00:01",
+    "date": "Aug 11, 2026 03:00 AM",
+    "account": "Reno Cab",
+    "script": "rc_pull.py",
+    "status": "count_drop",
+    "drop": 501,
+    "prev_count": 3719,
+    "new_count": 3218,
+    "error": "Dropped 501 rows (3,719 \u2192 3,218)"
   }
 ]
