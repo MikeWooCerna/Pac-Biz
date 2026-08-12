@@ -2502,5 +2502,14 @@
     "prev_count": 3719,
     "new_count": 3218,
     "error": "Dropped 501 rows (3,719 \u2192 3,218)"
+  },
+  {
+    "run_id": "2026-08-12T11:00:02",
+    "date": "Aug 12, 2026 11:00 AM",
+    "account": "Associated Cab",
+    "script": "ac_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 3,438 rows vs baseline 3,438; pipeline continued using the last healthy file."
   }
 ]
