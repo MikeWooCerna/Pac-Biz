@@ -2652,11 +2652,22 @@ def load_ti_data():
     refresh_ti_output()
     source = read_ti_workbook()
     if source.empty:
+        existing = load_existing_records_from_html("tiRawData")
+        if not existing.empty:
+            print(
+                f"Trans Iowa QA rows protected: fresh pull unavailable; "
+                f"keeping prior dashboard rows ({len(existing):,})"
+            )
+            return existing
         return pd.DataFrame(columns=[
             "qa_id", "evaluation_id", "eval_key", "emp_id", "ts", "week_start",
             "agent", "score", "score_ai", "score_human", "status",
             "coach", "supervisor",
         ])
+    canonical_cols = {"qa_id", "ts", "agent", "score", "coach", "supervisor"}
+    if canonical_cols.issubset(set(source.columns)):
+        print(f"Trans Iowa QA rows: {len(source)}")
+        return source
     result = transform_ti_data(source)
     print(f"Trans Iowa QA rows: {len(result)}")
     return result
