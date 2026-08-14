@@ -2561,5 +2561,25 @@
     "status": "healed",
     "action": "retry",
     "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-08-14T19:47:19",
+    "date": "Aug 14, 2026 07:47 PM",
+    "account": "YCDC",
+    "script": "ycdc_pull.py",
+    "status": "count_drop",
+    "drop": 177,
+    "prev_count": 3467,
+    "new_count": 3290,
+    "error": "Dropped 177 rows (3,467 \u2192 3,290)"
+  },
+  {
+    "run_id": "2026-08-14T19:47:19",
+    "date": "Aug 14, 2026 07:47 PM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
   }
 ]
