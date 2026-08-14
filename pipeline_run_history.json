@@ -1623,5 +1623,57 @@
     "failed_steps": 0,
     "not_reached_steps": 0,
     "failed_at": null
+  },
+  {
+    "run_id": "2026-08-14T11:00:02",
+    "run_date": "2026-08-14",
+    "started_at": "2026-08-14T11:00:02.285347",
+    "finished_at": "",
+    "duration_sec": null,
+    "status": "running",
+    "step_count": 2,
+    "passed_steps": 2,
+    "failed_steps": 0,
+    "not_reached_steps": 0,
+    "failed_at": null
+  },
+  {
+    "run_id": "2026-08-14T15:00:03",
+    "run_date": "2026-08-14",
+    "started_at": "2026-08-14T15:00:03.890213",
+    "finished_at": "",
+    "duration_sec": null,
+    "status": "running",
+    "step_count": 3,
+    "passed_steps": 3,
+    "failed_steps": 0,
+    "not_reached_steps": 0,
+    "failed_at": null
+  },
+  {
+    "run_id": "2026-08-14T19:00:04",
+    "run_date": "2026-08-14",
+    "started_at": "2026-08-14T19:00:04.066773",
+    "finished_at": "",
+    "duration_sec": null,
+    "status": "running",
+    "step_count": 1,
+    "passed_steps": 1,
+    "failed_steps": 0,
+    "not_reached_steps": 0,
+    "failed_at": null
+  },
+  {
+    "run_id": "2026-08-14T19:28:12",
+    "run_date": "2026-08-14",
+    "started_at": "2026-08-14T19:28:12.292070",
+    "finished_at": "2026-08-14T19:42:27.021128",
+    "duration_sec": 854.729,
+    "status": "success",
+    "step_count": 26,
+    "passed_steps": 26,
+    "failed_steps": 0,
+    "not_reached_steps": 0,
+    "failed_at": null
   }
 ]
