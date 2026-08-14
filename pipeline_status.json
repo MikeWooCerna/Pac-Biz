@@ -1,6 +1,6 @@
 {
-  "run_id": "2026-08-14T11:00:02",
-  "started_at": "2026-08-14T11:00:02.285347",
+  "run_id": "2026-08-14T15:00:03",
+  "started_at": "2026-08-14T15:00:03.890213",
   "finished_at": null,
   "status": "running",
   "failed_at": null,
@@ -10,15 +10,7 @@
       "script": "masterlist_fetch.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-08-14T11:00:12.474005",
-      "error": null
-    },
-    {
-      "account": "Coaching",
-      "script": "asana_pull.py",
-      "exit_code": 0,
-      "status": "pass",
-      "timestamp": "2026-08-14T11:00:35.525467",
+      "timestamp": "2026-08-14T15:00:15.329029",
       "error": null
     }
   ]
