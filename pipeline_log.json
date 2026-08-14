@@ -2522,5 +2522,44 @@
     "prev_count": 3748,
     "new_count": 3430,
     "error": "Dropped 318 rows (3,748 \u2192 3,430)"
+  },
+  {
+    "run_id": "2026-08-14T19:27:31",
+    "date": "Aug 14, 2026 07:27 PM",
+    "account": "Guardian",
+    "script": "pipeline_guardian.py",
+    "status": "guardian_warn",
+    "error": "not reached mismatch: status=21, monitor=23"
+  },
+  {
+    "run_id": "2026-08-14T19:28:12",
+    "date": "Aug 14, 2026 07:28 PM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "count_drop",
+    "drop": 110,
+    "prev_count": 110,
+    "new_count": 0,
+    "error": "Dropped 110 rows (110 \u2192 0)"
+  },
+  {
+    "run_id": "2026-08-14T19:28:12",
+    "date": "Aug 14, 2026 07:28 PM",
+    "account": "YCDC",
+    "script": "ycdc_pull.py",
+    "status": "count_drop",
+    "drop": 177,
+    "prev_count": 3467,
+    "new_count": 3290,
+    "error": "Dropped 177 rows (3,467 \u2192 3,290)"
+  },
+  {
+    "run_id": "2026-08-14T19:28:12",
+    "date": "Aug 14, 2026 07:28 PM",
+    "account": "britelift_pull.py",
+    "script": "britelift_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
   }
 ]
