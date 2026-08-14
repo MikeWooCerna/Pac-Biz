@@ -833,18 +833,18 @@
   },
   {
     "date": "2026-08-14",
-    "runs": 7,
-    "successful_runs": 4,
+    "runs": 8,
+    "successful_runs": 5,
     "partial_runs": 0,
     "failed_runs": 0,
-    "uptime_pct": 57.14,
-    "steps": 110,
-    "passed_steps": 110,
+    "uptime_pct": 62.5,
+    "steps": 136,
+    "passed_steps": 136,
     "failed_steps": 0,
     "step_uptime_pct": 100.0,
-    "incident_count": 6,
+    "incident_count": 8,
     "count_drop_count": 3,
-    "self_healed_count": 2,
+    "self_healed_count": 4,
     "high_volume_count": 0
   }
 ]
