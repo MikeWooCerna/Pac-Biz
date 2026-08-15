@@ -184,8 +184,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     </div>
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run 2026-08-15T20:24</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Dashboard: Aug 15, 2026 04:45 PM</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Aug 15, 2026 08:32 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Dashboard: Aug 15, 2026 08:36 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Aug 15, 2026 08:36 PM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -198,7 +198,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div class="stat-card"><div class="sc-val" style="color:#00e87a;">24</div><div class="sc-lbl">Passed</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">0</div><div class="sc-lbl">Failed</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#E84500;">0</div><div class="sc-lbl">Not Reached</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">56,847</div><div class="sc-lbl">Rows Pulled</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">56,513</div><div class="sc-lbl">Rows Pulled</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#7060a0;">&mdash;</div><div class="sc-lbl">running</div></div>
   </div>
 
@@ -350,7 +350,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       <div class="agg-node">
         <div class="agg-title">Data Engine / Processing</div>
         <div class="agg-grid">
-          <div class="agg-item"><div class="agg-val" style="color:#00e87a;">56,847</div><div class="agg-lbl">total rows</div></div>
+          <div class="agg-item"><div class="agg-val" style="color:#00e87a;">56,513</div><div class="agg-lbl">total rows</div></div>
           <div class="agg-item">
             <div class="agg-val" style="display:flex;align-items:center;justify-content:center;gap:5px;">
               <div class="blink-g"></div>
@@ -374,8 +374,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
         </div>
         <div class="dash-body">
           <div class="stage-title">Dashboard</div>
-          <div class="stage-status"><div class="blink-n"></div></div>
-          <div class="stage-detail">not reached</div>
+          <div id="dash-freshness" style="margin:5px 0 3px;min-height:20px;display:flex;justify-content:center;align-items:center;font-size:12px;"></div>
         </div>
       </a>
 
@@ -396,9 +395,9 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-row"><b class="b-g"></b>ch_pull.py &middot; 08:27 PM</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">472 rows</span>
+    <span class="meta-pill g">0 rows</span>
     <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-ok">&#10003;</span>
+    <span class="meta-pill cnt-drop">&darr; 472</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -446,9 +445,9 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="node-row"><b class="b-g"></b>ol_pull.py &middot; 08:30 PM</div>
   
   <div class="node-meta">
-    <span class="meta-pill g">2,473 rows</span>
+    <span class="meta-pill g">2,611 rows</span>
     <span class="meta-pill g">PASS</span>
-    <span class="meta-pill cnt-drop">&darr; 138</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -515,7 +514,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   </div>
 
   
-  <div class="drop-strip">&#9660; Row count drop detected &mdash; <b>Ollies</b> &darr;&thinsp;138 rows <span style='opacity:0.65;font-size:11px;'>(2,611 &rarr; 2,473)</span></div>
+  <div class="drop-strip">&#9660; Row count drop detected &mdash; <b>C&H</b> &darr;&thinsp;472 rows <span style='opacity:0.65;font-size:11px;'>(472 &rarr; 0)</span></div>
   <div class="vol-strip-crit">&#9888; High volume datasets detected &mdash; <b>Skyline</b> &#9651;&thinsp;20,635 rows <span style='opacity:0.65;font-size:11px;'>(CRITICAL)</span></div>
 
   <div class="divider" style="margin-top:12px;"></div>
@@ -782,7 +781,7 @@ RuntimeError: VIP source row count below safety floor: 3324 < 3500. Existi</div>
 
 // ── Dashboard freshness ───────────────────────────────────────────────────────
 (function() {
-  var BUILD_ISO = "2026-08-15T16:45:19.360049";
+  var BUILD_ISO = "2026-08-15T20:36:47.085613";
   var el = document.getElementById('dash-freshness');
   if (!el || !BUILD_ISO) return;
   var buildTs = new Date(BUILD_ISO);
