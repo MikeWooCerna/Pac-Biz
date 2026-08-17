@@ -1,21 +1,5 @@
 [
   {
-    "run_id": "2026-06-23T09:04:24",
-    "date": "Jun 23, 2026 09:04 AM",
-    "account": "Build",
-    "script": "dashboard.py",
-    "status": "fail",
-    "error": "    raise ValueError(\n    ...<4 lines>...\n    )\nValueError: Length of values (0) does not match length of index (827)"
-  },
-  {
-    "run_id": "2026-06-23T11:00:02",
-    "date": "Jun 23, 2026 11:00 AM",
-    "account": "Britelift Chat",
-    "script": "britelift_pull.py",
-    "status": "fail",
-    "error": "    r = self.request(\"get\", url, params=params)\n  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\gspread\\http_client.py\", line 128, in request\n    raise APIError(response)\ngspread.exceptions.APIError: APIError: [503]: The service is currently unavailable."
-  },
-  {
     "run_id": "2026-06-23T11:00:02",
     "date": "Jun 23, 2026 11:00 AM",
     "account": "RideX",
@@ -2642,5 +2626,23 @@
     "status": "healed",
     "action": "guarded-preserve",
     "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-08-17T17:29:06",
+    "date": "Aug 17, 2026 05:29 PM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-08-17T17:29:06",
+    "date": "Aug 17, 2026 05:29 PM",
+    "account": "Ollies",
+    "script": "ol_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 2,643 rows vs baseline 2,643; pipeline continued using the last healthy file."
   }
 ]
