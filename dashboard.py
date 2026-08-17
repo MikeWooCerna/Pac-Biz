@@ -5087,9 +5087,19 @@ def main():
     refresh_iso  = datetime.now().strftime("%Y-%m-%dT%H:%M:00")
 
     latest_snapshot = ""
+    latest_snapshot_dates = []
     if "Date Generated" in history.columns:
         latest_date = pd.to_datetime(history["Date Generated"], errors="coerce").max()
-        latest_snapshot = latest_date.strftime("%m/%d/%Y") if pd.notna(latest_date) else ""
+        if pd.notna(latest_date):
+            latest_snapshot_dates.append(latest_date)
+    for cache_file in (_ml_cache, _hist_cache, _move_cache):
+        try:
+            if cache_file.exists():
+                latest_snapshot_dates.append(pd.Timestamp.fromtimestamp(cache_file.stat().st_mtime))
+        except OSError:
+            pass
+    if latest_snapshot_dates:
+        latest_snapshot = max(latest_snapshot_dates).strftime("%m/%d/%Y")
 
     # Masterlist KPI strip scalar (avg tenure of active staff).
     # Computed here in Python; JS does not currently calculate this.
