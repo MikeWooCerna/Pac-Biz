@@ -2,17 +2,6 @@
   {
     "run_id": "2026-06-23T09:04:24",
     "date": "Jun 23, 2026 09:04 AM",
-    "account": "Reno Cab",
-    "script": "rc_pull.py",
-    "status": "count_drop",
-    "drop": 1633,
-    "prev_count": 2460,
-    "new_count": 827,
-    "error": "Dropped 1,633 rows (2,460 \u2192 827)"
-  },
-  {
-    "run_id": "2026-06-23T09:04:24",
-    "date": "Jun 23, 2026 09:04 AM",
     "account": "Circle Taxi",
     "script": "ct_pull.py",
     "status": "count_drop",
@@ -2643,6 +2632,15 @@
   {
     "run_id": "2026-08-16T23:28:08",
     "date": "Aug 16, 2026 11:28 PM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-08-17T11:14:41",
+    "date": "Aug 17, 2026 11:14 AM",
     "account": "Trans Iowa",
     "script": "ti_pull.py",
     "status": "healed",
