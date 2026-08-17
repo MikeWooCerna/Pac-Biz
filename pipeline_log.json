@@ -2,28 +2,6 @@
   {
     "run_id": "2026-06-23T09:04:24",
     "date": "Jun 23, 2026 09:04 AM",
-    "account": "Circle Taxi",
-    "script": "ct_pull.py",
-    "status": "count_drop",
-    "drop": 746,
-    "prev_count": 1267,
-    "new_count": 521,
-    "error": "Dropped 746 rows (1,267 \u2192 521)"
-  },
-  {
-    "run_id": "2026-06-23T09:04:24",
-    "date": "Jun 23, 2026 09:04 AM",
-    "account": "YCDC",
-    "script": "ycdc_pull.py",
-    "status": "count_drop",
-    "drop": 1593,
-    "prev_count": 2387,
-    "new_count": 794,
-    "error": "Dropped 1,593 rows (2,387 \u2192 794)"
-  },
-  {
-    "run_id": "2026-06-23T09:04:24",
-    "date": "Jun 23, 2026 09:04 AM",
     "account": "Build",
     "script": "dashboard.py",
     "status": "fail",
@@ -2641,6 +2619,24 @@
   {
     "run_id": "2026-08-17T11:14:41",
     "date": "Aug 17, 2026 11:14 AM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-08-17T15:40:31",
+    "date": "Aug 17, 2026 03:40 PM",
+    "account": "m7_pull.py",
+    "script": "m7_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-08-17T15:40:31",
+    "date": "Aug 17, 2026 03:40 PM",
     "account": "Trans Iowa",
     "script": "ti_pull.py",
     "status": "healed",
