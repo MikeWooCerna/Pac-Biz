@@ -1,6 +1,6 @@
 {
-  "run_id": "2026-08-17T18:02:31",
-  "started_at": "2026-08-17T18:02:31.038254",
+  "run_id": "2026-08-17T18:19:52",
+  "started_at": "2026-08-17T18:19:52.351804",
   "finished_at": null,
   "status": "running",
   "failed_at": null,
@@ -10,15 +10,7 @@
       "script": "masterlist_fetch.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-08-17T18:02:39.475245",
-      "error": null
-    },
-    {
-      "account": "Build",
-      "script": "dashboard.py",
-      "exit_code": 0,
-      "status": "pass",
-      "timestamp": "2026-08-17T18:18:26.945987",
+      "timestamp": "2026-08-17T18:20:00.737678",
       "error": null
     }
   ]

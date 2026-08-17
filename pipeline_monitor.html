@@ -183,9 +183,9 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       </div>
     </div>
     <div style="text-align:right;">
-      <div style="font-size:13px;color:#7060a0;">Run 2026-08-17T18:02</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Dashboard: Aug 17, 2026 06:18 PM</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Aug 17, 2026 06:18 PM</div>
+      <div style="font-size:13px;color:#7060a0;">Run 2026-08-17T18:19</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Dashboard: Aug 17, 2026 06:19 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Aug 17, 2026 06:20 PM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -216,7 +216,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       <div class="section-hdr">Data Sources 1&ndash;12</div>
       <div class="node n-pass">
   <div class="node-title" style="color:#00e87a;"><span>Masterlist</span><div class="blink-g"></div></div>
-  <div class="node-row"><b class="b-g"></b>masterlist_fetch.py &middot; 06:02 PM</div>
+  <div class="node-row"><b class="b-g"></b>masterlist_fetch.py &middot; 06:20 PM</div>
   
   <div class="node-meta">
     <span class="meta-pill g">215 rows</span>
@@ -358,7 +358,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
             </div>
             <div class="agg-lbl">sources ok</div>
           </div>
-          <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">06:02 PM</div><div class="agg-lbl">started</div></div>
+          <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">06:19 PM</div><div class="agg-lbl">started</div></div>
           <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">&mdash;</div><div class="agg-lbl">finished</div></div>
           <div class="agg-item" style="grid-column:span 2;"><div class="agg-val" style="color:#ffaa00;font-size:12px;">7:00 PM</div><div class="agg-lbl">next schedule</div></div>
         </div>
@@ -374,7 +374,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
         </div>
         <div class="dash-body">
           <div class="stage-title">Dashboard</div>
-          <div id="dash-freshness" style="margin:5px 0 3px;min-height:20px;display:flex;justify-content:center;align-items:center;font-size:12px;"></div>
+          <div class="stage-status"><div class="blink-n"></div></div>
+          <div class="stage-detail">not reached</div>
         </div>
       </a>
 
@@ -775,7 +776,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 
 // ── Dashboard freshness ───────────────────────────────────────────────────────
 (function() {
-  var BUILD_ISO = "2026-08-17T18:18:26.945987";
+  var BUILD_ISO = "2026-08-17T18:19:16.445776";
   var el = document.getElementById('dash-freshness');
   if (!el || !BUILD_ISO) return;
   var buildTs = new Date(BUILD_ISO);
