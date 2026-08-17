@@ -172,6 +172,14 @@
       "status": "pass",
       "timestamp": "2026-08-17T17:57:35.322618",
       "error": null
+    },
+    {
+      "account": "Vermont",
+      "script": "vt_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-17T17:57:50.617692",
+      "error": null
     }
   ]
 }
