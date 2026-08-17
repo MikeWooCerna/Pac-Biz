@@ -16,8 +16,9 @@ def push_live(label):
         if r.returncode != 0:
             subprocess.run(["git", "commit", "-m", f"[live] {label}"],
                            cwd=str(base), capture_output=True, timeout=30)
-            subprocess.run(["git", "pull", "--rebase", "--autostash"],
-                           cwd=str(base), capture_output=True, timeout=60)
+            # Live monitor updates are best-effort telemetry. Never start a
+            # rebase here: a generated HTML conflict can leave the main
+            # dashboard pipeline detached before the real publish step.
             subprocess.run(["git", "push"],
                            cwd=str(base), capture_output=True, timeout=60)
         print(f"  [monitor] live push ok: {label}")
