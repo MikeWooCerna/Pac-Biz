@@ -10,7 +10,7 @@
     "passed_steps": 0,
     "failed_steps": 0,
     "step_uptime_pct": null,
-    "incident_count": 31,
+    "incident_count": 28,
     "count_drop_count": 1,
     "self_healed_count": 1,
     "high_volume_count": 1
@@ -878,5 +878,21 @@
     "count_drop_count": 0,
     "self_healed_count": 6,
     "high_volume_count": 1
+  },
+  {
+    "date": "2026-08-18",
+    "runs": 1,
+    "successful_runs": 1,
+    "partial_runs": 0,
+    "failed_runs": 0,
+    "uptime_pct": 100.0,
+    "steps": 26,
+    "passed_steps": 26,
+    "failed_steps": 0,
+    "step_uptime_pct": 100.0,
+    "incident_count": 3,
+    "count_drop_count": 0,
+    "self_healed_count": 3,
+    "high_volume_count": 0
   }
 ]
