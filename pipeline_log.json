@@ -2,70 +2,6 @@
   {
     "run_id": "2026-06-23T11:00:02",
     "date": "Jun 23, 2026 11:00 AM",
-    "account": "Reno Cab",
-    "script": "rc_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-06-23T11:00:02",
-    "date": "Jun 23, 2026 11:00 AM",
-    "account": "Trans Iowa",
-    "script": "ti_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-06-23T11:00:02",
-    "date": "Jun 23, 2026 11:00 AM",
-    "account": "Data Carz",
-    "script": "dc_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-06-23T11:00:02",
-    "date": "Jun 23, 2026 11:00 AM",
-    "account": "Associated Cab",
-    "script": "ac_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-06-23T11:00:02",
-    "date": "Jun 23, 2026 11:00 AM",
-    "account": "Ollies",
-    "script": "ol_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-06-23T11:00:02",
-    "date": "Jun 23, 2026 11:00 AM",
-    "account": "Circle Taxi",
-    "script": "ct_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-06-23T11:00:02",
-    "date": "Jun 23, 2026 11:00 AM",
-    "account": "YCOV",
-    "script": "ycov_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-06-23T11:00:02",
-    "date": "Jun 23, 2026 11:00 AM",
-    "account": "Kelowna",
-    "script": "kel_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-06-23T11:00:02",
-    "date": "Jun 23, 2026 11:00 AM",
     "account": "Vermont",
     "script": "vt_pull.py",
     "status": "not_reached",
@@ -2648,5 +2584,83 @@
     "status": "healed",
     "action": "retry",
     "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-08-18T20:51:35",
+    "date": "Aug 18, 2026 08:51 PM",
+    "account": "Associated Cab",
+    "script": "ac_pull.py",
+    "status": "count_drop",
+    "drop": 555,
+    "prev_count": 3526,
+    "new_count": 2971,
+    "error": "Dropped 555 rows (3,526 \u2192 2,971)"
+  },
+  {
+    "run_id": "2026-08-18T20:51:35",
+    "date": "Aug 18, 2026 08:51 PM",
+    "account": "Kelowna",
+    "script": "kel_pull.py",
+    "status": "count_drop",
+    "drop": 2886,
+    "prev_count": 3151,
+    "new_count": 265,
+    "error": "Dropped 2,886 rows (3,151 \u2192 265)"
+  },
+  {
+    "run_id": "2026-08-18T20:51:35",
+    "date": "Aug 18, 2026 08:51 PM",
+    "account": "Vermont",
+    "script": "vt_pull.py",
+    "status": "count_drop",
+    "drop": 67,
+    "prev_count": 713,
+    "new_count": 646,
+    "error": "Dropped 67 rows (713 \u2192 646)"
+  },
+  {
+    "run_id": "2026-08-18T20:51:35",
+    "date": "Aug 18, 2026 08:51 PM",
+    "account": "Ridex_pull.py",
+    "script": "Ridex_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-08-18T20:51:35",
+    "date": "Aug 18, 2026 08:51 PM",
+    "account": "VIP",
+    "script": "vip_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 4,618 rows vs baseline 4,618; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-08-18T20:51:35",
+    "date": "Aug 18, 2026 08:51 PM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-08-18T20:51:35",
+    "date": "Aug 18, 2026 08:51 PM",
+    "account": "Ollies",
+    "script": "ol_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 2,646 rows vs baseline 2,646; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-08-18T20:51:35",
+    "date": "Aug 18, 2026 08:51 PM",
+    "account": "YCDC",
+    "script": "ycdc_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 3,517 rows vs baseline 3,517; pipeline continued using the last healthy file."
   }
 ]
