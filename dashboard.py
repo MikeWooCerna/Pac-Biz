@@ -7237,7 +7237,7 @@ def main():
     </div>
     <div class="ml-kpi">
         <div class="ml-kpi-lbl">Accounts</div>
-        <div class="ml-kpi-val" id="ml-kpi-accounts">22</div>
+        <div class="ml-kpi-val" id="ml-kpi-accounts">24</div>
         <div class="ml-kpi-sub">Active accounts</div>
     </div>
     <div class="ml-kpi">
@@ -8151,7 +8151,7 @@ const MASTERLIST_FILTERS = {{
     employmentClass: new Set(),
 }};
 const APPROVED_ACCOUNTS = new Set([
-    "Alpha Tax", "Associate", "Associated Cab", "Brite Lift", "Buffalo", "C&H",
+    "654 Limo", "654 Limo Billing", "Alpha Tax", "Associate", "Associated Cab", "Brite Lift", "Buffalo", "C&H",
     "Circle Taxi", "Data Carz", "DMG", "Hamilton", "Kaizen", "Kelowna", "Vermont", "YCDC",
     "Keys Please", "M7 Ride", "Mediroute", "Monsoon", "Ollies", "Parentis Health",
     "R4H", "Reno Nevada", "Skyline", "Trans IOWA", "Victoria YC", "VIP", "VRN", "YCDC",
@@ -10161,14 +10161,27 @@ function mlDeptDonutCounts(data) {{
     }});
     return Object.entries(out).map(([name, count]) => ({{name, count}})).sort((a, b) => b.count - a.count);
 }}
+function mlTenureAccountName(value) {{
+    const raw = norm(value) || "Blank";
+    const key = raw.toLowerCase();
+    if (key === "654 limo" || key === "654 limo billing") return "654 Limo";
+    return raw;
+}}
 function mlAccountTenureStack(data) {{
-    const accountNames = countBy(data, "LOB / Account")
+    const accountTotals = {{}};
+    data.forEach(r => {{
+        const account = mlTenureAccountName(r["LOB / Account"]);
+        accountTotals[account] = (accountTotals[account] || 0) + 1;
+    }});
+    const accountNames = Object.entries(accountTotals)
+        .map(([name, count]) => ({{name, count}}))
+        .sort((a, b) => b.count - a.count)
         .filter(d => APPROVED_ACCOUNTS.has(d.name.toLowerCase()))
         .map(d => d.name);
     const counts = {{}};
     accountNames.forEach(account => {{ counts[account] = Object.fromEntries(TENURE_GROUPS.map(g => [g.name, 0])); }});
     data.forEach(r => {{
-        const account = norm(r["LOB / Account"]) || "Blank";
+        const account = mlTenureAccountName(r["LOB / Account"]);
         if (!counts[account]) return;
         const groupName = tenureGroupName(parseDateValue(r["Hire Date"]), new Date());
         if (groupName) counts[account][groupName] += 1;
