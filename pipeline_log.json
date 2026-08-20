@@ -1,157 +1,5 @@
 [
   {
-    "run_id": "2026-06-23T19:00:02",
-    "date": "Jun 23, 2026 07:00 PM",
-    "account": "Blueline",
-    "script": "bl_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-06-23T19:23:13",
-    "date": "Jun 23, 2026 07:23 PM",
-    "account": "Skyline",
-    "script": "Skyline_pull.py",
-    "status": "high_volume",
-    "error": "Warning: 14,297 rows (threshold 10,000)"
-  },
-  {
-    "run_id": "2026-06-23T20:11:41",
-    "date": "Jun 23, 2026 08:11 PM",
-    "account": "Reno Cab",
-    "script": "rc_pull.py",
-    "status": "healed",
-    "action": "repull",
-    "error": "Count dropped 2,487 \u2192 1,712. Re-pull recovered 2,487 rows."
-  },
-  {
-    "run_id": "2026-06-24T03:00:02",
-    "date": "Jun 24, 2026 03:00 AM",
-    "account": "Skyline",
-    "script": "Skyline_pull.py",
-    "status": "count_drop",
-    "drop": 6530,
-    "prev_count": 14447,
-    "new_count": 7917,
-    "error": "Dropped 6,530 rows (14,447 \u2192 7,917)"
-  },
-  {
-    "run_id": "2026-06-24T03:00:02",
-    "date": "Jun 24, 2026 03:00 AM",
-    "account": "Circle Taxi",
-    "script": "ct_pull.py",
-    "status": "count_drop",
-    "drop": 23,
-    "prev_count": 523,
-    "new_count": 500,
-    "error": "Dropped 23 rows (523 \u2192 500)"
-  },
-  {
-    "run_id": "2026-06-24T08:45:27",
-    "date": "Jun 24, 2026 08:45 AM",
-    "account": "kel_pull.py",
-    "script": "kel_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
-    "run_id": "2026-06-24T11:00:02",
-    "date": "Jun 24, 2026 11:00 AM",
-    "account": "Circle Taxi",
-    "script": "ct_pull.py",
-    "status": "count_drop",
-    "drop": 771,
-    "prev_count": 1283,
-    "new_count": 512,
-    "error": "Dropped 771 rows (1,283 \u2192 512)"
-  },
-  {
-    "run_id": "2026-06-24T11:48:07",
-    "date": "Jun 24, 2026 11:48 AM",
-    "account": "Ridex_pull.py",
-    "script": "Ridex_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
-    "run_id": "2026-06-25T15:00:02",
-    "date": "Jun 25, 2026 03:00 PM",
-    "account": "britelift_pull.py",
-    "script": "britelift_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
-    "run_id": "2026-06-26T03:00:02",
-    "date": "Jun 26, 2026 03:00 AM",
-    "account": "parentis_pull.py",
-    "script": "parentis_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
-    "run_id": "2026-06-26T11:00:02",
-    "date": "Jun 26, 2026 11:00 AM",
-    "account": "britelift_pull.py",
-    "script": "britelift_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
-    "run_id": "2026-06-26T19:00:03",
-    "date": "Jun 26, 2026 07:00 PM",
-    "account": "dc_pull.py",
-    "script": "dc_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
-    "run_id": "2026-06-26T22:00:03",
-    "date": "Jun 26, 2026 10:00 PM",
-    "account": "Kelowna",
-    "script": "kel_pull.py",
-    "status": "count_drop",
-    "drop": 21,
-    "prev_count": 2353,
-    "new_count": 2332,
-    "error": "Dropped 21 rows (2,353 \u2192 2,332)"
-  },
-  {
-    "run_id": "2026-06-26T23:06:17",
-    "date": "Jun 26, 2026 11:06 PM",
-    "account": "Kelowna",
-    "script": "C:\\Users\\Mike Woo Cerna\\Documents\\PB\\Quality\\Kelowna\\kel_pull.py",
-    "status": "healed",
-    "action": "appsscript_trigger",
-    "error": "Count drop auto-recovered. Apps Script re-triggered, dashboard rebuilt and pushed."
-  },
-  {
-    "run_id": "2026-06-26T23:41:44",
-    "date": "Jun 26, 2026 11:41 PM",
-    "account": "Kelowna",
-    "script": "C:\\Users\\Mike Woo Cerna\\Documents\\PB\\Quality\\Kelowna\\kel_pull.py",
-    "status": "healed",
-    "action": "appsscript_trigger",
-    "prev_count": 2332,
-    "healed_count": 0,
-    "error": "Count drop auto-recovered. Apps Script re-triggered, dashboard rebuilt and pushed. Rows before drop: 2,332 \u2192 rows after heal: unknown."
-  },
-  {
-    "run_id": "2026-06-27T03:00:02",
-    "date": "Jun 27, 2026 03:00 AM",
-    "account": "parentis_pull.py",
-    "script": "parentis_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
     "run_id": "2026-06-27T11:00:02",
     "date": "Jun 27, 2026 11:00 AM",
     "account": "ol_pull.py",
@@ -2673,5 +2521,137 @@
     "status": "healed",
     "action": "guarded-preserve",
     "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-08-20T23:01:51",
+    "date": "Aug 20, 2026 11:01 PM",
+    "account": "C&H",
+    "script": "ch_pull.py",
+    "status": "fail",
+    "error": "    r = self.request(\"get\", url, params=params)\n  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\gspread\\http_client.py\", line 128, in request\n    raise APIError(response)\ngspread.exceptions.APIError: APIError: [503]: The service is currently unavailable."
+  },
+  {
+    "run_id": "2026-08-20T23:01:51",
+    "date": "Aug 20, 2026 11:01 PM",
+    "account": "Reno Cab",
+    "script": "rc_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-08-20T23:01:51",
+    "date": "Aug 20, 2026 11:01 PM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-08-20T23:01:51",
+    "date": "Aug 20, 2026 11:01 PM",
+    "account": "Data Carz",
+    "script": "dc_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-08-20T23:01:51",
+    "date": "Aug 20, 2026 11:01 PM",
+    "account": "Associated Cab",
+    "script": "ac_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-08-20T23:01:51",
+    "date": "Aug 20, 2026 11:01 PM",
+    "account": "Ollies",
+    "script": "ol_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-08-20T23:01:51",
+    "date": "Aug 20, 2026 11:01 PM",
+    "account": "Circle Taxi",
+    "script": "ct_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-08-20T23:01:51",
+    "date": "Aug 20, 2026 11:01 PM",
+    "account": "YCOV",
+    "script": "ycov_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-08-20T23:01:51",
+    "date": "Aug 20, 2026 11:01 PM",
+    "account": "Kelowna",
+    "script": "kel_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-08-20T23:01:51",
+    "date": "Aug 20, 2026 11:01 PM",
+    "account": "Vermont",
+    "script": "vt_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-08-20T23:01:51",
+    "date": "Aug 20, 2026 11:01 PM",
+    "account": "YCDC",
+    "script": "ycdc_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-08-20T23:01:51",
+    "date": "Aug 20, 2026 11:01 PM",
+    "account": "Blueline",
+    "script": "bl_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-08-20T23:01:51",
+    "date": "Aug 20, 2026 11:01 PM",
+    "account": "dmg_pull.py",
+    "script": "dmg_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-08-20T23:01:51",
+    "date": "Aug 20, 2026 11:01 PM",
+    "account": "britelift_pull.py",
+    "script": "britelift_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-08-20T23:01:51",
+    "date": "Aug 20, 2026 11:01 PM",
+    "account": "Ridex_pull.py",
+    "script": "Ridex_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-08-20T23:01:51",
+    "date": "Aug 20, 2026 11:01 PM",
+    "account": "vip_pull.py",
+    "script": "vip_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
   }
 ]
