@@ -1,8 +1,8 @@
 {
   "run_id": "2026-08-20T15:17:18",
   "started_at": "2026-08-20T15:17:18.727956",
-  "finished_at": "2026-08-20T15:34:39.392380",
-  "status": "partial",
+  "finished_at": "2026-08-20T15:35:59.516926",
+  "status": "success",
   "failed_at": "YCOV",
   "steps": [
     {
