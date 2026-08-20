@@ -2,8 +2,8 @@
   "run_id": "2026-08-20T15:17:18",
   "started_at": "2026-08-20T15:17:18.727956",
   "finished_at": null,
-  "status": "running",
-  "failed_at": null,
+  "status": "failed",
+  "failed_at": "YCOV",
   "steps": [
     {
       "account": "Masterlist",
@@ -156,6 +156,14 @@
       "status": "pass",
       "timestamp": "2026-08-20T15:25:49.309453",
       "error": null
+    },
+    {
+      "account": "YCOV",
+      "script": "ycov_pull.py",
+      "exit_code": 1,
+      "status": "fail",
+      "timestamp": "2026-08-20T15:27:05.963087",
+      "error": "    return wrapped(*args, **kwargs)\n  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\googleapiclient\\http.py\", line 938, in execute\n    raise HttpError(resp, content, uri=self.uri)\ngoogleapiclient.errors.HttpError: <HttpError 503 when requesting https://sheets.googleapis.com/v4/spreadsheets/1FtDh5kctA1rAE_qRfy-vkLPYTiPbt9T5NXHN8AhE44o/values/YCOV_Evaluations?alt=json returned \"The service is currently unavailable.\". Details: \"The service is currently unavailable.\">"
     }
   ]
 }
