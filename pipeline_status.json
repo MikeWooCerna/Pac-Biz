@@ -3,7 +3,7 @@
   "started_at": "2026-08-20T15:17:18.727956",
   "finished_at": "2026-08-20T15:35:59.516926",
   "status": "success",
-  "failed_at": "YCOV",
+  "failed_at": null,
   "steps": [
     {
       "account": "Masterlist",
@@ -130,7 +130,7 @@
       "script": "dc_pull.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-08-20T15:24:59.584520",
+      "timestamp": "2026-08-20T15:24:59.58452",
       "error": null
     },
     {
@@ -202,7 +202,7 @@
       "script": "dashboard.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-08-20T15:34:21.135680",
+      "timestamp": "2026-08-20T15:34:21.13568",
       "error": null
     },
     {

@@ -1869,6 +1869,6 @@
     "passed_steps": 26,
     "failed_steps": 1,
     "not_reached_steps": 0,
-    "failed_at": "YCOV"
+    "failed_at": null
   }
 ]
