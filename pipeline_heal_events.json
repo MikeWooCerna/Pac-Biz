@@ -1,11 +1,11 @@
 [
   {
-    "run_id": "2026-08-20T15:17:18",
-    "date": "Aug 20, 2026 03:17 PM",
-    "account": "vt_pull.py",
-    "script": "vt_pull.py",
+    "run_id": "2026-08-20T23:01:51",
+    "date": "Aug 20, 2026 11:01 PM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
     "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
   }
 ]
