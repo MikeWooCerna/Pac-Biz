@@ -1,27 +1,5 @@
 [
   {
-    "run_id": "2026-06-27T19:00:02",
-    "date": "Jun 27, 2026 07:00 PM",
-    "account": "Data Carz",
-    "script": "dc_pull.py",
-    "status": "count_drop",
-    "drop": 801,
-    "prev_count": 2825,
-    "new_count": 2024,
-    "error": "Dropped 801 rows (2,825 \u2192 2,024)"
-  },
-  {
-    "run_id": "2026-06-27T19:00:02",
-    "date": "Jun 27, 2026 07:00 PM",
-    "account": "Ollies",
-    "script": "ol_pull.py",
-    "status": "count_drop",
-    "drop": 455,
-    "prev_count": 1891,
-    "new_count": 1436,
-    "error": "Dropped 455 rows (1,891 \u2192 1,436)"
-  },
-  {
     "run_id": "2026-06-27T21:42:03",
     "date": "Jun 27, 2026 09:42 PM",
     "account": "Hamilton",
@@ -2651,5 +2629,23 @@
     "status": "healed",
     "action": "guarded-preserve",
     "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-08-21T19:55:45",
+    "date": "Aug 21, 2026 07:55 PM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-08-21T19:55:45",
+    "date": "Aug 21, 2026 07:55 PM",
+    "account": "vt_pull.py",
+    "script": "vt_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
   }
 ]
