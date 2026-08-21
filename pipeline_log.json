@@ -1,25 +1,5 @@
 [
   {
-    "run_id": "2026-06-27T11:00:02",
-    "date": "Jun 27, 2026 11:00 AM",
-    "account": "ol_pull.py",
-    "script": "ol_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
-    "run_id": "2026-06-27T19:00:02",
-    "date": "Jun 27, 2026 07:00 PM",
-    "account": "Hamilton",
-    "script": "Hamilton_pull.py",
-    "status": "count_drop",
-    "drop": 1032,
-    "prev_count": 3423,
-    "new_count": 2391,
-    "error": "Dropped 1,032 rows (3,423 \u2192 2,391)"
-  },
-  {
     "run_id": "2026-06-27T19:00:02",
     "date": "Jun 27, 2026 07:00 PM",
     "account": "Data Carz",
@@ -2653,5 +2633,23 @@
     "status": "healed",
     "action": "retry",
     "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-08-21T15:50:46",
+    "date": "Aug 21, 2026 03:50 PM",
+    "account": "Hamilton_pull.py",
+    "script": "Hamilton_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-08-21T15:50:46",
+    "date": "Aug 21, 2026 03:50 PM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
   }
 ]
