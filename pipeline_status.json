@@ -140,6 +140,14 @@
       "status": "pass",
       "timestamp": "2026-08-21T20:02:13.930023",
       "error": null
+    },
+    {
+      "account": "Ollies",
+      "script": "ol_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-21T20:02:31.151192",
+      "error": null
     }
   ]
 }
