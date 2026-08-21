@@ -1896,5 +1896,18 @@
     "failed_steps": 0,
     "not_reached_steps": 0,
     "failed_at": null
+  },
+  {
+    "run_id": "2026-08-21T19:55:45",
+    "run_date": "2026-08-21",
+    "started_at": "2026-08-21T19:55:45.774537",
+    "finished_at": "2026-08-21T20:12:33.230217",
+    "duration_sec": 1007.456,
+    "status": "success",
+    "step_count": 26,
+    "passed_steps": 26,
+    "failed_steps": 0,
+    "not_reached_steps": 0,
+    "failed_at": null
   }
 ]
