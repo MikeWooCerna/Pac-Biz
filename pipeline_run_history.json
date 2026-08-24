@@ -1909,5 +1909,18 @@
     "failed_steps": 0,
     "not_reached_steps": 0,
     "failed_at": null
+  },
+  {
+    "run_id": "2026-08-24T18:57:03",
+    "run_date": "2026-08-24",
+    "started_at": "2026-08-24T18:57:03.138287",
+    "finished_at": "2026-08-24T19:15:43.221123",
+    "duration_sec": 1120.083,
+    "status": "partial",
+    "step_count": 26,
+    "passed_steps": 25,
+    "failed_steps": 1,
+    "not_reached_steps": 0,
+    "failed_at": "RideX"
   }
 ]
