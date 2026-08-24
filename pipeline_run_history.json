@@ -1914,13 +1914,13 @@
     "run_id": "2026-08-24T18:57:03",
     "run_date": "2026-08-24",
     "started_at": "2026-08-24T18:57:03.138287",
-    "finished_at": "2026-08-24T19:15:43.221123",
-    "duration_sec": 1120.083,
-    "status": "partial",
-    "step_count": 26,
-    "passed_steps": 25,
+    "finished_at": "2026-08-24T19:16:25.408552",
+    "duration_sec": 1162.27,
+    "status": "success",
+    "step_count": 27,
+    "passed_steps": 26,
     "failed_steps": 1,
     "not_reached_steps": 0,
-    "failed_at": "RideX"
+    "failed_at": null
   }
 ]

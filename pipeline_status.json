@@ -1,9 +1,9 @@
 {
   "run_id": "2026-08-24T18:57:03",
   "started_at": "2026-08-24T18:57:03.138287",
-  "finished_at": "2026-08-24T19:15:43.221123",
-  "status": "partial",
-  "failed_at": "RideX",
+  "finished_at": "2026-08-24T19:16:25.408552",
+  "status": "success",
+  "failed_at": null,
   "steps": [
     {
       "account": "Masterlist",
