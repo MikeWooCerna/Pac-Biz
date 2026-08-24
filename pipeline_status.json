@@ -1,8 +1,8 @@
 {
   "run_id": "2026-08-24T18:57:03",
   "started_at": "2026-08-24T18:57:03.138287",
-  "finished_at": "2026-08-24T19:15:24.584822",
-  "status": "failed",
+  "finished_at": "2026-08-24T19:15:43.221123",
+  "status": "partial",
   "failed_at": "RideX",
   "steps": [
     {
