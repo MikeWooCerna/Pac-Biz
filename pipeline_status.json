@@ -2,8 +2,8 @@
   "run_id": "2026-08-24T18:57:03",
   "started_at": "2026-08-24T18:57:03.138287",
   "finished_at": null,
-  "status": "running",
-  "failed_at": null,
+  "status": "failed",
+  "failed_at": "RideX",
   "steps": [
     {
       "account": "Masterlist",
@@ -68,6 +68,14 @@
       "status": "pass",
       "timestamp": "2026-08-24T19:00:41.579118",
       "error": null
+    },
+    {
+      "account": "RideX",
+      "script": "Ridex_pull.py",
+      "exit_code": 1,
+      "status": "fail",
+      "timestamp": "2026-08-24T19:01:59.077815",
+      "error": "    r = self.request(\"get\", url, params=params)\n  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\gspread\\http_client.py\", line 128, in request\n    raise APIError(response)\ngspread.exceptions.APIError: APIError: [503]: The service is currently unavailable."
     }
   ]
 }
