@@ -1,25 +1,5 @@
 [
   {
-    "run_id": "2026-07-01T06:18:58",
-    "date": "Jul 01, 2026 06:18 AM",
-    "account": "Hamilton",
-    "script": "C:\\Users\\Mike Woo Cerna\\Documents\\PB\\Quality\\Hamilton\\Hamilton_pull.py",
-    "status": "healed",
-    "action": "appsscript_trigger",
-    "prev_count": 3531,
-    "healed_count": 3531,
-    "error": "Count drop auto-recovered. Apps Script re-triggered, dashboard rebuilt and pushed. Rows before drop: 3,531 \u2192 rows after heal: 3,531 (100%)."
-  },
-  {
-    "run_id": "2026-07-01T15:00:02",
-    "date": "Jul 01, 2026 03:00 PM",
-    "account": "rc_pull.py",
-    "script": "rc_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
     "run_id": "2026-07-02T03:00:02",
     "date": "Jul 02, 2026 03:00 AM",
     "account": "Hamilton",
@@ -2634,5 +2614,23 @@
     "script": "Skyline_pull.py",
     "status": "high_volume",
     "error": "CRITICAL: 20,835 rows (threshold 20,000)"
+  },
+  {
+    "run_id": "2026-08-25T22:11:24",
+    "date": "Aug 25, 2026 10:11 PM",
+    "account": "r4h_pull.py",
+    "script": "r4h_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-08-25T22:11:24",
+    "date": "Aug 25, 2026 10:11 PM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
   }
 ]
