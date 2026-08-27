@@ -2,22 +2,6 @@
   {
     "run_id": "2026-07-04T06:00:02",
     "date": "Jul 04, 2026 06:00 AM",
-    "account": "C&H",
-    "script": "ch_pull.py",
-    "status": "fail",
-    "error": "    r = self.request(\"get\", url, params=params)\n  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\gspread\\http_client.py\", line 128, in request\n    raise APIError(response)\ngspread.exceptions.APIError: APIError: [503]: The service is currently unavailable."
-  },
-  {
-    "run_id": "2026-07-04T06:00:02",
-    "date": "Jul 04, 2026 06:00 AM",
-    "account": "Reno Cab",
-    "script": "rc_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-07-04T06:00:02",
-    "date": "Jul 04, 2026 06:00 AM",
     "account": "Trans Iowa",
     "script": "ti_pull.py",
     "status": "not_reached",
@@ -2608,6 +2592,24 @@
     "date": "Aug 27, 2026 06:33 PM",
     "account": "ol_pull.py",
     "script": "ol_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-08-27T20:21:43",
+    "date": "Aug 27, 2026 08:21 PM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-08-27T20:21:43",
+    "date": "Aug 27, 2026 08:21 PM",
+    "account": "kel_pull.py",
+    "script": "kel_pull.py",
     "status": "healed",
     "action": "retry",
     "error": "Failed on attempt 1, recovered automatically on retry."
