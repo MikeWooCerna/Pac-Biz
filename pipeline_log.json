@@ -1,69 +1,5 @@
 [
   {
-    "run_id": "2026-07-02T21:02:00",
-    "date": "Jul 02, 2026 09:02 PM",
-    "account": "Data Carz",
-    "script": "C:\\Users\\Mike Woo Cerna\\Documents\\PB\\Quality\\Data Carz\\dc_pull.py",
-    "status": "healed",
-    "action": "manual_fix",
-    "prev_count": 2929,
-    "healed_count": 2929,
-    "error": "Count drop manually recovered. pullDCLast30Days rewritten to non-destructive merge. Rows before drop: 2,929 -> rows after heal: 2,929 (100%)."
-  },
-  {
-    "run_id": "2026-07-02T22:00:01",
-    "date": "Jul 02, 2026 10:00 PM",
-    "account": "Ollies",
-    "script": "ol_pull.py",
-    "status": "count_drop",
-    "drop": 125,
-    "prev_count": 1963,
-    "new_count": 1838,
-    "error": "Dropped 125 rows (1,963 \u2192 1,838)"
-  },
-  {
-    "run_id": "2026-07-02T22:19:56",
-    "date": "Jul 02, 2026 10:19 PM",
-    "account": "Ollies",
-    "script": "C:\\Users\\Mike Woo Cerna\\Documents\\PB\\Quality\\Ollies\\ol_pull.py",
-    "status": "healed",
-    "action": "appsscript_trigger",
-    "prev_count": 1963,
-    "healed_count": 1963,
-    "error": "Count drop auto-recovered. Apps Script re-triggered, dashboard rebuilt and pushed. Rows before drop: 1,963 \u2192 rows after heal: 1,963 (100%)."
-  },
-  {
-    "run_id": "2026-07-03T19:00:02",
-    "date": "Jul 03, 2026 07:00 PM",
-    "account": "Vermont",
-    "script": "vt_pull.py",
-    "status": "count_drop",
-    "drop": 237,
-    "prev_count": 614,
-    "new_count": 377,
-    "error": "Dropped 237 rows (614 \u2192 377)"
-  },
-  {
-    "run_id": "2026-07-03T22:34:19",
-    "date": "Jul 03, 2026 10:34 PM",
-    "account": "Vermont",
-    "script": "vt_pull.py",
-    "status": "healed",
-    "action": "next_run_recovered",
-    "prev_count": 614,
-    "healed_count": 614,
-    "error": "Count drop recovered on the next successful pipeline run. Rows before drop: 614 -> rows after heal: 614 (100%)."
-  },
-  {
-    "run_id": "2026-07-04T03:00:02",
-    "date": "Jul 04, 2026 03:00 AM",
-    "account": "Ridex_pull.py",
-    "script": "Ridex_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
     "run_id": "2026-07-04T06:00:02",
     "date": "Jul 04, 2026 06:00 AM",
     "account": "C&H",
@@ -2624,5 +2560,56 @@
     "status": "healed",
     "action": "guarded-preserve",
     "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 3,521 rows vs baseline 3,521; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-08-27T18:33:54",
+    "date": "Aug 27, 2026 06:33 PM",
+    "account": "Vermont",
+    "script": "vt_pull.py",
+    "status": "fail",
+    "error": "    return wrapped(*args, **kwargs)\n  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\googleapiclient\\http.py\", line 938, in execute\n    raise HttpError(resp, content, uri=self.uri)\ngoogleapiclient.errors.HttpError: <HttpError 503 when requesting https://sheets.googleapis.com/v4/spreadsheets/1DB-yjowB-Uiz3UdWIE8EYBsmdv4caqG1qwlv3TT3fSU/values/VT_Evaluations?alt=json returned \"The service is currently unavailable.\". Details: \"The service is currently unavailable.\">"
+  },
+  {
+    "run_id": "2026-08-27T18:33:54",
+    "date": "Aug 27, 2026 06:33 PM",
+    "account": "YCDC",
+    "script": "ycdc_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-08-27T18:33:54",
+    "date": "Aug 27, 2026 06:33 PM",
+    "account": "Blueline",
+    "script": "bl_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-08-27T18:33:54",
+    "date": "Aug 27, 2026 06:33 PM",
+    "account": "r4h_pull.py",
+    "script": "r4h_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-08-27T18:33:54",
+    "date": "Aug 27, 2026 06:33 PM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-08-27T18:33:54",
+    "date": "Aug 27, 2026 06:33 PM",
+    "account": "ol_pull.py",
+    "script": "ol_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
   }
 ]
