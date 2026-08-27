@@ -185,7 +185,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run 2026-08-27T18:33</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Dashboard: Aug 27, 2026 06:55 PM</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Aug 27, 2026 06:55 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Aug 27, 2026 06:56 PM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -195,10 +195,10 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   </div>
 
   <div class="stat-cards">
-    <div class="stat-card"><div class="sc-val" style="color:#00e87a;">23</div><div class="sc-lbl">Passed</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">1</div><div class="sc-lbl">Failed</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#00e87a;">24</div><div class="sc-lbl">Passed</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">0</div><div class="sc-lbl">Failed</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#E84500;">0</div><div class="sc-lbl">Not Reached</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">57,043</div><div class="sc-lbl">Rows Pulled</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">57,756</div><div class="sc-lbl">Rows Pulled</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#7060a0;">&mdash;</div><div class="sc-lbl">partial</div></div>
   </div>
 
@@ -350,11 +350,11 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       <div class="agg-node">
         <div class="agg-title">Data Engine / Processing</div>
         <div class="agg-grid">
-          <div class="agg-item"><div class="agg-val" style="color:#00e87a;">57,043</div><div class="agg-lbl">total rows</div></div>
+          <div class="agg-item"><div class="agg-val" style="color:#00e87a;">57,756</div><div class="agg-lbl">total rows</div></div>
           <div class="agg-item">
             <div class="agg-val" style="display:flex;align-items:center;justify-content:center;gap:5px;">
-              <div class="blink-r"></div>
-              <span style="color:#ff9090;">23/24</span>
+              <div class="blink-g"></div>
+              <span style="color:#00e87a;">24/24</span>
             </div>
             <div class="agg-lbl">sources ok</div>
           </div>
@@ -480,17 +480,14 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
-<div class="node n-fail">
-  <div class="node-title" style="color:#ff6060;"><span>Vermont</span><div class="blink-r"></div></div>
-  <div class="node-row"><b class="b-r"></b>vt_pull.py &middot; 06:46 PM</div>
-  <div class="node-err">    return wrapped(*args, **kwargs)
-  File "C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\googleapiclient\http.py", line 938, in execute
-    raise HttpError(resp, content, uri=self.uri)
-googleapiclient.errors.HttpError: &lt;HttpError 503 when requesting https://sheets.googleapis.com/v4/spreadsheets/1DB-yjowB-Uiz3UdWIE8EYBsmdv4caqG1qwlv3TT3fSU/values/VT_Evaluations?alt=json returned "The service is currently unavailable.". Details: "The service is currently unavailable."&gt;</div>
+<div class="node n-pass">
+  <div class="node-title" style="color:#00e87a;"><span>Vermont</span><div class="blink-g"></div></div>
+  <div class="node-row"><b class="b-g"></b>vt_pull.py &middot; 06:56 PM</div>
+  
   <div class="node-meta">
-    <span class="meta-pill r">&mdash; rows</span>
-    <span class="meta-pill r">FAIL</span>
-    
+    <span class="meta-pill g">713 rows</span>
+    <span class="meta-pill g">PASS</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -631,7 +628,7 @@ googleapiclient.errors.HttpError: &lt;HttpError 503 when requesting https://shee
   var ang = -Math.PI/2;
   var TRAIL = Math.PI * 1.35;
   var time = 0;
-  var FAIL = true;
+  var FAIL = false;
 
   var blips = [
     {ang:-90.00,r:0.63,st:"pass",nm:"Masterlist"},
@@ -655,7 +652,7 @@ googleapiclient.errors.HttpError: &lt;HttpError 503 when requesting https://shee
     {ang:180.00,r:0.63,st:"pass",nm:"Cir.Taxi"},
     {ang:195.00,r:0.44,st:"pass",nm:"YCOV"},
     {ang:210.00,r:0.63,st:"pass",nm:"Kelowna"},
-    {ang:225.00,r:0.44,st:"fail",nm:"Vermont"},
+    {ang:225.00,r:0.44,st:"pass",nm:"Vermont"},
     {ang:240.00,r:0.63,st:"pass",nm:"YCDC"},
     {ang:255.00,r:0.44,st:"pass",nm:"Blueline"},
   ];
