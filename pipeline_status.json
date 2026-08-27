@@ -180,6 +180,14 @@
       "status": "fail",
       "timestamp": "2026-08-27T18:46:33.330820",
       "error": "    return wrapped(*args, **kwargs)\n  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\googleapiclient\\http.py\", line 938, in execute\n    raise HttpError(resp, content, uri=self.uri)\ngoogleapiclient.errors.HttpError: <HttpError 503 when requesting https://sheets.googleapis.com/v4/spreadsheets/1DB-yjowB-Uiz3UdWIE8EYBsmdv4caqG1qwlv3TT3fSU/values/VT_Evaluations?alt=json returned \"The service is currently unavailable.\". Details: \"The service is currently unavailable.\">"
+    },
+    {
+      "account": "YCDC",
+      "script": "ycdc_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-27T18:46:57.745076",
+      "error": null
     }
   ]
 }
