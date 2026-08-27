@@ -1,9 +1,9 @@
 {
   "run_id": "2026-08-27T18:33:54",
   "started_at": "2026-08-27T18:33:54.558305",
-  "finished_at": "2026-08-27T18:55:36.882496",
-  "status": "partial",
-  "failed_at": "Vermont",
+  "finished_at": "2026-08-27T18:56:34.304694",
+  "status": "success",
+  "failed_at": null,
   "steps": [
     {
       "account": "Masterlist",

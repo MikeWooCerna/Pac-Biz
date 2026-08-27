@@ -1953,13 +1953,13 @@
     "run_id": "2026-08-27T18:33:54",
     "run_date": "2026-08-27",
     "started_at": "2026-08-27T18:33:54.558305",
-    "finished_at": "2026-08-27T18:55:36.882496",
-    "duration_sec": 1302.324,
-    "status": "partial",
-    "step_count": 26,
-    "passed_steps": 25,
+    "finished_at": "2026-08-27T18:56:34.304694",
+    "duration_sec": 1359.746,
+    "status": "success",
+    "step_count": 27,
+    "passed_steps": 26,
     "failed_steps": 1,
     "not_reached_steps": 0,
-    "failed_at": "Vermont"
+    "failed_at": null
   }
 ]
