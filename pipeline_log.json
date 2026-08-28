@@ -2,38 +2,6 @@
   {
     "run_id": "2026-07-04T06:00:02",
     "date": "Jul 04, 2026 06:00 AM",
-    "account": "Trans Iowa",
-    "script": "ti_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-07-04T06:00:02",
-    "date": "Jul 04, 2026 06:00 AM",
-    "account": "Data Carz",
-    "script": "dc_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-07-04T06:00:02",
-    "date": "Jul 04, 2026 06:00 AM",
-    "account": "Associated Cab",
-    "script": "ac_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-07-04T06:00:02",
-    "date": "Jul 04, 2026 06:00 AM",
-    "account": "Ollies",
-    "script": "ol_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-07-04T06:00:02",
-    "date": "Jul 04, 2026 06:00 AM",
     "account": "Circle Taxi",
     "script": "ct_pull.py",
     "status": "not_reached",
@@ -2610,6 +2578,44 @@
     "date": "Aug 27, 2026 08:21 PM",
     "account": "kel_pull.py",
     "script": "kel_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-08-28T20:59:11",
+    "date": "Aug 28, 2026 08:59 PM",
+    "account": "VIP",
+    "script": "vip_pull.py",
+    "status": "count_drop",
+    "drop": 774,
+    "prev_count": 4620,
+    "new_count": 3846,
+    "error": "Dropped 774 rows (4,620 \u2192 3,846)"
+  },
+  {
+    "run_id": "2026-08-28T20:59:11",
+    "date": "Aug 28, 2026 08:59 PM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-08-28T20:59:11",
+    "date": "Aug 28, 2026 08:59 PM",
+    "account": "ct_pull.py",
+    "script": "ct_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-08-28T20:59:11",
+    "date": "Aug 28, 2026 08:59 PM",
+    "account": "ycov_pull.py",
+    "script": "ycov_pull.py",
     "status": "healed",
     "action": "retry",
     "error": "Failed on attempt 1, recovered automatically on retry."
