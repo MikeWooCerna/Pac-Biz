@@ -1,102 +1,5 @@
 [
   {
-    "run_id": "2026-07-04T06:00:02",
-    "date": "Jul 04, 2026 06:00 AM",
-    "account": "Circle Taxi",
-    "script": "ct_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-07-04T06:00:02",
-    "date": "Jul 04, 2026 06:00 AM",
-    "account": "YCOV",
-    "script": "ycov_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-07-04T06:00:02",
-    "date": "Jul 04, 2026 06:00 AM",
-    "account": "Kelowna",
-    "script": "kel_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-07-04T06:00:02",
-    "date": "Jul 04, 2026 06:00 AM",
-    "account": "Vermont",
-    "script": "vt_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-07-04T06:00:02",
-    "date": "Jul 04, 2026 06:00 AM",
-    "account": "YCDC",
-    "script": "ycdc_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-07-04T06:00:02",
-    "date": "Jul 04, 2026 06:00 AM",
-    "account": "Blueline",
-    "script": "bl_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-07-06T01:24:39",
-    "date": "Jul 06, 2026 01:24 AM",
-    "account": "Trans Iowa",
-    "script": "ti_pull.py",
-    "status": "healed",
-    "prev_count": 62,
-    "new_count": 62,
-    "error": "Count drop recovered manually: Trans Iowa re-pull restored 62 rows.",
-    "action": "manual_repull"
-  },
-  {
-    "run_id": "2026-07-06T01:24:39",
-    "date": "Jul 06, 2026 01:24 AM",
-    "account": "Reno Cab",
-    "script": "rc_pull.py",
-    "status": "healed",
-    "action": "repull",
-    "error": "Count dropped 2,885 \u2192 2,499. Re-pull recovered 2,885 rows."
-  },
-  {
-    "run_id": "2026-07-06T11:00:01",
-    "date": "Jul 06, 2026 11:00 AM",
-    "account": "britelift_pull.py",
-    "script": "britelift_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
-    "run_id": "2026-07-06T11:00:01",
-    "date": "Jul 06, 2026 11:00 AM",
-    "account": "Ridex_pull.py",
-    "script": "Ridex_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
-    "run_id": "2026-07-06T19:00:01",
-    "date": "Jul 06, 2026 07:00 PM",
-    "account": "Ollies",
-    "script": "ol_pull.py",
-    "status": "count_drop",
-    "drop": 40,
-    "prev_count": 2003,
-    "new_count": 1963,
-    "error": "Dropped 40 rows (2,003 \u2192 1,963)"
-  },
-  {
     "run_id": "2026-07-07T11:00:01",
     "date": "Jul 07, 2026 11:00 AM",
     "account": "Blueline",
@@ -2619,5 +2522,98 @@
     "status": "healed",
     "action": "retry",
     "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-08-31T19:10:53",
+    "date": "Aug 31, 2026 07:10 PM",
+    "account": "Circle Taxi",
+    "script": "ct_pull.py",
+    "status": "fail",
+    "error": "    r = self.request(\"get\", url, params=params)\n  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\gspread\\http_client.py\", line 128, in request\n    raise APIError(response)\ngspread.exceptions.APIError: APIError: [503]: The service is currently unavailable."
+  },
+  {
+    "run_id": "2026-08-31T19:10:53",
+    "date": "Aug 31, 2026 07:10 PM",
+    "account": "YCOV",
+    "script": "ycov_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-08-31T19:10:53",
+    "date": "Aug 31, 2026 07:10 PM",
+    "account": "Kelowna",
+    "script": "kel_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-08-31T19:10:53",
+    "date": "Aug 31, 2026 07:10 PM",
+    "account": "Vermont",
+    "script": "vt_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-08-31T19:10:53",
+    "date": "Aug 31, 2026 07:10 PM",
+    "account": "YCDC",
+    "script": "ycdc_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-08-31T19:10:53",
+    "date": "Aug 31, 2026 07:10 PM",
+    "account": "Blueline",
+    "script": "bl_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-08-31T19:10:53",
+    "date": "Aug 31, 2026 07:10 PM",
+    "account": "britelift_pull.py",
+    "script": "britelift_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-08-31T19:10:53",
+    "date": "Aug 31, 2026 07:10 PM",
+    "account": "Hamilton",
+    "script": "Hamilton_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 4,776 rows vs baseline 4,776; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-08-31T19:10:53",
+    "date": "Aug 31, 2026 07:10 PM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-08-31T19:10:53",
+    "date": "Aug 31, 2026 07:10 PM",
+    "account": "ac_pull.py",
+    "script": "ac_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-08-31T19:10:53",
+    "date": "Aug 31, 2026 07:10 PM",
+    "account": "Ollies",
+    "script": "ol_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 2,646 rows vs baseline 2,646; pipeline continued using the last healthy file."
   }
 ]
