@@ -156,6 +156,14 @@
       "status": "fail",
       "timestamp": "2026-08-31T19:25:55.521540",
       "error": "    r = self.request(\"get\", url, params=params)\n  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\gspread\\http_client.py\", line 128, in request\n    raise APIError(response)\ngspread.exceptions.APIError: APIError: [503]: The service is currently unavailable."
+    },
+    {
+      "account": "YCOV",
+      "script": "ycov_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-08-31T19:26:11.430800",
+      "error": null
     }
   ]
 }
