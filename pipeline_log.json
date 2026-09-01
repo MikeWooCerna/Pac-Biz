@@ -1,27 +1,5 @@
 [
   {
-    "run_id": "2026-07-07T11:00:01",
-    "date": "Jul 07, 2026 11:00 AM",
-    "account": "Blueline",
-    "script": "bl_pull.py",
-    "status": "source_confirmed",
-    "drop": 4,
-    "prev_count": 104,
-    "new_count": 100,
-    "error": "Source re-pull confirmed current Blueline count is 100 rows (previous baseline 104). Baseline accepted."
-  },
-  {
-    "run_id": "2026-07-07T15:00:02",
-    "date": "Jul 07, 2026 03:00 PM",
-    "account": "Hamilton",
-    "script": "Hamilton_pull.py",
-    "status": "count_drop",
-    "drop": 1,
-    "prev_count": 3771,
-    "new_count": 3770,
-    "error": "Dropped 1 rows (3,771 \u2192 3,770)"
-  },
-  {
     "run_id": "2026-07-07T15:00:02",
     "date": "Jul 07, 2026 03:00 PM",
     "account": "bl_pull.py",
@@ -2615,5 +2593,23 @@
     "status": "healed",
     "action": "guarded-preserve",
     "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 2,646 rows vs baseline 2,646; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-09-01T19:07:32",
+    "date": "Sep 01, 2026 07:07 PM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-09-01T19:07:32",
+    "date": "Sep 01, 2026 07:07 PM",
+    "account": "ol_pull.py",
+    "script": "ol_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
   }
 ]
