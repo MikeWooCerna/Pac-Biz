@@ -1,8 +1,8 @@
 {
   "run_id": "2026-09-02T19:59:48",
   "started_at": "2026-09-02T19:59:48.210394",
-  "finished_at": "2026-09-02T20:18:51.723475",
-  "status": "failed",
+  "finished_at": "2026-09-02T20:19:11.072156",
+  "status": "partial",
   "failed_at": "Associated Cab",
   "steps": [
     {

@@ -1,96 +1,5 @@
 [
   {
-    "run_id": "2026-07-07T15:00:02",
-    "date": "Jul 07, 2026 03:00 PM",
-    "account": "bl_pull.py",
-    "script": "bl_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
-    "run_id": "2026-07-08T22:00:04",
-    "date": "Jul 08, 2026 10:00 PM",
-    "account": "Hamilton",
-    "script": "Hamilton_pull.py",
-    "status": "source_confirmed",
-    "drop": 424,
-    "prev_count": 3794,
-    "new_count": 3370,
-    "error": "Source re-pull confirmed current Hamilton count is 3,370 rows (previous baseline 3,794). Baseline accepted."
-  },
-  {
-    "run_id": "2026-07-08T22:00:04",
-    "date": "Jul 08, 2026 10:00 PM",
-    "account": "VIP",
-    "script": "vip_pull.py",
-    "status": "source_confirmed",
-    "drop": 1070,
-    "prev_count": 3666,
-    "new_count": 2596,
-    "error": "Source re-pull confirmed current VIP count is 2,596 rows (previous baseline 3,666). Baseline accepted."
-  },
-  {
-    "run_id": "2026-07-09T19:00:03",
-    "date": "Jul 09, 2026 07:00 PM",
-    "account": "ch_pull.py",
-    "script": "ch_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
-    "run_id": "2026-07-09T22:00:01",
-    "date": "Jul 09, 2026 10:00 PM",
-    "account": "masterlist_fetch.py",
-    "script": "masterlist_fetch.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
-    "run_id": "2026-07-10T15:00:01",
-    "date": "Jul 10, 2026 03:00 PM",
-    "account": "bl_pull.py",
-    "script": "bl_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
-    "run_id": "2026-07-10T22:00:02",
-    "date": "Jul 10, 2026 10:00 PM",
-    "account": "Hamilton",
-    "script": "Hamilton_pull.py",
-    "status": "count_drop",
-    "drop": 18,
-    "prev_count": 3860,
-    "new_count": 3842,
-    "error": "Dropped 18 rows (3,860 \u2192 3,842)"
-  },
-  {
-    "run_id": "2026-07-11T22:00:01",
-    "date": "Jul 11, 2026 10:00 PM",
-    "account": "DMG",
-    "script": "dmg_pull.py",
-    "status": "count_drop",
-    "drop": 1,
-    "prev_count": 292,
-    "new_count": 291,
-    "error": "Dropped 1 rows (292 \u2192 291)"
-  },
-  {
-    "run_id": "2026-07-11T22:00:01",
-    "date": "Jul 11, 2026 10:00 PM",
-    "account": "R4H",
-    "script": "r4h_pull.py",
-    "status": "count_drop",
-    "drop": 137,
-    "prev_count": 292,
-    "new_count": 155,
-    "error": "Dropped 137 rows (292 \u2192 155)"
-  },
-  {
     "run_id": "2026-07-11T22:00:01",
     "date": "Jul 11, 2026 11:30 PM",
     "account": "DMG",
@@ -2611,5 +2520,78 @@
     "status": "healed",
     "action": "retry",
     "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-09-02T19:59:48",
+    "date": "Sep 02, 2026 07:59 PM",
+    "account": "Associated Cab",
+    "script": "ac_pull.py",
+    "status": "fail",
+    "error": "    r = self.request(\"get\", url, params=params)\n  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\gspread\\http_client.py\", line 128, in request\n    raise APIError(response)\ngspread.exceptions.APIError: APIError: [503]: The service is currently unavailable."
+  },
+  {
+    "run_id": "2026-09-02T19:59:48",
+    "date": "Sep 02, 2026 07:59 PM",
+    "account": "Ollies",
+    "script": "ol_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-02T19:59:48",
+    "date": "Sep 02, 2026 07:59 PM",
+    "account": "Circle Taxi",
+    "script": "ct_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-02T19:59:48",
+    "date": "Sep 02, 2026 07:59 PM",
+    "account": "YCOV",
+    "script": "ycov_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-02T19:59:48",
+    "date": "Sep 02, 2026 07:59 PM",
+    "account": "Kelowna",
+    "script": "kel_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-02T19:59:48",
+    "date": "Sep 02, 2026 07:59 PM",
+    "account": "Vermont",
+    "script": "vt_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-02T19:59:48",
+    "date": "Sep 02, 2026 07:59 PM",
+    "account": "YCDC",
+    "script": "ycdc_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-02T19:59:48",
+    "date": "Sep 02, 2026 07:59 PM",
+    "account": "Blueline",
+    "script": "bl_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-02T19:59:48",
+    "date": "Sep 02, 2026 07:59 PM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
   }
 ]
