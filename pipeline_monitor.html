@@ -185,7 +185,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run 2026-09-02T19:59</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Dashboard: Sep 02, 2026 08:18 PM</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Sep 02, 2026 08:19 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Sep 02, 2026 08:20 PM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -195,10 +195,10 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   </div>
 
   <div class="stat-cards">
-    <div class="stat-card"><div class="sc-val" style="color:#00e87a;">23</div><div class="sc-lbl">Passed</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">1</div><div class="sc-lbl">Failed</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#00e87a;">24</div><div class="sc-lbl">Passed</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">0</div><div class="sc-lbl">Failed</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#E84500;">0</div><div class="sc-lbl">Not Reached</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">54,288</div><div class="sc-lbl">Rows Pulled</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">57,815</div><div class="sc-lbl">Rows Pulled</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#7060a0;">&mdash;</div><div class="sc-lbl">partial</div></div>
   </div>
 
@@ -350,11 +350,11 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       <div class="agg-node">
         <div class="agg-title">Data Engine / Processing</div>
         <div class="agg-grid">
-          <div class="agg-item"><div class="agg-val" style="color:#00e87a;">54,288</div><div class="agg-lbl">total rows</div></div>
+          <div class="agg-item"><div class="agg-val" style="color:#00e87a;">57,815</div><div class="agg-lbl">total rows</div></div>
           <div class="agg-item">
             <div class="agg-val" style="display:flex;align-items:center;justify-content:center;gap:5px;">
-              <div class="blink-r"></div>
-              <span style="color:#ff9090;">23/24</span>
+              <div class="blink-g"></div>
+              <span style="color:#00e87a;">24/24</span>
             </div>
             <div class="agg-lbl">sources ok</div>
           </div>
@@ -430,17 +430,14 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
-<div class="node n-fail">
-  <div class="node-title" style="color:#ff6060;"><span>Associated Cab</span><div class="blink-r"></div></div>
-  <div class="node-row"><b class="b-r"></b>ac_pull.py &middot; 08:09 PM</div>
-  <div class="node-err">    r = self.request("get", url, params=params)
-  File "C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\gspread\http_client.py", line 128, in request
-    raise APIError(response)
-gspread.exceptions.APIError: APIError: [503]: The service is currently unavailable.</div>
+<div class="node n-pass">
+  <div class="node-title" style="color:#00e87a;"><span>Associated Cab</span><div class="blink-g"></div></div>
+  <div class="node-row"><b class="b-g"></b>ac_pull.py &middot; 08:20 PM</div>
+  
   <div class="node-meta">
-    <span class="meta-pill r">&mdash; rows</span>
-    <span class="meta-pill r">FAIL</span>
-    
+    <span class="meta-pill g">3,527 rows</span>
+    <span class="meta-pill g">PASS</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -632,7 +629,7 @@ gspread.exceptions.APIError: APIError: [503]: The service is currently unavailab
   var ang = -Math.PI/2;
   var TRAIL = Math.PI * 1.35;
   var time = 0;
-  var FAIL = true;
+  var FAIL = false;
 
   var blips = [
     {ang:-90.00,r:0.63,st:"pass",nm:"Masterlist"},
@@ -651,7 +648,7 @@ gspread.exceptions.APIError: APIError: [503]: The service is currently unavailab
     {ang:105.00,r:0.44,st:"pass",nm:"Reno Cab"},
     {ang:120.00,r:0.63,st:"pass",nm:"Trans Iowa"},
     {ang:135.00,r:0.44,st:"pass",nm:"Data Carz"},
-    {ang:150.00,r:0.63,st:"fail",nm:"Assoc.Cab"},
+    {ang:150.00,r:0.63,st:"pass",nm:"Assoc.Cab"},
     {ang:165.00,r:0.44,st:"pass",nm:"Ollies"},
     {ang:180.00,r:0.63,st:"pass",nm:"Cir.Taxi"},
     {ang:195.00,r:0.44,st:"pass",nm:"YCOV"},
