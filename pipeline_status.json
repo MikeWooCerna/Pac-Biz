@@ -12,6 +12,14 @@
       "status": "fail",
       "timestamp": "2026-09-04T21:39:46.750151",
       "error": "ERROR fetching History: HTTPSConnectionPool(host='doc-0o-4k-sheets.googleusercontent.com', port=443): Read timed out. (read timeout=30)"
+    },
+    {
+      "account": "Coaching",
+      "script": "asana_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-09-04T21:40:12.662105",
+      "error": null
     }
   ]
 }
