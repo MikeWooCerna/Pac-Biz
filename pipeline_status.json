@@ -68,6 +68,14 @@
       "status": "pass",
       "timestamp": "2026-09-04T21:41:14.175164",
       "error": null
+    },
+    {
+      "account": "RideX",
+      "script": "Ridex_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-09-04T21:42:33.562270",
+      "error": null
     }
   ]
 }
