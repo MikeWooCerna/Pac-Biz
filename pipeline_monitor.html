@@ -185,7 +185,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run 2026-09-04T21:37</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Dashboard: Sep 04, 2026 09:58 PM</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Sep 04, 2026 09:58 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Sep 04, 2026 10:00 PM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -195,10 +195,10 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   </div>
 
   <div class="stat-cards">
-    <div class="stat-card"><div class="sc-val" style="color:#00e87a;">22</div><div class="sc-lbl">Passed</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">2</div><div class="sc-lbl">Failed</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#00e87a;">23</div><div class="sc-lbl">Passed</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">1</div><div class="sc-lbl">Failed</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#E84500;">0</div><div class="sc-lbl">Not Reached</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">57,108</div><div class="sc-lbl">Rows Pulled</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">57,323</div><div class="sc-lbl">Rows Pulled</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#7060a0;">&mdash;</div><div class="sc-lbl">partial</div></div>
   </div>
 
@@ -214,14 +214,14 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   <div class="main-layout">
     <div class="side-col">
       <div class="section-hdr">Data Sources 1&ndash;12</div>
-      <div class="node n-fail">
-  <div class="node-title" style="color:#ff6060;"><span>Masterlist</span><div class="blink-r"></div></div>
-  <div class="node-row"><b class="b-r"></b>masterlist_fetch.py &middot; 09:39 PM</div>
-  <div class="node-err">ERROR fetching History: HTTPSConnectionPool(host='doc-0o-4k-sheets.googleusercontent.com', port=443): Read timed out. (read timeout=30)</div>
+      <div class="node n-pass">
+  <div class="node-title" style="color:#00e87a;"><span>Masterlist</span><div class="blink-g"></div></div>
+  <div class="node-row"><b class="b-g"></b>masterlist_fetch.py &middot; 10:00 PM</div>
+  
   <div class="node-meta">
-    <span class="meta-pill r">&mdash; rows</span>
-    <span class="meta-pill r">FAIL</span>
-    
+    <span class="meta-pill g">215 rows</span>
+    <span class="meta-pill g">PASS</span>
+    <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
 <div class="node n-pass">
@@ -350,17 +350,17 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       <div class="agg-node">
         <div class="agg-title">Data Engine / Processing</div>
         <div class="agg-grid">
-          <div class="agg-item"><div class="agg-val" style="color:#00e87a;">57,108</div><div class="agg-lbl">total rows</div></div>
+          <div class="agg-item"><div class="agg-val" style="color:#00e87a;">57,323</div><div class="agg-lbl">total rows</div></div>
           <div class="agg-item">
             <div class="agg-val" style="display:flex;align-items:center;justify-content:center;gap:5px;">
               <div class="blink-r"></div>
-              <span style="color:#ff9090;">22/24</span>
+              <span style="color:#ff9090;">23/24</span>
             </div>
             <div class="agg-lbl">sources ok</div>
           </div>
           <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">09:37 PM</div><div class="agg-lbl">started</div></div>
           <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">09:58 PM</div><div class="agg-lbl">finished</div></div>
-          <div class="agg-item" style="grid-column:span 2;"><div class="agg-val" style="color:#ffaa00;font-size:12px;">10:00 PM</div><div class="agg-lbl">next schedule</div></div>
+          <div class="agg-item" style="grid-column:span 2;"><div class="agg-val" style="color:#ffaa00;font-size:12px;">3:00 AM +1d</div><div class="agg-lbl">next schedule</div></div>
         </div>
       </div>
 
@@ -633,7 +633,7 @@ gspread.exceptions.APIError: APIError: [503]: The service is currently unavailab
   var FAIL = true;
 
   var blips = [
-    {ang:-90.00,r:0.63,st:"fail",nm:"Masterlist"},
+    {ang:-90.00,r:0.63,st:"pass",nm:"Masterlist"},
     {ang:-75.00,r:0.44,st:"pass",nm:"Coaching"},
     {ang:-60.00,r:0.63,st:"pass",nm:"M7"},
     {ang:-45.00,r:0.44,st:"pass",nm:"DMG"},
