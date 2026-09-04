@@ -116,6 +116,14 @@
       "status": "pass",
       "timestamp": "2026-09-04T21:45:56.726656",
       "error": null
+    },
+    {
+      "account": "Trans Iowa",
+      "script": "ti_pull.py",
+      "exit_code": 1,
+      "status": "fail",
+      "timestamp": "2026-09-04T21:47:17.086657",
+      "error": "    r = self.request(\"get\", url, params=params)\n  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\gspread\\http_client.py\", line 128, in request\n    raise APIError(response)\ngspread.exceptions.APIError: APIError: [503]: The service is currently unavailable."
     }
   ]
 }
