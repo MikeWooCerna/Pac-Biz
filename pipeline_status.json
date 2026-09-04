@@ -1,9 +1,9 @@
 {
   "run_id": "2026-09-04T21:37:34",
   "started_at": "2026-09-04T21:37:34.031571",
-  "finished_at": "2026-09-04T22:06:58.335315",
-  "status": "partial",
-  "failed_at": "Masterlist",
+  "finished_at": "2026-09-04T22:07:48.382620",
+  "status": "success",
+  "failed_at": null,
   "steps": [
     {
       "account": "Masterlist",
