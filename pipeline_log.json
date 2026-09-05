@@ -1,27 +1,5 @@
 [
   {
-    "run_id": "2026-07-14T15:00:03",
-    "date": "Jul 14, 2026 03:00 PM",
-    "account": "Data Carz",
-    "script": "dc_pull.py",
-    "status": "count_drop",
-    "drop": 1,
-    "prev_count": 3184,
-    "new_count": 3183,
-    "error": "Dropped 1 rows (3,184 \u2192 3,183)"
-  },
-  {
-    "run_id": "2026-07-15T11:00:01",
-    "date": "Jul 15, 2026 11:00 AM",
-    "account": "Vermont",
-    "script": "vt_pull.py",
-    "status": "count_drop",
-    "drop": 48,
-    "prev_count": 691,
-    "new_count": 643,
-    "error": "Dropped 48 rows (691 \u2192 643)"
-  },
-  {
     "run_id": "2026-07-15T20:22:08",
     "date": "Jul 15, 2026 08:22 PM",
     "account": "Ollies",
@@ -2588,5 +2566,23 @@
     "script": "Skyline_pull.py",
     "status": "high_volume",
     "error": "CRITICAL: 20,835 rows (threshold 20,000)"
+  },
+  {
+    "run_id": "2026-09-05T19:09:05",
+    "date": "Sep 05, 2026 07:09 PM",
+    "account": "Ridex_pull.py",
+    "script": "Ridex_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-09-05T19:09:05",
+    "date": "Sep 05, 2026 07:09 PM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
   }
 ]
