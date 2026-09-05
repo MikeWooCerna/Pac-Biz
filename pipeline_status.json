@@ -180,6 +180,22 @@
       "status": "pass",
       "timestamp": "2026-09-05T19:20:20.174919",
       "error": null
+    },
+    {
+      "account": "YCDC",
+      "script": "ycdc_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-09-05T19:21:05.361831",
+      "error": null
+    },
+    {
+      "account": "Blueline",
+      "script": "bl_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-09-05T19:21:44.684441",
+      "error": null
     }
   ]
 }
