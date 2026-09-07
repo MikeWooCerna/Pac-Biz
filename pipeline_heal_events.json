@@ -1,1 +1,38 @@
-[]
+[
+  {
+    "run_id": "2026-09-07T21:37:57",
+    "date": "Sep 07, 2026 09:37 PM",
+    "account": "rc_pull.py",
+    "script": "rc_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-09-07T21:37:57",
+    "date": "Sep 07, 2026 09:37 PM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-09-07T21:37:57",
+    "date": "Sep 07, 2026 09:37 PM",
+    "account": "ct_pull.py",
+    "script": "ct_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-09-07T21:37:57",
+    "date": "Sep 07, 2026 09:37 PM",
+    "account": "bl_pull.py",
+    "script": "bl_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
+  }
+]
