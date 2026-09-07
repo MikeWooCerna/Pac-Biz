@@ -12,6 +12,14 @@
       "status": "fail",
       "timestamp": "2026-09-07T21:40:20.248325",
       "error": "ERROR fetching Movement: HTTPSConnectionPool(host='docs.google.com', port=443): Read timed out. (read timeout=30)"
+    },
+    {
+      "account": "Coaching",
+      "script": "asana_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-09-07T21:41:13.150207",
+      "error": null
     }
   ]
 }
