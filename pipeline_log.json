@@ -2,15 +2,6 @@
   {
     "run_id": "2026-07-21T19:00:03",
     "date": "Jul 21, 2026 07:00 PM",
-    "account": "ol_pull.py",
-    "script": "ol_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
-    "run_id": "2026-07-21T19:00:03",
-    "date": "Jul 21, 2026 07:00 PM",
     "account": "Skyline",
     "script": "Skyline_pull.py",
     "status": "high_volume",
@@ -2547,5 +2538,14 @@
     "script": "Skyline_pull.py",
     "status": "high_volume",
     "error": "CRITICAL: 20,835 rows (threshold 20,000)"
+  },
+  {
+    "run_id": "2026-09-08T13:14:20",
+    "date": "Sep 08, 2026 01:14 PM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
   }
 ]
