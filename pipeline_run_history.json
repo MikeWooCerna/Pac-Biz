@@ -2096,13 +2096,13 @@
     "run_id": "2026-09-08T19:48:44",
     "run_date": "2026-09-08",
     "started_at": "2026-09-08T19:48:44.693554",
-    "finished_at": "2026-09-08T20:10:05.416028",
-    "duration_sec": 1280.722,
-    "status": "partial",
-    "step_count": 26,
-    "passed_steps": 25,
+    "finished_at": "2026-09-08T20:11:28.794602",
+    "duration_sec": 1364.101,
+    "status": "success",
+    "step_count": 27,
+    "passed_steps": 26,
     "failed_steps": 1,
     "not_reached_steps": 0,
-    "failed_at": "YCOV"
+    "failed_at": null
   }
 ]
