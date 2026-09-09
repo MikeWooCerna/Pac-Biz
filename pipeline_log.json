@@ -1,30 +1,5 @@
 [
   {
-    "run_id": "2026-07-24T11:00:07",
-    "date": "Jul 24, 2026 11:00 AM",
-    "account": "dc_pull.py",
-    "script": "dc_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
-    "run_id": "2026-07-24T15:25:37",
-    "date": "Jul 24, 2026 03:25 PM",
-    "account": "Guardian",
-    "script": "pipeline_guardian.py",
-    "status": "guardian_warn",
-    "error": "failed mismatch: status=2, monitor=10007"
-  },
-  {
-    "run_id": "2026-07-24T15:00:02",
-    "date": "Jul 24, 2026 05:47 PM",
-    "account": "VIP",
-    "script": "vip_pull.py",
-    "status": "healed",
-    "error": "Manual re-pull succeeded after source safety-floor failure. Current RAW has 4,167 rows."
-  },
-  {
     "run_id": "2026-07-24T15:00:02",
     "date": "Jul 24, 2026 05:47 PM",
     "account": "YCDC",
@@ -2541,6 +2516,33 @@
   {
     "run_id": "2026-09-09T20:18:03",
     "date": "Sep 09, 2026 08:18 PM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-09-09T23:26:37",
+    "date": "Sep 09, 2026 11:26 PM",
+    "account": "britelift_pull.py",
+    "script": "britelift_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-09-09T23:26:37",
+    "date": "Sep 09, 2026 11:26 PM",
+    "account": "ch_pull.py",
+    "script": "ch_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-09-09T23:26:37",
+    "date": "Sep 09, 2026 11:26 PM",
     "account": "Trans Iowa",
     "script": "ti_pull.py",
     "status": "healed",
