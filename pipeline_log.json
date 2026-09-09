@@ -1,16 +1,5 @@
 [
   {
-    "run_id": "2026-07-23T22:00:03",
-    "date": "Jul 23, 2026 10:00 PM",
-    "account": "VIP",
-    "script": "vip_pull.py",
-    "status": "count_drop",
-    "drop": 1776,
-    "prev_count": 4149,
-    "new_count": 2373,
-    "error": "Dropped 1,776 rows (4,149 \u2192 2,373)"
-  },
-  {
     "run_id": "2026-07-24T11:00:07",
     "date": "Jul 24, 2026 11:00 AM",
     "account": "dc_pull.py",
@@ -2543,6 +2532,15 @@
   {
     "run_id": "2026-09-09T12:02:45",
     "date": "Sep 09, 2026 12:02 PM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-09-09T20:18:03",
+    "date": "Sep 09, 2026 08:18 PM",
     "account": "Trans Iowa",
     "script": "ti_pull.py",
     "status": "healed",
