@@ -2,22 +2,6 @@
   {
     "run_id": "2026-07-29T19:00:02",
     "date": "Jul 29, 2026 07:00 PM",
-    "account": "C&H",
-    "script": "ch_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-07-29T19:00:02",
-    "date": "Jul 29, 2026 07:00 PM",
-    "account": "Reno Cab",
-    "script": "rc_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-07-29T19:00:02",
-    "date": "Jul 29, 2026 07:00 PM",
     "account": "Trans Iowa",
     "script": "ti_pull.py",
     "status": "not_reached",
@@ -2542,5 +2526,25 @@
     "script": "Skyline_pull.py",
     "status": "high_volume",
     "error": "CRITICAL: 20,835 rows (threshold 20,000)"
+  },
+  {
+    "run_id": "2026-09-11T00:14:09",
+    "date": "Sep 11, 2026 12:14 AM",
+    "account": "Kelowna",
+    "script": "kel_pull.py",
+    "status": "count_drop",
+    "drop": 298,
+    "prev_count": 3153,
+    "new_count": 2855,
+    "error": "Dropped 298 rows (3,153 \u2192 2,855)"
+  },
+  {
+    "run_id": "2026-09-11T00:14:09",
+    "date": "Sep 11, 2026 12:14 AM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
   }
 ]
