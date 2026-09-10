@@ -1,211 +1,5 @@
 [
   {
-    "run_id": "2026-07-24T15:00:02",
-    "date": "Jul 24, 2026 05:47 PM",
-    "account": "YCDC",
-    "script": "ycdc_pull.py",
-    "status": "healed",
-    "error": "Manual re-pull succeeded after source safety-floor failure. Current RAW has 3,224 rows."
-  },
-  {
-    "run_id": "2026-07-24T15:00:02",
-    "date": "Jul 24, 2026 05:47 PM",
-    "account": "Hamilton",
-    "script": "Hamilton_pull.py",
-    "status": "healed",
-    "error": "Count drop manually recovered. Re-pull restored 4,305 rows."
-  },
-  {
-    "run_id": "2026-07-24T15:00:02",
-    "date": "Jul 24, 2026 05:47 PM",
-    "account": "Ollies",
-    "script": "ol_pull.py",
-    "status": "healed",
-    "error": "Count drop manually recovered. Re-pull restored 2,276 rows."
-  },
-  {
-    "run_id": "2026-07-24T15:00:02",
-    "date": "Jul 24, 2026 03:00 PM",
-    "account": "Associated Cab",
-    "script": "ac_pull.py",
-    "status": "count_drop",
-    "drop": 2065,
-    "prev_count": 3174,
-    "new_count": 1109,
-    "error": "Dropped 2,065 rows (3,174 -> 1,109). Source AC_Evaluations currently has 1,109 data rows."
-  },
-  {
-    "run_id": "2026-07-26T15:00:01",
-    "date": "Jul 26, 2026 03:00 PM",
-    "account": "dc_pull.py",
-    "script": "dc_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
-    "run_id": "2026-07-27T03:00:01",
-    "date": "Jul 27, 2026 03:00 AM",
-    "account": "britelift_pull.py",
-    "script": "britelift_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
-    "run_id": "2026-07-28T15:00:01",
-    "date": "Jul 28, 2026 03:00 PM",
-    "account": "Hamilton",
-    "script": "Hamilton_pull.py",
-    "status": "fail",
-    "error": "    raise RuntimeError(\n    ...<3 lines>...\n    )\nRuntimeError: Hamilton source row count below safety floor: 2920 < 3500. Existing RAW file was not overwritten."
-  },
-  {
-    "run_id": "2026-07-28T15:00:01",
-    "date": "Jul 28, 2026 03:00 PM",
-    "account": "Skyline",
-    "script": "Skyline_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-07-28T15:00:01",
-    "date": "Jul 28, 2026 03:00 PM",
-    "account": "VIP",
-    "script": "vip_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-07-28T15:00:01",
-    "date": "Jul 28, 2026 03:00 PM",
-    "account": "C&H",
-    "script": "ch_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-07-28T15:00:01",
-    "date": "Jul 28, 2026 03:00 PM",
-    "account": "Reno Cab",
-    "script": "rc_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-07-28T15:00:01",
-    "date": "Jul 28, 2026 03:00 PM",
-    "account": "Trans Iowa",
-    "script": "ti_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-07-28T15:00:01",
-    "date": "Jul 28, 2026 03:00 PM",
-    "account": "Data Carz",
-    "script": "dc_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-07-28T15:00:01",
-    "date": "Jul 28, 2026 03:00 PM",
-    "account": "Associated Cab",
-    "script": "ac_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-07-28T15:00:01",
-    "date": "Jul 28, 2026 03:00 PM",
-    "account": "Ollies",
-    "script": "ol_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-07-28T15:00:01",
-    "date": "Jul 28, 2026 03:00 PM",
-    "account": "Circle Taxi",
-    "script": "ct_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-07-28T15:00:01",
-    "date": "Jul 28, 2026 03:00 PM",
-    "account": "YCOV",
-    "script": "ycov_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-07-28T15:00:01",
-    "date": "Jul 28, 2026 03:00 PM",
-    "account": "Kelowna",
-    "script": "kel_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-07-28T15:00:01",
-    "date": "Jul 28, 2026 03:00 PM",
-    "account": "Vermont",
-    "script": "vt_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-07-28T15:00:01",
-    "date": "Jul 28, 2026 03:00 PM",
-    "account": "YCDC",
-    "script": "ycdc_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-07-28T15:00:01",
-    "date": "Jul 28, 2026 03:00 PM",
-    "account": "Blueline",
-    "script": "bl_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-07-28T15:00:01",
-    "date": "Jul 28, 2026 03:00 PM",
-    "account": "Ridex_pull.py",
-    "script": "Ridex_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
-    "run_id": "2026-07-28T15:00:01",
-    "date": "Jul 28, 2026 03:00 PM",
-    "account": "Skyline",
-    "script": "Skyline_pull.py",
-    "status": "high_volume",
-    "error": "Warning: 19,335 rows (threshold 10,000)"
-  },
-  {
-    "run_id": "2026-07-28T15:19:05",
-    "date": "Jul 28, 2026 03:19 PM",
-    "account": "Guardian",
-    "script": "pipeline_guardian.py",
-    "status": "guardian_warn",
-    "error": "failed mismatch: status=1, monitor=10007"
-  },
-  {
-    "run_id": "2026-07-29T19:00:02",
-    "date": "Jul 29, 2026 07:00 PM",
-    "account": "VIP",
-    "script": "vip_pull.py",
-    "status": "fail",
-    "error": "    raise RuntimeError(\n    ...<3 lines>...\n    )\nRuntimeError: VIP source row count below safety floor: 3324 < 3500. Existing RAW file was not overwritten."
-  },
-  {
     "run_id": "2026-07-29T19:00:02",
     "date": "Jul 29, 2026 07:00 PM",
     "account": "C&H",
@@ -2548,5 +2342,205 @@
     "status": "healed",
     "action": "guarded-preserve",
     "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-09-10T12:02:48",
+    "date": "Sep 10, 2026 12:02 PM",
+    "account": "Masterlist",
+    "script": "masterlist_fetch.py",
+    "status": "fail",
+    "error": "ERROR fetching History: HTTPSConnectionPool(host='docs.google.com', port=443): Max retries exceeded with url: /spreadsheets/d/e/2PACX-1vS82OdHh0VFVA9K6P3b7Y8pjPmdeJSOQxj1KQ_4ts5HYL4YgUHwKjpFymrPCJdfMK0Rox6fnSTG3rKf/pub?gid=166777136&single=true&output=csv (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)')))"
+  },
+  {
+    "run_id": "2026-09-10T12:02:48",
+    "date": "Sep 10, 2026 12:02 PM",
+    "account": "Coaching",
+    "script": "asana_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-10T12:02:48",
+    "date": "Sep 10, 2026 12:02 PM",
+    "account": "M7",
+    "script": "m7_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-10T12:02:48",
+    "date": "Sep 10, 2026 12:02 PM",
+    "account": "DMG",
+    "script": "dmg_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-10T12:02:48",
+    "date": "Sep 10, 2026 12:02 PM",
+    "account": "R4H",
+    "script": "r4h_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-10T12:02:48",
+    "date": "Sep 10, 2026 12:02 PM",
+    "account": "Parentis Health",
+    "script": "parentis_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-10T12:02:48",
+    "date": "Sep 10, 2026 12:02 PM",
+    "account": "Britelift",
+    "script": "britelift_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-10T12:02:48",
+    "date": "Sep 10, 2026 12:02 PM",
+    "account": "Britelift Chat",
+    "script": "britelift_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-10T12:02:48",
+    "date": "Sep 10, 2026 12:02 PM",
+    "account": "RideX",
+    "script": "Ridex_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-10T12:02:48",
+    "date": "Sep 10, 2026 12:02 PM",
+    "account": "Hamilton",
+    "script": "Hamilton_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-10T12:02:48",
+    "date": "Sep 10, 2026 12:02 PM",
+    "account": "Skyline",
+    "script": "Skyline_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-10T12:02:48",
+    "date": "Sep 10, 2026 12:02 PM",
+    "account": "VIP",
+    "script": "vip_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-10T12:02:48",
+    "date": "Sep 10, 2026 12:02 PM",
+    "account": "C&H",
+    "script": "ch_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-10T12:02:48",
+    "date": "Sep 10, 2026 12:02 PM",
+    "account": "Reno Cab",
+    "script": "rc_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-10T12:02:48",
+    "date": "Sep 10, 2026 12:02 PM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-10T12:02:48",
+    "date": "Sep 10, 2026 12:02 PM",
+    "account": "Data Carz",
+    "script": "dc_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-10T12:02:48",
+    "date": "Sep 10, 2026 12:02 PM",
+    "account": "Associated Cab",
+    "script": "ac_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-10T12:02:48",
+    "date": "Sep 10, 2026 12:02 PM",
+    "account": "Ollies",
+    "script": "ol_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-10T12:02:48",
+    "date": "Sep 10, 2026 12:02 PM",
+    "account": "Circle Taxi",
+    "script": "ct_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-10T12:02:48",
+    "date": "Sep 10, 2026 12:02 PM",
+    "account": "YCOV",
+    "script": "ycov_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-10T12:02:48",
+    "date": "Sep 10, 2026 12:02 PM",
+    "account": "Kelowna",
+    "script": "kel_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-10T12:02:48",
+    "date": "Sep 10, 2026 12:02 PM",
+    "account": "Vermont",
+    "script": "vt_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-10T12:02:48",
+    "date": "Sep 10, 2026 12:02 PM",
+    "account": "YCDC",
+    "script": "ycdc_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-10T12:02:48",
+    "date": "Sep 10, 2026 12:02 PM",
+    "account": "Blueline",
+    "script": "bl_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-10T12:02:48",
+    "date": "Sep 10, 2026 12:02 PM",
+    "account": "Skyline",
+    "script": "Skyline_pull.py",
+    "status": "high_volume",
+    "error": "CRITICAL: 20,835 rows (threshold 20,000)"
   }
 ]
