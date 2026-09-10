@@ -42,9 +42,9 @@
     "passed_steps": 156,
     "failed_steps": 0,
     "step_uptime_pct": 100.0,
-    "incident_count": 4,
-    "count_drop_count": 1,
-    "self_healed_count": 3,
+    "incident_count": 0,
+    "count_drop_count": 0,
+    "self_healed_count": 0,
     "high_volume_count": 0
   },
   {
@@ -74,9 +74,9 @@
     "passed_steps": 156,
     "failed_steps": 0,
     "step_uptime_pct": 100.0,
-    "incident_count": 1,
+    "incident_count": 0,
     "count_drop_count": 0,
-    "self_healed_count": 1,
+    "self_healed_count": 0,
     "high_volume_count": 0
   },
   {
@@ -90,9 +90,9 @@
     "passed_steps": 156,
     "failed_steps": 0,
     "step_uptime_pct": 100.0,
-    "incident_count": 1,
+    "incident_count": 0,
     "count_drop_count": 0,
-    "self_healed_count": 1,
+    "self_healed_count": 0,
     "high_volume_count": 0
   },
   {
@@ -106,10 +106,10 @@
     "passed_steps": 155,
     "failed_steps": 1,
     "step_uptime_pct": 99.36,
-    "incident_count": 18,
+    "incident_count": 0,
     "count_drop_count": 0,
-    "self_healed_count": 1,
-    "high_volume_count": 1
+    "self_healed_count": 0,
+    "high_volume_count": 0
   },
   {
     "date": "2026-07-29",
@@ -122,7 +122,7 @@
     "passed_steps": 179,
     "failed_steps": 3,
     "step_uptime_pct": 98.35,
-    "incident_count": 32,
+    "incident_count": 31,
     "count_drop_count": 1,
     "self_healed_count": 1,
     "high_volume_count": 0
@@ -718,5 +718,21 @@
     "count_drop_count": 0,
     "self_healed_count": 5,
     "high_volume_count": 0
+  },
+  {
+    "date": "2026-09-10",
+    "runs": 1,
+    "successful_runs": 0,
+    "partial_runs": 1,
+    "failed_runs": 0,
+    "uptime_pct": 100.0,
+    "steps": 26,
+    "passed_steps": 23,
+    "failed_steps": 3,
+    "step_uptime_pct": 88.46,
+    "incident_count": 25,
+    "count_drop_count": 0,
+    "self_healed_count": 0,
+    "high_volume_count": 1
   }
 ]

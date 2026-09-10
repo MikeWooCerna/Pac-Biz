@@ -2143,5 +2143,18 @@
     "failed_steps": 0,
     "not_reached_steps": 0,
     "failed_at": null
+  },
+  {
+    "run_id": "2026-09-10T12:02:48",
+    "run_date": "2026-09-10",
+    "started_at": "2026-09-10T12:02:48.437945",
+    "finished_at": "2026-09-10T12:39:49.875380",
+    "duration_sec": 2221.437,
+    "status": "partial",
+    "step_count": 26,
+    "passed_steps": 23,
+    "failed_steps": 3,
+    "not_reached_steps": 0,
+    "failed_at": "Masterlist"
   }
 ]
