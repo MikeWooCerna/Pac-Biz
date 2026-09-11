@@ -52,6 +52,14 @@
       "status": "pass",
       "timestamp": "2026-09-11T10:59:27.136080",
       "error": null
+    },
+    {
+      "account": "Britelift",
+      "script": "britelift_pull.py",
+      "exit_code": 1,
+      "status": "fail",
+      "timestamp": "2026-09-11T11:04:27.719355",
+      "error": "    r = adapter.send(request, **kwargs)\n  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\adapters.py\", line 727, in send\n    raise SSLError(e, request=request)\nrequests.exceptions.SSLError: HTTPSConnectionPool(host='sheets.googleapis.com', port=443): Max retries exceeded with url: /v4/spreadsheets/1mZXpZKfNCF8f-IIyF0KHP-zqp97CZhGCdco1iPw9OQQ?includeGridData=false (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)')))"
     }
   ]
 }
