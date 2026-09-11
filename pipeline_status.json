@@ -172,6 +172,22 @@
       "status": "pass",
       "timestamp": "2026-09-11T11:10:53.082271",
       "error": null
+    },
+    {
+      "account": "Vermont",
+      "script": "vt_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-09-11T11:11:19.929611",
+      "error": null
+    },
+    {
+      "account": "YCDC",
+      "script": "ycdc_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-09-11T11:13:47.883834",
+      "error": null
     }
   ]
 }
