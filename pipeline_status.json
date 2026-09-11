@@ -2,16 +2,16 @@
   "run_id": "2026-09-11T10:48:49",
   "started_at": "2026-09-11T10:48:49.295316",
   "finished_at": "2026-09-11T11:36:07.931725",
-  "status": "partial",
-  "failed_at": "Masterlist",
+  "status": "success",
+  "failed_at": null,
   "steps": [
     {
       "account": "Masterlist",
       "script": "masterlist_fetch.py",
-      "exit_code": 1,
-      "status": "fail",
-      "timestamp": "2026-09-11T10:51:03.180928",
-      "error": "ERROR fetching History: HTTPSConnectionPool(host='doc-0o-4k-sheets.googleusercontent.com', port=443): Max retries exceeded with url: /pub/54bogvaave6cua4cdnls17ksc4/5e1br8auoffe34oaecs6fimvoc/1789095050000/110569056607926095955/*/e@2PACX-1vS82OdHh0VFVA9K6P3b7Y8pjPmdeJSOQxj1KQ_4ts5HYL4YgUHwKjpFymrPCJdfMK0Rox6fnSTG3rKf?gid=166777136&single=true&output=csv (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)')))"
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-09-11T11:29:55.998955",
+      "error": null
     },
     {
       "account": "Coaching",
@@ -50,16 +50,16 @@
       "script": "parentis_pull.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-09-11T10:59:27.136080",
+      "timestamp": "2026-09-11T10:59:27.13608",
       "error": null
     },
     {
       "account": "Britelift",
       "script": "britelift_pull.py",
-      "exit_code": 1,
-      "status": "fail",
-      "timestamp": "2026-09-11T11:04:27.719355",
-      "error": "    r = adapter.send(request, **kwargs)\n  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\adapters.py\", line 727, in send\n    raise SSLError(e, request=request)\nrequests.exceptions.SSLError: HTTPSConnectionPool(host='sheets.googleapis.com', port=443): Max retries exceeded with url: /v4/spreadsheets/1mZXpZKfNCF8f-IIyF0KHP-zqp97CZhGCdco1iPw9OQQ?includeGridData=false (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)')))"
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-09-11T11:30:04.638361",
+      "error": null
     },
     {
       "account": "Britelift Chat",
@@ -130,7 +130,7 @@
       "script": "dc_pull.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-09-11T11:09:20.040030",
+      "timestamp": "2026-09-11T11:09:20.04003",
       "error": null
     },
     {
@@ -203,38 +203,6 @@
       "exit_code": 0,
       "status": "pass",
       "timestamp": "2026-09-11T11:36:07.931725",
-      "error": null
-    },
-    {
-      "account": "Git Push",
-      "script": "git push",
-      "exit_code": 0,
-      "status": "pass",
-      "timestamp": "2026-09-11T11:27:30.453969",
-      "error": null
-    },
-    {
-      "account": "Masterlist",
-      "script": "masterlist_fetch.py",
-      "exit_code": 0,
-      "status": "pass",
-      "timestamp": "2026-09-11T11:29:55.998955",
-      "error": null
-    },
-    {
-      "account": "Britelift",
-      "script": "britelift_pull.py",
-      "exit_code": 0,
-      "status": "pass",
-      "timestamp": "2026-09-11T11:30:04.638361",
-      "error": null
-    },
-    {
-      "account": "Build",
-      "script": "dashboard.py",
-      "exit_code": 0,
-      "status": "pass",
-      "timestamp": "2026-09-11T11:35:46.309429",
       "error": null
     },
     {

@@ -2174,13 +2174,13 @@
     "run_id": "2026-09-11T10:48:49",
     "run_date": "2026-09-11",
     "started_at": "2026-09-11T10:48:49.295316",
-    "finished_at": "2026-09-11T11:35:45.529093",
-    "duration_sec": 2816.234,
-    "status": "partial",
-    "step_count": 29,
-    "passed_steps": 27,
-    "failed_steps": 2,
+    "finished_at": "2026-09-11T11:36:07.931725",
+    "duration_sec": 2838.636,
+    "status": "success",
+    "step_count": 26,
+    "passed_steps": 26,
+    "failed_steps": 0,
     "not_reached_steps": 0,
-    "failed_at": "Masterlist"
+    "failed_at": null
   }
 ]
