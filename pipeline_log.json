@@ -1,13 +1,5 @@
 [
   {
-    "run_id": "2026-07-29T22:58:47",
-    "date": "Jul 29, 2026 10:58 PM",
-    "account": "Guardian",
-    "script": "pipeline_guardian.py",
-    "status": "guardian_warn",
-    "error": "failed mismatch: status=1, monitor=10007"
-  },
-  {
     "run_id": "2026-07-29T23:39:14",
     "date": "Jul 29, 2026 11:39 PM",
     "account": "YCDC",
@@ -2546,5 +2538,14 @@
     "script": "pipeline_guardian.py",
     "status": "guardian_warn",
     "error": "failed mismatch: status=2, monitor=0"
+  },
+  {
+    "run_id": "2026-09-11T23:14:20",
+    "date": "Sep 11, 2026 11:14 PM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
   }
 ]
