@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "run_id": "2026-09-11T10:48:49",
+    "date": "Sep 11, 2026 10:48 AM",
+    "account": "asana_pull.py",
+    "script": "asana_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-09-11T10:48:49",
+    "date": "Sep 11, 2026 10:48 AM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
+  }
+]
