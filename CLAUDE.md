@@ -50,7 +50,7 @@ If any step returns a non-zero exit code the entire pipeline aborts (`goto :fail
 7.  Britelift Chat    — %BLC_DIR%\britelift_pull.py        ← SAME script name, different dir
 8.  RideX             — %RIDEX_DIR%\Ridex_pull.py
 8.  Hamilton          — %HAMILTON_DIR%\Hamilton_pull.py
-9.  Skyline           — %SKYLINE_DIR%\Skyline_pull.py
+9.  Skyline           — %SKYLINE_DIR%\Skyline_pull.py    (direct QA API pull + Masterlist enrichment)
 10. VIP               — %VIP_DIR%\vip_pull.py
 11. C&H               — %CH_DIR%\ch_pull.py
 12. Reno Cab          — %RC_DIR%\rc_pull.py
