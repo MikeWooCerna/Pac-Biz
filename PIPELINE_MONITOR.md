@@ -82,8 +82,8 @@ Matches pipeline execution order. Masterlist is **first** (step 1) because it ru
 12. VIP              vip_pull.py
 13. C&H              ch_pull.py
 14. Reno Cab         rc_pull.py
-15. Trans Iowa       ti_pull.py
-16. Data Carz        dc_pull.py
+15. Trans Iowa       ti_pull.py        (direct QA API pull + Masterlist enrichment)
+16. Data Carz        dc_pull.py        (direct QA API pull + Masterlist enrichment)
 17. Associated Cab   ac_pull.py
 18. Ollies           ol_pull.py
 19. Circle Taxi      ct_pull.py

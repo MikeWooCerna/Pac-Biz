@@ -54,8 +54,8 @@ If any step returns a non-zero exit code the entire pipeline aborts (`goto :fail
 10. VIP               — %VIP_DIR%\vip_pull.py
 11. C&H               — %CH_DIR%\ch_pull.py
 12. Reno Cab          — %RC_DIR%\rc_pull.py
-13. Trans Iowa        — %TI_DIR%\ti_pull.py
-14. Data Carz         — %DC_DIR%\dc_pull.py
+13. Trans Iowa        — %TI_DIR%\ti_pull.py        (direct QA API pull + Masterlist enrichment)
+14. Data Carz         — %DC_DIR%\dc_pull.py        (direct QA API pull + Masterlist enrichment)
 14. Associated Cab    — %AC_DIR%\ac_pull.py
 15. Ollies            — %OL_DIR%\ol_pull.py
 16. Circle Taxi       — %CT_DIR%\ct_pull.py
