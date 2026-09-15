@@ -1,96 +1,5 @@
 [
   {
-    "run_id": "2026-08-01T19:00:02",
-    "date": "Aug 01, 2026 07:00 PM",
-    "account": "ch_pull.py",
-    "script": "ch_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
-    "run_id": "2026-08-01T19:00:02",
-    "date": "Aug 01, 2026 07:00 PM",
-    "account": "ti_pull.py",
-    "script": "ti_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
-    "run_id": "2026-08-01T19:00:02",
-    "date": "Aug 01, 2026 07:00 PM",
-    "account": "vt_pull.py",
-    "script": "vt_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
-    "run_id": "2026-08-03T19:00:03",
-    "date": "Aug 03, 2026 07:00 PM",
-    "account": "Masterlist",
-    "script": "masterlist_fetch.py",
-    "status": "fail",
-    "error": "ERROR fetching Masterlist: HTTPSConnectionPool(host='docs.google.com', port=443): Max retries exceeded with url: /spreadsheets/d/e/2PACX-1vS82OdHh0VFVA9K6P3b7Y8pjPmdeJSOQxj1KQ_4ts5HYL4YgUHwKjpFymrPCJdfMK0Rox6fnSTG3rKf/pub?gid=0&single=true&output=csv (Caused by NameResolutionError(\"HTTPSConnection(host='docs.google.com', port=443): Failed to resolve 'docs.google.com' ([Errno 11001] getaddrinfo failed)\"))"
-  },
-  {
-    "run_id": "2026-08-03T19:00:03",
-    "date": "Aug 03, 2026 07:00 PM",
-    "account": "Coaching",
-    "script": "asana_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-08-03T19:00:03",
-    "date": "Aug 03, 2026 07:00 PM",
-    "account": "M7",
-    "script": "m7_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-08-03T19:00:03",
-    "date": "Aug 03, 2026 07:00 PM",
-    "account": "DMG",
-    "script": "dmg_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-08-03T19:00:03",
-    "date": "Aug 03, 2026 07:00 PM",
-    "account": "R4H",
-    "script": "r4h_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-08-03T19:00:03",
-    "date": "Aug 03, 2026 07:00 PM",
-    "account": "Parentis Health",
-    "script": "parentis_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-08-03T19:00:03",
-    "date": "Aug 03, 2026 07:00 PM",
-    "account": "Britelift",
-    "script": "britelift_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-08-03T19:00:03",
-    "date": "Aug 03, 2026 07:00 PM",
-    "account": "Britelift Chat",
-    "script": "britelift_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
     "run_id": "2026-08-03T19:00:03",
     "date": "Aug 03, 2026 07:00 PM",
     "account": "RideX",
@@ -2545,5 +2454,93 @@
     "status": "healed",
     "action": "retry",
     "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-09-15T12:00:27",
+    "date": "Sep 15, 2026 12:00 PM",
+    "account": "C&H",
+    "script": "ch_pull.py",
+    "status": "fail",
+    "error": "    )\n  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\google\\auth\\transport\\requests.py\", line 195, in __call__\n    raise new_exc from caught_exc\ngoogle.auth.exceptions.TransportError: HTTPSConnectionPool(host='oauth2.googleapis.com', port=443): Max retries exceeded with url: /token (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)')))"
+  },
+  {
+    "run_id": "2026-09-15T12:00:27",
+    "date": "Sep 15, 2026 12:00 PM",
+    "account": "Trans Iowa",
+    "script": "ti_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-15T12:00:27",
+    "date": "Sep 15, 2026 12:00 PM",
+    "account": "Data Carz",
+    "script": "dc_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-15T12:00:27",
+    "date": "Sep 15, 2026 12:00 PM",
+    "account": "Associated Cab",
+    "script": "ac_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-15T12:00:27",
+    "date": "Sep 15, 2026 12:00 PM",
+    "account": "Ollies",
+    "script": "ol_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-15T12:00:27",
+    "date": "Sep 15, 2026 12:00 PM",
+    "account": "Circle Taxi",
+    "script": "ct_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-15T12:00:27",
+    "date": "Sep 15, 2026 12:00 PM",
+    "account": "YCOV",
+    "script": "ycov_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-15T12:00:27",
+    "date": "Sep 15, 2026 12:00 PM",
+    "account": "Kelowna",
+    "script": "kel_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-15T12:00:27",
+    "date": "Sep 15, 2026 12:00 PM",
+    "account": "Vermont",
+    "script": "vt_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-15T12:00:27",
+    "date": "Sep 15, 2026 12:00 PM",
+    "account": "YCDC",
+    "script": "ycdc_pull.py",
+    "status": "not_reached",
+    "error": null
+  },
+  {
+    "run_id": "2026-09-15T12:00:27",
+    "date": "Sep 15, 2026 12:00 PM",
+    "account": "Blueline",
+    "script": "bl_pull.py",
+    "status": "not_reached",
+    "error": null
   }
 ]
