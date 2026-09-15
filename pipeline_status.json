@@ -1,8 +1,8 @@
 {
   "run_id": "2026-09-15T10:12:36",
   "started_at": "2026-09-15T10:12:36.963430",
-  "finished_at": null,
-  "status": "running",
+  "finished_at": "2026-09-15T11:35:36.991466",
+  "status": "success",
   "failed_at": null,
   "steps": [
     {
@@ -195,6 +195,14 @@
       "exit_code": 0,
       "status": "pass",
       "timestamp": "2026-09-15T10:43:55.632518",
+      "error": null
+    },
+    {
+      "account": "Build",
+      "script": "dashboard.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-09-15T11:34:27.458801",
       "error": null
     }
   ]
