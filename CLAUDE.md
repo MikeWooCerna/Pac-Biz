@@ -28,9 +28,9 @@ at build time — it has no pull script and no local Excel file.
 | `requirements.txt` | Python deps: pandas>=2.2.0, openpyxl>=3.1.0, requests>=2.32.0, xlsxwriter>=3.2.0 |
 | `test_connection.py` | Google Sheets API connectivity test |
 | `pacbiz_logo.png` / `pacbiz_favicon.png` | Branding assets embedded in the HTML at build time |
-| `diagnose_drops.py` | Count drop investigation agent — runs after every build, sends email report, auto-triggers Apps Script heal |
+| `diagnose_drops.py` | Count drop investigation agent — runs after every build, sends email report, and can trigger Apps Script heal when a trigger file is configured |
 | `pipeline_status_history.py` | Appends run/step status history and daily uptime rollups for dashboarding |
-| `appsscript_triggers.json` | Maps account name → Apps Script web app URL for auto-heal (currently: Kelowna) |
+| `appsscript_triggers.json` | Optional map of account name → Apps Script web app URL for auto-heal; not required for direct QA API pulls |
 | `pipeline_drops_notified.json` | Tracks which drop events have already been reported — prevents duplicate emails |
 
 Python executable: `C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\python.exe`
@@ -60,7 +60,7 @@ If any step returns a non-zero exit code the entire pipeline aborts (`goto :fail
 15. Ollies            — %OL_DIR%\ol_pull.py
 16. Circle Taxi       — %CT_DIR%\ct_pull.py
 17. YCOV              — %YCOV_DIR%\ycov_pull.py
-18. Kelowna           — %KEL_DIR%\kel_pull.py
+18. Kelowna           — %KEL_DIR%\kel_pull.py       (direct QA API pull + Masterlist enrichment)
 19. Vermont           — %VT_DIR%\vt_pull.py
 20. YCDC              — %YCDC_DIR%\ycdc_pull.py
 21. Blueline          — %BL_DIR%\bl_pull.py
@@ -157,13 +157,14 @@ Pipeline monitoring system is fully live as of 2026-06-22. See `PIPELINE_MONITOR
   - **CLUSTER** = multiple accounts drop in the same run → likely an upsert overwrote the sheet
   - **ISOLATED** = single large one-time drop → transient data source issue
   - **MINOR** = single small drop (≤50 rows) → likely legitimate upstream deletion
-- **Apps Script web app auto-heal for Kelowna** — when a Kelowna count drop is detected, `diagnose_drops.py` automatically runs the full heal sequence (see details in 2026-06-27 section below).
-  - Kelowna trigger URL stored in `appsscript_triggers.json`
-  - To add more accounts: deploy `doGet()` on their Apps Script, add URL to `appsscript_triggers.json`, add pull script path to `ACCOUNT_PULL_SCRIPTS` in `diagnose_drops.py`
-  - Kelowna Apps Script updated with leftover-sheet cleanup (`KEL_Evaluations_new` guard) in both `pullKELEvaluationsToSheet()` and `pullKELLast30Days()`
+- **Kelowna direct QA API pull** — Kelowna was moved off the Google Sheets/App Script feed on 2026-09-15. `Quality\Kelowna\kel_pull.py` now calls the QA API directly, enriches from Masterlist/History, writes `KEL_RAW.xlsx` with `xlsxwriter`, and keeps a safety floor before overwrite.
+  - QA account ID: `68edb43eec372b2bf04692bf`
+  - Current direct pull validation: 3,153 rows × 129 columns
+  - Old Google Sheets pull was backed up locally as `Quality\Kelowna\kel_pull.py.gsheet_backup`
+  - Historical Apps Script notes below are retained as lessons for any future sheet-fed account, but Kelowna no longer depends on the Apps Script export.
 
 ### Changes made 2026-06-27
-- **Auto-heal sequence corrected** — original `doGet()` called `pullKELLast30Days()` (rolling 30 days, ~731 rows) which wiped the full year dataset. Fixed: `doGet()` now calls `clearKELProgress()` + `pullKELEvaluationsToSheet()` (full year, ~2,300+ rows). Any future Apps Script web app for other accounts must follow the same pattern — never call the 30-day pull from `doGet()`.
+- **Historical Apps Script lesson from Kelowna** — original `doGet()` called `pullKELLast30Days()` (rolling 30 days, ~731 rows) which wiped the full year dataset. If any future account uses an Apps Script web app, `doGet()` must call a full-year pull and never a rolling-window variant.
 - **`doGet()` JSON protocol** — now returns `{"status":"partial","rows_so_far":N,"last_week":"..."}` or `{"status":"complete","rows":N}` instead of plain text "OK". Includes `SpreadsheetApp.flush()` before `getLastRow()` to avoid stale sheet-rename timing. On first call clears progress; on resume calls skips `clearKELProgress()` so prior weekly progress is preserved.
 - **Multi-call heal loop** (`diagnose_drops.py`) — `trigger_appsscript()` now loops up to `MAX_TRIGGER_CALLS = 12` times, calling the web app URL until it returns `"complete"`. Needed because `pullKELEvaluationsToSheet()` uses a 5-minute PropertiesService resume pattern — one HTTP call may only cover part of the year. Each partial response logs progress; loop breaks on `"complete"`. Falls back to plain-text "OK" for backward compatibility.
 - **Pre-drop count verification** — `trigger_appsscript()` now accepts `prev_count` (the exact row count before the drop, read from the drop log event). After the Apps Script completes, it verifies the restored count is ≥ 80% of `prev_count`. Fails clearly if the count is still too low rather than proceeding to rebuild the dashboard with incomplete data. `run()` passes the highest `prev_count` from all new drops for that account.

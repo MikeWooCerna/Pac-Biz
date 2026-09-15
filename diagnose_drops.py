@@ -142,7 +142,7 @@ def _kelowna_heal_note(s, triggers):
         color     = "#14532d"
         rationale = (
             "This account has a persistent or large drop that would benefit from an Apps Script "
-            "auto-heal — the same setup used for Kelowna. Consider deploying a <code>doGet()</code> "
+            "auto-heal if it still depends on an Apps Script feed. Consider deploying a <code>doGet()</code> "
             "web app on its Apps Script, adding the URL to <code>appsscript_triggers.json</code>, "
             "and adding its pull script to <code>ACCOUNT_PULL_SCRIPTS</code> in "
             "<code>diagnose_drops.py</code>."
@@ -168,7 +168,7 @@ def _kelowna_heal_note(s, triggers):
         )
     return f"""
         <div style="margin-top:10px;padding:10px 12px;background:{bg};border-left:3px solid {border};border-radius:0 4px 4px 0;font-size:12px;color:{color};">
-          <b>Auto-heal like Kelowna? {verdict}</b><br>
+          <b>Apps Script auto-heal recommended? {verdict}</b><br>
           <span style="display:block;margin-top:4px;color:#374151;">{rationale}</span>
         </div>"""
 
