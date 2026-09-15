@@ -51,7 +51,7 @@ If any step returns a non-zero exit code the entire pipeline aborts (`goto :fail
 8.  RideX             — %RIDEX_DIR%\Ridex_pull.py
 8.  Hamilton          — %HAMILTON_DIR%\Hamilton_pull.py
 9.  Skyline           — %SKYLINE_DIR%\Skyline_pull.py    (direct QA API pull + Masterlist enrichment)
-10. VIP               — %VIP_DIR%\vip_pull.py
+10. VIP               — %VIP_DIR%\vip_pull.py       (direct QA API pull + Masterlist enrichment)
 11. C&H               — %CH_DIR%\ch_pull.py
 12. Reno Cab          — %RC_DIR%\rc_pull.py       (direct QA API pull + Masterlist enrichment)
 13. Trans Iowa        — %TI_DIR%\ti_pull.py        (direct QA API pull + Masterlist enrichment)
@@ -168,6 +168,12 @@ Pipeline monitoring system is fully live as of 2026-06-22. See `PIPELINE_MONITOR
   - Current direct pull validation: 3,835 rows × 123 columns
   - Old Google Sheets pull was backed up locally as `Quality\Reno Cab\rc_pull.py.gsheet_backup`
   - Reno Cab aliases preserved from the Apps Script: Divina Jaluag, John Robert Estrabela, Marlyn Balahan, Venicio Cañete Jr., and Gladys Burton.
+
+- **VIP direct QA API pull** — VIP was moved off the Google Sheets/App Script feed on 2026-09-15. `Quality\VIP\vip_pull.py` now calls the QA API directly, enriches from Masterlist/History, writes `VIP_RAW.xlsx` with `xlsxwriter`, and keeps a 3,500-row safety floor before overwrite.
+  - QA account ID: `6891a544fe5443aa64a3ad1a`
+  - Current direct pull validation: 4,620 rows × 132 columns
+  - Old Google Sheets pull was backed up locally as `Quality\VIP\vip_pull.py.gsheet_backup`
+  - VIP aliases preserved from the Apps Script: Nidalyn Mascardo, Gina De Los Santos, Amulek Pasco, Anton Francis Catacutan, Gladys Burton, and Macario Jr. Maquiling.
 
 ### Changes made 2026-06-27
 - **Historical Apps Script lesson from Kelowna** — original `doGet()` called `pullKELLast30Days()` (rolling 30 days, ~731 rows) which wiped the full year dataset. If any future account uses an Apps Script web app, `doGet()` must call a full-year pull and never a rolling-window variant.

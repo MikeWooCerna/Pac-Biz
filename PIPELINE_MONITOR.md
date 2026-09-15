@@ -79,7 +79,7 @@ Matches pipeline execution order. Masterlist is **first** (step 1) because it ru
 9.  RideX            Ridex_pull.py
 10. Hamilton         Hamilton_pull.py
 11. Skyline          Skyline_pull.py    (direct QA API pull + Masterlist enrichment)
-12. VIP              vip_pull.py
+12. VIP              vip_pull.py       (direct QA API pull + Masterlist enrichment)
 13. C&H              ch_pull.py
 14. Reno Cab         rc_pull.py       (direct QA API pull + Masterlist enrichment)
 15. Trans Iowa       ti_pull.py        (direct QA API pull + Masterlist enrichment)
