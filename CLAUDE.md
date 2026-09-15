@@ -53,7 +53,7 @@ If any step returns a non-zero exit code the entire pipeline aborts (`goto :fail
 9.  Skyline           — %SKYLINE_DIR%\Skyline_pull.py    (direct QA API pull + Masterlist enrichment)
 10. VIP               — %VIP_DIR%\vip_pull.py
 11. C&H               — %CH_DIR%\ch_pull.py
-12. Reno Cab          — %RC_DIR%\rc_pull.py
+12. Reno Cab          — %RC_DIR%\rc_pull.py       (direct QA API pull + Masterlist enrichment)
 13. Trans Iowa        — %TI_DIR%\ti_pull.py        (direct QA API pull + Masterlist enrichment)
 14. Data Carz         — %DC_DIR%\dc_pull.py        (direct QA API pull + Masterlist enrichment)
 14. Associated Cab    — %AC_DIR%\ac_pull.py
@@ -162,6 +162,12 @@ Pipeline monitoring system is fully live as of 2026-06-22. See `PIPELINE_MONITOR
   - Current direct pull validation: 3,153 rows × 129 columns
   - Old Google Sheets pull was backed up locally as `Quality\Kelowna\kel_pull.py.gsheet_backup`
   - Historical Apps Script notes below are retained as lessons for any future sheet-fed account, but Kelowna no longer depends on the Apps Script export.
+
+- **Reno Cab direct QA API pull** — Reno Cab was moved off the Google Sheets/App Script feed on 2026-09-15. `Quality\Reno Cab\rc_pull.py` now calls the QA API directly, enriches from Masterlist/History, writes `RC_RAW.xlsx` with `xlsxwriter`, and keeps a 3,000-row safety floor before overwrite.
+  - QA account ID: `6891a464fe5443aa64a3ad13`
+  - Current direct pull validation: 3,835 rows × 123 columns
+  - Old Google Sheets pull was backed up locally as `Quality\Reno Cab\rc_pull.py.gsheet_backup`
+  - Reno Cab aliases preserved from the Apps Script: Divina Jaluag, John Robert Estrabela, Marlyn Balahan, Venicio Cañete Jr., and Gladys Burton.
 
 ### Changes made 2026-06-27
 - **Historical Apps Script lesson from Kelowna** — original `doGet()` called `pullKELLast30Days()` (rolling 30 days, ~731 rows) which wiped the full year dataset. If any future account uses an Apps Script web app, `doGet()` must call a full-year pull and never a rolling-window variant.
