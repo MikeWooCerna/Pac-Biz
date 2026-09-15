@@ -180,6 +180,14 @@
       "status": "pass",
       "timestamp": "2026-09-15T20:24:37.792006",
       "error": null
+    },
+    {
+      "account": "YCDC",
+      "script": "ycdc_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-09-15T20:24:58.387360",
+      "error": null
     }
   ]
 }
