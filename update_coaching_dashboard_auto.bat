@@ -322,7 +322,7 @@ if errorlevel 1 (
 
 echo.
 echo ========================================
-echo Updating Kelowna QA data from Google Sheets
+echo Updating Kelowna QA data from direct QA API
 echo ========================================
 cd /d "%KEL_DIR%"
 py -3 "%MASTERLIST_DIR%\self_heal.py" run-step kel_pull.py
