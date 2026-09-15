@@ -173,7 +173,7 @@ Pipeline monitoring system is fully live as of 2026-06-22. See `PIPELINE_MONITOR
   - QA account ID: `6891a544fe5443aa64a3ad1a`
   - Current direct pull validation: 4,620 rows × 132 columns
   - Old Google Sheets pull was backed up locally as `Quality\VIP\vip_pull.py.gsheet_backup`
-  - VIP aliases preserved from the Apps Script: Nidalyn Mascardo, Gina De Los Santos, Amulek Pasco, Anton Francis Catacutan, Gladys Burton, and Macario Jr. Maquiling.
+  - VIP aliases preserved/added from the Apps Script and Masterlist fixes: Nidalyn Mascardo, Gina De Los Santos, Amulek Pasco, Anton Francis Catacutan, Ericson Dagooc -> Dago-oc, Ericson, Gladys Burton, and Macario Jr. Maquiling.
 
 ### Changes made 2026-06-27
 - **Historical Apps Script lesson from Kelowna** — original `doGet()` called `pullKELLast30Days()` (rolling 30 days, ~731 rows) which wiped the full year dataset. If any future account uses an Apps Script web app, `doGet()` must call a full-year pull and never a rolling-window variant.
