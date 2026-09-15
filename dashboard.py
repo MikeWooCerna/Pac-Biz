@@ -20,6 +20,13 @@ GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/18hKmm2SmlWqB23osiV3J
 OUTPUT_FILE = "masterlist_dashboard.html"
 LOGO_FILE = "pacbiz_logo.png"
 FAVICON_FILE = "pacbiz_favicon.png"
+SKIP_ACCOUNT_REFRESH = os.getenv("SKIP_ACCOUNT_REFRESH", "").strip().lower() in {"1", "true", "yes", "on"}
+
+if SKIP_ACCOUNT_REFRESH:
+    def _skip_account_refresh_run(*args, **kwargs):
+        raise subprocess.SubprocessError("Account refresh skipped by SKIP_ACCOUNT_REFRESH=1")
+
+    subprocess.run = _skip_account_refresh_run
 
 COACHING_DIR = Path(os.getenv("COACHING_DIR", r"C:\Users\Mike Woo Cerna\Documents\PB\Coaching"))
 COACHING_SCRIPT = Path(os.getenv("COACHING_SCRIPT", str(COACHING_DIR / "asana_pull.py")))
