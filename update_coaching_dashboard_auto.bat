@@ -196,7 +196,7 @@ if errorlevel 1 (
 
 echo.
 echo ========================================
-echo Updating VIP QA data from Google Sheets
+echo Updating VIP QA data from direct QA API
 echo ========================================
 cd /d "%VIP_DIR%"
 py -3 "%MASTERLIST_DIR%\self_heal.py" run-step vip_pull.py
