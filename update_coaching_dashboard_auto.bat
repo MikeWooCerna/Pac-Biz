@@ -224,7 +224,7 @@ if errorlevel 1 (
 
 echo.
 echo ========================================
-echo Updating Reno Cab QA data from Google Sheets
+echo Updating Reno Cab QA data from direct QA API
 echo ========================================
 cd /d "%RC_DIR%"
 py -3 "%MASTERLIST_DIR%\self_heal.py" run-step rc_pull.py
