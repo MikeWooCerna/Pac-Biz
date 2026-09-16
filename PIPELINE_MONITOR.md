@@ -77,7 +77,7 @@ Matches pipeline execution order. Masterlist is **first** (step 1) because it ru
 7.  Britelift        britelift_pull.py
 8.  Britelift Chat   britelift_pull.py     (same script name, different dir)
 9.  RideX            Ridex_pull.py
-10. Hamilton         Hamilton_pull.py
+10. Hamilton         Hamilton_pull.py  (direct QA API pull + Masterlist enrichment)
 11. Skyline          Skyline_pull.py    (direct QA API pull + Masterlist enrichment)
 12. VIP              vip_pull.py       (direct QA API pull + Masterlist enrichment)
 13. C&H              ch_pull.py

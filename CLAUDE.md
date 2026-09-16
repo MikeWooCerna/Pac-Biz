@@ -49,7 +49,7 @@ If any step returns a non-zero exit code the entire pipeline aborts (`goto :fail
 6.  Britelift         — %BRITELIFT_DIR%\britelift_pull.py
 7.  Britelift Chat    — %BLC_DIR%\britelift_pull.py        ← SAME script name, different dir
 8.  RideX             — %RIDEX_DIR%\Ridex_pull.py
-8.  Hamilton          — %HAMILTON_DIR%\Hamilton_pull.py
+8.  Hamilton          — %HAMILTON_DIR%\Hamilton_pull.py  (direct QA API pull + Masterlist enrichment)
 9.  Skyline           — %SKYLINE_DIR%\Skyline_pull.py    (direct QA API pull + Masterlist enrichment)
 10. VIP               — %VIP_DIR%\vip_pull.py       (direct QA API pull + Masterlist enrichment)
 11. C&H               — %CH_DIR%\ch_pull.py
@@ -174,6 +174,12 @@ Pipeline monitoring system is fully live as of 2026-06-22. See `PIPELINE_MONITOR
   - Current direct pull validation: 4,620 rows × 132 columns
   - Old Google Sheets pull was backed up locally as `Quality\VIP\vip_pull.py.gsheet_backup`
   - VIP aliases preserved/added from the Apps Script and Masterlist fixes: Nidalyn Mascardo, Gina De Los Santos, Amulek Pasco, Anton Francis Catacutan, Ericson Dagooc -> Dago-oc, Ericson, Gladys Burton, and Macario Jr. Maquiling.
+
+- **Hamilton direct QA API pull** — Hamilton was moved off the Google Sheets/App Script feed on 2026-09-16. `Quality\Hamilton\Hamilton_pull.py` now calls the QA API directly, enriches from Masterlist/History, writes `HAMILTON_RAW.xlsx` with `xlsxwriter`, and keeps a 3,500-row safety floor before overwrite.
+  - QA account ID: `68771c783fbff7af18e459f7`
+  - Current direct pull validation: 4,776 rows × 165 columns
+  - Old Google Sheets pull was backed up locally as `Quality\Hamilton\Hamilton_pull.py.gsheet_backup`
+  - Hamilton aliases/exclusion preserved from the Apps Script: Hermie Danag, John Kenneth Titoy, Lynette Tinaypan, Nina/Niña Parcon, Nidalyn Mascardo, Gina De Los Santos; excluded employee: Rovamay Pimentel.
 
 ### Changes made 2026-06-27
 - **Historical Apps Script lesson from Kelowna** — original `doGet()` called `pullKELLast30Days()` (rolling 30 days, ~731 rows) which wiped the full year dataset. If any future account uses an Apps Script web app, `doGet()` must call a full-year pull and never a rolling-window variant.
