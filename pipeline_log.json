@@ -2,14 +2,6 @@
   {
     "run_id": "2026-08-03T19:00:03",
     "date": "Aug 03, 2026 07:00 PM",
-    "account": "VIP",
-    "script": "vip_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-08-03T19:00:03",
-    "date": "Aug 03, 2026 07:00 PM",
     "account": "C&H",
     "script": "ch_pull.py",
     "status": "not_reached",
@@ -2545,5 +2537,16 @@
     "status": "healed",
     "action": "repull",
     "error": "Count dropped 4,620 \u2192 4,359. Re-pull recovered 4,620 rows."
+  },
+  {
+    "run_id": "2026-09-16T13:44:04",
+    "date": "Sep 16, 2026 01:44 PM",
+    "account": "Hamilton",
+    "script": "Hamilton_pull.py",
+    "status": "count_drop",
+    "drop": 351,
+    "prev_count": 4776,
+    "new_count": 4425,
+    "error": "Dropped 351 rows (4,776 \u2192 4,425)"
   }
 ]
