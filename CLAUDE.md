@@ -56,13 +56,13 @@ If any step returns a non-zero exit code the entire pipeline aborts (`goto :fail
 12. Reno Cab          — %RC_DIR%\rc_pull.py       (direct QA API pull + Masterlist enrichment)
 13. Trans Iowa        — %TI_DIR%\ti_pull.py        (direct QA API pull + Masterlist enrichment)
 14. Data Carz         — %DC_DIR%\dc_pull.py        (direct QA API pull + Masterlist enrichment)
-14. Associated Cab    — %AC_DIR%\ac_pull.py
+14. Associated Cab    — %AC_DIR%\ac_pull.py       (direct QA API pull + Masterlist enrichment)
 15. Ollies            — %OL_DIR%\ol_pull.py
-16. Circle Taxi       — %CT_DIR%\ct_pull.py
+16. Circle Taxi       — %CT_DIR%\ct_pull.py       (direct QA API pull + Masterlist enrichment)
 17. YCOV              — %YCOV_DIR%\ycov_pull.py
 18. Kelowna           — %KEL_DIR%\kel_pull.py       (direct QA API pull + Masterlist enrichment)
 19. Vermont           — %VT_DIR%\vt_pull.py
-20. YCDC              — %YCDC_DIR%\ycdc_pull.py
+20. YCDC              — %YCDC_DIR%\ycdc_pull.py       (direct QA API pull + Masterlist enrichment)
 21. Blueline          — %BL_DIR%\bl_pull.py
 22. git pull --rebase --autostash   (sync before rebuild)
 23. py -3 dashboard.py              (rebuild HTML)
@@ -180,6 +180,24 @@ Pipeline monitoring system is fully live as of 2026-06-22. See `PIPELINE_MONITOR
   - Current direct pull validation: 4,776 rows × 165 columns
   - Old Google Sheets pull was backed up locally as `Quality\Hamilton\Hamilton_pull.py.gsheet_backup`
   - Hamilton aliases/exclusion preserved from the Apps Script: Hermie Danag, John Kenneth Titoy, Lynette Tinaypan, Nina/Niña Parcon, Nidalyn Mascardo, Gina De Los Santos; excluded employee: Rovamay Pimentel.
+
+- **Circle Taxi direct QA API pull** — Circle Taxi was moved off the Google Sheets/App Script feed on 2026-09-16. `Quality\Circle Taxi\ct_pull.py` now calls the QA API directly, enriches from Masterlist/History, writes `CT_RAW.xlsx` with `xlsxwriter`, and keeps a 1,500-row safety floor before overwrite.
+  - QA account ID: `68edb2c7ec372b2bf04692b7`
+  - Current direct pull validation: 2,006 rows × 129 columns; 0 `EMPLOYEEIDNOTFOUND`
+  - Old Google Sheets pull was backed up locally as `Quality\Circle Taxi\ct_pull.py.gsheet_backup`
+  - Circle Taxi aliases preserved from the Apps Script: Christian Ron Paragas, Kenneth Espeleta, and Gladys Burton.
+
+- **Associated Cab direct QA API pull** — Associated Cab was moved off the Google Sheets/App Script feed on 2026-09-16. `Quality\Associated Cab\ac_pull.py` now calls the QA API directly, enriches from Masterlist/History, writes `AC_RAW.xlsx` with `xlsxwriter`, and keeps a 2,500-row safety floor before overwrite.
+  - QA account ID: `6893c6c28ddf7b44bd573056`
+  - Current direct pull validation: 3,527 rows × 129 columns; remaining unresolved employee: `cliff cathy villegas` because no matching Masterlist record was found.
+  - Old Google Sheets pull was backed up locally as `Quality\Associated Cab\ac_pull.py.gsheet_backup`
+  - Associated Cab aliases preserved/added from the Apps Script and Masterlist fixes: Bonna Jane Navarro, Cindy Patula, Hanah Jy Salas, Jefferson Alforque, and Gladys Burton.
+
+- **YCDC direct QA API pull** — YCDC was moved off the Google Sheets/App Script feed on 2026-09-16. `Quality\YCDC\ycdc_pull.py` now calls the QA API directly, enriches from Masterlist/History, writes `YCDC_RAW.xlsx` with `xlsxwriter`, and keeps a 2,500-row safety floor before overwrite.
+  - QA account ID: `69aa34779fc698e48e585128`
+  - Current direct pull validation: 3,521 rows × 126 columns; 0 `EMPLOYEEIDNOTFOUND`
+  - Old Google Sheets pull was backed up locally as `Quality\YCDC\ycdc_pull.py.gsheet_backup`
+  - YCDC aliases preserved from the Apps Script: Melgazar Gorgonio, Michelle Jucom, Niña Parcon, Rondel Ramos, Gladys Burton, and Kenneth Espeleta.
 
 ### Changes made 2026-06-27
 - **Historical Apps Script lesson from Kelowna** — original `doGet()` called `pullKELLast30Days()` (rolling 30 days, ~731 rows) which wiped the full year dataset. If any future account uses an Apps Script web app, `doGet()` must call a full-year pull and never a rolling-window variant.

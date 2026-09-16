@@ -84,13 +84,13 @@ Matches pipeline execution order. Masterlist is **first** (step 1) because it ru
 14. Reno Cab         rc_pull.py       (direct QA API pull + Masterlist enrichment)
 15. Trans Iowa       ti_pull.py        (direct QA API pull + Masterlist enrichment)
 16. Data Carz        dc_pull.py        (direct QA API pull + Masterlist enrichment)
-17. Associated Cab   ac_pull.py
+17. Associated Cab   ac_pull.py       (direct QA API pull + Masterlist enrichment)
 18. Ollies           ol_pull.py
-19. Circle Taxi      ct_pull.py
+19. Circle Taxi      ct_pull.py       (direct QA API pull + Masterlist enrichment)
 20. YCOV             ycov_pull.py
 21. Kelowna          kel_pull.py       (direct QA API pull + Masterlist enrichment)
 22. Vermont          vt_pull.py
-23. YCDC             ycdc_pull.py
+23. YCDC             ycdc_pull.py     (direct QA API pull + Masterlist enrichment)
 24. Blueline         bl_pull.py
     Build            dashboard.py
     Git Push         git push
