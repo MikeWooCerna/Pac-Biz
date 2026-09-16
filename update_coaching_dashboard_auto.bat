@@ -168,7 +168,7 @@ if errorlevel 1 (
 
 echo.
 echo ========================================
-echo Updating Hamilton QA data from Google Sheets
+echo Updating Hamilton QA data from direct QA API
 echo ========================================
 cd /d "%HAMILTON_DIR%"
 py -3 "%MASTERLIST_DIR%\self_heal.py" run-step Hamilton_pull.py
