@@ -266,7 +266,7 @@ if errorlevel 1 (
 
 echo.
 echo ========================================
-echo Updating Associated Cab QA data from Google Sheets
+echo Updating Associated Cab QA data from direct QA API
 echo ========================================
 cd /d "%AC_DIR%"
 py -3 "%MASTERLIST_DIR%\self_heal.py" run-step ac_pull.py
@@ -294,7 +294,7 @@ if errorlevel 1 (
 
 echo.
 echo ========================================
-echo Updating Circle Taxi QA data from Google Sheets
+echo Updating Circle Taxi QA data from direct QA API
 echo ========================================
 cd /d "%CT_DIR%"
 py -3 "%MASTERLIST_DIR%\self_heal.py" run-step ct_pull.py
@@ -350,7 +350,7 @@ if errorlevel 1 (
 
 echo.
 echo ========================================
-echo Updating YCDC QA data from Google Sheets
+echo Updating YCDC QA data from direct QA API
 echo ========================================
 cd /d "%YCDC_DIR%"
 py -3 "%MASTERLIST_DIR%\self_heal.py" run-step ycdc_pull.py
