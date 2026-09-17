@@ -147,66 +147,72 @@
     {
       "account": "Parentis Health",
       "script": "parentis_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-17T19:48:38.968488",
+      "status": "checking",
+      "timestamp": "2026-09-17T19:48:43.837429",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-09-17T19:48:38.968470"
     },
     {
       "account": "Britelift",
       "script": "britelift_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-17T19:47:32.988230",
+      "status": "checking",
+      "timestamp": "2026-09-17T19:48:48.365888",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-09-17T19:48:43.839433"
     },
     {
       "account": "Britelift Chat",
       "script": "britelift_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-17T19:47:33.007857",
+      "status": "checking",
+      "timestamp": "2026-09-17T19:48:52.919552",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-09-17T19:48:48.429363"
     },
     {
       "account": "RideX",
       "script": "Ridex_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-17T19:47:33.026658",
+      "status": "checking",
+      "timestamp": "2026-09-17T19:48:56.954945",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-09-17T19:48:52.949669"
     },
     {
       "account": "C&H",
       "script": "ch_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-17T19:47:33.053708",
+      "status": "checking",
+      "timestamp": "2026-09-17T19:49:02.352902",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-09-17T19:48:57.049665"
     },
     {
       "account": "Blueline",
       "script": "bl_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-17T19:47:33.074921",
+      "status": "checking",
+      "timestamp": "2026-09-17T19:49:07.401826",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-09-17T19:49:02.382287"
     },
     {
       "account": "Reno Cab",
       "script": "rc_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-17T19:47:33.092932",
+      "status": "running",
+      "timestamp": "2026-09-17T19:49:07.437080",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-09-17T19:49:07.437073"
     },
     {
       "account": "Kelowna",
