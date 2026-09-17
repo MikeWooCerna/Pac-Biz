@@ -108,6 +108,14 @@
       "status": "pass",
       "timestamp": "2026-09-17T18:19:56.181415",
       "error": null
+    },
+    {
+      "account": "Reno Cab",
+      "script": "rc_pull.py",
+      "exit_code": 0,
+      "status": "pass",
+      "timestamp": "2026-09-17T18:21:41.628872",
+      "error": null
     }
   ]
 }
