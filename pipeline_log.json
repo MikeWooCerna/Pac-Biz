@@ -2,14 +2,6 @@
   {
     "run_id": "2026-08-03T19:00:03",
     "date": "Aug 03, 2026 07:00 PM",
-    "account": "Reno Cab",
-    "script": "rc_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-08-03T19:00:03",
-    "date": "Aug 03, 2026 07:00 PM",
     "account": "Trans Iowa",
     "script": "ti_pull.py",
     "status": "not_reached",
@@ -2548,5 +2540,14 @@
     "script": "Skyline_pull.py",
     "status": "fail",
     "error": "File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\sessions.py\", line 651, in request\nresp = self.send(prep, **send_kwargs)\nFile \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\sessions.py\", line 784, in send\nr = adapter.send(request, **kwargs)\nFile \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\adapters.py\", line 742, in send\nraise ReadTimeout(e, request=request)\nrequests.exceptions.ReadTimeout: HTTPSConnectionPool(host='qa.pacph.com', port=443): Read timed out. (read timeout=90)\n[notify] Email sent: Report Monitoring \ufffd FAILED: Skyline_pull.py"
+  },
+  {
+    "run_id": "2026-09-17T19:46:50",
+    "date": "Sep 17, 2026 07:46 PM",
+    "account": "Skyline",
+    "script": "Skyline_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source transient source failure protected the RAW file. Preserved local RAW has 20,837 rows vs baseline 20,837; pipeline continued using the last healthy file."
   }
 ]
