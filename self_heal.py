@@ -161,6 +161,29 @@ def is_safety_floor_failure(error_text):
         and "existing raw file was not overwritten" in text
     )
 
+
+def is_transient_source_failure(error_text):
+    """Recognize transport failures where preserving a healthy RAW is safe."""
+    text = (error_text or "").lower()
+    markers = (
+        "read timed out",
+        "connect timeout",
+        "connection timed out",
+        "connection reset",
+        "remote end closed connection",
+        "temporarily unavailable",
+        "temporary failure in name resolution",
+        "eof occurred in violation of protocol",
+        "tlsv1 alert",
+        "status code 502",
+        "status code 503",
+        "status code 504",
+        "502 bad gateway",
+        "503 service unavailable",
+        "504 gateway timeout",
+    )
+    return any(marker in text for marker in markers)
+
 def preserved_raw_is_healthy(account):
     if not account:
         return False, None, None
@@ -172,7 +195,9 @@ def preserved_raw_is_healthy(account):
     return local_rows >= int(baseline_rows * 0.95), local_rows, baseline_rows
 
 def handle_guarded_source_failure(script, error_text):
-    if not is_safety_floor_failure(error_text):
+    safety_floor = is_safety_floor_failure(error_text)
+    transient_source = is_transient_source_failure(error_text)
+    if not safety_floor and not transient_source:
         return False
 
     account = resolve_account_for_script(script)
@@ -180,8 +205,9 @@ def handle_guarded_source_failure(script, error_text):
     if not healthy:
         return False
 
+    failure_kind = "safety-floor failure" if safety_floor else "transient source failure"
     detail = (
-        "Source safety-floor failure protected the RAW file. "
+        f"Source {failure_kind} protected the RAW file. "
         f"Preserved local RAW has {local_rows:,} rows vs baseline {baseline_rows:,}; "
         "pipeline continued using the last healthy file."
     )

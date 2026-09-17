@@ -1,6 +1,6 @@
 # PB Dashboard — project context
 # This file is read by Claude Code (auto) and Codex (manual).
-# Last updated: 2026-07-15
+# Last updated: 2026-09-17
 
 ## What this is
 
@@ -30,6 +30,7 @@ at build time — it has no pull script and no local Excel file.
 | `pacbiz_logo.png` / `pacbiz_favicon.png` | Branding assets embedded in the HTML at build time |
 | `diagnose_drops.py` | Count drop investigation agent — runs after every build, sends email report, and can trigger Apps Script heal when a trigger file is configured |
 | `pipeline_status_history.py` | Appends run/step status history and daily uptime rollups for dashboarding |
+| `parallel_qa_runner.py` | Runs the 22 QA pulls in four bounded lanes, publishes live states, and enforces the pre-build validation barrier |
 | `appsscript_triggers.json` | Optional map of account name → Apps Script web app URL for auto-heal; not required for direct QA API pulls |
 | `pipeline_drops_notified.json` | Tracks which drop events have already been reported — prevents duplicate emails |
 
@@ -37,37 +38,32 @@ Python executable: `C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python
 
 ## Pipeline sequence (update_coaching_dashboard_auto.bat)
 
-Each step runs `py -3 <script>.py` inside the account's directory.
-If any step returns a non-zero exit code the entire pipeline aborts (`goto :fail`).
+Masterlist, movement notification reconciliation, and Coaching run first. The
+22 QA sources then run through `parallel_qa_runner.py`. A dashboard build is
+allowed only after all QA workbooks pass the validation barrier.
 
 ```
-1.  Coaching          — %COACHING_DIR%\asana_pull.py
-2.  M7                — %M7_DIR%\m7_pull.py
-3.  DMG               — %DMG_DIR%\dmg_pull.py
-4.  R4H               — %R4H_DIR%\r4h_pull.py
-5.  Parentis Health   — %PARENTIS_DIR%\parentis_pull.py
-6.  Britelift         — %BRITELIFT_DIR%\britelift_pull.py
-7.  Britelift Chat    — %BLC_DIR%\britelift_pull.py        ← SAME script name, different dir
-8.  RideX             — %RIDEX_DIR%\Ridex_pull.py
-8.  Hamilton          — %HAMILTON_DIR%\Hamilton_pull.py  (direct QA API pull + Masterlist enrichment)
-9.  Skyline           — %SKYLINE_DIR%\Skyline_pull.py    (direct QA API pull + Masterlist enrichment)
-10. VIP               — %VIP_DIR%\vip_pull.py       (direct QA API pull + Masterlist enrichment)
-11. C&H               — %CH_DIR%\ch_pull.py
-12. Reno Cab          — %RC_DIR%\rc_pull.py       (direct QA API pull + Masterlist enrichment)
-13. Trans Iowa        — %TI_DIR%\ti_pull.py        (direct QA API pull + Masterlist enrichment)
-14. Data Carz         — %DC_DIR%\dc_pull.py        (direct QA API pull + Masterlist enrichment)
-14. Associated Cab    — %AC_DIR%\ac_pull.py       (direct QA API pull + Masterlist enrichment)
-15. Ollies            — %OL_DIR%\ol_pull.py       (direct QA API pull + Masterlist enrichment)
-16. Circle Taxi       — %CT_DIR%\ct_pull.py       (direct QA API pull + Masterlist enrichment)
-17. YCOV              — %YCOV_DIR%\ycov_pull.py     (direct QA API pull + Masterlist enrichment)
-18. Kelowna           — %KEL_DIR%\kel_pull.py       (direct QA API pull + Masterlist enrichment)
-19. Vermont           — %VT_DIR%\vt_pull.py       (direct QA API pull + Masterlist enrichment)
-20. YCDC              — %YCDC_DIR%\ycdc_pull.py       (direct QA API pull + Masterlist enrichment)
-21. Blueline          — %BL_DIR%\bl_pull.py
-22. git pull --rebase --autostash   (sync before rebuild)
-23. py -3 dashboard.py              (rebuild HTML)
-24. git add → git commit → git pull --rebase → git push
+1. Masterlist fetch and movement notification check
+2. Coaching pull
+3. Four controlled QA lanes (15-second stagger, maximum four active pulls):
+   - Lane 1: Skyline
+   - Lane 2: Hamilton, VIP, Vermont, Trans Iowa
+   - Lane 3: Data Carz, Associated Cab, Ollies, Circle Taxi, YCOV
+   - Lane 4: M7, DMG, R4H, Parentis Health, Britelift, Britelift Chat, RideX, C&H, Blueline, Reno Cab, Kelowna, YCDC
+4. Validation barrier: process result, workbook readability, nonzero rows, required standardized columns, and no unprotected drop over 5%
+5. `git pull --rebase --autostash`
+6. `SKIP_ACCOUNT_REFRESH=1` plus `dashboard.py` so QA pulls are not repeated during the build
+7. Movement reconciliation, dashboard commit, monitor completion, and Git push
 ```
+
+Parallel child processes never write `pipeline_status.json` or invoke Git.
+The parent runner serializes status writes and publishes the monitor at most
+once per minute. Local per-account logs are stored under
+`pipeline_parallel_logs/` and are ignored by Git.
+
+Transient transport failures may preserve a prior RAW workbook only when it
+is readable and at least 95% of the committed baseline. Authentication,
+schema, empty-output, and count-drop failures still fail closed.
 
 ## Architecture decisions already made
 

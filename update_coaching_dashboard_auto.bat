@@ -70,6 +70,19 @@ if errorlevel 1 (
 
 echo.
 echo ========================================
+echo Updating 22 QA sources in 4 controlled parallel lanes
+echo ========================================
+cd /d "%MASTERLIST_DIR%"
+py -3 "%MASTERLIST_DIR%\parallel_qa_runner.py"
+if errorlevel 1 (
+    set "ANY_ACCOUNT_FAILED=1"
+    echo [ERROR] Parallel QA validation failed -- dashboard publish blocked
+    goto :fail
+)
+goto :qa_done
+
+echo.
+echo ========================================
 echo Updating M7 QA data from Google Sheets
 echo ========================================
 cd /d "%M7_DIR%"
@@ -376,9 +389,10 @@ if errorlevel 1 (
     py -3 "%MASTERLIST_DIR%\log_step.py" step "Blueline" "bl_pull.py" 0
 )
 
+:qa_done
 echo.
 echo ========================================
-echo Rebuilding dashboard
+echo Rebuilding dashboard from validated workbooks
 echo ========================================
 cd /d "%MASTERLIST_DIR%"
 
@@ -392,7 +406,9 @@ echo Syncing latest dashboard repo changes...
 git pull --rebase --autostash
 if errorlevel 1 goto :fail
 
+set "SKIP_ACCOUNT_REFRESH=1"
 py -3 "%MASTERLIST_DIR%\self_heal.py" run-step dashboard.py
+set "SKIP_ACCOUNT_REFRESH="
 if errorlevel 1 (
     py -3 "%MASTERLIST_DIR%\log_step.py" step "Build" "dashboard.py" 1
     goto :fail

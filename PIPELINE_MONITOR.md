@@ -1,7 +1,7 @@
 # Pipeline Monitor — Technical Reference
 
 **Live URL:** https://mikewoocerna.github.io/Pac-Biz/pipeline_monitor.html  
-**Last updated:** 2026-07-15  
+**Last updated:** 2026-09-17  
 **Version signature:** `v26.06.22`
 
 ---
@@ -18,6 +18,7 @@ A fully self-contained HTML dashboard that shows the real-time status of every s
 |------|---------|
 | `generate_monitor.py` | Reads `pipeline_status.json` + Excel/CSV files → writes `pipeline_monitor.html`. Called by `log_step.py` after every step AND by both bat files at finish. |
 | `log_step.py` | Called by bat files with `init` / `step` / `finish` commands. Writes to `pipeline_status.json`. After each `step`, calls `generate_monitor.py` and pushes to GitHub (live heartbeat). |
+| `parallel_qa_runner.py` | Runs the 22 QA sources in four controlled lanes. It is the sole status/Git writer during the parallel phase and validates every workbook before allowing a build. |
 | `masterlist_fetch.py` | Fetches the 3 Masterlist Google Sheets CSVs and caches them locally as `masterlist_cache.csv`, `history_cache.csv`, `movement_cache.csv`. First step in both bat files. |
 | `pipeline_status.json` | Runtime state written by `log_step.py`. Contains `run_id`, `started_at`, `finished_at`, `status`, `failed_at`, `steps[]`. Committed to git after every step. |
 | `pipeline_log.json` | Persistent incident history. Appended to by `generate_monitor.py` when a run finishes. Survives across runs. Capped at 300 entries. |
@@ -36,16 +37,18 @@ bat file runs
   └─ log_step.py init
        └─ writes pipeline_status.json {status: "running"}
 
-  for each account step:
-    └─ py -3 script.py 2>step_err.tmp
-    └─ log_step.py step "Account" "script.py" exit_code
-         ├─ reads step_err.tmp for error message (on failure)
-         ├─ appends step to pipeline_status.json
-         └─ push_live():
-              ├─ generate_monitor.py  →  pipeline_monitor.html
-              ├─ git add pipeline_status.json pipeline_monitor.html
-              ├─ git commit -m "[live] Account"
-              └─ git push
+  └─ Masterlist + movement notifications + Coaching
+
+  └─ parallel_qa_runner.py
+       ├─ queues 22 QA sources in 4 static lanes
+       ├─ starts lanes 15 seconds apart
+       ├─ runs one source at a time within each lane through self_heal.py
+       ├─ serializes queued/running/checking/pass/fail status writes
+       ├─ publishes monitor progress at most once per minute
+       └─ validates every workbook before releasing the build
+
+  └─ SKIP_ACCOUNT_REFRESH=1 dashboard.py
+       └─ builds once from the already validated local workbooks
 
   └─ log_step.py finish success|failed
        └─ sets pipeline_status.json {status: "success"|"failed", finished_at: ...}
@@ -107,6 +110,8 @@ Left/right panel balance is dynamic. With the current 24 sources, the monitor re
 | `pass` | `#00e87a` green | Blinking green | Step completed successfully |
 | `fail` | `#ff3d3d` red | Blinking red (fast) | Step exited non-zero; error captured from stderr |
 | `running` | `#ffaa00` amber | Blinking amber | Step is currently executing |
+| `checking` | `#22d3ee` cyan | Blinking cyan | Pull finished and is waiting at the validation barrier |
+| `queued` | `#a78bfa` purple | Purple | Step is assigned to a lane and waiting to run |
 | `blocked` | `#E84500` orange | Blinking orange | Pipeline stopped upstream; step never ran |
 | `pending` | `#E84500` orange | Blinking orange | Account not in last run's data (new account) |
 
@@ -184,6 +189,11 @@ The baseline is committed to git so it survives machine restarts and re-clones.
 ---
 
 ## Live heartbeat
+
+During the controlled parallel phase, `parallel_qa_runner.py` replaces the
+per-step heartbeat with one serialized publisher. This prevents concurrent
+JSON writes and Git operations. Progress is published at most every 60
+seconds plus an initial queued state and a final validation state.
 
 `log_step.py` calls `push_live(account)` after every step. This:
 1. Runs `generate_monitor.py` (rebuilds HTML with current mid-run state)

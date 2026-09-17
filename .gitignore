@@ -1,4 +1,5 @@
 __pycache__/
+pipeline_parallel_logs/
 *.py[cod]
 .pytest_cache/
 

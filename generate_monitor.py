@@ -200,23 +200,28 @@ def dot(status):
     if status == "pass":    return '<div class="blink-g"></div>'
     if status == "fail":    return '<div class="blink-r"></div>'
     if status == "running": return '<div class="blink-a"></div>'
+    if status == "checking": return '<div class="blink-c"></div>'
     return '<div class="blink-n"></div>'
 
 def node_cls(status):
-    return {"pass": "n-pass", "fail": "n-fail", "running": "n-warn"}.get(status, "n-blocked")
+    return {"pass": "n-pass", "fail": "n-fail", "running": "n-warn",
+            "checking": "n-checking", "queued": "n-queued"}.get(status, "n-blocked")
 
 def title_color(status):
     return {"pass": "#00e87a", "fail": "#ff6060", "running": "#ffaa00",
+            "checking": "#22d3ee", "queued": "#a78bfa",
             "blocked": "#E84500", "pending": "#E84500"}.get(status, "#4a3d7a")
 
 def dot_cls(status):
     return {"pass": "b-g", "fail": "b-r"}.get(status, "b-n")
 
 STATUS_LABELS = {"pass": "PASS", "fail": "FAIL", "running": "RUNNING",
+                 "checking": "CHECKING", "queued": "QUEUED",
                  "blocked": "NOT REACHED", "pending": "NOT REACHED"}
 
 def render_node(name, script, status, ts, rows, error=None, drop_info=None, hv_lvl=None):
-    pill_cls = {"pass": "g", "fail": "r", "blocked": "o", "pending": "o"}.get(status, "")
+    pill_cls = {"pass": "g", "fail": "r", "running": "a", "checking": "c",
+                "queued": "q", "blocked": "o", "pending": "o"}.get(status, "")
     rows_str = f"{rows:,}" if rows is not None else "&mdash;"
     status_lbl = STATUS_LABELS.get(status, status.upper())
     if status == "fail":
@@ -371,7 +376,7 @@ def generate():
                 s = "pending"
             ts    = "&mdash;"
             error = None
-        rows = get_row_count(xlsx) if s == "pass" else None
+        rows = get_row_count(xlsx) if s in ("pass", "checking") else None
         account_states.append({"name": name, "script": script, "status": s, "ts": ts, "rows": rows, "error": error})
 
     passed     = sum(1 for a in account_states if a["status"] == "pass")
@@ -678,6 +683,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 .blink-r{{width:7px;height:7px;border-radius:50%;background:#ff3d3d;animation:blinkR 0.9s ease-in-out infinite;flex-shrink:0;}}
 .blink-n{{width:7px;height:7px;border-radius:50%;background:#E84500;animation:blinkO 1.4s ease-in-out infinite;flex-shrink:0;}}
 .blink-a{{width:7px;height:7px;border-radius:50%;background:#ffaa00;animation:blinkA 1.2s ease-in-out infinite;flex-shrink:0;}}
+.blink-c{{width:7px;height:7px;border-radius:50%;background:#22d3ee;animation:blinkA 1.2s ease-in-out infinite;flex-shrink:0;}}
 @keyframes blinkG{{0%,100%{{opacity:1;box-shadow:0 0 5px #00e87a;}}50%{{opacity:0.3;box-shadow:none;}}}}
 @keyframes blinkR{{0%,100%{{opacity:1;box-shadow:0 0 7px #ff3d3d;}}50%{{opacity:0.2;box-shadow:none;}}}}
 @keyframes blinkA{{0%,100%{{opacity:1;box-shadow:0 0 5px #ffaa00;}}50%{{opacity:0.3;box-shadow:none;}}}}
@@ -698,11 +704,16 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 .meta-pill.g{{background:rgba(0,232,122,0.07);color:#30b860;border-color:rgba(0,232,122,0.18);}}
 .meta-pill.r{{background:rgba(255,61,61,0.1);color:#ff8080;border-color:rgba(255,61,61,0.2);}}
 .meta-pill.o{{background:rgba(232,69,0,0.1);color:#E84500;border-color:rgba(232,69,0,0.3);}}
+.meta-pill.a{{background:rgba(255,170,0,0.1);color:#ffaa00;border-color:rgba(255,170,0,0.28);}}
+.meta-pill.c{{background:rgba(34,211,238,0.1);color:#22d3ee;border-color:rgba(34,211,238,0.28);}}
+.meta-pill.q{{background:rgba(167,139,250,0.1);color:#a78bfa;border-color:rgba(167,139,250,0.28);}}
 .b-g{{background:#00e87a;}}.b-r{{background:#ff3d3d;}}.b-n{{background:#E84500;}}
 .n-pass{{background:rgba(0,50,25,0.2);border-color:rgba(0,232,122,0.18);}}
 .n-fail{{background:rgba(70,0,0,0.35);border-color:rgba(255,61,61,0.38);}}
 .n-blocked,.n-pending{{background:rgba(60,18,0,0.18);border-color:rgba(232,69,0,0.4);}}
 .n-warn{{background:rgba(70,40,0,0.3);border-color:rgba(255,170,0,0.3);}}
+.n-checking{{background:rgba(0,55,65,0.28);border-color:rgba(34,211,238,0.35);}}
+.n-queued{{background:rgba(45,25,85,0.3);border-color:rgba(167,139,250,0.3);}}
 /* --- Center column --- */
 .radar-wrap{{position:relative;width:324px;height:324px;flex-shrink:0;}}
 .radar-label{{text-align:center;margin-top:4px;}}
@@ -812,7 +823,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 }}
 }}
 @media(prefers-reduced-motion:reduce){{
-  .blink-g,.blink-r,.blink-a{{animation:none;}}
+  .blink-g,.blink-r,.blink-a,.blink-c{{animation:none;}}
   canvas{{display:none;}}
 }}
 </style>
@@ -855,6 +866,8 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
     <div class="leg-item"><div class="blink-g"></div> Pass</div>
     <div class="leg-item"><div class="blink-r"></div> Failed</div>
     <div class="leg-item"><div class="blink-a"></div> Running</div>
+    <div class="leg-item"><div class="blink-c"></div> Checking</div>
+    <div class="leg-item"><div class="blink-n" style="background:#a78bfa;animation:none;"></div> Queued</div>
     <div class="leg-item"><div class="blink-n"></div> Not reached</div>
   </div>
 
@@ -1020,6 +1033,8 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
       if (b.st === 'pass')    {{ col=[0,232,122];   sz=3;   glow_r=10; }}
       else if (b.st==='fail') {{ col=[255,61,61];   sz=3.5; glow_r=11; }}
       else if (b.st==='running') {{ col=[255,170,0]; sz=3; glow_r=10; }}
+      else if (b.st==='checking') {{ col=[34,211,238]; sz=3; glow_r=10; }}
+      else if (b.st==='queued') {{ col=[167,139,250]; sz=2.5; glow_r=5; }}
       else if (b.st==='blocked'||b.st==='pending') {{ col=[232,69,0]; sz=3; glow_r=9; }}
       else                    {{ col=[74,61,122];   sz=2;   glow_r=0;  pulse=0.25; }}
       if (glow_r > 0) {{
@@ -1033,8 +1048,9 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
 
       // label
       var isNotReached = b.st==='blocked'||b.st==='pending';
-      var isFail = b.st==='fail', isRun = b.st==='running';
-      var fontSize = (isFail||isRun||isNotReached) ? 8 : 7;
+      var isFail = b.st==='fail', isRun = b.st==='running'||b.st==='checking';
+      var isQueued = b.st==='queued';
+      var fontSize = (isFail||isRun||isNotReached||isQueued) ? 8 : 7;
       var labelAlpha = isNotReached ? (0.5+pulse*0.3) : (isFail ? (0.7+pulse*0.3) : 0.55);
       ctx.font = 'bold '+fontSize+'px system-ui,sans-serif';
       ctx.fillStyle = 'rgba('+col+','+labelAlpha+')';
@@ -1044,7 +1060,7 @@ body{{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,sa
       var cosA = Math.cos(ba);
       ctx.textAlign = cosA > 0.2 ? 'left' : (cosA < -0.2 ? 'right' : 'center');
       ctx.textBaseline = 'middle';
-      if (isFail || isRun || isNotReached) {{
+      if (isFail || isRun || isNotReached || isQueued) {{
         ctx.shadowBlur = 6; ctx.shadowColor = 'rgba('+col+',0.7)';
       }}
       ctx.fillText(b.nm, lx, ly);
