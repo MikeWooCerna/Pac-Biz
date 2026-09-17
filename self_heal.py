@@ -205,9 +205,9 @@ def handle_guarded_source_failure(script, error_text):
     if not healthy:
         return False
 
-    failure_kind = "safety-floor failure" if safety_floor else "transient source failure"
+    failure_kind = "Source safety-floor failure" if safety_floor else "Transient source failure"
     detail = (
-        f"Source {failure_kind} protected the RAW file. "
+        f"{failure_kind} protected the RAW file. "
         f"Preserved local RAW has {local_rows:,} rows vs baseline {baseline_rows:,}; "
         "pipeline continued using the last healthy file."
     )

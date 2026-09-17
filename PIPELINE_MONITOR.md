@@ -1,7 +1,7 @@
 # Pipeline Monitor — Technical Reference
 
 **Live URL:** https://mikewoocerna.github.io/Pac-Biz/pipeline_monitor.html  
-**Last updated:** 2026-09-17  
+**Last updated:** 2026-09-17
 **Version signature:** `v26.06.22`
 
 ---
