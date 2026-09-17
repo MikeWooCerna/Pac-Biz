@@ -57,11 +57,11 @@ If any step returns a non-zero exit code the entire pipeline aborts (`goto :fail
 13. Trans Iowa        — %TI_DIR%\ti_pull.py        (direct QA API pull + Masterlist enrichment)
 14. Data Carz         — %DC_DIR%\dc_pull.py        (direct QA API pull + Masterlist enrichment)
 14. Associated Cab    — %AC_DIR%\ac_pull.py       (direct QA API pull + Masterlist enrichment)
-15. Ollies            — %OL_DIR%\ol_pull.py
+15. Ollies            — %OL_DIR%\ol_pull.py       (direct QA API pull + Masterlist enrichment)
 16. Circle Taxi       — %CT_DIR%\ct_pull.py       (direct QA API pull + Masterlist enrichment)
-17. YCOV              — %YCOV_DIR%\ycov_pull.py
+17. YCOV              — %YCOV_DIR%\ycov_pull.py     (direct QA API pull + Masterlist enrichment)
 18. Kelowna           — %KEL_DIR%\kel_pull.py       (direct QA API pull + Masterlist enrichment)
-19. Vermont           — %VT_DIR%\vt_pull.py
+19. Vermont           — %VT_DIR%\vt_pull.py       (direct QA API pull + Masterlist enrichment)
 20. YCDC              — %YCDC_DIR%\ycdc_pull.py       (direct QA API pull + Masterlist enrichment)
 21. Blueline          — %BL_DIR%\bl_pull.py
 22. git pull --rebase --autostash   (sync before rebuild)
@@ -198,6 +198,25 @@ Pipeline monitoring system is fully live as of 2026-06-22. See `PIPELINE_MONITOR
   - Current direct pull validation: 3,521 rows × 126 columns; 0 `EMPLOYEEIDNOTFOUND`
   - Old Google Sheets pull was backed up locally as `Quality\YCDC\ycdc_pull.py.gsheet_backup`
   - YCDC aliases preserved from the Apps Script: Melgazar Gorgonio, Michelle Jucom, Niña Parcon, Rondel Ramos, Gladys Burton, and Kenneth Espeleta.
+
+- **Vermont direct QA API pull** — Vermont was moved off the Google Sheets/App Script feed on 2026-09-17. `Quality\Vermont\vt_pull.py` now calls the QA API directly, enriches from Masterlist/History, writes `VT_RAW.xlsx` through a protected temporary file, and keeps a 500-row safety floor before overwrite.
+  - QA account ID: `69aa17509fc698e48e5850d5`
+  - Current direct pull validation: 713 rows × 123 columns; 0 `EMPLOYEEIDNOTFOUND`
+  - Old Google Sheets pull was backed up locally as `Quality\Vermont\vt_pull.py.gsheet_backup`
+  - Vermont aliases preserved from the Apps Script: Ivohrey Abenido, Gladys Burton, and Kenneth Espeleta.
+
+- **Ollies direct QA API pull** — Ollies was moved off the Google Sheets/App Script feed on 2026-09-17. `Quality\Ollies\ol_pull.py` now calls the QA API directly, enriches from Masterlist/History, writes `OL_RAW.xlsx` through a protected temporary file, and keeps a 1,800-row safety floor before overwrite.
+  - QA account ID: `689535a48ddf7b44bd57305a`
+  - Current direct pull validation: 2,646 rows × 150 columns; 0 `EMPLOYEEIDNOTFOUND`
+  - Old Google Sheets pull was backed up locally as `Quality\Ollies\ol_pull.py.gsheet_backup`
+  - Ollies aliases preserved from the Apps Script: Judemay Gargar and Gladys Burton.
+
+- **YCOV direct QA API pull** — YCOV was moved off the Google Sheets/App Script feed on 2026-09-17. `Quality\YCOV\ycov_pull.py` now calls the QA API directly, enriches from Masterlist/History, writes `YCOV_RAW.xlsx` through a protected temporary file, and keeps a 1,000-row safety floor before overwrite.
+  - QA account ID: `68edb415ec372b2bf04692bd`
+  - Current direct pull validation: 1,238 rows × 129 columns; 0 `EMPLOYEEIDNOTFOUND`
+  - Old Google Sheets pull was backed up locally as `Quality\YCOV\ycov_pull.py.gsheet_backup`
+  - YCOV aliases preserved from the Apps Script: Allain Joshua Balinas, Daisy Pearl Sojor, Denisse Vincoy, Jullie Ann Apor, Kenneth Espeleta, Kristine Emerald Palomar, and Gladys Burton.
+  - Vermont and YCOV can contain repeated generated `QA_ID` values when distinct API evaluations share the same employee and date-only timestamp. The API `evaluation_id` values remain unique; do not delete these valid evaluations as duplicates.
 
 ### Changes made 2026-06-27
 - **Historical Apps Script lesson from Kelowna** — original `doGet()` called `pullKELLast30Days()` (rolling 30 days, ~731 rows) which wiped the full year dataset. If any future account uses an Apps Script web app, `doGet()` must call a full-year pull and never a rolling-window variant.
