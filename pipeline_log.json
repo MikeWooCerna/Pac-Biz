@@ -2,14 +2,6 @@
   {
     "run_id": "2026-08-03T19:00:03",
     "date": "Aug 03, 2026 07:00 PM",
-    "account": "C&H",
-    "script": "ch_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-08-03T19:00:03",
-    "date": "Aug 03, 2026 07:00 PM",
     "account": "Reno Cab",
     "script": "rc_pull.py",
     "status": "not_reached",
@@ -2548,5 +2540,13 @@
     "prev_count": 4776,
     "new_count": 4425,
     "error": "Dropped 351 rows (4,776 \u2192 4,425)"
+  },
+  {
+    "run_id": "2026-09-17T19:27:22",
+    "date": "Sep 17, 2026 07:27 PM",
+    "account": "Skyline",
+    "script": "Skyline_pull.py",
+    "status": "fail",
+    "error": "File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\sessions.py\", line 651, in request\nresp = self.send(prep, **send_kwargs)\nFile \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\sessions.py\", line 784, in send\nr = adapter.send(request, **kwargs)\nFile \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\adapters.py\", line 742, in send\nraise ReadTimeout(e, request=request)\nrequests.exceptions.ReadTimeout: HTTPSConnectionPool(host='qa.pacph.com', port=443): Read timed out. (read timeout=90)\n[notify] Email sent: Report Monitoring \ufffd FAILED: Skyline_pull.py"
   }
 ]
