@@ -2364,5 +2364,31 @@
     "failed_steps": 0,
     "not_reached_steps": 0,
     "failed_at": null
+  },
+  {
+    "run_id": "2026-09-17T19:27:22",
+    "run_date": "2026-09-17",
+    "started_at": "2026-09-17T19:27:22.105400",
+    "finished_at": "2026-09-17T19:45:04.771103",
+    "duration_sec": 1062.666,
+    "status": "failed",
+    "step_count": 24,
+    "passed_steps": 23,
+    "failed_steps": 1,
+    "not_reached_steps": 0,
+    "failed_at": "Skyline"
+  },
+  {
+    "run_id": "2026-09-17T19:46:50",
+    "run_date": "2026-09-17",
+    "started_at": "2026-09-17T19:46:50.604035",
+    "finished_at": "2026-09-17T20:10:17.456946",
+    "duration_sec": 1406.853,
+    "status": "success",
+    "step_count": 26,
+    "passed_steps": 26,
+    "failed_steps": 0,
+    "not_reached_steps": 0,
+    "failed_at": null
   }
 ]
