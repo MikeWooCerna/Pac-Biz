@@ -280,7 +280,7 @@ if errorlevel 1 (
 
 echo.
 echo ========================================
-echo Updating Ollies QA data from Google Sheets
+echo Updating Ollies QA data from direct QA API
 echo ========================================
 cd /d "%OL_DIR%"
 py -3 "%MASTERLIST_DIR%\self_heal.py" run-step ol_pull.py
@@ -308,7 +308,7 @@ if errorlevel 1 (
 
 echo.
 echo ========================================
-echo Updating YCOV QA data from Google Sheets
+echo Updating YCOV QA data from direct QA API
 echo ========================================
 cd /d "%YCOV_DIR%"
 py -3 "%MASTERLIST_DIR%\self_heal.py" run-step ycov_pull.py
@@ -336,7 +336,7 @@ if errorlevel 1 (
 
 echo.
 echo ========================================
-echo Updating Vermont QA data from Google Sheets
+echo Updating Vermont QA data from direct QA API
 echo ========================================
 cd /d "%VT_DIR%"
 py -3 "%MASTERLIST_DIR%\self_heal.py" run-step vt_pull.py
