@@ -2,14 +2,6 @@
   {
     "run_id": "2026-08-03T19:00:03",
     "date": "Aug 03, 2026 07:00 PM",
-    "account": "Trans Iowa",
-    "script": "ti_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-08-03T19:00:03",
-    "date": "Aug 03, 2026 07:00 PM",
     "account": "Data Carz",
     "script": "dc_pull.py",
     "status": "not_reached",
@@ -2549,5 +2541,14 @@
     "status": "healed",
     "action": "guarded-preserve",
     "error": "Source transient source failure protected the RAW file. Preserved local RAW has 20,837 rows vs baseline 20,837; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-09-18T16:09:28",
+    "date": "Sep 18, 2026 04:09 PM",
+    "account": "Skyline",
+    "script": "Skyline_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Transient source failure protected the RAW file. Preserved local RAW has 20,837 rows vs baseline 20,837; pipeline continued using the last healthy file."
   }
 ]

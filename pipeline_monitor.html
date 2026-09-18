@@ -191,7 +191,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run 2026-09-18T16:09</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Dashboard: Sep 18, 2026 04:29 PM</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Sep 18, 2026 04:29 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Sep 18, 2026 04:30 PM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -205,7 +205,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">0</div><div class="sc-lbl">Failed</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#E84500;">0</div><div class="sc-lbl">Not Reached</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">58,016</div><div class="sc-lbl">Rows Pulled</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#7060a0;">&mdash;</div><div class="sc-lbl">running</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#00e87a;">&#10003;</div><div class="sc-lbl">success</div></div>
   </div>
 
   <div class="divider"></div>
@@ -350,7 +350,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       </div>
       <div class="radar-label">
         <div class="radar-lbl-main">Pipeline / Container Monitoring</div>
-        <div class="radar-lbl-status"><div class="blink-a"></div><span style="color:#ffaa00;font-size:12px;">running</span></div>
+        <div class="radar-lbl-status"><div class="blink-g"></div><span style="color:#00e87a;font-size:12px;">complete</span></div>
       </div>
 
       <div class="connector"></div>
@@ -367,7 +367,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
             <div class="agg-lbl">sources ok</div>
           </div>
           <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">04:09 PM</div><div class="agg-lbl">started</div></div>
-          <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">04:29 PM</div><div class="agg-lbl">finished</div></div>
+          <div class="agg-item"><div class="agg-val" style="color:#c0a0ff;font-size:12px;">04:30 PM</div><div class="agg-lbl">finished</div></div>
           <div class="agg-item" style="grid-column:span 2;"><div class="agg-val" style="color:#ffaa00;font-size:12px;">7:00 PM</div><div class="agg-lbl">next schedule</div></div>
         </div>
       </div>
@@ -531,7 +531,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div class="log-wrap">
       <table class="log-table">
         <thead><tr><th>Date</th><th>Dataset</th><th>Status</th></tr></thead>
-        <tbody><tr><td class="log-td-d">Sep 17, 2026 07:46 PM</td><td class="log-td-ds"><b>Skyline</b> <span class="log-sc">&middot; Skyline_pull.py</span><div class="log-err">Source transient source failure protected the RAW file. Preserved local RAW has 20,837 rows vs baseline 20,837; pipeline</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
+        <tbody><tr><td class="log-td-d">Sep 18, 2026 04:09 PM</td><td class="log-td-ds"><b>Skyline</b> <span class="log-sc">&middot; Skyline_pull.py</span><div class="log-err">Transient source failure protected the RAW file. Preserved local RAW has 20,837 rows vs baseline 20,837; pipeline contin</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
+<tr><td class="log-td-d">Sep 17, 2026 07:46 PM</td><td class="log-td-ds"><b>Skyline</b> <span class="log-sc">&middot; Skyline_pull.py</span><div class="log-err">Source transient source failure protected the RAW file. Preserved local RAW has 20,837 rows vs baseline 20,837; pipeline</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
 <tr><td class="log-td-d">Sep 17, 2026 07:27 PM</td><td class="log-td-ds"><b>Skyline</b> <span class="log-sc">&middot; Skyline_pull.py</span><div class="log-err">File "C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\requests\sessions.py", line 651,</div></td><td class="log-td-st"><span class="lp lp-f">FAILED</span></td></tr>
 <tr><td class="log-td-d">Sep 16, 2026 01:44 PM</td><td class="log-td-ds"><b>Hamilton</b> <span class="log-sc">&middot; Hamilton_pull.py</span><div class="log-err">Dropped 351 rows (4,776 → 4,425)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
 <tr><td class="log-td-d">Sep 15, 2026 08:01 PM</td><td class="log-td-ds"><b>VIP</b> <span class="log-sc">&middot; vip_pull.py</span><div class="log-err">Count dropped 4,620 → 4,359. Re-pull recovered 4,620 rows.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
@@ -610,8 +611,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 <tr><td class="log-td-d">Sep 10, 2026 12:02 PM</td><td class="log-td-ds"><b>Masterlist</b> <span class="log-sc">&middot; masterlist_fetch.py</span><div class="log-err">ERROR fetching History: HTTPSConnectionPool(host='docs.google.com', port=443): Max retries exceeded with url: /spreadshe</div></td><td class="log-td-st"><span class="lp lp-f">FAILED</span></td></tr>
 <tr><td class="log-td-d">Sep 09, 2026 11:26 PM</td><td class="log-td-ds"><b>Trans Iowa</b> <span class="log-sc">&middot; ti_pull.py</span><div class="log-err">Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
 <tr><td class="log-td-d">Sep 09, 2026 11:26 PM</td><td class="log-td-ds"><b>ch_pull.py</b> <span class="log-sc">&middot; ch_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
-<tr><td class="log-td-d">Sep 09, 2026 11:26 PM</td><td class="log-td-ds"><b>britelift_pull.py</b> <span class="log-sc">&middot; britelift_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
-<tr><td class="log-td-d">Sep 09, 2026 08:18 PM</td><td class="log-td-ds"><b>Trans Iowa</b> <span class="log-sc">&middot; ti_pull.py</span><div class="log-err">Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr></tbody>
+<tr><td class="log-td-d">Sep 09, 2026 11:26 PM</td><td class="log-td-ds"><b>britelift_pull.py</b> <span class="log-sc">&middot; britelift_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr></tbody>
       </table>
     </div>
   </div>
