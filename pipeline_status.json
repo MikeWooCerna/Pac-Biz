@@ -54,21 +54,22 @@
     {
       "account": "Vermont",
       "script": "vt_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-18T16:22:36.835534",
+      "status": "checking",
+      "timestamp": "2026-09-18T16:23:45.537872",
       "lane": "Lane 2 - Hamilton",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-09-18T16:22:36.835522"
     },
     {
       "account": "Trans Iowa",
       "script": "ti_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-18T16:10:21.280791",
+      "status": "checking",
+      "timestamp": "2026-09-18T16:24:20.852328",
       "lane": "Lane 2 - Hamilton",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-09-18T16:23:45.540726"
     },
     {
       "account": "Data Carz",
@@ -93,21 +94,22 @@
     {
       "account": "Ollies",
       "script": "ol_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-18T16:21:27.838447",
+      "status": "checking",
+      "timestamp": "2026-09-18T16:24:32.422027",
       "lane": "Lane 3 - Direct QA",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-09-18T16:21:27.838437"
     },
     {
       "account": "Circle Taxi",
       "script": "ct_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-18T16:10:21.355708",
+      "status": "running",
+      "timestamp": "2026-09-18T16:24:32.458344",
       "lane": "Lane 3 - Direct QA",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-09-18T16:24:32.458329"
     },
     {
       "account": "YCOV",
@@ -231,10 +233,10 @@
     {
       "account": "YCDC",
       "script": "ycdc_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-18T16:21:17.401347",
+      "status": "checking",
+      "timestamp": "2026-09-18T16:24:34.549602",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-09-18T16:21:17.401332"
     }
