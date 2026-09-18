@@ -24,10 +24,10 @@
     {
       "account": "Skyline",
       "script": "Skyline_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-18T16:10:26.558540",
+      "status": "checking",
+      "timestamp": "2026-09-18T16:21:11.991915",
       "lane": "Lane 1 - Skyline",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-09-18T16:10:26.558529"
     },
@@ -219,21 +219,22 @@
     {
       "account": "Kelowna",
       "script": "kel_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-18T16:17:03.981980",
+      "status": "checking",
+      "timestamp": "2026-09-18T16:21:17.396999",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-09-18T16:17:03.981968"
     },
     {
       "account": "YCDC",
       "script": "ycdc_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-18T16:10:21.628068",
+      "status": "running",
+      "timestamp": "2026-09-18T16:21:17.401347",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-09-18T16:21:17.401332"
     }
   ]
 }
