@@ -24,31 +24,32 @@
     {
       "account": "Skyline",
       "script": "Skyline_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-21T19:03:59.637423",
+      "status": "checking",
+      "timestamp": "2026-09-21T19:12:49.427169",
       "lane": "Lane 1 - Skyline",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-09-21T19:03:59.637414"
     },
     {
       "account": "Hamilton",
       "script": "Hamilton_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-21T19:04:14.638207",
+      "status": "checking",
+      "timestamp": "2026-09-21T19:13:35.113827",
       "lane": "Lane 2 - Hamilton",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-09-21T19:04:14.638197"
     },
     {
       "account": "VIP",
       "script": "vip_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T19:03:55.524636",
+      "status": "running",
+      "timestamp": "2026-09-21T19:13:35.144255",
       "lane": "Lane 2 - Hamilton",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-09-21T19:13:35.144246"
     },
     {
       "account": "Vermont",
@@ -71,21 +72,22 @@
     {
       "account": "Data Carz",
       "script": "dc_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-21T19:04:29.638425",
+      "status": "checking",
+      "timestamp": "2026-09-21T19:13:13.015503",
       "lane": "Lane 3 - Direct QA",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-09-21T19:04:29.638407"
     },
     {
       "account": "Associated Cab",
       "script": "ac_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T19:03:55.582854",
+      "status": "running",
+      "timestamp": "2026-09-21T19:13:13.036576",
       "lane": "Lane 3 - Direct QA",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-09-21T19:13:13.036567"
     },
     {
       "account": "Ollies",
