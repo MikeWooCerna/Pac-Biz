@@ -147,39 +147,42 @@
     {
       "account": "Parentis Health",
       "script": "parentis_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-21T20:02:07.890518",
+      "status": "checking",
+      "timestamp": "2026-09-21T20:02:41.229696",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-09-21T20:02:07.890498"
     },
     {
       "account": "Britelift",
       "script": "britelift_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T19:58:06.158007",
+      "status": "checking",
+      "timestamp": "2026-09-21T20:03:02.281614",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-09-21T20:02:41.254200"
     },
     {
       "account": "Britelift Chat",
       "script": "britelift_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T19:58:06.189800",
+      "status": "checking",
+      "timestamp": "2026-09-21T20:03:24.524038",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-09-21T20:03:02.494384"
     },
     {
       "account": "RideX",
       "script": "Ridex_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T19:58:06.212494",
+      "status": "running",
+      "timestamp": "2026-09-21T20:03:24.609677",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-09-21T20:03:24.609653"
     },
     {
       "account": "C&H",
