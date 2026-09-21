@@ -157,48 +157,52 @@
     {
       "account": "Britelift",
       "script": "britelift_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-21T20:27:34.230308",
+      "status": "checking",
+      "timestamp": "2026-09-21T20:27:51.932311",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-09-21T20:27:34.230287"
     },
     {
       "account": "Britelift Chat",
       "script": "britelift_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T20:25:09.920906",
+      "status": "checking",
+      "timestamp": "2026-09-21T20:28:10.505098",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-09-21T20:27:51.962187"
     },
     {
       "account": "RideX",
       "script": "Ridex_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T20:25:10.356475",
+      "status": "checking",
+      "timestamp": "2026-09-21T20:28:22.099173",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-09-21T20:28:10.629677"
     },
     {
       "account": "C&H",
       "script": "ch_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T20:25:10.697960",
+      "status": "checking",
+      "timestamp": "2026-09-21T20:28:49.034719",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-09-21T20:28:22.198235"
     },
     {
       "account": "Blueline",
       "script": "bl_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T20:25:10.719709",
+      "status": "running",
+      "timestamp": "2026-09-21T20:28:49.059592",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-09-21T20:28:49.059569"
     },
     {
       "account": "Reno Cab",
