@@ -2403,5 +2403,70 @@
     "failed_steps": 0,
     "not_reached_steps": 0,
     "failed_at": null
+  },
+  {
+    "run_id": "2026-09-21T19:03:18",
+    "run_date": "2026-09-21",
+    "started_at": "2026-09-21T19:03:18.861188",
+    "finished_at": "2026-09-21T19:21:33.667413",
+    "duration_sec": 1094.806,
+    "status": "failed",
+    "step_count": 24,
+    "passed_steps": 23,
+    "failed_steps": 1,
+    "not_reached_steps": 0,
+    "failed_at": "C&H"
+  },
+  {
+    "run_id": "2026-09-21T19:30:15",
+    "run_date": "2026-09-21",
+    "started_at": "2026-09-21T19:30:15.969693",
+    "finished_at": "",
+    "duration_sec": null,
+    "status": "failed",
+    "step_count": 24,
+    "passed_steps": 2,
+    "failed_steps": 1,
+    "not_reached_steps": 0,
+    "failed_at": "Reno Cab"
+  },
+  {
+    "run_id": "2026-09-21T19:53:18",
+    "run_date": "2026-09-21",
+    "started_at": "2026-09-21T19:53:18.015221",
+    "finished_at": "2026-09-21T19:54:40.820235",
+    "duration_sec": 82.805,
+    "status": "success",
+    "step_count": 4,
+    "passed_steps": 2,
+    "failed_steps": 0,
+    "not_reached_steps": 0,
+    "failed_at": null
+  },
+  {
+    "run_id": "2026-09-21T19:56:22",
+    "run_date": "2026-09-21",
+    "started_at": "2026-09-21T19:56:22.748779",
+    "finished_at": "",
+    "duration_sec": null,
+    "status": "failed",
+    "step_count": 24,
+    "passed_steps": 2,
+    "failed_steps": 1,
+    "not_reached_steps": 0,
+    "failed_at": "VIP"
+  },
+  {
+    "run_id": "2026-09-21T20:23:30",
+    "run_date": "2026-09-21",
+    "started_at": "2026-09-21T20:23:30.189521",
+    "finished_at": "2026-09-21T21:00:40.660404",
+    "duration_sec": 2230.471,
+    "status": "success",
+    "step_count": 26,
+    "passed_steps": 26,
+    "failed_steps": 0,
+    "not_reached_steps": 0,
+    "failed_at": null
   }
 ]

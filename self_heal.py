@@ -175,7 +175,14 @@ def is_transient_source_failure(error_text):
         "temporary failure in name resolution",
         "eof occurred in violation of protocol",
         "tlsv1 alert",
+        "jsondecodeerror",
+        "unterminated string",
+        "status code 520",
+        "status code 521",
         "status code 502",
+        "status code 522",
+        "status code 523",
+        "status code 524",
         "status code 503",
         "status code 504",
         "502 bad gateway",
@@ -265,7 +272,10 @@ def run_step(script):
             print(result.stderr, file=sys.stderr, flush=True)
 
         if attempt == 0:
-            if is_safety_floor_failure(result.stderr or ""):
+            if (
+                is_safety_floor_failure(result.stderr or "")
+                or is_transient_source_failure(result.stderr or "")
+            ):
                 if handle_guarded_source_failure(script, result.stderr or ""):
                     sys.exit(0)
             label = "Build" if is_build else script

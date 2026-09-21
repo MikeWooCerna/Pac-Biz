@@ -65,6 +65,12 @@ Transient transport failures may preserve a prior RAW workbook only when it
 is readable and at least 95% of the committed baseline. Authentication,
 schema, empty-output, and count-drop failures still fail closed.
 
+- **Transient API and status-write hardening (2026-09-21):** `self_heal.py`
+  immediately preserves a healthy RAW for recognized transport failures,
+  including truncated JSON and Cloudflare 520-524 responses. The parent
+  parallel runner uses per-process temporary status files and retries the
+  atomic replacement when Windows briefly locks `pipeline_status.json`.
+
 - **C&H fail-closed guard (2026-09-21):** `Quality\C&H\ch_pull.py` writes to
   `CH_RAW.tmp.xlsx`, requires at least 400 source rows and all eight standard
   enrichment columns, validates the temporary workbook, then atomically
@@ -171,6 +177,7 @@ Pipeline monitoring system is fully live as of 2026-06-22. See `PIPELINE_MONITOR
 - **Reno Cab direct QA API pull** — Reno Cab was moved off the Google Sheets/App Script feed on 2026-09-15. `Quality\Reno Cab\rc_pull.py` now calls the QA API directly, enriches from Masterlist/History, writes `RC_RAW.xlsx` with `xlsxwriter`, and keeps a 3,000-row safety floor before overwrite.
   - QA account ID: `6891a464fe5443aa64a3ad13`
   - Current direct pull validation: 3,835 rows × 123 columns
+  - Each weekly API request retries up to four times when the response is truncated or the connection fails, so one incomplete JSON payload does not restart the entire annual pull.
   - Old Google Sheets pull was backed up locally as `Quality\Reno Cab\rc_pull.py.gsheet_backup`
   - Reno Cab aliases preserved from the Apps Script: Divina Jaluag, John Robert Estrabela, Marlyn Balahan, Venicio Cañete Jr., and Gladys Burton.
 

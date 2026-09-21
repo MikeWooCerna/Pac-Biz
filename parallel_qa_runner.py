@@ -116,9 +116,18 @@ class StatusStore:
         }
 
     def _save(self, data):
-        temp = STATUS_FILE.with_suffix(".json.tmp")
+        temp = STATUS_FILE.with_name(
+            f"{STATUS_FILE.name}.{os.getpid()}.{threading.get_ident()}.tmp"
+        )
         temp.write_text(json.dumps(data, indent=2, default=str), encoding="utf-8")
-        os.replace(temp, STATUS_FILE)
+        for attempt in range(20):
+            try:
+                os.replace(temp, STATUS_FILE)
+                return
+            except PermissionError:
+                if attempt == 19:
+                    raise
+                time.sleep(0.25)
 
     def set_step(self, item, status, lane, *, exit_code=None, error=None, rows=None, started_at=None):
         now = datetime.now().isoformat()

@@ -202,9 +202,9 @@
     "passed_steps": 130,
     "failed_steps": 24,
     "step_uptime_pct": 84.42,
-    "incident_count": 10,
+    "incident_count": 0,
     "count_drop_count": 0,
-    "self_healed_count": 1,
+    "self_healed_count": 0,
     "high_volume_count": 0
   },
   {
@@ -250,8 +250,8 @@
     "passed_steps": 148,
     "failed_steps": 0,
     "step_uptime_pct": 100.0,
-    "incident_count": 1,
-    "count_drop_count": 1,
+    "incident_count": 0,
+    "count_drop_count": 0,
     "self_healed_count": 0,
     "high_volume_count": 0
   },
@@ -266,9 +266,9 @@
     "passed_steps": 96,
     "failed_steps": 0,
     "step_uptime_pct": 100.0,
-    "incident_count": 2,
-    "count_drop_count": 1,
-    "self_healed_count": 1,
+    "incident_count": 0,
+    "count_drop_count": 0,
+    "self_healed_count": 0,
     "high_volume_count": 0
   },
   {
@@ -314,9 +314,9 @@
     "passed_steps": 130,
     "failed_steps": 0,
     "step_uptime_pct": 100.0,
-    "incident_count": 1,
+    "incident_count": 0,
     "count_drop_count": 0,
-    "self_healed_count": 1,
+    "self_healed_count": 0,
     "high_volume_count": 0
   },
   {
@@ -330,8 +330,8 @@
     "passed_steps": 156,
     "failed_steps": 0,
     "step_uptime_pct": 100.0,
-    "incident_count": 1,
-    "count_drop_count": 1,
+    "incident_count": 0,
+    "count_drop_count": 0,
     "self_healed_count": 0,
     "high_volume_count": 0
   },
@@ -346,9 +346,9 @@
     "passed_steps": 129,
     "failed_steps": 0,
     "step_uptime_pct": 100.0,
-    "incident_count": 1,
+    "incident_count": 0,
     "count_drop_count": 0,
-    "self_healed_count": 1,
+    "self_healed_count": 0,
     "high_volume_count": 0
   },
   {
@@ -362,8 +362,8 @@
     "passed_steps": 156,
     "failed_steps": 0,
     "step_uptime_pct": 100.0,
-    "incident_count": 1,
-    "count_drop_count": 1,
+    "incident_count": 0,
+    "count_drop_count": 0,
     "self_healed_count": 0,
     "high_volume_count": 0
   },
@@ -378,9 +378,9 @@
     "passed_steps": 136,
     "failed_steps": 0,
     "step_uptime_pct": 100.0,
-    "incident_count": 8,
-    "count_drop_count": 3,
-    "self_healed_count": 4,
+    "incident_count": 0,
+    "count_drop_count": 0,
+    "self_healed_count": 0,
     "high_volume_count": 0
   },
   {
@@ -394,9 +394,9 @@
     "passed_steps": 78,
     "failed_steps": 0,
     "step_uptime_pct": 100.0,
-    "incident_count": 6,
-    "count_drop_count": 1,
-    "self_healed_count": 5,
+    "incident_count": 0,
+    "count_drop_count": 0,
+    "self_healed_count": 0,
     "high_volume_count": 0
   },
   {
@@ -410,9 +410,9 @@
     "passed_steps": 62,
     "failed_steps": 0,
     "step_uptime_pct": 100.0,
-    "incident_count": 5,
+    "incident_count": 0,
     "count_drop_count": 0,
-    "self_healed_count": 5,
+    "self_healed_count": 0,
     "high_volume_count": 0
   },
   {
@@ -426,9 +426,9 @@
     "passed_steps": 28,
     "failed_steps": 0,
     "step_uptime_pct": 100.0,
-    "incident_count": 7,
+    "incident_count": 4,
     "count_drop_count": 0,
-    "self_healed_count": 6,
+    "self_healed_count": 3,
     "high_volume_count": 1
   },
   {
@@ -845,6 +845,22 @@
     "incident_count": 1,
     "count_drop_count": 0,
     "self_healed_count": 1,
+    "high_volume_count": 0
+  },
+  {
+    "date": "2026-09-21",
+    "runs": 5,
+    "successful_runs": 2,
+    "partial_runs": 0,
+    "failed_runs": 3,
+    "uptime_pct": 40.0,
+    "steps": 102,
+    "passed_steps": 55,
+    "failed_steps": 3,
+    "step_uptime_pct": 53.92,
+    "incident_count": 39,
+    "count_drop_count": 0,
+    "self_healed_count": 16,
     "high_volume_count": 0
   }
 ]
