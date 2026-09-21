@@ -191,7 +191,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run 2026-09-21T19:30</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Dashboard: Sep 18, 2026 04:29 PM</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Sep 21, 2026 07:45 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Sep 21, 2026 07:46 PM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -202,10 +202,10 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 
   <div class="stat-cards">
     <div class="stat-card"><div class="sc-val" style="color:#00e87a;">2</div><div class="sc-lbl">Passed</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">0</div><div class="sc-lbl">Failed</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">1</div><div class="sc-lbl">Failed</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#E84500;">0</div><div class="sc-lbl">Not Reached</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">40,830</div><div class="sc-lbl">Rows Pulled</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#7060a0;">&mdash;</div><div class="sc-lbl">running</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">43,476</div><div class="sc-lbl">Rows Pulled</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">&#10007;</div><div class="sc-lbl">failed</div></div>
   </div>
 
   <div class="divider"></div>
@@ -350,7 +350,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       </div>
       <div class="radar-label">
         <div class="radar-lbl-main">Pipeline / Container Monitoring</div>
-        <div class="radar-lbl-status"><div class="blink-a"></div><span style="color:#ffaa00;font-size:12px;">running</span></div>
+        <div class="radar-lbl-status"><div class="blink-r"></div><span style="color:#ff3d3d;font-size:12px;">stopped</span></div>
       </div>
 
       <div class="connector"></div>
@@ -358,11 +358,11 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       <div class="agg-node">
         <div class="agg-title">Data Engine / Processing</div>
         <div class="agg-grid">
-          <div class="agg-item"><div class="agg-val" style="color:#00e87a;">40,830</div><div class="agg-lbl">total rows</div></div>
+          <div class="agg-item"><div class="agg-val" style="color:#00e87a;">43,476</div><div class="agg-lbl">total rows</div></div>
           <div class="agg-item">
             <div class="agg-val" style="display:flex;align-items:center;justify-content:center;gap:5px;">
-              <div class="blink-g"></div>
-              <span style="color:#00e87a;">2/2</span>
+              <div class="blink-r"></div>
+              <span style="color:#ff9090;">2/3</span>
             </div>
             <div class="agg-lbl">sources ok</div>
           </div>
@@ -391,8 +391,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 
       <div class="stage-node">
         <div class="stage-title">Git Repository</div>
-        <div class="stage-status"><div class="blink-a"></div></div>
-        <div class="stage-detail">queued…</div>
+        <div class="stage-status"><div class="blink-n"></div></div>
+        <div class="stage-detail">not reached</div>
         <div class="stage-detail" style="color:#b45309;font-size:10px;">&#9888; Guardian warned · Sep 11, 2026 11:36 AM</div>
       </div>
     </div>
@@ -409,13 +409,20 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     
   </div>
 </div>
-<div class="node n-warn">
-  <div class="node-title" style="color:#ffaa00;"><span>Reno Cab</span><div class="blink-a"></div></div>
-  <div class="node-row"><b class="b-n"></b>rc_pull.py &middot; 07:32 PM</div>
-  
+<div class="node n-fail">
+  <div class="node-title" style="color:#ff6060;"><span>Reno Cab</span><div class="blink-r"></div></div>
+  <div class="node-row"><b class="b-r"></b>rc_pull.py &middot; 07:45 PM</div>
+  <div class="node-err">File "C:\Users\Mike Woo Cerna\Documents\PB\Quality\Reno Cab\rc_pull.py", line 402, in pull_rc_data
+week_rows = fetch_week(session, token, start_date, end_date)
+File "C:\Users\Mike Woo Cerna\Documents\PB\Quality\Reno Cab\rc_pull.py", line 377, in fetch_week
+payload = response.json()
+File "C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\requests\models.py", line 1120, in json
+raise RequestsJSONDecodeError(e.msg, e.doc, e.pos)
+requests.exceptions.JSONDecodeError: Unterminated string starting at: line 1 column 391765 (char 391764)
+[notify] Email sent: Report Monitoring � FAILED: rc_pull.py</div>
   <div class="node-meta">
-    <span class="meta-pill a">&mdash; rows</span>
-    <span class="meta-pill a">RUNNING</span>
+    <span class="meta-pill r">&mdash; rows</span>
+    <span class="meta-pill r">FAIL</span>
     
   </div>
 </div>
@@ -449,23 +456,23 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     
   </div>
 </div>
+<div class="node n-checking">
+  <div class="node-title" style="color:#22d3ee;"><span>Ollies</span><div class="blink-c"></div></div>
+  <div class="node-row"><b class="b-n"></b>ol_pull.py &middot; 07:45 PM</div>
+  
+  <div class="node-meta">
+    <span class="meta-pill c">2,646 rows</span>
+    <span class="meta-pill c">CHECKING</span>
+    
+  </div>
+</div>
 <div class="node n-warn">
-  <div class="node-title" style="color:#ffaa00;"><span>Ollies</span><div class="blink-a"></div></div>
-  <div class="node-row"><b class="b-n"></b>ol_pull.py &middot; 07:43 PM</div>
+  <div class="node-title" style="color:#ffaa00;"><span>Circle Taxi</span><div class="blink-a"></div></div>
+  <div class="node-row"><b class="b-n"></b>ct_pull.py &middot; 07:45 PM</div>
   
   <div class="node-meta">
     <span class="meta-pill a">&mdash; rows</span>
     <span class="meta-pill a">RUNNING</span>
-    
-  </div>
-</div>
-<div class="node n-queued">
-  <div class="node-title" style="color:#a78bfa;"><span>Circle Taxi</span><div class="blink-n"></div></div>
-  <div class="node-row"><b class="b-n"></b>ct_pull.py &middot; 07:30 PM</div>
-  
-  <div class="node-meta">
-    <span class="meta-pill q">&mdash; rows</span>
-    <span class="meta-pill q">QUEUED</span>
     
   </div>
 </div>
@@ -479,13 +486,13 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     
   </div>
 </div>
-<div class="node n-queued">
-  <div class="node-title" style="color:#a78bfa;"><span>Kelowna</span><div class="blink-n"></div></div>
-  <div class="node-row"><b class="b-n"></b>kel_pull.py &middot; 07:30 PM</div>
+<div class="node n-warn">
+  <div class="node-title" style="color:#ffaa00;"><span>Kelowna</span><div class="blink-a"></div></div>
+  <div class="node-row"><b class="b-n"></b>kel_pull.py &middot; 07:45 PM</div>
   
   <div class="node-meta">
-    <span class="meta-pill q">&mdash; rows</span>
-    <span class="meta-pill q">QUEUED</span>
+    <span class="meta-pill a">&mdash; rows</span>
+    <span class="meta-pill a">RUNNING</span>
     
   </div>
 </div>
@@ -522,7 +529,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     </div>
   </div>
 
-  
+  <div class="warn-strip">&#9888; Pipeline stopped at <b>Reno Cab</b> &middot; Exit code 1 &middot; 0 steps not reached</div>
   
   <div class="vol-strip-crit">&#9888; High volume datasets detected &mdash; <b>Skyline</b> &#9651;&thinsp;20,837 rows <span style='opacity:0.65;font-size:11px;'>(CRITICAL)</span></div>
 
@@ -532,7 +539,13 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div class="log-wrap">
       <table class="log-table">
         <thead><tr><th>Date</th><th>Dataset</th><th>Status</th></tr></thead>
-        <tbody><tr><td class="log-td-d">Sep 21, 2026 07:03 PM</td><td class="log-td-ds"><b>Skyline</b> <span class="log-sc">&middot; Skyline_pull.py</span><div class="log-err">Transient source failure protected the RAW file. Preserved local RAW has 20,837 rows vs baseline 20,837; pipeline contin</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
+        <tbody><tr><td class="log-td-d">Sep 21, 2026 07:30 PM</td><td class="log-td-ds"><b>vip_pull.py</b> <span class="log-sc">&middot; vip_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
+<tr><td class="log-td-d">Sep 21, 2026 07:30 PM</td><td class="log-td-ds"><b>ac_pull.py</b> <span class="log-sc">&middot; ac_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
+<tr><td class="log-td-d">Sep 21, 2026 07:30 PM</td><td class="log-td-ds"><b>Skyline</b> <span class="log-sc">&middot; Skyline_pull.py</span><div class="log-err">Transient source failure protected the RAW file. Preserved local RAW has 20,837 rows vs baseline 20,837; pipeline contin</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
+<tr><td class="log-td-d">Sep 21, 2026 07:30 PM</td><td class="log-td-ds"><b>C&H</b> <span class="log-sc">&middot; ch_pull.py</span><div class="log-err">Source safety-floor failure protected the RAW file. Preserved local RAW has 488 rows vs baseline 488; pipeline continued</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
+<tr><td class="log-td-d">Sep 21, 2026 07:30 PM</td><td class="log-td-ds"><b>Reno Cab</b> <span class="log-sc">&middot; rc_pull.py</span><div class="log-err">File "C:\Users\Mike Woo Cerna\Documents\PB\Quality\Reno Cab\rc_pull.py", line 402, in pull_rc_data
+week_rows = fetch_wee</div></td><td class="log-td-st"><span class="lp lp-f">FAILED</span></td></tr>
+<tr><td class="log-td-d">Sep 21, 2026 07:03 PM</td><td class="log-td-ds"><b>Skyline</b> <span class="log-sc">&middot; Skyline_pull.py</span><div class="log-err">Transient source failure protected the RAW file. Preserved local RAW has 20,837 rows vs baseline 20,837; pipeline contin</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
 <tr><td class="log-td-d">Sep 21, 2026 07:03 PM</td><td class="log-td-ds"><b>C&H</b> <span class="log-sc">&middot; ch_pull.py</span><div class="log-err">Validation count drop: 488 -> 56 (88.5%).</div></td><td class="log-td-st"><span class="lp lp-f">FAILED</span></td></tr>
 <tr><td class="log-td-d">Sep 18, 2026 04:09 PM</td><td class="log-td-ds"><b>Skyline</b> <span class="log-sc">&middot; Skyline_pull.py</span><div class="log-err">Transient source failure protected the RAW file. Preserved local RAW has 20,837 rows vs baseline 20,837; pipeline contin</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
 <tr><td class="log-td-d">Sep 17, 2026 07:46 PM</td><td class="log-td-ds"><b>Skyline</b> <span class="log-sc">&middot; Skyline_pull.py</span><div class="log-err">Source transient source failure protected the RAW file. Preserved local RAW has 20,837 rows vs baseline 20,837; pipeline</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
@@ -607,12 +620,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 <tr><td class="log-td-d">Sep 10, 2026 12:02 PM</td><td class="log-td-ds"><b>Britelift Chat</b> <span class="log-sc">&middot; britelift_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
 <tr><td class="log-td-d">Sep 10, 2026 12:02 PM</td><td class="log-td-ds"><b>Britelift</b> <span class="log-sc">&middot; britelift_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
 <tr><td class="log-td-d">Sep 10, 2026 12:02 PM</td><td class="log-td-ds"><b>Parentis Health</b> <span class="log-sc">&middot; parentis_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
-<tr><td class="log-td-d">Sep 10, 2026 12:02 PM</td><td class="log-td-ds"><b>R4H</b> <span class="log-sc">&middot; r4h_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
-<tr><td class="log-td-d">Sep 10, 2026 12:02 PM</td><td class="log-td-ds"><b>DMG</b> <span class="log-sc">&middot; dmg_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
-<tr><td class="log-td-d">Sep 10, 2026 12:02 PM</td><td class="log-td-ds"><b>M7</b> <span class="log-sc">&middot; m7_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
-<tr><td class="log-td-d">Sep 10, 2026 12:02 PM</td><td class="log-td-ds"><b>Coaching</b> <span class="log-sc">&middot; asana_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
-<tr><td class="log-td-d">Sep 10, 2026 12:02 PM</td><td class="log-td-ds"><b>Masterlist</b> <span class="log-sc">&middot; masterlist_fetch.py</span><div class="log-err">ERROR fetching History: HTTPSConnectionPool(host='docs.google.com', port=443): Max retries exceeded with url: /spreadshe</div></td><td class="log-td-st"><span class="lp lp-f">FAILED</span></td></tr>
-<tr><td class="log-td-d">Sep 09, 2026 11:26 PM</td><td class="log-td-ds"><b>Trans Iowa</b> <span class="log-sc">&middot; ti_pull.py</span><div class="log-err">Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr></tbody>
+<tr><td class="log-td-d">Sep 10, 2026 12:02 PM</td><td class="log-td-ds"><b>R4H</b> <span class="log-sc">&middot; r4h_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr></tbody>
       </table>
     </div>
   </div>
@@ -634,7 +642,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
   var ang = -Math.PI/2;
   var TRAIL = Math.PI * 1.35;
   var time = 0;
-  var FAIL = false;
+  var FAIL = true;
 
   var blips = [
     {ang:-90.00,r:0.63,st:"pass",nm:"Masterlist"},
@@ -650,14 +658,14 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     {ang:60.00,r:0.63,st:"checking",nm:"Skyline"},
     {ang:75.00,r:0.44,st:"checking",nm:"VIP"},
     {ang:90.00,r:0.63,st:"checking",nm:"C&H"},
-    {ang:105.00,r:0.44,st:"running",nm:"Reno Cab"},
+    {ang:105.00,r:0.44,st:"fail",nm:"Reno Cab"},
     {ang:120.00,r:0.63,st:"queued",nm:"Trans Iowa"},
     {ang:135.00,r:0.44,st:"checking",nm:"Data Carz"},
     {ang:150.00,r:0.63,st:"checking",nm:"Assoc.Cab"},
-    {ang:165.00,r:0.44,st:"running",nm:"Ollies"},
-    {ang:180.00,r:0.63,st:"queued",nm:"Cir.Taxi"},
+    {ang:165.00,r:0.44,st:"checking",nm:"Ollies"},
+    {ang:180.00,r:0.63,st:"running",nm:"Cir.Taxi"},
     {ang:195.00,r:0.44,st:"queued",nm:"YCOV"},
-    {ang:210.00,r:0.63,st:"queued",nm:"Kelowna"},
+    {ang:210.00,r:0.63,st:"running",nm:"Kelowna"},
     {ang:225.00,r:0.44,st:"running",nm:"Vermont"},
     {ang:240.00,r:0.63,st:"queued",nm:"YCDC"},
     {ang:255.00,r:0.44,st:"checking",nm:"Blueline"},
