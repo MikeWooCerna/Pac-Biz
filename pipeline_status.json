@@ -103,21 +103,22 @@
     {
       "account": "Circle Taxi",
       "script": "ct_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-21T19:45:55.668311",
+      "status": "checking",
+      "timestamp": "2026-09-21T19:47:30.644300",
       "lane": "Lane 3 - Direct QA",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-09-21T19:45:55.668302"
     },
     {
       "account": "YCOV",
       "script": "ycov_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T19:30:54.161322",
+      "status": "running",
+      "timestamp": "2026-09-21T19:47:30.657326",
       "lane": "Lane 3 - Direct QA",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-09-21T19:47:30.657317"
     },
     {
       "account": "M7",
@@ -222,21 +223,22 @@
     {
       "account": "Kelowna",
       "script": "kel_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-21T19:45:18.735931",
+      "status": "checking",
+      "timestamp": "2026-09-21T19:47:24.397439",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-09-21T19:45:18.735923"
     },
     {
       "account": "YCDC",
       "script": "ycdc_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T19:30:54.444044",
+      "status": "running",
+      "timestamp": "2026-09-21T19:47:24.399874",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-09-21T19:47:24.399865"
     }
   ]
 }
