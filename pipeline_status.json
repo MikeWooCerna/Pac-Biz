@@ -127,30 +127,32 @@
     {
       "account": "DMG",
       "script": "dmg_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-21T20:01:01.768895",
+      "status": "checking",
+      "timestamp": "2026-09-21T20:01:49.798036",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-09-21T20:01:01.768875"
     },
     {
       "account": "R4H",
       "script": "r4h_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T19:58:06.070376",
+      "status": "checking",
+      "timestamp": "2026-09-21T20:02:07.714873",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-09-21T20:01:49.853054"
     },
     {
       "account": "Parentis Health",
       "script": "parentis_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T19:58:06.132244",
+      "status": "running",
+      "timestamp": "2026-09-21T20:02:07.890518",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-09-21T20:02:07.890498"
     },
     {
       "account": "Britelift",
