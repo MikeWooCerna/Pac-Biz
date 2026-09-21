@@ -1,8 +1,8 @@
 {
-  "run_id": "2026-09-21T19:53:18",
-  "started_at": "2026-09-21T19:53:18.015221",
-  "finished_at": "2026-09-21T19:54:40.820235",
-  "status": "success",
+  "run_id": "2026-09-21T19:56:22",
+  "started_at": "2026-09-21T19:56:22.748779",
+  "finished_at": null,
+  "status": "running",
   "failed_at": null,
   "steps": [
     {
@@ -10,33 +10,7 @@
       "script": "masterlist_fetch.py",
       "exit_code": 0,
       "status": "pass",
-      "timestamp": "2026-09-21T19:53:34.568102",
-      "error": null
-    },
-    {
-      "account": "Coaching",
-      "script": "asana_pull.py",
-      "exit_code": 0,
-      "status": "pass",
-      "timestamp": "2026-09-21T19:54:28.999506",
-      "error": null
-    },
-    {
-      "account": "Skyline",
-      "script": "Skyline_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T19:54:39.590615",
-      "lane": "Lane 1 - Skyline",
-      "exit_code": null,
-      "error": null
-    },
-    {
-      "account": "Hamilton",
-      "script": "Hamilton_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T19:54:39.592132",
-      "lane": "Lane 2 - Hamilton",
-      "exit_code": null,
+      "timestamp": "2026-09-21T19:56:41.269258",
       "error": null
     }
   ]
