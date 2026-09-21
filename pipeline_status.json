@@ -117,21 +117,22 @@
     {
       "account": "M7",
       "script": "m7_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-21T19:58:59.585688",
+      "status": "checking",
+      "timestamp": "2026-09-21T20:01:01.670711",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-09-21T19:58:59.585659"
     },
     {
       "account": "DMG",
       "script": "dmg_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T19:58:05.989610",
+      "status": "running",
+      "timestamp": "2026-09-21T20:01:01.768895",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-09-21T20:01:01.768875"
     },
     {
       "account": "R4H",
