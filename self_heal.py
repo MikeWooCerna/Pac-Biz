@@ -265,6 +265,9 @@ def run_step(script):
             print(result.stderr, file=sys.stderr, flush=True)
 
         if attempt == 0:
+            if is_safety_floor_failure(result.stderr or ""):
+                if handle_guarded_source_failure(script, result.stderr or ""):
+                    sys.exit(0)
             label = "Build" if is_build else script
             print(f"[self-heal] {label} failed — retrying in {wait}s...", flush=True)
             time.sleep(wait)
