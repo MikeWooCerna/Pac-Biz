@@ -177,39 +177,42 @@
     {
       "account": "RideX",
       "script": "Ridex_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-21T20:03:24.609677",
+      "status": "checking",
+      "timestamp": "2026-09-21T20:03:44.314314",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-09-21T20:03:24.609653"
     },
     {
       "account": "C&H",
       "script": "ch_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T19:58:06.238862",
+      "status": "checking",
+      "timestamp": "2026-09-21T20:04:09.366925",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-09-21T20:03:44.343907"
     },
     {
       "account": "Blueline",
       "script": "bl_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T19:58:06.271322",
+      "status": "checking",
+      "timestamp": "2026-09-21T20:04:37.145982",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-09-21T20:04:09.382131"
     },
     {
       "account": "Reno Cab",
       "script": "rc_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T19:58:06.326990",
+      "status": "running",
+      "timestamp": "2026-09-21T20:04:37.246691",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-09-21T20:04:37.246667"
     },
     {
       "account": "Kelowna",
