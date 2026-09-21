@@ -117,48 +117,52 @@
     {
       "account": "M7",
       "script": "m7_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-21T20:26:10.761280",
+      "status": "checking",
+      "timestamp": "2026-09-21T20:26:39.814897",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-09-21T20:26:10.761258"
     },
     {
       "account": "DMG",
       "script": "dmg_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T20:25:09.793675",
+      "status": "checking",
+      "timestamp": "2026-09-21T20:27:01.722252",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-09-21T20:26:39.834764"
     },
     {
       "account": "R4H",
       "script": "r4h_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T20:25:09.829438",
+      "status": "checking",
+      "timestamp": "2026-09-21T20:27:19.704737",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-09-21T20:27:01.868125"
     },
     {
       "account": "Parentis Health",
       "script": "parentis_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T20:25:09.859251",
+      "status": "checking",
+      "timestamp": "2026-09-21T20:27:33.916553",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-09-21T20:27:19.875064"
     },
     {
       "account": "Britelift",
       "script": "britelift_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T20:25:09.887401",
+      "status": "running",
+      "timestamp": "2026-09-21T20:27:34.230308",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-09-21T20:27:34.230287"
     },
     {
       "account": "Britelift Chat",
