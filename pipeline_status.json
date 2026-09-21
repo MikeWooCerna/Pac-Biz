@@ -24,20 +24,22 @@
     {
       "account": "Skyline",
       "script": "Skyline_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T20:25:08.556670",
+      "status": "running",
+      "timestamp": "2026-09-21T20:25:25.642404",
       "lane": "Lane 1 - Skyline",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-09-21T20:25:25.642372"
     },
     {
       "account": "Hamilton",
       "script": "Hamilton_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T20:25:08.557943",
+      "status": "running",
+      "timestamp": "2026-09-21T20:25:40.711252",
       "lane": "Lane 2 - Hamilton",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-09-21T20:25:40.711221"
     },
     {
       "account": "VIP",
@@ -69,11 +71,12 @@
     {
       "account": "Data Carz",
       "script": "dc_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T20:25:08.960260",
+      "status": "running",
+      "timestamp": "2026-09-21T20:25:55.761678",
       "lane": "Lane 3 - Direct QA",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-09-21T20:25:55.761652"
     },
     {
       "account": "Associated Cab",
@@ -114,11 +117,12 @@
     {
       "account": "M7",
       "script": "m7_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T20:25:09.744693",
+      "status": "running",
+      "timestamp": "2026-09-21T20:26:10.761280",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-09-21T20:26:10.761258"
     },
     {
       "account": "DMG",
