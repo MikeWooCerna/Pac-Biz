@@ -2,8 +2,8 @@
   "run_id": "2026-09-21T19:30:15",
   "started_at": "2026-09-21T19:30:15.969693",
   "finished_at": null,
-  "status": "running",
-  "failed_at": null,
+  "status": "failed",
+  "failed_at": "Reno Cab",
   "steps": [
     {
       "account": "Masterlist",
@@ -44,21 +44,22 @@
     {
       "account": "VIP",
       "script": "vip_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-21T19:38:12.560776",
+      "status": "checking",
+      "timestamp": "2026-09-21T19:44:16.373379",
       "lane": "Lane 2 - Hamilton",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-09-21T19:38:12.560761"
     },
     {
       "account": "Vermont",
       "script": "vt_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T19:30:54.045158",
+      "status": "running",
+      "timestamp": "2026-09-21T19:44:16.376133",
       "lane": "Lane 2 - Hamilton",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-09-21T19:44:16.376122"
     },
     {
       "account": "Trans Iowa",
@@ -210,21 +211,22 @@
     {
       "account": "Reno Cab",
       "script": "rc_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-21T19:32:29.161765",
+      "status": "fail",
+      "timestamp": "2026-09-21T19:45:18.733632",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null,
+      "exit_code": 1,
+      "error": "File \"C:\\Users\\Mike Woo Cerna\\Documents\\PB\\Quality\\Reno Cab\\rc_pull.py\", line 402, in pull_rc_data\nweek_rows = fetch_week(session, token, start_date, end_date)\nFile \"C:\\Users\\Mike Woo Cerna\\Documents\\PB\\Quality\\Reno Cab\\rc_pull.py\", line 377, in fetch_week\npayload = response.json()\nFile \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\models.py\", line 1120, in json\nraise RequestsJSONDecodeError(e.msg, e.doc, e.pos)\nrequests.exceptions.JSONDecodeError: Unterminated string starting at: line 1 column 391765 (char 391764)\n[notify] Email sent: Report Monitoring \ufffd FAILED: rc_pull.py",
       "started_at": "2026-09-21T19:32:29.161754"
     },
     {
       "account": "Kelowna",
       "script": "kel_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T19:30:54.421918",
+      "status": "running",
+      "timestamp": "2026-09-21T19:45:18.735931",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-09-21T19:45:18.735923"
     },
     {
       "account": "YCDC",
