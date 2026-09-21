@@ -94,21 +94,22 @@
     {
       "account": "Ollies",
       "script": "ol_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-21T20:47:48.419800",
+      "status": "checking",
+      "timestamp": "2026-09-21T20:53:10.667126",
       "lane": "Lane 3 - Direct QA",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-09-21T20:47:48.419794"
     },
     {
       "account": "Circle Taxi",
       "script": "ct_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T20:25:09.456290",
+      "status": "running",
+      "timestamp": "2026-09-21T20:53:10.669103",
       "lane": "Lane 3 - Direct QA",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-09-21T20:53:10.669097"
     },
     {
       "account": "YCOV",
