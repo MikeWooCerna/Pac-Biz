@@ -191,7 +191,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run 2026-09-21T19:56</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Dashboard: Sep 18, 2026 04:29 PM</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Sep 21, 2026 08:20 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Sep 21, 2026 08:21 PM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -202,10 +202,10 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 
   <div class="stat-cards">
     <div class="stat-card"><div class="sc-val" style="color:#00e87a;">2</div><div class="sc-lbl">Passed</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">0</div><div class="sc-lbl">Failed</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">1</div><div class="sc-lbl">Failed</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#E84500;">0</div><div class="sc-lbl">Not Reached</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">21,854</div><div class="sc-lbl">Rows Pulled</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#7060a0;">&mdash;</div><div class="sc-lbl">running</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">&#10007;</div><div class="sc-lbl">failed</div></div>
   </div>
 
   <div class="divider"></div>
@@ -332,13 +332,20 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     
   </div>
 </div>
-<div class="node n-warn">
-  <div class="node-title" style="color:#ffaa00;"><span>VIP</span><div class="blink-a"></div></div>
-  <div class="node-row"><b class="b-n"></b>vip_pull.py &middot; 08:17 PM</div>
-  
+<div class="node n-fail">
+  <div class="node-title" style="color:#ff6060;"><span>VIP</span><div class="blink-r"></div></div>
+  <div class="node-row"><b class="b-r"></b>vip_pull.py &middot; 08:21 PM</div>
+  <div class="node-err">week_rows = fetch_week(session, token, start_date, end_date)
+File "C:\Users\Mike Woo Cerna\Documents\PB\Quality\VIP\vip_pull.py", line 380, in fetch_week
+response.raise_for_status()
+~~~~~~~~~~~~~~~~~~~~~~~~~^^
+File "C:\Users\Mike Woo Cerna\AppData\Local\Programs\Python\Python313\Lib\site-packages\requests\models.py", line 1167, in raise_for_status
+raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 522 Server Error: &lt;none&gt; for url: https://qa.pacph.com/api/v1/reports/evaluations?start_date=2026-01-01&amp;end_date=2026-01-07&amp;account=6891a544fe5443aa64a3ad1a
+[notify] Email sent: Report Monitoring � FAILED: vip_pull.py</div>
   <div class="node-meta">
-    <span class="meta-pill a">&mdash; rows</span>
-    <span class="meta-pill a">RUNNING</span>
+    <span class="meta-pill r">&mdash; rows</span>
+    <span class="meta-pill r">FAIL</span>
     
   </div>
 </div>
@@ -350,7 +357,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       </div>
       <div class="radar-label">
         <div class="radar-lbl-main">Pipeline / Container Monitoring</div>
-        <div class="radar-lbl-status"><div class="blink-a"></div><span style="color:#ffaa00;font-size:12px;">running</span></div>
+        <div class="radar-lbl-status"><div class="blink-r"></div><span style="color:#ff3d3d;font-size:12px;">stopped</span></div>
       </div>
 
       <div class="connector"></div>
@@ -361,8 +368,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
           <div class="agg-item"><div class="agg-val" style="color:#00e87a;">21,854</div><div class="agg-lbl">total rows</div></div>
           <div class="agg-item">
             <div class="agg-val" style="display:flex;align-items:center;justify-content:center;gap:5px;">
-              <div class="blink-g"></div>
-              <span style="color:#00e87a;">2/2</span>
+              <div class="blink-r"></div>
+              <span style="color:#ff9090;">2/3</span>
             </div>
             <div class="agg-lbl">sources ok</div>
           </div>
@@ -391,8 +398,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 
       <div class="stage-node">
         <div class="stage-title">Git Repository</div>
-        <div class="stage-status"><div class="blink-a"></div></div>
-        <div class="stage-detail">queued…</div>
+        <div class="stage-status"><div class="blink-n"></div></div>
+        <div class="stage-detail">not reached</div>
         <div class="stage-detail" style="color:#b45309;font-size:10px;">&#9888; Guardian warned · Sep 11, 2026 11:36 AM</div>
       </div>
     </div>
@@ -489,13 +496,13 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     
   </div>
 </div>
-<div class="node n-queued">
-  <div class="node-title" style="color:#a78bfa;"><span>Vermont</span><div class="blink-n"></div></div>
-  <div class="node-row"><b class="b-n"></b>vt_pull.py &middot; 07:58 PM</div>
+<div class="node n-warn">
+  <div class="node-title" style="color:#ffaa00;"><span>Vermont</span><div class="blink-a"></div></div>
+  <div class="node-row"><b class="b-n"></b>vt_pull.py &middot; 08:21 PM</div>
   
   <div class="node-meta">
-    <span class="meta-pill q">&mdash; rows</span>
-    <span class="meta-pill q">QUEUED</span>
+    <span class="meta-pill a">&mdash; rows</span>
+    <span class="meta-pill a">RUNNING</span>
     
   </div>
 </div>
@@ -522,7 +529,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     </div>
   </div>
 
-  
+  <div class="warn-strip">&#9888; Pipeline stopped at <b>VIP</b> &middot; Exit code 1 &middot; 0 steps not reached</div>
   
   
 
@@ -532,7 +539,12 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div class="log-wrap">
       <table class="log-table">
         <thead><tr><th>Date</th><th>Dataset</th><th>Status</th></tr></thead>
-        <tbody><tr><td class="log-td-d">Sep 21, 2026 07:53 PM</td><td class="log-td-ds"><b>Blueline</b> <span class="log-sc">&middot; bl_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
+        <tbody><tr><td class="log-td-d">Sep 21, 2026 07:56 PM</td><td class="log-td-ds"><b>Hamilton_pull.py</b> <span class="log-sc">&middot; Hamilton_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
+<tr><td class="log-td-d">Sep 21, 2026 07:56 PM</td><td class="log-td-ds"><b>C&H</b> <span class="log-sc">&middot; ch_pull.py</span><div class="log-err">Source safety-floor failure protected the RAW file. Preserved local RAW has 488 rows vs baseline 488; pipeline continued</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
+<tr><td class="log-td-d">Sep 21, 2026 07:56 PM</td><td class="log-td-ds"><b>m7_pull.py</b> <span class="log-sc">&middot; m7_pull.py</span><div class="log-err">Failed on attempt 1, recovered automatically on retry.</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
+<tr><td class="log-td-d">Sep 21, 2026 07:56 PM</td><td class="log-td-ds"><b>VIP</b> <span class="log-sc">&middot; vip_pull.py</span><div class="log-err">week_rows = fetch_week(session, token, start_date, end_date)
+File "C:\Users\Mike Woo Cerna\Documents\PB\Quality\VIP\vip_</div></td><td class="log-td-st"><span class="lp lp-f">FAILED</span></td></tr>
+<tr><td class="log-td-d">Sep 21, 2026 07:53 PM</td><td class="log-td-ds"><b>Blueline</b> <span class="log-sc">&middot; bl_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
 <tr><td class="log-td-d">Sep 21, 2026 07:53 PM</td><td class="log-td-ds"><b>YCDC</b> <span class="log-sc">&middot; ycdc_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
 <tr><td class="log-td-d">Sep 21, 2026 07:53 PM</td><td class="log-td-ds"><b>Vermont</b> <span class="log-sc">&middot; vt_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
 <tr><td class="log-td-d">Sep 21, 2026 07:53 PM</td><td class="log-td-ds"><b>Kelowna</b> <span class="log-sc">&middot; kel_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
@@ -609,11 +621,7 @@ week_rows = fetch_wee</div></td><td class="log-td-st"><span class="lp lp-f">FAIL
 <tr><td class="log-td-d">Sep 11, 2026 10:48 AM</td><td class="log-td-ds"><b>R4H</b> <span class="log-sc">&middot; r4h_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
 <tr><td class="log-td-d">Sep 11, 2026 10:48 AM</td><td class="log-td-ds"><b>DMG</b> <span class="log-sc">&middot; dmg_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
 <tr><td class="log-td-d">Sep 11, 2026 10:48 AM</td><td class="log-td-ds"><b>M7</b> <span class="log-sc">&middot; m7_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
-<tr><td class="log-td-d">Sep 11, 2026 10:48 AM</td><td class="log-td-ds"><b>Coaching</b> <span class="log-sc">&middot; asana_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
-<tr><td class="log-td-d">Sep 11, 2026 10:48 AM</td><td class="log-td-ds"><b>Masterlist</b> <span class="log-sc">&middot; masterlist_fetch.py</span><div class="log-err">ERROR fetching History: HTTPSConnectionPool(host='doc-0o-4k-sheets.googleusercontent.com', port=443): Max retries exceed</div></td><td class="log-td-st"><span class="lp lp-f">FAILED</span></td></tr>
-<tr><td class="log-td-d">Sep 11, 2026 12:14 AM</td><td class="log-td-ds"><b>Trans Iowa</b> <span class="log-sc">&middot; ti_pull.py</span><div class="log-err">Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
-<tr><td class="log-td-d">Sep 11, 2026 12:14 AM</td><td class="log-td-ds"><b>Kelowna</b> <span class="log-sc">&middot; kel_pull.py</span><div class="log-err">Dropped 298 rows (3,153 → 2,855)</div></td><td class="log-td-st"><span class="lp lp-d">COUNT DROP</span></td></tr>
-<tr><td class="log-td-d">Sep 10, 2026 12:02 PM</td><td class="log-td-ds"><b>Skyline</b> <span class="log-sc">&middot; Skyline_pull.py</span><div class="log-err">CRITICAL: 20,835 rows (threshold 20,000)</div></td><td class="log-td-st"><span class="lp lp-v">HIGH VOLUME</span></td></tr></tbody>
+<tr><td class="log-td-d">Sep 11, 2026 10:48 AM</td><td class="log-td-ds"><b>Coaching</b> <span class="log-sc">&middot; asana_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr></tbody>
       </table>
     </div>
   </div>
@@ -635,7 +643,7 @@ week_rows = fetch_wee</div></td><td class="log-td-st"><span class="lp lp-f">FAIL
   var ang = -Math.PI/2;
   var TRAIL = Math.PI * 1.35;
   var time = 0;
-  var FAIL = false;
+  var FAIL = true;
 
   var blips = [
     {ang:-90.00,r:0.63,st:"pass",nm:"Masterlist"},
@@ -649,7 +657,7 @@ week_rows = fetch_wee</div></td><td class="log-td-st"><span class="lp lp-f">FAIL
     {ang:30.00,r:0.63,st:"checking",nm:"RideX"},
     {ang:45.00,r:0.44,st:"checking",nm:"Hamilton"},
     {ang:60.00,r:0.63,st:"running",nm:"Skyline"},
-    {ang:75.00,r:0.44,st:"running",nm:"VIP"},
+    {ang:75.00,r:0.44,st:"fail",nm:"VIP"},
     {ang:90.00,r:0.63,st:"checking",nm:"C&H"},
     {ang:105.00,r:0.44,st:"checking",nm:"Reno Cab"},
     {ang:120.00,r:0.63,st:"queued",nm:"Trans Iowa"},
@@ -659,7 +667,7 @@ week_rows = fetch_wee</div></td><td class="log-td-st"><span class="lp lp-f">FAIL
     {ang:180.00,r:0.63,st:"running",nm:"Cir.Taxi"},
     {ang:195.00,r:0.44,st:"queued",nm:"YCOV"},
     {ang:210.00,r:0.63,st:"running",nm:"Kelowna"},
-    {ang:225.00,r:0.44,st:"queued",nm:"Vermont"},
+    {ang:225.00,r:0.44,st:"running",nm:"Vermont"},
     {ang:240.00,r:0.63,st:"queued",nm:"YCDC"},
     {ang:255.00,r:0.44,st:"checking",nm:"Blueline"},
   ];

@@ -2,8 +2,8 @@
   "run_id": "2026-09-21T19:56:22",
   "started_at": "2026-09-21T19:56:22.748779",
   "finished_at": null,
-  "status": "running",
-  "failed_at": null,
+  "status": "failed",
+  "failed_at": "VIP",
   "steps": [
     {
       "account": "Masterlist",
@@ -44,21 +44,22 @@
     {
       "account": "VIP",
       "script": "vip_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-21T20:17:51.302041",
+      "status": "fail",
+      "timestamp": "2026-09-21T20:21:38.747518",
       "lane": "Lane 2 - Hamilton",
-      "exit_code": null,
-      "error": null,
+      "exit_code": 1,
+      "error": "week_rows = fetch_week(session, token, start_date, end_date)\nFile \"C:\\Users\\Mike Woo Cerna\\Documents\\PB\\Quality\\VIP\\vip_pull.py\", line 380, in fetch_week\nresponse.raise_for_status()\n~~~~~~~~~~~~~~~~~~~~~~~~~^^\nFile \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\models.py\", line 1167, in raise_for_status\nraise HTTPError(http_error_msg, response=self)\nrequests.exceptions.HTTPError: 522 Server Error: <none> for url: https://qa.pacph.com/api/v1/reports/evaluations?start_date=2026-01-01&end_date=2026-01-07&account=6891a544fe5443aa64a3ad1a\n[notify] Email sent: Report Monitoring \ufffd FAILED: vip_pull.py",
       "started_at": "2026-09-21T20:17:51.302021"
     },
     {
       "account": "Vermont",
       "script": "vt_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-21T19:58:05.327799",
+      "status": "running",
+      "timestamp": "2026-09-21T20:21:38.782260",
       "lane": "Lane 2 - Hamilton",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-09-21T20:21:38.782238"
     },
     {
       "account": "Trans Iowa",
