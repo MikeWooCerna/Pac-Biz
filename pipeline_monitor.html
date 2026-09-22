@@ -191,7 +191,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run 2026-09-22T19:45</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Dashboard: Sep 21, 2026 09:00 PM</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Sep 22, 2026 07:48 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Sep 22, 2026 07:52 PM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -204,7 +204,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div class="stat-card"><div class="sc-val" style="color:#00e87a;">2</div><div class="sc-lbl">Passed</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">0</div><div class="sc-lbl">Failed</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#E84500;">0</div><div class="sc-lbl">Not Reached</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">3,380</div><div class="sc-lbl">Rows Pulled</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">24,217</div><div class="sc-lbl">Rows Pulled</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#7060a0;">&mdash;</div><div class="sc-lbl">running</div></div>
   </div>
 
@@ -322,14 +322,14 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     
   </div>
 </div>
-<div class="node n-warn">
-  <div class="node-title" style="color:#ffaa00;"><span>Skyline</span><div class="blink-a"></div></div>
-  <div class="node-row"><b class="b-n"></b>Skyline_pull.py &middot; 07:46 PM</div>
+<div class="node n-checking">
+  <div class="node-title" style="color:#22d3ee;"><span>Skyline</span><div class="blink-c"></div></div>
+  <div class="node-row"><b class="b-n"></b>Skyline_pull.py &middot; 07:52 PM</div>
   
   <div class="node-meta">
-    <span class="meta-pill a">&mdash; rows</span>
-    <span class="meta-pill a">RUNNING</span>
-    
+    <span class="meta-pill c">20,837 rows</span>
+    <span class="meta-pill c">CHECKING</span>
+    <span class="meta-pill cnt-vol-crit">&#9888; CRITICAL VOL</span>
   </div>
 </div>
 <div class="node n-queued">
@@ -358,7 +358,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       <div class="agg-node">
         <div class="agg-title">Data Engine / Processing</div>
         <div class="agg-grid">
-          <div class="agg-item"><div class="agg-val" style="color:#00e87a;">3,380</div><div class="agg-lbl">total rows</div></div>
+          <div class="agg-item"><div class="agg-val" style="color:#00e87a;">24,217</div><div class="agg-lbl">total rows</div></div>
           <div class="agg-item">
             <div class="agg-val" style="display:flex;align-items:center;justify-content:center;gap:5px;">
               <div class="blink-g"></div>
@@ -524,7 +524,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 
   
   
-  
+  <div class="vol-strip-crit">&#9888; High volume datasets detected &mdash; <b>Skyline</b> &#9651;&thinsp;20,837 rows <span style='opacity:0.65;font-size:11px;'>(CRITICAL)</span></div>
 
   <div class="divider" style="margin-top:12px;"></div>
   <div class="log-section">
@@ -649,7 +649,7 @@ week_rows = fetch_wee</div></td><td class="log-td-st"><span class="lp lp-f">FAIL
     {ang:15.00,r:0.44,st:"checking",nm:"BLC"},
     {ang:30.00,r:0.63,st:"checking",nm:"RideX"},
     {ang:45.00,r:0.44,st:"running",nm:"Hamilton"},
-    {ang:60.00,r:0.63,st:"running",nm:"Skyline"},
+    {ang:60.00,r:0.63,st:"checking",nm:"Skyline"},
     {ang:75.00,r:0.44,st:"queued",nm:"VIP"},
     {ang:90.00,r:0.63,st:"checking",nm:"C&H"},
     {ang:105.00,r:0.44,st:"running",nm:"Reno Cab"},
