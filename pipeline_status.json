@@ -71,21 +71,22 @@
     {
       "account": "Data Carz",
       "script": "dc_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-22T19:28:22.276207",
+      "status": "checking",
+      "timestamp": "2026-09-22T19:34:01.032703",
       "lane": "Lane 3 - Direct QA",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-09-22T19:28:22.276195"
     },
     {
       "account": "Associated Cab",
       "script": "ac_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-22T19:27:47.519156",
+      "status": "running",
+      "timestamp": "2026-09-22T19:34:01.035103",
       "lane": "Lane 3 - Direct QA",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-09-22T19:34:01.035095"
     },
     {
       "account": "Ollies",
@@ -207,21 +208,22 @@
     {
       "account": "Reno Cab",
       "script": "rc_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-22T19:29:50.324455",
+      "status": "checking",
+      "timestamp": "2026-09-22T19:34:17.094739",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-09-22T19:29:50.324443"
     },
     {
       "account": "Kelowna",
       "script": "kel_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-22T19:27:47.818773",
+      "status": "running",
+      "timestamp": "2026-09-22T19:34:17.097382",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-09-22T19:34:17.097371"
     },
     {
       "account": "YCDC",
