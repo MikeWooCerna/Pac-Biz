@@ -64,10 +64,10 @@
     {
       "account": "Trans Iowa",
       "script": "ti_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-22T19:38:57.658516",
+      "status": "checking",
+      "timestamp": "2026-09-22T19:39:23.932977",
       "lane": "Lane 2 - Hamilton",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-09-22T19:38:57.658504"
     },
@@ -94,21 +94,22 @@
     {
       "account": "Ollies",
       "script": "ol_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-22T19:36:45.520664",
+      "status": "checking",
+      "timestamp": "2026-09-22T19:39:20.406606",
       "lane": "Lane 3 - Direct QA",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-09-22T19:36:45.520657"
     },
     {
       "account": "Circle Taxi",
       "script": "ct_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-22T19:27:47.560636",
+      "status": "running",
+      "timestamp": "2026-09-22T19:39:20.408973",
       "lane": "Lane 3 - Direct QA",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-09-22T19:39:20.408965"
     },
     {
       "account": "YCOV",
@@ -232,10 +233,10 @@
     {
       "account": "YCDC",
       "script": "ycdc_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-22T19:37:02.117738",
+      "status": "checking",
+      "timestamp": "2026-09-22T19:39:38.981210",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-09-22T19:37:02.117726"
     }
