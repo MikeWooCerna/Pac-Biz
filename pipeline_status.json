@@ -1,7 +1,7 @@
 {
   "run_id": "2026-09-22T19:27:04",
   "started_at": "2026-09-22T19:27:04.093606",
-  "finished_at": null,
+  "finished_at": "2026-09-22T19:41:19.631692",
   "status": "failed",
   "failed_at": "Blueline",
   "steps": [
