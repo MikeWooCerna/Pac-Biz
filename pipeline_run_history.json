@@ -2468,5 +2468,31 @@
     "failed_steps": 0,
     "not_reached_steps": 0,
     "failed_at": null
+  },
+  {
+    "run_id": "2026-09-22T19:27:04",
+    "run_date": "2026-09-22",
+    "started_at": "2026-09-22T19:27:04.093606",
+    "finished_at": "2026-09-22T19:41:19.631692",
+    "duration_sec": 855.538,
+    "status": "failed",
+    "step_count": 24,
+    "passed_steps": 22,
+    "failed_steps": 2,
+    "not_reached_steps": 0,
+    "failed_at": "Blueline"
+  },
+  {
+    "run_id": "2026-09-22T19:45:35",
+    "run_date": "2026-09-22",
+    "started_at": "2026-09-22T19:45:35.765999",
+    "finished_at": "2026-09-22T20:15:22.487850",
+    "duration_sec": 1786.722,
+    "status": "success",
+    "step_count": 26,
+    "passed_steps": 26,
+    "failed_steps": 0,
+    "not_reached_steps": 0,
+    "failed_at": null
   }
 ]
