@@ -72,13 +72,20 @@ schema, empty-output, and count-drop failures still fail closed.
   atomic replacement when Windows briefly locks `pipeline_status.json`.
 
 - **C&H fail-closed guard (2026-09-21):** `Quality\C&H\ch_pull.py` writes to
-  `CH_RAW.tmp.xlsx`, requires at least 400 source rows and all eight standard
+  `CH_RAW.tmp.xlsx`, requires at least 465 source rows and all eight standard
   enrichment columns, validates the temporary workbook, then atomically
   replaces `CH_RAW.xlsx`. A 56-row upstream sheet response previously
   overwrote the 488-row healthy RAW; the workbook was restored from the last
   published dashboard's embedded C&H records. `self_heal.py` now handles a
   deterministic safety-floor failure immediately when the preserved RAW is
   within 95% of baseline, without an unnecessary second pull.
+
+- **Blueline fail-closed guard (2026-09-22):** `Quality\Blueline\bl_pull.py`
+  writes and validates `BL_RAW.tmp.xlsx`, requires at least 440 source rows
+  and all eight standard enrichment columns, then atomically replaces
+  `BL_RAW.xlsx`. A partial 33-row response was rejected; the 460-row healthy
+  history was restored from the last published dashboard before publication.
+  The same run restored C&H from 418 to its 488-row healthy baseline.
 
 ## Architecture decisions already made
 
