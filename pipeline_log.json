@@ -1,40 +1,5 @@
 [
   {
-    "run_id": "2026-08-17T18:19:52",
-    "date": "Aug 17, 2026 06:19 PM",
-    "account": "Skyline",
-    "script": "Skyline_pull.py",
-    "status": "high_volume",
-    "error": "CRITICAL: 20,794 rows (threshold 20,000)"
-  },
-  {
-    "run_id": "2026-08-18T14:14:53",
-    "date": "Aug 18, 2026 02:14 PM",
-    "account": "dmg_pull.py",
-    "script": "dmg_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
-    "run_id": "2026-08-18T14:14:53",
-    "date": "Aug 18, 2026 02:14 PM",
-    "account": "Trans Iowa",
-    "script": "ti_pull.py",
-    "status": "healed",
-    "action": "guarded-preserve",
-    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
-  },
-  {
-    "run_id": "2026-08-18T14:14:53",
-    "date": "Aug 18, 2026 02:14 PM",
-    "account": "ac_pull.py",
-    "script": "ac_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
     "run_id": "2026-08-18T20:51:35",
     "date": "Aug 18, 2026 08:51 PM",
     "account": "Associated Cab",
@@ -2519,5 +2484,41 @@
     "status": "healed",
     "action": "guarded-preserve",
     "error": "Transient source failure protected the RAW file. Preserved local RAW has 20,837 rows vs baseline 20,837; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-09-22T19:45:35",
+    "date": "Sep 22, 2026 07:45 PM",
+    "account": "C&H",
+    "script": "ch_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 488 rows vs baseline 488; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-09-22T19:45:35",
+    "date": "Sep 22, 2026 07:45 PM",
+    "account": "Blueline",
+    "script": "bl_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 460 rows vs baseline 460; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-09-22T19:45:35",
+    "date": "Sep 22, 2026 07:45 PM",
+    "account": "Skyline",
+    "script": "Skyline_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Transient source failure protected the RAW file. Preserved local RAW has 20,837 rows vs baseline 20,837; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-09-22T19:45:35",
+    "date": "Sep 22, 2026 07:45 PM",
+    "account": "Kelowna",
+    "script": "kel_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Transient source failure protected the RAW file. Preserved local RAW has 3,153 rows vs baseline 3,153; pipeline continued using the last healthy file."
   }
 ]
