@@ -64,10 +64,10 @@
     {
       "account": "Trans Iowa",
       "script": "ti_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-23T20:47:10.942415",
+      "status": "checking",
+      "timestamp": "2026-09-23T20:47:44.886115",
       "lane": "Lane 2 - Hamilton",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-09-23T20:47:10.942404"
     },
