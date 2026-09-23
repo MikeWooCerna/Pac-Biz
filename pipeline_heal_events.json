@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "run_id": "2026-09-23T20:31:39",
+    "date": "Sep 23, 2026 08:31 PM",
+    "account": "C&H",
+    "script": "ch_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 488 rows vs baseline 488; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-09-23T20:31:39",
+    "date": "Sep 23, 2026 08:31 PM",
+    "account": "Blueline",
+    "script": "bl_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 460 rows vs baseline 460; pipeline continued using the last healthy file."
+  }
+]
