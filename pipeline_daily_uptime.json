@@ -442,8 +442,8 @@
     "passed_steps": 52,
     "failed_steps": 0,
     "step_uptime_pct": 100.0,
-    "incident_count": 8,
-    "count_drop_count": 3,
+    "incident_count": 6,
+    "count_drop_count": 1,
     "self_healed_count": 5,
     "high_volume_count": 0
   },
@@ -882,17 +882,17 @@
   {
     "date": "2026-09-23",
     "runs": 1,
-    "successful_runs": 0,
-    "partial_runs": 1,
+    "successful_runs": 1,
+    "partial_runs": 0,
     "failed_runs": 0,
     "uptime_pct": 100.0,
-    "steps": 26,
-    "passed_steps": 26,
+    "steps": 27,
+    "passed_steps": 27,
     "failed_steps": 0,
     "step_uptime_pct": 100.0,
-    "incident_count": 0,
+    "incident_count": 2,
     "count_drop_count": 0,
-    "self_healed_count": 0,
+    "self_healed_count": 2,
     "high_volume_count": 0
   }
 ]

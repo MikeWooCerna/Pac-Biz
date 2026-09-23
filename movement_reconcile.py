@@ -154,6 +154,7 @@ def repair_missing_effective_history_rows(
     }
 
     repaired_rows: list[dict[str, object]] = []
+    corrected_rows = 0
     existing_keys = set()
     history_dates = _date_series(history["Date Generated"])
     for idx, row in history.iterrows():
@@ -170,6 +171,25 @@ def repair_missing_effective_history_rows(
 
         key = (emp_name.lower(), effective_date)
         if key in existing_keys:
+            if _text(row.get("Type of Movement")).lower() == "attrition":
+                matching = (
+                    history["Emp Name"].str.strip().str.lower().eq(emp_name.lower())
+                    & history_dates.eq(effective_date)
+                )
+                inactive = history.loc[matching, "Employment Status"].str.strip().str.lower().eq("inactive")
+                if matching.any() and not inactive.any():
+                    history.loc[matching, "Employment Status"] = "Inactive"
+                    if "Attrition Date" in history.columns:
+                        history.loc[matching, "Attrition Date"] = effective_date.strftime("%m/%d/%Y")
+                    if "Change Type" in history.columns:
+                        history.loc[matching, "Change Type"] = _change_type_from_processed_note(
+                            row.get("Processed Note")
+                        )
+                    corrected_rows += int(matching.sum())
+                    print(
+                        "[movement_reconcile] Corrected local History attrition row: "
+                        f"{emp_name} ({effective_date.strftime('%m/%d/%Y')})"
+                    )
             continue
 
         master_row = master_by_name.get(emp_name.lower())
@@ -194,15 +214,20 @@ def repair_missing_effective_history_rows(
             f"{emp_name} ({effective_date.strftime('%m/%d/%Y')})"
         )
 
-    if not repaired_rows:
+    if not repaired_rows and corrected_rows == 0:
         return history
 
-    repaired_history = pd.concat(
-        [history, pd.DataFrame(repaired_rows, columns=history.columns)],
-        ignore_index=True,
-    )
+    repaired_history = history
+    if repaired_rows:
+        repaired_history = pd.concat(
+            [history, pd.DataFrame(repaired_rows, columns=history.columns)],
+            ignore_index=True,
+        )
     repaired_history.to_csv(HISTORY_CACHE, index=False)
-    print(f"[movement_reconcile] Added {len(repaired_rows)} local History repair row(s).")
+    if repaired_rows:
+        print(f"[movement_reconcile] Added {len(repaired_rows)} local History repair row(s).")
+    if corrected_rows:
+        print(f"[movement_reconcile] Corrected {corrected_rows} local History attrition row(s).")
     return repaired_history
 
 
