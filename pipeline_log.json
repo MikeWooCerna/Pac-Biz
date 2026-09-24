@@ -2,26 +2,6 @@
   {
     "run_id": "2026-08-18T20:51:35",
     "date": "Aug 18, 2026 08:51 PM",
-    "account": "Vermont",
-    "script": "vt_pull.py",
-    "status": "count_drop",
-    "drop": 67,
-    "prev_count": 713,
-    "new_count": 646,
-    "error": "Dropped 67 rows (713 \u2192 646)"
-  },
-  {
-    "run_id": "2026-08-18T20:51:35",
-    "date": "Aug 18, 2026 08:51 PM",
-    "account": "Ridex_pull.py",
-    "script": "Ridex_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
-    "run_id": "2026-08-18T20:51:35",
-    "date": "Aug 18, 2026 08:51 PM",
     "account": "VIP",
     "script": "vip_pull.py",
     "status": "healed",
@@ -2511,6 +2491,24 @@
   {
     "run_id": "2026-09-23T20:31:39",
     "date": "Sep 23, 2026 08:31 PM",
+    "account": "Blueline",
+    "script": "bl_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 460 rows vs baseline 460; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-09-24T20:32:47",
+    "date": "Sep 24, 2026 08:32 PM",
+    "account": "C&H",
+    "script": "ch_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 488 rows vs baseline 488; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-09-24T20:32:47",
+    "date": "Sep 24, 2026 08:32 PM",
     "account": "Blueline",
     "script": "bl_pull.py",
     "status": "healed",
