@@ -233,10 +233,10 @@
     {
       "account": "YCDC",
       "script": "ycdc_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-24T20:44:29.434038",
+      "status": "checking",
+      "timestamp": "2026-09-24T20:47:51.968077",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-09-24T20:44:29.434033"
     }
