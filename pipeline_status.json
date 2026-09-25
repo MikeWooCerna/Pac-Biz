@@ -24,10 +24,10 @@
     {
       "account": "Skyline",
       "script": "Skyline_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-25T20:39:28.556529",
+      "status": "checking",
+      "timestamp": "2026-09-25T20:44:45.942502",
       "lane": "Lane 1 - Skyline",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-09-25T20:39:28.556520"
     },
