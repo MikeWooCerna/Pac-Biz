@@ -104,21 +104,22 @@
     {
       "account": "Circle Taxi",
       "script": "ct_pull.py",
-      "status": "running",
-      "timestamp": "2026-09-28T20:09:47.612920",
+      "status": "checking",
+      "timestamp": "2026-09-28T20:11:58.048131",
       "lane": "Lane 3 - Direct QA",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-09-28T20:09:47.612909"
     },
     {
       "account": "YCOV",
       "script": "ycov_pull.py",
-      "status": "queued",
-      "timestamp": "2026-09-28T19:56:05.364557",
+      "status": "running",
+      "timestamp": "2026-09-28T20:11:58.052120",
       "lane": "Lane 3 - Direct QA",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-09-28T20:11:58.052102"
     },
     {
       "account": "M7",
