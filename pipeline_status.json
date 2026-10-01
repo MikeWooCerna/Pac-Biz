@@ -24,20 +24,22 @@
     {
       "account": "Skyline",
       "script": "Skyline_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-01T20:23:19.232312",
+      "status": "running",
+      "timestamp": "2026-10-01T20:23:29.529734",
       "lane": "Lane 1 - Skyline",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-01T20:23:29.529714"
     },
     {
       "account": "Hamilton",
       "script": "Hamilton_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-01T20:23:19.237591",
+      "status": "running",
+      "timestamp": "2026-10-01T20:23:44.531829",
       "lane": "Lane 2 - Hamilton",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-01T20:23:44.531805"
     },
     {
       "account": "VIP",
@@ -69,11 +71,12 @@
     {
       "account": "Data Carz",
       "script": "dc_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-01T20:23:19.342656",
+      "status": "running",
+      "timestamp": "2026-10-01T20:23:59.531695",
       "lane": "Lane 3 - Direct QA",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-01T20:23:59.531678"
     },
     {
       "account": "Associated Cab",
@@ -114,20 +117,22 @@
     {
       "account": "M7",
       "script": "m7_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-01T20:23:19.515735",
+      "status": "checking",
+      "timestamp": "2026-10-01T20:24:24.381096",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-10-01T20:24:14.532999"
     },
     {
       "account": "DMG",
       "script": "dmg_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-01T20:23:19.541219",
+      "status": "running",
+      "timestamp": "2026-10-01T20:24:24.413205",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-01T20:24:24.413188"
     },
     {
       "account": "R4H",
