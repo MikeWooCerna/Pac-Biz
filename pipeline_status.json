@@ -197,21 +197,22 @@
     {
       "account": "Blueline",
       "script": "bl_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-02T18:25:28.055971",
+      "status": "checking",
+      "timestamp": "2026-10-02T18:26:17.587973",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-02T18:25:28.055961"
     },
     {
       "account": "Reno Cab",
       "script": "rc_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-02T18:21:42.901706",
+      "status": "running",
+      "timestamp": "2026-10-02T18:26:17.594807",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-02T18:26:17.594795"
     },
     {
       "account": "Kelowna",
