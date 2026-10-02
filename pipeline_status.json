@@ -24,10 +24,10 @@
     {
       "account": "Skyline",
       "script": "Skyline_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-02T18:21:50.988292",
+      "status": "checking",
+      "timestamp": "2026-10-02T18:42:07.425647",
       "lane": "Lane 1 - Skyline",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-02T18:21:50.988279"
     },
@@ -104,21 +104,22 @@
     {
       "account": "Circle Taxi",
       "script": "ct_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-02T18:38:02.848870",
+      "status": "checking",
+      "timestamp": "2026-10-02T18:42:20.578544",
       "lane": "Lane 3 - Direct QA",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-02T18:38:02.848846"
     },
     {
       "account": "YCOV",
       "script": "ycov_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-02T18:21:42.520860",
+      "status": "running",
+      "timestamp": "2026-10-02T18:42:21.158750",
       "lane": "Lane 3 - Direct QA",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-02T18:42:21.158738"
     },
     {
       "account": "M7",
