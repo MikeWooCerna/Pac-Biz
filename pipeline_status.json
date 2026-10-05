@@ -64,10 +64,10 @@
     {
       "account": "Trans Iowa",
       "script": "ti_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-05T20:49:04.577354",
+      "status": "checking",
+      "timestamp": "2026-10-05T20:49:48.032363",
       "lane": "Lane 2 - Hamilton",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-05T20:49:04.577343"
     },
@@ -232,10 +232,10 @@
     {
       "account": "YCDC",
       "script": "ycdc_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-05T20:46:25.811692",
+      "status": "checking",
+      "timestamp": "2026-10-05T20:50:12.991721",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-05T20:46:25.811679"
     }
