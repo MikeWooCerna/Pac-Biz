@@ -1006,5 +1006,21 @@
     "count_drop_count": 0,
     "self_healed_count": 0,
     "high_volume_count": 0
+  },
+  {
+    "date": "2026-10-05",
+    "runs": 2,
+    "successful_runs": 1,
+    "partial_runs": 0,
+    "failed_runs": 0,
+    "uptime_pct": 50.0,
+    "steps": 50,
+    "passed_steps": 28,
+    "failed_steps": 0,
+    "step_uptime_pct": 56.0,
+    "incident_count": 0,
+    "count_drop_count": 0,
+    "self_healed_count": 0,
+    "high_volume_count": 0
   }
 ]

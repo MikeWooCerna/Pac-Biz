@@ -2611,5 +2611,31 @@
     "failed_steps": 0,
     "not_reached_steps": 0,
     "failed_at": null
+  },
+  {
+    "run_id": "2026-10-05T20:26:28",
+    "run_date": "2026-10-05",
+    "started_at": "2026-10-05T20:26:28.631716",
+    "finished_at": "",
+    "duration_sec": null,
+    "status": "running",
+    "step_count": 24,
+    "passed_steps": 2,
+    "failed_steps": 0,
+    "not_reached_steps": 0,
+    "failed_at": null
+  },
+  {
+    "run_id": "2026-10-05T20:35:30",
+    "run_date": "2026-10-05",
+    "started_at": "2026-10-05T20:35:30.179052",
+    "finished_at": "2026-10-05T20:59:05.703704",
+    "duration_sec": 1415.525,
+    "status": "success",
+    "step_count": 26,
+    "passed_steps": 26,
+    "failed_steps": 0,
+    "not_reached_steps": 0,
+    "failed_at": null
   }
 ]
