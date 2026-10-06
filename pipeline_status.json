@@ -71,21 +71,22 @@
     {
       "account": "Data Carz",
       "script": "dc_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-06T20:03:17.001746",
+      "status": "checking",
+      "timestamp": "2026-10-06T20:08:43.751292",
       "lane": "Lane 3 - Direct QA",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-06T20:03:17.001724"
     },
     {
       "account": "Associated Cab",
       "script": "ac_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-06T20:02:43.008360",
+      "status": "running",
+      "timestamp": "2026-10-06T20:08:43.755635",
       "lane": "Lane 3 - Direct QA",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-06T20:08:43.755618"
     },
     {
       "account": "Ollies",
