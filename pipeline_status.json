@@ -114,10 +114,10 @@
     {
       "account": "YCOV",
       "script": "ycov_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-06T20:18:01.714050",
+      "status": "checking",
+      "timestamp": "2026-10-06T20:19:19.348282",
       "lane": "Lane 3 - Direct QA",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-06T20:18:01.714044"
     },
