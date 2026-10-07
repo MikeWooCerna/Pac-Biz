@@ -2,15 +2,6 @@
   {
     "run_id": "2026-08-18T20:51:35",
     "date": "Aug 18, 2026 08:51 PM",
-    "account": "Trans Iowa",
-    "script": "ti_pull.py",
-    "status": "healed",
-    "action": "guarded-preserve",
-    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
-  },
-  {
-    "run_id": "2026-08-18T20:51:35",
-    "date": "Aug 18, 2026 08:51 PM",
     "account": "Ollies",
     "script": "ol_pull.py",
     "status": "healed",
@@ -2509,6 +2500,15 @@
   {
     "run_id": "2026-09-25T20:38:41",
     "date": "Sep 25, 2026 08:38 PM",
+    "account": "Skyline",
+    "script": "Skyline_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Transient source failure protected the RAW file. Preserved local RAW has 20,837 rows vs baseline 20,837; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-10-07T20:21:41",
+    "date": "Oct 07, 2026 08:21 PM",
     "account": "Skyline",
     "script": "Skyline_pull.py",
     "status": "healed",
