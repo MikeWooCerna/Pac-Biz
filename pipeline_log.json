@@ -1,14 +1,5 @@
 [
   {
-    "run_id": "2026-08-18T20:51:35",
-    "date": "Aug 18, 2026 08:51 PM",
-    "account": "YCDC",
-    "script": "ycdc_pull.py",
-    "status": "healed",
-    "action": "guarded-preserve",
-    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 3,517 rows vs baseline 3,517; pipeline continued using the last healthy file."
-  },
-  {
     "run_id": "2026-08-19T17:17:44",
     "date": "Aug 19, 2026 05:17 PM",
     "account": "Vermont",
@@ -2509,6 +2500,15 @@
   {
     "run_id": "2026-10-08T19:14:28",
     "date": "Oct 08, 2026 07:14 PM",
+    "account": "Skyline",
+    "script": "Skyline_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Transient source failure protected the RAW file. Preserved local RAW has 20,837 rows vs baseline 20,837; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-10-09T19:06:23",
+    "date": "Oct 09, 2026 07:06 PM",
     "account": "Skyline",
     "script": "Skyline_pull.py",
     "status": "healed",
