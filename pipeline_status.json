@@ -219,21 +219,22 @@
     {
       "account": "Kelowna",
       "script": "kel_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-12T19:04:01.986408",
+      "status": "checking",
+      "timestamp": "2026-10-12T19:07:56.742965",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-12T19:04:01.986398"
     },
     {
       "account": "YCDC",
       "script": "ycdc_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-12T18:57:24.071109",
+      "status": "running",
+      "timestamp": "2026-10-12T19:07:56.746278",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-12T19:07:56.746266"
     }
   ]
 }
