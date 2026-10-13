@@ -24,222 +24,244 @@
     {
       "account": "Skyline",
       "script": "Skyline_pull.py",
-      "status": "checking",
-      "timestamp": "2026-10-13T19:28:20.028028",
+      "status": "pass",
+      "timestamp": "2026-10-13T19:41:01.464891",
       "lane": "Lane 1 - Skyline",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-10-13T19:22:53.554761"
+      "started_at": "2026-10-13T19:22:53.554761",
+      "rows": 20837
     },
     {
       "account": "Hamilton",
       "script": "Hamilton_pull.py",
-      "status": "checking",
-      "timestamp": "2026-10-13T19:29:30.372696",
+      "status": "pass",
+      "timestamp": "2026-10-13T19:41:01.905820",
       "lane": "Lane 2 - Hamilton",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-10-13T19:23:08.555358"
+      "started_at": "2026-10-13T19:23:08.555358",
+      "rows": 4776
     },
     {
       "account": "VIP",
       "script": "vip_pull.py",
-      "status": "checking",
-      "timestamp": "2026-10-13T19:36:20.199068",
+      "status": "pass",
+      "timestamp": "2026-10-13T19:41:02.270994",
       "lane": "Lane 2 - Hamilton",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-10-13T19:29:30.393856"
+      "started_at": "2026-10-13T19:29:30.393856",
+      "rows": 4620
     },
     {
       "account": "Vermont",
       "script": "vt_pull.py",
-      "status": "checking",
-      "timestamp": "2026-10-13T19:37:23.141490",
+      "status": "pass",
+      "timestamp": "2026-10-13T19:41:02.356814",
       "lane": "Lane 2 - Hamilton",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-10-13T19:36:20.202527"
+      "started_at": "2026-10-13T19:36:20.202527",
+      "rows": 713
     },
     {
       "account": "Trans Iowa",
       "script": "ti_pull.py",
-      "status": "checking",
-      "timestamp": "2026-10-13T19:38:08.993445",
+      "status": "pass",
+      "timestamp": "2026-10-13T19:41:02.399458",
       "lane": "Lane 2 - Hamilton",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-10-13T19:37:23.144976"
+      "started_at": "2026-10-13T19:37:23.144976",
+      "rows": 119
     },
     {
       "account": "Data Carz",
       "script": "dc_pull.py",
-      "status": "checking",
-      "timestamp": "2026-10-13T19:29:09.059990",
+      "status": "pass",
+      "timestamp": "2026-10-13T19:41:02.703642",
       "lane": "Lane 3 - Direct QA",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-10-13T19:23:23.555834"
+      "started_at": "2026-10-13T19:23:23.555834",
+      "rows": 3704
     },
     {
       "account": "Associated Cab",
       "script": "ac_pull.py",
-      "status": "checking",
-      "timestamp": "2026-10-13T19:32:09.899376",
+      "status": "pass",
+      "timestamp": "2026-10-13T19:41:03.009826",
       "lane": "Lane 3 - Direct QA",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-10-13T19:29:09.063430"
+      "started_at": "2026-10-13T19:29:09.063430",
+      "rows": 3527
     },
     {
       "account": "Ollies",
       "script": "ol_pull.py",
-      "status": "checking",
-      "timestamp": "2026-10-13T19:38:43.439616",
+      "status": "pass",
+      "timestamp": "2026-10-13T19:41:03.230112",
       "lane": "Lane 3 - Direct QA",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-10-13T19:32:09.902447"
+      "started_at": "2026-10-13T19:32:09.902447",
+      "rows": 2646
     },
     {
       "account": "Circle Taxi",
       "script": "ct_pull.py",
-      "status": "checking",
-      "timestamp": "2026-10-13T19:39:58.746208",
+      "status": "pass",
+      "timestamp": "2026-10-13T19:41:03.410041",
       "lane": "Lane 3 - Direct QA",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-10-13T19:38:43.441908"
+      "started_at": "2026-10-13T19:38:43.441908",
+      "rows": 2006
     },
     {
       "account": "YCOV",
       "script": "ycov_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-13T19:39:58.749662",
+      "status": "pass",
+      "timestamp": "2026-10-13T19:41:03.554602",
       "lane": "Lane 3 - Direct QA",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
-      "started_at": "2026-10-13T19:39:58.749651"
+      "started_at": "2026-10-13T19:39:58.749651",
+      "rows": 1238
     },
     {
       "account": "M7",
       "script": "m7_pull.py",
-      "status": "checking",
-      "timestamp": "2026-10-13T19:23:44.120684",
+      "status": "pass",
+      "timestamp": "2026-10-13T19:41:03.608796",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-10-13T19:23:38.556219"
+      "started_at": "2026-10-13T19:23:38.556219",
+      "rows": 129
     },
     {
       "account": "DMG",
       "script": "dmg_pull.py",
-      "status": "checking",
-      "timestamp": "2026-10-13T19:23:50.163575",
+      "status": "pass",
+      "timestamp": "2026-10-13T19:41:03.685536",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-10-13T19:23:44.143092"
+      "started_at": "2026-10-13T19:23:44.143092",
+      "rows": 716
     },
     {
       "account": "R4H",
       "script": "r4h_pull.py",
-      "status": "checking",
-      "timestamp": "2026-10-13T19:23:55.613259",
+      "status": "pass",
+      "timestamp": "2026-10-13T19:41:03.735567",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-10-13T19:23:50.184025"
+      "started_at": "2026-10-13T19:23:50.184025",
+      "rows": 188
     },
     {
       "account": "Parentis Health",
       "script": "parentis_pull.py",
-      "status": "checking",
-      "timestamp": "2026-10-13T19:24:01.806660",
+      "status": "pass",
+      "timestamp": "2026-10-13T19:41:03.779206",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-10-13T19:23:55.616326"
+      "started_at": "2026-10-13T19:23:55.616326",
+      "rows": 69
     },
     {
       "account": "Britelift",
       "script": "britelift_pull.py",
-      "status": "checking",
-      "timestamp": "2026-10-13T19:24:07.739897",
+      "status": "pass",
+      "timestamp": "2026-10-13T19:41:03.824875",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-10-13T19:24:01.834546"
+      "started_at": "2026-10-13T19:24:01.834546",
+      "rows": 139
     },
     {
       "account": "Britelift Chat",
       "script": "britelift_pull.py",
-      "status": "checking",
-      "timestamp": "2026-10-13T19:24:12.864216",
+      "status": "pass",
+      "timestamp": "2026-10-13T19:41:03.899000",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-10-13T19:24:07.762849"
+      "started_at": "2026-10-13T19:24:07.762849",
+      "rows": 310
     },
     {
       "account": "RideX",
       "script": "Ridex_pull.py",
-      "status": "checking",
-      "timestamp": "2026-10-13T19:24:17.849614",
+      "status": "pass",
+      "timestamp": "2026-10-13T19:41:03.952886",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-10-13T19:24:12.888617"
+      "started_at": "2026-10-13T19:24:12.888617",
+      "rows": 118
     },
     {
       "account": "C&H",
       "script": "ch_pull.py",
-      "status": "checking",
-      "timestamp": "2026-10-13T19:24:25.286631",
+      "status": "pass",
+      "timestamp": "2026-10-13T19:41:04.026481",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-10-13T19:24:17.879895"
+      "started_at": "2026-10-13T19:24:17.879895",
+      "rows": 488
     },
     {
       "account": "Blueline",
       "script": "bl_pull.py",
-      "status": "checking",
-      "timestamp": "2026-10-13T19:24:33.360322",
+      "status": "pass",
+      "timestamp": "2026-10-13T19:41:04.139195",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-10-13T19:24:25.314605"
+      "started_at": "2026-10-13T19:24:25.314605",
+      "rows": 460
     },
     {
       "account": "Reno Cab",
       "script": "rc_pull.py",
-      "status": "checking",
-      "timestamp": "2026-10-13T19:29:19.524051",
+      "status": "pass",
+      "timestamp": "2026-10-13T19:41:04.520499",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-10-13T19:24:33.454090"
+      "started_at": "2026-10-13T19:24:33.454090",
+      "rows": 3835
     },
     {
       "account": "Kelowna",
       "script": "kel_pull.py",
-      "status": "checking",
-      "timestamp": "2026-10-13T19:32:20.240794",
+      "status": "pass",
+      "timestamp": "2026-10-13T19:41:04.817417",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-10-13T19:29:19.567195"
+      "started_at": "2026-10-13T19:29:19.567195",
+      "rows": 3153
     },
     {
       "account": "YCDC",
       "script": "ycdc_pull.py",
-      "status": "checking",
-      "timestamp": "2026-10-13T19:35:52.885104",
+      "status": "pass",
+      "timestamp": "2026-10-13T19:41:05.088678",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-10-13T19:32:20.245153"
+      "started_at": "2026-10-13T19:32:20.245153",
+      "rows": 3521
     }
   ]
 }
