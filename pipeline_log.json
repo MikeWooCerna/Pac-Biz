@@ -2,17 +2,6 @@
   {
     "run_id": "2026-08-19T17:17:44",
     "date": "Aug 19, 2026 05:17 PM",
-    "account": "Vermont",
-    "script": "vt_pull.py",
-    "status": "count_drop",
-    "drop": 705,
-    "prev_count": 713,
-    "new_count": 8,
-    "error": "Dropped 705 rows (713 \u2192 8)"
-  },
-  {
-    "run_id": "2026-08-19T17:17:44",
-    "date": "Aug 19, 2026 05:17 PM",
     "account": "vip_pull.py",
     "script": "vip_pull.py",
     "status": "healed",
@@ -2509,6 +2498,15 @@
   {
     "run_id": "2026-10-09T19:06:23",
     "date": "Oct 09, 2026 07:06 PM",
+    "account": "Skyline",
+    "script": "Skyline_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Transient source failure protected the RAW file. Preserved local RAW has 20,837 rows vs baseline 20,837; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-10-13T18:28:28",
+    "date": "Oct 13, 2026 06:28 PM",
     "account": "Skyline",
     "script": "Skyline_pull.py",
     "status": "healed",
