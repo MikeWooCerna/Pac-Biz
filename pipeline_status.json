@@ -137,57 +137,62 @@
     {
       "account": "R4H",
       "script": "r4h_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-14T19:25:34.881135",
+      "status": "checking",
+      "timestamp": "2026-10-14T19:25:43.318317",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-14T19:25:34.881120"
     },
     {
       "account": "Parentis Health",
       "script": "parentis_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-14T19:24:27.742789",
+      "status": "checking",
+      "timestamp": "2026-10-14T19:25:57.060669",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-10-14T19:25:43.327685"
     },
     {
       "account": "Britelift",
       "script": "britelift_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-14T19:24:27.764364",
+      "status": "checking",
+      "timestamp": "2026-10-14T19:26:13.218711",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-10-14T19:25:57.167930"
     },
     {
       "account": "Britelift Chat",
       "script": "britelift_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-14T19:24:27.783239",
+      "status": "checking",
+      "timestamp": "2026-10-14T19:26:29.304981",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-10-14T19:26:13.248329"
     },
     {
       "account": "RideX",
       "script": "Ridex_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-14T19:24:27.805011",
+      "status": "checking",
+      "timestamp": "2026-10-14T19:26:42.463530",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-10-14T19:26:29.373211"
     },
     {
       "account": "C&H",
       "script": "ch_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-14T19:24:27.828693",
+      "status": "running",
+      "timestamp": "2026-10-14T19:26:42.469155",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-14T19:26:42.469134"
     },
     {
       "account": "Blueline",
