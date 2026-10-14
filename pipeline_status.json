@@ -44,21 +44,22 @@
     {
       "account": "VIP",
       "script": "vip_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-14T20:54:27.149168",
+      "status": "checking",
+      "timestamp": "2026-10-14T21:01:40.101176",
       "lane": "Lane 2 - Hamilton",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-14T20:54:27.149159"
     },
     {
       "account": "Vermont",
       "script": "vt_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-14T20:46:24.534833",
+      "status": "running",
+      "timestamp": "2026-10-14T21:01:40.113289",
       "lane": "Lane 2 - Hamilton",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-14T21:01:40.113267"
     },
     {
       "account": "Trans Iowa",
