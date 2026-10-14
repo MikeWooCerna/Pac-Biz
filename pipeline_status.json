@@ -24,12 +24,13 @@
     {
       "account": "Skyline",
       "script": "Skyline_pull.py",
-      "status": "checking",
-      "timestamp": "2026-10-14T21:11:51.012701",
+      "status": "pass",
+      "timestamp": "2026-10-14T21:16:06.675883",
       "lane": "Lane 1 - Skyline",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-10-14T20:46:32.665541"
+      "started_at": "2026-10-14T20:46:32.665541",
+      "rows": 20837
     },
     {
       "account": "Hamilton",
@@ -114,10 +115,10 @@
     {
       "account": "YCOV",
       "script": "ycov_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-14T21:13:37.061130",
+      "status": "checking",
+      "timestamp": "2026-10-14T21:15:48.423577",
       "lane": "Lane 3 - Direct QA",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-14T21:13:37.061105"
     },
