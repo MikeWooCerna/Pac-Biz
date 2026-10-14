@@ -187,30 +187,32 @@
     {
       "account": "C&H",
       "script": "ch_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-14T19:26:42.469155",
+      "status": "checking",
+      "timestamp": "2026-10-14T19:26:57.751264",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-14T19:26:42.469134"
     },
     {
       "account": "Blueline",
       "script": "bl_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-14T19:24:27.849819",
+      "status": "checking",
+      "timestamp": "2026-10-14T19:27:07.550669",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-10-14T19:26:57.755115"
     },
     {
       "account": "Reno Cab",
       "script": "rc_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-14T19:24:27.866806",
+      "status": "running",
+      "timestamp": "2026-10-14T19:27:07.583296",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-14T19:27:07.583285"
     },
     {
       "account": "Kelowna",
