@@ -450,6 +450,28 @@ ai_s = pd.to_numeric(df[ai_col] if ai_col in df.columns else pd.Series(0, index=
 
 ## Known limitations
 
+## Required v1 Dashboard Update Report
+
+After **every** requested full v1 Dashboard update, the completion report must
+include these eleven items, in this order, using the values from that run:
+
+1. Pipeline sources passed (for example, `24/24`).
+2. Total validated QA rows.
+3. Masterlist row count.
+4. Latest History snapshot date (`Date Generated`).
+5. Row count for that latest History snapshot date.
+6. Count of History rows with blank `Date Generated`.
+7. Coaching snapshot row count.
+8. Latest Coaching Date.
+9. Latest Coaching Created/Modified Date.
+10. Movement notification result, including the count or that none were sent.
+11. Count-drop and overdue-movement result.
+
+Do not omit the History or Coaching snapshot fields merely because the full
+pipeline passed. Verify the source-derived values after the pull, not from a
+previous report. If a source snapshot is missing or stale, state that plainly
+instead of reporting the dashboard as fully current.
+
 - **Live push adds time** — ~5–15s per step for git operations. 22 steps = up to ~5min extra total pipeline time.
 - **GitHub Pages delay** — ~1 min after each push before the page reflects changes. The 60s reload timer is tuned for this. Large HTML files (26MB) can take 3–5 min.
 - **Row counts are snapshots** — baseline only stores last run. No full history trend. A drop is flagged once and then the baseline updates.
