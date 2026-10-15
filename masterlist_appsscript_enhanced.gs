@@ -889,13 +889,18 @@ function refreshTodayHistory(master, history, todayText, weekStart, appliedChang
 
   if (remainingRuntimeMs(startTime) < HISTORY_REFRESH_MIN_REMAINING_MS) return -1;
 
-  deleteTodayHistoryRows(history, todayText, startTime);
-
-  if (remainingRuntimeMs(startTime) < HISTORY_REFRESH_MIN_REMAINING_MS) return -1;
+  // A daily snapshot is append-only. Never delete an existing date before a
+  // replacement is safely written: a timeout after deletion would lose that day.
+  const existingSnapshotRows = getHistorySnapshotRowCount(history, todayText);
+  if (existingSnapshotRows > 0) {
+    Logger.log('History snapshot already exists for ' + todayText + ': ' + existingSnapshotRows + ' rows retained.');
+    return 0;
+  }
 
   const masterData          = master.getRange(2, 1, masterLastRow - 1, master.getLastColumn()).getValues();
   const employmentStatusCol = getCol(masterHeaders, 'Employment Status');
   const nameCol             = getCol(masterHeaders, 'Emp Name');
+  const knownEmployeeNames  = getHistoryEmployeeNames(history);
 
   const historyRows = masterData
     .filter(row => {
@@ -905,7 +910,7 @@ function refreshTodayHistory(master, history, todayText, weekStart, appliedChang
     })
     .map(row => {
       const empName    = normalize(row[nameCol]);
-      const changeType = appliedChanges[empName] || getDefaultHistoryChangeType(history, empName);
+      const changeType = appliedChanges[empName] || (knownEmployeeNames[empName] ? 'No Change' : 'New Record');
       return [...row, todayText, changeType, weekStart];
     });
 
@@ -1007,21 +1012,37 @@ function setupMovementTrackingColumns(movement) {
   ensureColumn(movement, 'Void');
 }
 
-function deleteTodayHistoryRows(history, todayText, startTime) {
+function getHistorySnapshotRowCount(history, todayText) {
   const headers = getHeaders(history);
   const dateCol = getCol(headers, 'Date Generated');
   const lastRow = history.getLastRow();
-  if (lastRow < 2 || dateCol === -1) return;
+  if (lastRow < 2 || dateCol === -1) return 0;
 
   const dateValues = history.getRange(2, dateCol + 1, lastRow - 1, 1).getValues();
-  for (let row = lastRow; row >= 2; row--) {
-    if (remainingRuntimeMs(startTime) < 90 * 1000) return;
-    const value     = dateValues[row - 2][0];
-    const valueText = value instanceof Date
-      ? Utilities.formatDate(value, SpreadsheetApp.getActiveSpreadsheet().getSpreadsheetTimeZone(), 'MM/dd/yyyy')
-      : String(value).trim();
-    if (valueText === todayText) history.deleteRow(row);
+  return dateValues.reduce((count, row) => {
+    return count + (formatHistoryDate(row[0]) === todayText ? 1 : 0);
+  }, 0);
+}
+
+function getHistoryEmployeeNames(history) {
+  const headers = getHeaders(history);
+  const nameCol = getCol(headers, 'Emp Name');
+  const lastRow = history.getLastRow();
+  const names = {};
+  if (lastRow < 2 || nameCol === -1) return names;
+
+  history.getRange(2, nameCol + 1, lastRow - 1, 1).getValues().forEach(row => {
+    const empName = normalize(row[0]);
+    if (empName) names[empName] = true;
+  });
+  return names;
+}
+
+function formatHistoryDate(value) {
+  if (value instanceof Date) {
+    return Utilities.formatDate(value, SpreadsheetApp.getActiveSpreadsheet().getSpreadsheetTimeZone(), 'MM/dd/yyyy');
   }
+  return String(value || '').trim();
 }
 
 function getDefaultHistoryChangeType(history, empName) {
