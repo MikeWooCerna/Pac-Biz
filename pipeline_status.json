@@ -54,21 +54,22 @@
     {
       "account": "Vermont",
       "script": "vt_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-15T19:50:33.471189",
+      "status": "checking",
+      "timestamp": "2026-10-15T19:51:42.764029",
       "lane": "Lane 2 - Hamilton",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-15T19:50:33.471183"
     },
     {
       "account": "Trans Iowa",
       "script": "ti_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-15T19:40:39.683665",
+      "status": "checking",
+      "timestamp": "2026-10-15T19:52:15.768984",
       "lane": "Lane 2 - Hamilton",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-10-15T19:51:42.767820"
     },
     {
       "account": "Data Carz",
@@ -93,21 +94,22 @@
     {
       "account": "Ollies",
       "script": "ol_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-15T19:50:05.151481",
+      "status": "checking",
+      "timestamp": "2026-10-15T19:52:20.104718",
       "lane": "Lane 3 - Direct QA",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-15T19:50:05.151470"
     },
     {
       "account": "Circle Taxi",
       "script": "ct_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-15T19:40:39.778342",
+      "status": "running",
+      "timestamp": "2026-10-15T19:52:20.133009",
       "lane": "Lane 3 - Direct QA",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-15T19:52:20.132998"
     },
     {
       "account": "YCOV",
