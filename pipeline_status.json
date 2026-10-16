@@ -34,21 +34,22 @@
     {
       "account": "Hamilton",
       "script": "Hamilton_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-16T19:51:51.792658",
+      "status": "checking",
+      "timestamp": "2026-10-16T19:58:16.101003",
       "lane": "Lane 2 - Hamilton",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-16T19:51:51.792640"
     },
     {
       "account": "VIP",
       "script": "vip_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-16T19:51:30.533180",
+      "status": "running",
+      "timestamp": "2026-10-16T19:58:16.168382",
       "lane": "Lane 2 - Hamilton",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-16T19:58:16.168369"
     },
     {
       "account": "Vermont",
@@ -71,21 +72,22 @@
     {
       "account": "Data Carz",
       "script": "dc_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-16T19:52:06.793477",
+      "status": "checking",
+      "timestamp": "2026-10-16T19:57:47.207436",
       "lane": "Lane 3 - Direct QA",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-16T19:52:06.793459"
     },
     {
       "account": "Associated Cab",
       "script": "ac_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-16T19:51:30.648322",
+      "status": "running",
+      "timestamp": "2026-10-16T19:57:47.211761",
       "lane": "Lane 3 - Direct QA",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-16T19:57:47.211750"
     },
     {
       "account": "Ollies",
@@ -207,21 +209,22 @@
     {
       "account": "Reno Cab",
       "script": "rc_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-16T19:53:48.274733",
+      "status": "checking",
+      "timestamp": "2026-10-16T19:58:14.873428",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-16T19:53:48.274716"
     },
     {
       "account": "Kelowna",
       "script": "kel_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-16T19:51:31.027725",
+      "status": "running",
+      "timestamp": "2026-10-16T19:58:14.926282",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-16T19:58:14.926269"
     },
     {
       "account": "YCDC",
