@@ -2,14 +2,6 @@
   {
     "run_id": "2026-08-20T15:17:18",
     "date": "Aug 20, 2026 03:17 PM",
-    "account": "Vermont",
-    "script": "vt_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-08-20T15:17:18",
-    "date": "Aug 20, 2026 03:17 PM",
     "account": "YCDC",
     "script": "ycdc_pull.py",
     "status": "not_reached",
@@ -2514,5 +2506,14 @@
     "status": "healed",
     "action": "guarded-preserve",
     "error": "Transient source failure protected the RAW file. Preserved local RAW has 119 rows vs baseline 119; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-10-16T19:50:31",
+    "date": "Oct 16, 2026 07:50 PM",
+    "account": "Skyline",
+    "script": "Skyline_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Transient source failure protected the RAW file. Preserved local RAW has 20,837 rows vs baseline 20,837; pipeline continued using the last healthy file."
   }
 ]
