@@ -34,11 +34,12 @@
     {
       "account": "Hamilton",
       "script": "Hamilton_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-19T15:04:25.323194",
+      "status": "running",
+      "timestamp": "2026-10-19T15:04:43.476087",
       "lane": "Lane 2 - Hamilton",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-19T15:04:43.476076"
     },
     {
       "account": "VIP",
