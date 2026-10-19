@@ -117,11 +117,12 @@
     {
       "account": "M7",
       "script": "m7_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-19T15:08:53.152562",
+      "status": "running",
+      "timestamp": "2026-10-19T15:09:40.862736",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-19T15:09:40.862717"
     },
     {
       "account": "DMG",
