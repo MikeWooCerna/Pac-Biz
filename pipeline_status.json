@@ -147,21 +147,22 @@
     {
       "account": "Parentis Health",
       "script": "parentis_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-19T15:05:25.485805",
+      "status": "checking",
+      "timestamp": "2026-10-19T15:05:29.586388",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-19T15:05:25.485793"
     },
     {
       "account": "Britelift",
       "script": "britelift_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-19T15:04:25.467132",
+      "status": "running",
+      "timestamp": "2026-10-19T15:05:29.590079",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-19T15:05:29.590066"
     },
     {
       "account": "Britelift Chat",
