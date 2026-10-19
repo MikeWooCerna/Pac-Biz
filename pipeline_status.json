@@ -2,8 +2,8 @@
   "run_id": "2026-10-19T21:07:32",
   "started_at": "2026-10-19T21:07:32.060893",
   "finished_at": null,
-  "status": "running",
-  "failed_at": null,
+  "status": "failed",
+  "failed_at": "Skyline",
   "steps": [
     {
       "account": "Masterlist",
@@ -24,11 +24,11 @@
     {
       "account": "Skyline",
       "script": "Skyline_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-19T21:08:37.359598",
+      "status": "fail",
+      "timestamp": "2026-10-19T21:18:11.843626",
       "lane": "Lane 1 - Skyline",
-      "exit_code": null,
-      "error": null,
+      "exit_code": 1,
+      "error": "r.content\nFile \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\models.py\", line 1042, in content\nself._content = b\"\".join(self.iter_content(CONTENT_CHUNK_SIZE)) or b\"\"\n~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFile \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\models.py\", line 939, in generate\nraise ChunkedEncodingError(e)\nrequests.exceptions.ChunkedEncodingError: (\"Connection broken: ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None)\", ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))\n[notify] Email sent: Report Monitoring \ufffd FAILED: Skyline_pull.py",
       "started_at": "2026-10-19T21:08:37.359583"
     },
     {
