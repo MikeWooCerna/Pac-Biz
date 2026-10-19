@@ -2,8 +2,8 @@
   "run_id": "2026-10-19T15:03:53",
   "started_at": "2026-10-19T15:03:53.521515",
   "finished_at": null,
-  "status": "running",
-  "failed_at": null,
+  "status": "failed",
+  "failed_at": "Blueline",
   "steps": [
     {
       "account": "Masterlist",
@@ -197,21 +197,22 @@
     {
       "account": "Blueline",
       "script": "bl_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-19T15:05:56.013263",
+      "status": "fail",
+      "timestamp": "2026-10-19T15:07:02.693195",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null,
+      "exit_code": 1,
+      "error": "from googleapiclient.discovery import build\nModuleNotFoundError: No module named 'googleapiclient'\n[self-heal] bl_pull.py failed \ufffd retrying in 60s...\nTraceback (most recent call last):\nFile \"C:\\Users\\Mike Woo Cerna\\Documents\\PB\\Quality\\Blueline\\bl_pull.py\", line 7, in <module>\nfrom googleapiclient.discovery import build\nModuleNotFoundError: No module named 'googleapiclient'\n[notify] Email sent: Report Monitoring \ufffd FAILED: bl_pull.py",
       "started_at": "2026-10-19T15:05:56.013245"
     },
     {
       "account": "Reno Cab",
       "script": "rc_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-19T15:04:25.545596",
+      "status": "running",
+      "timestamp": "2026-10-19T15:07:02.696356",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-19T15:07:02.696344"
     },
     {
       "account": "Kelowna",

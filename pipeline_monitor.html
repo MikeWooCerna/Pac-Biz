@@ -191,7 +191,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div style="text-align:right;">
       <div style="font-size:13px;color:#7060a0;">Run 2026-10-19T15:03</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Dashboard: Oct 19, 2026 01:52 PM</div>
-      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Oct 19, 2026 03:05 PM</div>
+      <div style="font-size:12px;color:#4a3d7a;margin-top:2px;">Monitor: Oct 19, 2026 03:07 PM</div>
       <div style="font-size:12px;color:#4a3d7a;margin-top:2px;" id="cd">Auto-refresh in 60s</div>
     </div>
   </div>
@@ -202,10 +202,10 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 
   <div class="stat-cards">
     <div class="stat-card"><div class="sc-val" style="color:#00e87a;">2</div><div class="sc-lbl">Passed</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">0</div><div class="sc-lbl">Failed</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">1</div><div class="sc-lbl">Failed</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#E84500;">0</div><div class="sc-lbl">Not Reached</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">3,132</div><div class="sc-lbl">Rows Pulled</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#7060a0;">&mdash;</div><div class="sc-lbl">running</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">&#10007;</div><div class="sc-lbl">failed</div></div>
   </div>
 
   <div class="divider"></div>
@@ -350,7 +350,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       </div>
       <div class="radar-label">
         <div class="radar-lbl-main">Pipeline / Container Monitoring</div>
-        <div class="radar-lbl-status"><div class="blink-a"></div><span style="color:#ffaa00;font-size:12px;">running</span></div>
+        <div class="radar-lbl-status"><div class="blink-r"></div><span style="color:#ff3d3d;font-size:12px;">stopped</span></div>
       </div>
 
       <div class="connector"></div>
@@ -361,8 +361,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
           <div class="agg-item"><div class="agg-val" style="color:#00e87a;">3,132</div><div class="agg-lbl">total rows</div></div>
           <div class="agg-item">
             <div class="agg-val" style="display:flex;align-items:center;justify-content:center;gap:5px;">
-              <div class="blink-g"></div>
-              <span style="color:#00e87a;">2/2</span>
+              <div class="blink-r"></div>
+              <span style="color:#ff9090;">2/3</span>
             </div>
             <div class="agg-lbl">sources ok</div>
           </div>
@@ -391,8 +391,8 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
 
       <div class="stage-node">
         <div class="stage-title">Git Repository</div>
-        <div class="stage-status"><div class="blink-a"></div></div>
-        <div class="stage-detail">queued…</div>
+        <div class="stage-status"><div class="blink-n"></div></div>
+        <div class="stage-detail">not reached</div>
         <div class="stage-detail" style="color:#b45309;font-size:10px;">&#9888; Guardian warned · Sep 11, 2026 11:36 AM</div>
       </div>
     </div>
@@ -409,13 +409,13 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     
   </div>
 </div>
-<div class="node n-queued">
-  <div class="node-title" style="color:#a78bfa;"><span>Reno Cab</span><div class="blink-n"></div></div>
-  <div class="node-row"><b class="b-n"></b>rc_pull.py &middot; 03:04 PM</div>
+<div class="node n-warn">
+  <div class="node-title" style="color:#ffaa00;"><span>Reno Cab</span><div class="blink-a"></div></div>
+  <div class="node-row"><b class="b-n"></b>rc_pull.py &middot; 03:07 PM</div>
   
   <div class="node-meta">
-    <span class="meta-pill q">&mdash; rows</span>
-    <span class="meta-pill q">QUEUED</span>
+    <span class="meta-pill a">&mdash; rows</span>
+    <span class="meta-pill a">RUNNING</span>
     
   </div>
 </div>
@@ -509,20 +509,27 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     
   </div>
 </div>
-<div class="node n-warn">
-  <div class="node-title" style="color:#ffaa00;"><span>Blueline</span><div class="blink-a"></div></div>
-  <div class="node-row"><b class="b-n"></b>bl_pull.py &middot; 03:05 PM</div>
-  
+<div class="node n-fail">
+  <div class="node-title" style="color:#ff6060;"><span>Blueline</span><div class="blink-r"></div></div>
+  <div class="node-row"><b class="b-r"></b>bl_pull.py &middot; 03:07 PM</div>
+  <div class="node-err">from googleapiclient.discovery import build
+ModuleNotFoundError: No module named 'googleapiclient'
+[self-heal] bl_pull.py failed � retrying in 60s...
+Traceback (most recent call last):
+File "C:\Users\Mike Woo Cerna\Documents\PB\Quality\Blueline\bl_pull.py", line 7, in &lt;module&gt;
+from googleapiclient.discovery import build
+ModuleNotFoundError: No module named 'googleapiclient'
+[notify] Email sent: Report Monitoring � FAILED: bl_pull.py</div>
   <div class="node-meta">
-    <span class="meta-pill a">&mdash; rows</span>
-    <span class="meta-pill a">RUNNING</span>
+    <span class="meta-pill r">&mdash; rows</span>
+    <span class="meta-pill r">FAIL</span>
     
   </div>
 </div>
     </div>
   </div>
 
-  
+  <div class="warn-strip">&#9888; Pipeline stopped at <b>Blueline</b> &middot; Exit code 1 &middot; 0 steps not reached</div>
   
   
 
@@ -532,7 +539,10 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div class="log-wrap">
       <table class="log-table">
         <thead><tr><th>Date</th><th>Dataset</th><th>Status</th></tr></thead>
-        <tbody><tr><td class="log-td-d">Oct 19, 2026 01:28 PM</td><td class="log-td-ds"><b>Skyline</b> <span class="log-sc">&middot; Skyline_pull.py</span><div class="log-err">CRITICAL: 20,837 rows (threshold 20,000)</div></td><td class="log-td-st"><span class="lp lp-v">HIGH VOLUME</span></td></tr>
+        <tbody><tr><td class="log-td-d">Oct 19, 2026 03:03 PM</td><td class="log-td-ds"><b>Blueline</b> <span class="log-sc">&middot; bl_pull.py</span><div class="log-err">from googleapiclient.discovery import build
+ModuleNotFoundError: No module named 'googleapiclient'
+[self-heal] bl_pull.p</div></td><td class="log-td-st"><span class="lp lp-f">FAILED</span></td></tr>
+<tr><td class="log-td-d">Oct 19, 2026 01:28 PM</td><td class="log-td-ds"><b>Skyline</b> <span class="log-sc">&middot; Skyline_pull.py</span><div class="log-err">CRITICAL: 20,837 rows (threshold 20,000)</div></td><td class="log-td-st"><span class="lp lp-v">HIGH VOLUME</span></td></tr>
 <tr><td class="log-td-d">Oct 19, 2026 01:28 PM</td><td class="log-td-ds"><b>Skyline</b> <span class="log-sc">&middot; Skyline_pull.py</span><div class="log-err">Transient source failure protected the RAW file. Preserved local RAW has 20,837 rows vs baseline 20,837; pipeline contin</div></td><td class="log-td-st"><span class="lp lp-h">SELF HEALED</span></td></tr>
 <tr><td class="log-td-d">Oct 19, 2026 01:05 PM</td><td class="log-td-ds"><b>Blueline</b> <span class="log-sc">&middot; bl_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
 <tr><td class="log-td-d">Oct 19, 2026 01:05 PM</td><td class="log-td-ds"><b>YCDC</b> <span class="log-sc">&middot; ycdc_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
@@ -612,8 +622,7 @@ File "C:\Users\Mike Woo Cerna\Documents\PB\Quality\VIP\vip_</div></td><td class=
 <tr><td class="log-td-d">Sep 21, 2026 07:53 PM</td><td class="log-td-ds"><b>Trans Iowa</b> <span class="log-sc">&middot; ti_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
 <tr><td class="log-td-d">Sep 21, 2026 07:53 PM</td><td class="log-td-ds"><b>Reno Cab</b> <span class="log-sc">&middot; rc_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
 <tr><td class="log-td-d">Sep 21, 2026 07:53 PM</td><td class="log-td-ds"><b>C&H</b> <span class="log-sc">&middot; ch_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
-<tr><td class="log-td-d">Sep 21, 2026 07:53 PM</td><td class="log-td-ds"><b>VIP</b> <span class="log-sc">&middot; vip_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr>
-<tr><td class="log-td-d">Sep 21, 2026 07:53 PM</td><td class="log-td-ds"><b>RideX</b> <span class="log-sc">&middot; Ridex_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr></tbody>
+<tr><td class="log-td-d">Sep 21, 2026 07:53 PM</td><td class="log-td-ds"><b>VIP</b> <span class="log-sc">&middot; vip_pull.py</span></td><td class="log-td-st"><span class="lp lp-n">NOT REACHED</span></td></tr></tbody>
       </table>
     </div>
   </div>
@@ -635,7 +644,7 @@ File "C:\Users\Mike Woo Cerna\Documents\PB\Quality\VIP\vip_</div></td><td class=
   var ang = -Math.PI/2;
   var TRAIL = Math.PI * 1.35;
   var time = 0;
-  var FAIL = false;
+  var FAIL = true;
 
   var blips = [
     {ang:-90.00,r:0.63,st:"pass",nm:"Masterlist"},
@@ -651,7 +660,7 @@ File "C:\Users\Mike Woo Cerna\Documents\PB\Quality\VIP\vip_</div></td><td class=
     {ang:60.00,r:0.63,st:"running",nm:"Skyline"},
     {ang:75.00,r:0.44,st:"queued",nm:"VIP"},
     {ang:90.00,r:0.63,st:"checking",nm:"C&H"},
-    {ang:105.00,r:0.44,st:"queued",nm:"Reno Cab"},
+    {ang:105.00,r:0.44,st:"running",nm:"Reno Cab"},
     {ang:120.00,r:0.63,st:"queued",nm:"Trans Iowa"},
     {ang:135.00,r:0.44,st:"running",nm:"Data Carz"},
     {ang:150.00,r:0.63,st:"queued",nm:"Assoc.Cab"},
@@ -661,7 +670,7 @@ File "C:\Users\Mike Woo Cerna\Documents\PB\Quality\VIP\vip_</div></td><td class=
     {ang:210.00,r:0.63,st:"queued",nm:"Kelowna"},
     {ang:225.00,r:0.44,st:"queued",nm:"Vermont"},
     {ang:240.00,r:0.63,st:"queued",nm:"YCDC"},
-    {ang:255.00,r:0.44,st:"running",nm:"Blueline"},
+    {ang:255.00,r:0.44,st:"fail",nm:"Blueline"},
   ];
 
   function draw() {
