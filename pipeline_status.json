@@ -1,7 +1,7 @@
 {
   "run_id": "2026-10-19T21:07:32",
   "started_at": "2026-10-19T21:07:32.060893",
-  "finished_at": null,
+  "finished_at": "2026-10-19T21:26:09.714788",
   "status": "failed",
   "failed_at": "Skyline",
   "steps": [
