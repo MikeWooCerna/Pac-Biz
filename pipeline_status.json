@@ -187,21 +187,22 @@
     {
       "account": "C&H",
       "script": "ch_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-19T15:05:51.423558",
+      "status": "checking",
+      "timestamp": "2026-10-19T15:05:56.010427",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-19T15:05:51.423546"
     },
     {
       "account": "Blueline",
       "script": "bl_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-19T15:04:25.529019",
+      "status": "running",
+      "timestamp": "2026-10-19T15:05:56.013263",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-19T15:05:56.013245"
     },
     {
       "account": "Reno Cab",
