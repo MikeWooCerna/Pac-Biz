@@ -137,21 +137,22 @@
     {
       "account": "R4H",
       "script": "r4h_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-19T15:05:21.528505",
+      "status": "checking",
+      "timestamp": "2026-10-19T15:05:25.481936",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-19T15:05:21.528492"
     },
     {
       "account": "Parentis Health",
       "script": "parentis_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-19T15:04:25.453437",
+      "status": "running",
+      "timestamp": "2026-10-19T15:05:25.485805",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-19T15:05:25.485793"
     },
     {
       "account": "Britelift",
