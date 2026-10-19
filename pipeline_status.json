@@ -167,30 +167,32 @@
     {
       "account": "Britelift Chat",
       "script": "britelift_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-19T15:05:43.541441",
+      "status": "checking",
+      "timestamp": "2026-10-19T15:05:47.846946",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-19T15:05:43.541428"
     },
     {
       "account": "RideX",
       "script": "Ridex_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-19T15:04:25.491311",
+      "status": "checking",
+      "timestamp": "2026-10-19T15:05:51.421117",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-10-19T15:05:47.849855"
     },
     {
       "account": "C&H",
       "script": "ch_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-19T15:04:25.505411",
+      "status": "running",
+      "timestamp": "2026-10-19T15:05:51.423558",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-19T15:05:51.423546"
     },
     {
       "account": "Blueline",
