@@ -117,30 +117,32 @@
     {
       "account": "M7",
       "script": "m7_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-19T15:05:13.476508",
+      "status": "checking",
+      "timestamp": "2026-10-19T15:05:17.275702",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-19T15:05:13.476483"
     },
     {
       "account": "DMG",
       "script": "dmg_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-19T15:04:25.434584",
+      "status": "checking",
+      "timestamp": "2026-10-19T15:05:21.514662",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-10-19T15:05:17.278681"
     },
     {
       "account": "R4H",
       "script": "r4h_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-19T15:04:25.443744",
+      "status": "running",
+      "timestamp": "2026-10-19T15:05:21.528505",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-19T15:05:21.528492"
     },
     {
       "account": "Parentis Health",

@@ -204,7 +204,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <div class="stat-card"><div class="sc-val" style="color:#00e87a;">2</div><div class="sc-lbl">Passed</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#ff3d3d;">0</div><div class="sc-lbl">Failed</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#E84500;">0</div><div class="sc-lbl">Not Reached</div></div>
-    <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">965</div><div class="sc-lbl">Rows Pulled</div></div>
+    <div class="stat-card"><div class="sc-val" style="color:#c0a0ff;">1,820</div><div class="sc-lbl">Rows Pulled</div></div>
     <div class="stat-card"><div class="sc-val" style="color:#7060a0;">&mdash;</div><div class="sc-lbl">running</div></div>
   </div>
 
@@ -242,33 +242,33 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
     <span class="meta-pill cnt-ok">&#10003;</span>
   </div>
 </div>
-<div class="node n-warn">
-  <div class="node-title" style="color:#ffaa00;"><span>M7</span><div class="blink-a"></div></div>
+<div class="node n-checking">
+  <div class="node-title" style="color:#22d3ee;"><span>M7</span><div class="blink-c"></div></div>
   <div class="node-row"><b class="b-n"></b>m7_pull.py &middot; 03:05 PM</div>
+  
+  <div class="node-meta">
+    <span class="meta-pill c">129 rows</span>
+    <span class="meta-pill c">CHECKING</span>
+    
+  </div>
+</div>
+<div class="node n-checking">
+  <div class="node-title" style="color:#22d3ee;"><span>DMG</span><div class="blink-c"></div></div>
+  <div class="node-row"><b class="b-n"></b>dmg_pull.py &middot; 03:05 PM</div>
+  
+  <div class="node-meta">
+    <span class="meta-pill c">726 rows</span>
+    <span class="meta-pill c">CHECKING</span>
+    
+  </div>
+</div>
+<div class="node n-warn">
+  <div class="node-title" style="color:#ffaa00;"><span>R4H</span><div class="blink-a"></div></div>
+  <div class="node-row"><b class="b-n"></b>r4h_pull.py &middot; 03:05 PM</div>
   
   <div class="node-meta">
     <span class="meta-pill a">&mdash; rows</span>
     <span class="meta-pill a">RUNNING</span>
-    
-  </div>
-</div>
-<div class="node n-queued">
-  <div class="node-title" style="color:#a78bfa;"><span>DMG</span><div class="blink-n"></div></div>
-  <div class="node-row"><b class="b-n"></b>dmg_pull.py &middot; 03:04 PM</div>
-  
-  <div class="node-meta">
-    <span class="meta-pill q">&mdash; rows</span>
-    <span class="meta-pill q">QUEUED</span>
-    
-  </div>
-</div>
-<div class="node n-queued">
-  <div class="node-title" style="color:#a78bfa;"><span>R4H</span><div class="blink-n"></div></div>
-  <div class="node-row"><b class="b-n"></b>r4h_pull.py &middot; 03:04 PM</div>
-  
-  <div class="node-meta">
-    <span class="meta-pill q">&mdash; rows</span>
-    <span class="meta-pill q">QUEUED</span>
     
   </div>
 </div>
@@ -358,7 +358,7 @@ body{background:#0a0018;min-height:100vh;font-family:system-ui,-apple-system,san
       <div class="agg-node">
         <div class="agg-title">Data Engine / Processing</div>
         <div class="agg-grid">
-          <div class="agg-item"><div class="agg-val" style="color:#00e87a;">965</div><div class="agg-lbl">total rows</div></div>
+          <div class="agg-item"><div class="agg-val" style="color:#00e87a;">1,820</div><div class="agg-lbl">total rows</div></div>
           <div class="agg-item">
             <div class="agg-val" style="display:flex;align-items:center;justify-content:center;gap:5px;">
               <div class="blink-g"></div>
@@ -640,9 +640,9 @@ File "C:\Users\Mike Woo Cerna\Documents\PB\Quality\VIP\vip_</div></td><td class=
   var blips = [
     {ang:-90.00,r:0.63,st:"pass",nm:"Masterlist"},
     {ang:-75.00,r:0.44,st:"pass",nm:"Coaching"},
-    {ang:-60.00,r:0.63,st:"running",nm:"M7"},
-    {ang:-45.00,r:0.44,st:"queued",nm:"DMG"},
-    {ang:-30.00,r:0.63,st:"queued",nm:"R4H"},
+    {ang:-60.00,r:0.63,st:"checking",nm:"M7"},
+    {ang:-45.00,r:0.44,st:"checking",nm:"DMG"},
+    {ang:-30.00,r:0.63,st:"running",nm:"R4H"},
     {ang:-15.00,r:0.44,st:"queued",nm:"Parentis"},
     {ang:0.00,r:0.63,st:"queued",nm:"Britelift"},
     {ang:15.00,r:0.44,st:"queued",nm:"BLC"},
