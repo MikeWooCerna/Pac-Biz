@@ -24,11 +24,12 @@
     {
       "account": "Skyline",
       "script": "Skyline_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-19T15:08:53.044427",
+      "status": "running",
+      "timestamp": "2026-10-19T15:08:55.861561",
       "lane": "Lane 1 - Skyline",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-19T15:08:55.861534"
     },
     {
       "account": "Hamilton",
