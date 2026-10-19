@@ -24,20 +24,22 @@
     {
       "account": "Skyline",
       "script": "Skyline_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-19T21:28:04.890018",
+      "status": "running",
+      "timestamp": "2026-10-19T21:28:08.670615",
       "lane": "Lane 1 - Skyline",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-19T21:28:08.670596"
     },
     {
       "account": "Hamilton",
       "script": "Hamilton_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-19T21:28:04.891661",
+      "status": "running",
+      "timestamp": "2026-10-19T21:28:23.671286",
       "lane": "Lane 2 - Hamilton",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-19T21:28:23.671266"
     },
     {
       "account": "VIP",
@@ -69,11 +71,12 @@
     {
       "account": "Data Carz",
       "script": "dc_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-19T21:28:04.935935",
+      "status": "running",
+      "timestamp": "2026-10-19T21:28:38.671552",
       "lane": "Lane 3 - Direct QA",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-19T21:28:38.671539"
     },
     {
       "account": "Associated Cab",
@@ -114,29 +117,32 @@
     {
       "account": "M7",
       "script": "m7_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-19T21:28:04.996905",
+      "status": "checking",
+      "timestamp": "2026-10-19T21:28:57.525962",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-10-19T21:28:53.672306"
     },
     {
       "account": "DMG",
       "script": "dmg_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-19T21:28:05.007754",
+      "status": "checking",
+      "timestamp": "2026-10-19T21:29:11.124863",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-10-19T21:28:57.529840"
     },
     {
       "account": "R4H",
       "script": "r4h_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-19T21:28:05.020690",
+      "status": "running",
+      "timestamp": "2026-10-19T21:29:11.141457",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-19T21:29:11.141443"
     },
     {
       "account": "Parentis Health",
