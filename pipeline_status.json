@@ -82,21 +82,22 @@
     {
       "account": "Associated Cab",
       "script": "ac_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-20T19:07:40.398997",
+      "status": "checking",
+      "timestamp": "2026-10-20T19:10:16.042829",
       "lane": "Lane 3 - Direct QA",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-20T19:07:40.398980"
     },
     {
       "account": "Ollies",
       "script": "ol_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-20T19:01:39.586977",
+      "status": "running",
+      "timestamp": "2026-10-20T19:10:16.045418",
       "lane": "Lane 3 - Direct QA",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-20T19:10:16.045404"
     },
     {
       "account": "Circle Taxi",
