@@ -167,48 +167,52 @@
     {
       "account": "Britelift Chat",
       "script": "britelift_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-20T19:04:24.718619",
+      "status": "checking",
+      "timestamp": "2026-10-20T19:04:29.191180",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-20T19:04:24.718604"
     },
     {
       "account": "RideX",
       "script": "Ridex_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-20T19:01:39.692571",
+      "status": "checking",
+      "timestamp": "2026-10-20T19:04:32.963444",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-10-20T19:04:29.194639"
     },
     {
       "account": "C&H",
       "script": "ch_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-20T19:01:39.704184",
+      "status": "checking",
+      "timestamp": "2026-10-20T19:04:38.312834",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-10-20T19:04:32.977398"
     },
     {
       "account": "Blueline",
       "script": "bl_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-20T19:01:39.716425",
+      "status": "checking",
+      "timestamp": "2026-10-20T19:04:43.296877",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-10-20T19:04:38.328421"
     },
     {
       "account": "Reno Cab",
       "script": "rc_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-20T19:01:39.728871",
+      "status": "running",
+      "timestamp": "2026-10-20T19:04:43.310091",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-20T19:04:43.310075"
     },
     {
       "account": "Kelowna",
