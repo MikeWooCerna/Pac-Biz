@@ -24,31 +24,32 @@
     {
       "account": "Skyline",
       "script": "Skyline_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-20T19:01:43.468588",
+      "status": "checking",
+      "timestamp": "2026-10-20T19:07:53.861563",
       "lane": "Lane 1 - Skyline",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-20T19:01:43.468574"
     },
     {
       "account": "Hamilton",
       "script": "Hamilton_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-20T19:01:58.469141",
+      "status": "checking",
+      "timestamp": "2026-10-20T19:08:01.190637",
       "lane": "Lane 2 - Hamilton",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-20T19:01:58.469127"
     },
     {
       "account": "VIP",
       "script": "vip_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-20T19:01:39.532409",
+      "status": "running",
+      "timestamp": "2026-10-20T19:08:01.204501",
       "lane": "Lane 2 - Hamilton",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-20T19:08:01.204489"
     },
     {
       "account": "Vermont",
@@ -208,21 +209,22 @@
     {
       "account": "Reno Cab",
       "script": "rc_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-20T19:04:43.310091",
+      "status": "checking",
+      "timestamp": "2026-10-20T19:08:24.896651",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-20T19:04:43.310075"
     },
     {
       "account": "Kelowna",
       "script": "kel_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-20T19:01:39.739201",
+      "status": "running",
+      "timestamp": "2026-10-20T19:08:24.911733",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-20T19:08:24.911718"
     },
     {
       "account": "YCDC",
