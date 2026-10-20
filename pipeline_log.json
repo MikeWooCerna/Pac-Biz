@@ -2,14 +2,6 @@
   {
     "run_id": "2026-08-24T18:57:03",
     "date": "Aug 24, 2026 06:57 PM",
-    "account": "Reno Cab",
-    "script": "rc_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-08-24T18:57:03",
-    "date": "Aug 24, 2026 06:57 PM",
     "account": "Trans Iowa",
     "script": "ti_pull.py",
     "status": "not_reached",
@@ -2507,5 +2499,14 @@
     "script": "Skyline_pull.py",
     "status": "fail",
     "error": "r.content\nFile \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\models.py\", line 1042, in content\nself._content = b\"\".join(self.iter_content(CONTENT_CHUNK_SIZE)) or b\"\"\n~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFile \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\models.py\", line 939, in generate\nraise ChunkedEncodingError(e)\nrequests.exceptions.ChunkedEncodingError: (\"Connection broken: ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None)\", ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))\n[notify] Email sent: Report Monitoring \ufffd FAILED: Skyline_pull.py"
+  },
+  {
+    "run_id": "2026-10-20T19:00:54",
+    "date": "Oct 20, 2026 07:00 PM",
+    "account": "Skyline",
+    "script": "Skyline_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Transient source failure protected the RAW file. Preserved local RAW has 20,837 rows vs baseline 20,837; pipeline continued using the last healthy file."
   }
 ]
