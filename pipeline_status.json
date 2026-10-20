@@ -157,21 +157,22 @@
     {
       "account": "Britelift",
       "script": "britelift_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-20T19:02:46.848561",
+      "status": "checking",
+      "timestamp": "2026-10-20T19:04:24.714884",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-20T19:02:46.848543"
     },
     {
       "account": "Britelift Chat",
       "script": "britelift_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-20T19:01:39.680673",
+      "status": "running",
+      "timestamp": "2026-10-20T19:04:24.718619",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-20T19:04:24.718604"
     },
     {
       "account": "RideX",
