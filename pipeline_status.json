@@ -44,21 +44,22 @@
     {
       "account": "VIP",
       "script": "vip_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-22T19:13:47.612870",
+      "status": "checking",
+      "timestamp": "2026-10-22T19:17:08.366315",
       "lane": "Lane 2 - Hamilton",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-22T19:13:47.612857"
     },
     {
       "account": "Vermont",
       "script": "vt_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-22T19:07:58.459843",
+      "status": "running",
+      "timestamp": "2026-10-22T19:17:08.378977",
       "lane": "Lane 2 - Hamilton",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-22T19:17:08.378965"
     },
     {
       "account": "Trans Iowa",
@@ -220,21 +221,22 @@
     {
       "account": "Kelowna",
       "script": "kel_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-22T19:14:04.655799",
+      "status": "checking",
+      "timestamp": "2026-10-22T19:16:32.024819",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-22T19:14:04.655787"
     },
     {
       "account": "YCDC",
       "script": "ycdc_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-22T19:07:58.653439",
+      "status": "running",
+      "timestamp": "2026-10-22T19:16:32.027790",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-22T19:16:32.027779"
     }
   ]
 }
