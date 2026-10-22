@@ -157,39 +157,42 @@
     {
       "account": "Britelift",
       "script": "britelift_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-22T19:09:03.673738",
+      "status": "checking",
+      "timestamp": "2026-10-22T19:09:07.522484",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-22T19:09:03.673728"
     },
     {
       "account": "Britelift Chat",
       "script": "britelift_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-22T19:07:58.587316",
+      "status": "checking",
+      "timestamp": "2026-10-22T19:09:11.751807",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-10-22T19:09:07.525083"
     },
     {
       "account": "RideX",
       "script": "Ridex_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-22T19:07:58.597293",
+      "status": "checking",
+      "timestamp": "2026-10-22T19:09:15.358103",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-10-22T19:09:11.764894"
     },
     {
       "account": "C&H",
       "script": "ch_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-22T19:07:58.607592",
+      "status": "running",
+      "timestamp": "2026-10-22T19:09:15.370777",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-22T19:09:15.370766"
     },
     {
       "account": "Blueline",
