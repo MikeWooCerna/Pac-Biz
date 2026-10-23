@@ -2,14 +2,6 @@
   {
     "run_id": "2026-08-24T18:57:03",
     "date": "Aug 24, 2026 06:57 PM",
-    "account": "Data Carz",
-    "script": "dc_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-08-24T18:57:03",
-    "date": "Aug 24, 2026 06:57 PM",
     "account": "Associated Cab",
     "script": "ac_pull.py",
     "status": "not_reached",
@@ -2504,6 +2496,15 @@
   {
     "run_id": "2026-10-21T18:55:58",
     "date": "Oct 21, 2026 06:55 PM",
+    "account": "Skyline",
+    "script": "Skyline_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Transient source failure protected the RAW file. Preserved local RAW has 20,837 rows vs baseline 20,837; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-10-23T19:45:36",
+    "date": "Oct 23, 2026 07:45 PM",
     "account": "Skyline",
     "script": "Skyline_pull.py",
     "status": "healed",
