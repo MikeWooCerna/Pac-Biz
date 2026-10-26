@@ -157,57 +157,62 @@
     {
       "account": "Britelift",
       "script": "britelift_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-26T19:02:45.944004",
+      "status": "checking",
+      "timestamp": "2026-10-26T19:02:50.029198",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-26T19:02:45.943989"
     },
     {
       "account": "Britelift Chat",
       "script": "britelift_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-26T19:01:40.679852",
+      "status": "checking",
+      "timestamp": "2026-10-26T19:02:55.403097",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-10-26T19:02:50.031742"
     },
     {
       "account": "RideX",
       "script": "Ridex_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-26T19:01:40.689569",
+      "status": "checking",
+      "timestamp": "2026-10-26T19:02:59.190119",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-10-26T19:02:55.416814"
     },
     {
       "account": "C&H",
       "script": "ch_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-26T19:01:40.700478",
+      "status": "checking",
+      "timestamp": "2026-10-26T19:03:03.464700",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-10-26T19:02:59.203293"
     },
     {
       "account": "Blueline",
       "script": "bl_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-26T19:01:40.712500",
+      "status": "checking",
+      "timestamp": "2026-10-26T19:03:07.737335",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-10-26T19:03:03.477381"
     },
     {
       "account": "Reno Cab",
       "script": "rc_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-26T19:01:40.723528",
+      "status": "running",
+      "timestamp": "2026-10-26T19:03:07.749505",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-26T19:03:07.749493"
     },
     {
       "account": "Kelowna",
