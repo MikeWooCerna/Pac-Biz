@@ -54,21 +54,22 @@
     {
       "account": "Vermont",
       "script": "vt_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-26T19:12:29.350007",
+      "status": "checking",
+      "timestamp": "2026-10-26T19:13:36.210100",
       "lane": "Lane 2 - Hamilton",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-26T19:12:29.349992"
     },
     {
       "account": "Trans Iowa",
       "script": "ti_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-26T19:01:40.565170",
+      "status": "checking",
+      "timestamp": "2026-10-26T19:14:05.374857",
       "lane": "Lane 2 - Hamilton",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-10-26T19:13:36.213642"
     },
     {
       "account": "Data Carz",
@@ -231,10 +232,10 @@
     {
       "account": "YCDC",
       "script": "ycdc_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-26T19:10:49.375215",
+      "status": "checking",
+      "timestamp": "2026-10-26T19:13:58.642434",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-26T19:10:49.375201"
     }
