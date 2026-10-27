@@ -2,22 +2,6 @@
   {
     "run_id": "2026-08-24T18:57:03",
     "date": "Aug 24, 2026 06:57 PM",
-    "account": "YCOV",
-    "script": "ycov_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-08-24T18:57:03",
-    "date": "Aug 24, 2026 06:57 PM",
-    "account": "Kelowna",
-    "script": "kel_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-08-24T18:57:03",
-    "date": "Aug 24, 2026 06:57 PM",
     "account": "Vermont",
     "script": "vt_pull.py",
     "status": "not_reached",
@@ -2508,6 +2492,24 @@
   {
     "run_id": "2026-10-26T19:00:57",
     "date": "Oct 26, 2026 07:00 PM",
+    "account": "Skyline",
+    "script": "Skyline_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Transient source failure protected the RAW file. Preserved local RAW has 20,837 rows vs baseline 20,837; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-10-27T18:50:53",
+    "date": "Oct 27, 2026 06:50 PM",
+    "account": "C&H",
+    "script": "ch_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 488 rows vs baseline 488; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-10-27T18:50:53",
+    "date": "Oct 27, 2026 06:50 PM",
     "account": "Skyline",
     "script": "Skyline_pull.py",
     "status": "healed",
