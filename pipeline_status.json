@@ -44,30 +44,32 @@
     {
       "account": "VIP",
       "script": "vip_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-28T23:07:29.334323",
+      "status": "checking",
+      "timestamp": "2026-10-28T23:10:24.220155",
       "lane": "Lane 2 - Hamilton",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-28T23:07:29.334307"
     },
     {
       "account": "Vermont",
       "script": "vt_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-28T22:57:25.811637",
+      "status": "checking",
+      "timestamp": "2026-10-28T23:10:59.267017",
       "lane": "Lane 2 - Hamilton",
-      "exit_code": null,
-      "error": null
+      "exit_code": 0,
+      "error": null,
+      "started_at": "2026-10-28T23:10:24.222930"
     },
     {
       "account": "Trans Iowa",
       "script": "ti_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-28T22:57:25.822868",
+      "status": "running",
+      "timestamp": "2026-10-28T23:10:59.277995",
       "lane": "Lane 2 - Hamilton",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-28T23:10:59.277985"
     },
     {
       "account": "Data Carz",
@@ -102,21 +104,22 @@
     {
       "account": "Circle Taxi",
       "script": "ct_pull.py",
-      "status": "running",
-      "timestamp": "2026-10-28T23:09:34.997379",
+      "status": "checking",
+      "timestamp": "2026-10-28T23:10:46.123765",
       "lane": "Lane 3 - Direct QA",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-10-28T23:09:34.997367"
     },
     {
       "account": "YCOV",
       "script": "ycov_pull.py",
-      "status": "queued",
-      "timestamp": "2026-10-28T22:57:25.883736",
+      "status": "running",
+      "timestamp": "2026-10-28T23:10:46.135353",
       "lane": "Lane 3 - Direct QA",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-10-28T23:10:46.135342"
     },
     {
       "account": "M7",
