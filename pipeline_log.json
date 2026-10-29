@@ -2,14 +2,6 @@
   {
     "run_id": "2026-08-24T18:57:03",
     "date": "Aug 24, 2026 06:57 PM",
-    "account": "Blueline",
-    "script": "bl_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-08-24T18:57:03",
-    "date": "Aug 24, 2026 06:57 PM",
     "account": "parentis_pull.py",
     "script": "parentis_pull.py",
     "status": "healed",
@@ -2517,5 +2509,14 @@
     "status": "healed",
     "action": "retry",
     "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-10-29T19:06:57",
+    "date": "Oct 29, 2026 07:06 PM",
+    "account": "Skyline",
+    "script": "Skyline_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Transient source failure protected the RAW file. Preserved local RAW has 20,837 rows vs baseline 20,837; pipeline continued using the last healthy file."
   }
 ]
