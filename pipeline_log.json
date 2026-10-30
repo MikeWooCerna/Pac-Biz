@@ -1,22 +1,5 @@
 [
   {
-    "run_id": "2026-08-24T18:57:03",
-    "date": "Aug 24, 2026 06:57 PM",
-    "account": "parentis_pull.py",
-    "script": "parentis_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
-    "run_id": "2026-08-24T18:57:03",
-    "date": "Aug 24, 2026 06:57 PM",
-    "account": "Skyline",
-    "script": "Skyline_pull.py",
-    "status": "high_volume",
-    "error": "CRITICAL: 20,835 rows (threshold 20,000)"
-  },
-  {
     "run_id": "2026-08-25T22:11:24",
     "date": "Aug 25, 2026 10:11 PM",
     "account": "r4h_pull.py",
@@ -2518,5 +2501,23 @@
     "status": "healed",
     "action": "guarded-preserve",
     "error": "Transient source failure protected the RAW file. Preserved local RAW has 20,837 rows vs baseline 20,837; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-10-30T21:07:07",
+    "date": "Oct 30, 2026 09:07 PM",
+    "account": "Skyline",
+    "script": "Skyline_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Transient source failure protected the RAW file. Preserved local RAW has 20,837 rows vs baseline 20,837; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-10-30T21:07:07",
+    "date": "Oct 30, 2026 09:07 PM",
+    "account": "dc_pull.py",
+    "script": "dc_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
   }
 ]
