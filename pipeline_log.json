@@ -2,15 +2,6 @@
   {
     "run_id": "2026-08-25T22:11:24",
     "date": "Aug 25, 2026 10:11 PM",
-    "account": "r4h_pull.py",
-    "script": "r4h_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
-    "run_id": "2026-08-25T22:11:24",
-    "date": "Aug 25, 2026 10:11 PM",
     "account": "Trans Iowa",
     "script": "ti_pull.py",
     "status": "healed",
@@ -2519,5 +2510,14 @@
     "status": "healed",
     "action": "retry",
     "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-10-31T21:21:18",
+    "date": "Oct 31, 2026 09:21 PM",
+    "account": "Skyline",
+    "script": "Skyline_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Transient source failure protected the RAW file. Preserved local RAW has 20,837 rows vs baseline 20,837; pipeline continued using the last healthy file."
   }
 ]
