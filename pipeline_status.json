@@ -3,7 +3,7 @@
   "started_at": "2026-11-03T22:05:35.172616",
   "finished_at": null,
   "status": "failed",
-  "failed_at": "Data Carz",
+  "failed_at": "Kelowna",
   "steps": [
     {
       "account": "Masterlist",
@@ -24,222 +24,242 @@
     {
       "account": "Skyline",
       "script": "Skyline_pull.py",
-      "status": "running",
-      "timestamp": "2026-11-03T22:06:13.697938",
+      "status": "pass",
+      "timestamp": "2026-11-03T22:32:14.616684",
       "lane": "Lane 1 - Skyline",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
-      "started_at": "2026-11-03T22:06:13.697925"
+      "started_at": "2026-11-03T22:06:13.697925",
+      "rows": 20837
     },
     {
       "account": "Hamilton",
       "script": "Hamilton_pull.py",
-      "status": "checking",
-      "timestamp": "2026-11-03T22:19:56.069830",
+      "status": "pass",
+      "timestamp": "2026-11-03T22:32:14.743060",
       "lane": "Lane 2 - Hamilton",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-11-03T22:06:28.697117"
+      "started_at": "2026-11-03T22:06:28.697117",
+      "rows": 4776
     },
     {
       "account": "VIP",
       "script": "vip_pull.py",
-      "status": "checking",
-      "timestamp": "2026-11-03T22:25:05.182139",
+      "status": "pass",
+      "timestamp": "2026-11-03T22:32:14.861115",
       "lane": "Lane 2 - Hamilton",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-11-03T22:19:56.072143"
+      "started_at": "2026-11-03T22:19:56.072143",
+      "rows": 4620
     },
     {
       "account": "Vermont",
       "script": "vt_pull.py",
-      "status": "checking",
-      "timestamp": "2026-11-03T22:26:46.074156",
+      "status": "pass",
+      "timestamp": "2026-11-03T22:32:14.896812",
       "lane": "Lane 2 - Hamilton",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-11-03T22:25:05.185032"
+      "started_at": "2026-11-03T22:25:05.185032",
+      "rows": 713
     },
     {
       "account": "Trans Iowa",
       "script": "ti_pull.py",
-      "status": "checking",
-      "timestamp": "2026-11-03T22:27:45.233391",
+      "status": "pass",
+      "timestamp": "2026-11-03T22:32:14.915418",
       "lane": "Lane 2 - Hamilton",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-11-03T22:26:46.076805"
+      "started_at": "2026-11-03T22:26:46.076805",
+      "rows": 119
     },
     {
       "account": "Data Carz",
       "script": "dc_pull.py",
       "status": "fail",
-      "timestamp": "2026-11-03T22:16:09.589317",
+      "timestamp": "2026-11-03T22:32:14.926039",
       "lane": "Lane 3 - Direct QA",
       "exit_code": 1,
-      "error": "File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\sessions.py\", line 651, in request\nresp = self.send(prep, **send_kwargs)\nFile \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\sessions.py\", line 784, in send\nr = adapter.send(request, **kwargs)\nFile \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\adapters.py\", line 711, in send\nraise ConnectionError(err, request=request)\nrequests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))\n[notify] Email sent: Report Monitoring \ufffd FAILED: dc_pull.py",
+      "error": "Pull process failed; validation was not attempted.",
       "started_at": "2026-11-03T22:06:43.695821"
     },
     {
       "account": "Associated Cab",
       "script": "ac_pull.py",
-      "status": "checking",
-      "timestamp": "2026-11-03T22:21:11.110396",
+      "status": "pass",
+      "timestamp": "2026-11-03T22:32:15.048253",
       "lane": "Lane 3 - Direct QA",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-11-03T22:16:09.591611"
+      "started_at": "2026-11-03T22:16:09.591611",
+      "rows": 3527
     },
     {
       "account": "Ollies",
       "script": "ol_pull.py",
-      "status": "checking",
-      "timestamp": "2026-11-03T22:27:57.128786",
+      "status": "pass",
+      "timestamp": "2026-11-03T22:32:15.121414",
       "lane": "Lane 3 - Direct QA",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-11-03T22:21:11.113514"
+      "started_at": "2026-11-03T22:21:11.113514",
+      "rows": 2646
     },
     {
       "account": "Circle Taxi",
       "script": "ct_pull.py",
-      "status": "checking",
-      "timestamp": "2026-11-03T22:30:16.326290",
+      "status": "pass",
+      "timestamp": "2026-11-03T22:32:15.185754",
       "lane": "Lane 3 - Direct QA",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-11-03T22:27:57.132995"
+      "started_at": "2026-11-03T22:27:57.132995",
+      "rows": 2006
     },
     {
       "account": "YCOV",
       "script": "ycov_pull.py",
-      "status": "checking",
-      "timestamp": "2026-11-03T22:31:46.437591",
+      "status": "pass",
+      "timestamp": "2026-11-03T22:32:15.238505",
       "lane": "Lane 3 - Direct QA",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-11-03T22:30:16.330148"
+      "started_at": "2026-11-03T22:30:16.330148",
+      "rows": 1238
     },
     {
       "account": "M7",
       "script": "m7_pull.py",
-      "status": "checking",
-      "timestamp": "2026-11-03T22:07:02.695490",
+      "status": "pass",
+      "timestamp": "2026-11-03T22:32:15.265907",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-11-03T22:06:58.694290"
+      "started_at": "2026-11-03T22:06:58.694290",
+      "rows": 129
     },
     {
       "account": "DMG",
       "script": "dmg_pull.py",
-      "status": "checking",
-      "timestamp": "2026-11-03T22:07:06.078799",
+      "status": "pass",
+      "timestamp": "2026-11-03T22:32:15.294620",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-11-03T22:07:02.708265"
+      "started_at": "2026-11-03T22:07:02.708265",
+      "rows": 777
     },
     {
       "account": "R4H",
       "script": "r4h_pull.py",
-      "status": "checking",
-      "timestamp": "2026-11-03T22:07:09.803969",
+      "status": "pass",
+      "timestamp": "2026-11-03T22:32:15.316924",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-11-03T22:07:06.091170"
+      "started_at": "2026-11-03T22:07:06.091170",
+      "rows": 188
     },
     {
       "account": "Parentis Health",
       "script": "parentis_pull.py",
-      "status": "checking",
-      "timestamp": "2026-11-03T22:07:13.622201",
+      "status": "pass",
+      "timestamp": "2026-11-03T22:32:15.335951",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-11-03T22:07:09.815314"
+      "started_at": "2026-11-03T22:07:09.815314",
+      "rows": 69
     },
     {
       "account": "Britelift",
       "script": "britelift_pull.py",
-      "status": "checking",
-      "timestamp": "2026-11-03T22:07:17.203272",
+      "status": "pass",
+      "timestamp": "2026-11-03T22:32:15.364508",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-11-03T22:07:13.636468"
+      "started_at": "2026-11-03T22:07:13.636468",
+      "rows": 139
     },
     {
       "account": "Britelift Chat",
       "script": "britelift_pull.py",
-      "status": "checking",
-      "timestamp": "2026-11-03T22:07:21.132123",
+      "status": "pass",
+      "timestamp": "2026-11-03T22:32:15.389343",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-11-03T22:07:17.208340"
+      "started_at": "2026-11-03T22:07:17.208340",
+      "rows": 310
     },
     {
       "account": "RideX",
       "script": "Ridex_pull.py",
-      "status": "checking",
-      "timestamp": "2026-11-03T22:07:24.675616",
+      "status": "pass",
+      "timestamp": "2026-11-03T22:32:15.408405",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-11-03T22:07:21.145126"
+      "started_at": "2026-11-03T22:07:21.145126",
+      "rows": 118
     },
     {
       "account": "C&H",
       "script": "ch_pull.py",
-      "status": "checking",
-      "timestamp": "2026-11-03T22:07:29.125431",
+      "status": "pass",
+      "timestamp": "2026-11-03T22:32:15.439770",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-11-03T22:07:24.687688"
+      "started_at": "2026-11-03T22:07:24.687688",
+      "rows": 488
     },
     {
       "account": "Blueline",
       "script": "bl_pull.py",
-      "status": "checking",
-      "timestamp": "2026-11-03T22:07:33.204889",
+      "status": "pass",
+      "timestamp": "2026-11-03T22:32:15.468459",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-11-03T22:07:29.138293"
+      "started_at": "2026-11-03T22:07:29.138293",
+      "rows": 460
     },
     {
       "account": "Reno Cab",
       "script": "rc_pull.py",
-      "status": "checking",
-      "timestamp": "2026-11-03T22:12:44.181471",
+      "status": "pass",
+      "timestamp": "2026-11-03T22:32:15.572138",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-11-03T22:07:33.216395"
+      "started_at": "2026-11-03T22:07:33.216395",
+      "rows": 3835
     },
     {
       "account": "Kelowna",
       "script": "kel_pull.py",
       "status": "fail",
-      "timestamp": "2026-11-03T22:16:05.711310",
+      "timestamp": "2026-11-03T22:32:15.583501",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": 1,
-      "error": "File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\sessions.py\", line 651, in request\nresp = self.send(prep, **send_kwargs)\nFile \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\sessions.py\", line 784, in send\nr = adapter.send(request, **kwargs)\nFile \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\adapters.py\", line 711, in send\nraise ConnectionError(err, request=request)\nrequests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))\n[notify] Email sent: Report Monitoring \ufffd FAILED: kel_pull.py",
+      "error": "Pull process failed; validation was not attempted.",
       "started_at": "2026-11-03T22:12:44.184555"
     },
     {
       "account": "YCDC",
       "script": "ycdc_pull.py",
-      "status": "checking",
-      "timestamp": "2026-11-03T22:20:57.694227",
+      "status": "pass",
+      "timestamp": "2026-11-03T22:32:15.677200",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": 0,
       "error": null,
-      "started_at": "2026-11-03T22:16:05.714169"
+      "started_at": "2026-11-03T22:16:05.714169",
+      "rows": 3521
     }
   ]
 }
