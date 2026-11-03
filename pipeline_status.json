@@ -3,7 +3,7 @@
   "started_at": "2026-11-03T22:05:35.172616",
   "finished_at": null,
   "status": "failed",
-  "failed_at": "Kelowna",
+  "failed_at": "Data Carz",
   "steps": [
     {
       "account": "Masterlist",
@@ -71,21 +71,22 @@
     {
       "account": "Data Carz",
       "script": "dc_pull.py",
-      "status": "running",
-      "timestamp": "2026-11-03T22:06:43.695839",
+      "status": "fail",
+      "timestamp": "2026-11-03T22:16:09.589317",
       "lane": "Lane 3 - Direct QA",
-      "exit_code": null,
-      "error": null,
+      "exit_code": 1,
+      "error": "File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\sessions.py\", line 651, in request\nresp = self.send(prep, **send_kwargs)\nFile \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\sessions.py\", line 784, in send\nr = adapter.send(request, **kwargs)\nFile \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\adapters.py\", line 711, in send\nraise ConnectionError(err, request=request)\nrequests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))\n[notify] Email sent: Report Monitoring \ufffd FAILED: dc_pull.py",
       "started_at": "2026-11-03T22:06:43.695821"
     },
     {
       "account": "Associated Cab",
       "script": "ac_pull.py",
-      "status": "queued",
-      "timestamp": "2026-11-03T22:06:09.775648",
+      "status": "running",
+      "timestamp": "2026-11-03T22:16:09.591622",
       "lane": "Lane 3 - Direct QA",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-11-03T22:16:09.591611"
     },
     {
       "account": "Ollies",
