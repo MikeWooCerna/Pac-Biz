@@ -2,23 +2,6 @@
   {
     "run_id": "2026-08-27T18:33:54",
     "date": "Aug 27, 2026 06:33 PM",
-    "account": "Blueline",
-    "script": "bl_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
-    "run_id": "2026-08-27T18:33:54",
-    "date": "Aug 27, 2026 06:33 PM",
-    "account": "r4h_pull.py",
-    "script": "r4h_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
-    "run_id": "2026-08-27T18:33:54",
-    "date": "Aug 27, 2026 06:33 PM",
     "account": "Trans Iowa",
     "script": "ti_pull.py",
     "status": "healed",
@@ -2520,5 +2503,21 @@
     "status": "healed",
     "action": "retry",
     "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-11-03T22:05:35",
+    "date": "Nov 03, 2026 10:05 PM",
+    "account": "Kelowna",
+    "script": "kel_pull.py",
+    "status": "fail",
+    "error": "File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\sessions.py\", line 651, in request\nresp = self.send(prep, **send_kwargs)\nFile \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\sessions.py\", line 784, in send\nr = adapter.send(request, **kwargs)\nFile \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\adapters.py\", line 711, in send\nraise ConnectionError(err, request=request)\nrequests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))\n[notify] Email sent: Report Monitoring \ufffd FAILED: kel_pull.py"
+  },
+  {
+    "run_id": "2026-11-03T22:05:35",
+    "date": "Nov 03, 2026 10:05 PM",
+    "account": "Skyline",
+    "script": "Skyline_pull.py",
+    "status": "high_volume",
+    "error": "CRITICAL: 20,837 rows (threshold 20,000)"
   }
 ]
