@@ -1,57 +1,5 @@
 [
   {
-    "run_id": "2026-08-26T19:10:18",
-    "date": "Aug 26, 2026 07:10 PM",
-    "account": "britelift_pull.py",
-    "script": "britelift_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
-    "run_id": "2026-08-26T19:10:18",
-    "date": "Aug 26, 2026 07:10 PM",
-    "account": "Trans Iowa",
-    "script": "ti_pull.py",
-    "status": "healed",
-    "action": "guarded-preserve",
-    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 110 rows vs baseline 110; pipeline continued using the last healthy file."
-  },
-  {
-    "run_id": "2026-08-26T19:10:18",
-    "date": "Aug 26, 2026 07:10 PM",
-    "account": "kel_pull.py",
-    "script": "kel_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
-    "run_id": "2026-08-26T19:10:18",
-    "date": "Aug 26, 2026 07:10 PM",
-    "account": "YCDC",
-    "script": "ycdc_pull.py",
-    "status": "healed",
-    "action": "guarded-preserve",
-    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 3,521 rows vs baseline 3,521; pipeline continued using the last healthy file."
-  },
-  {
-    "run_id": "2026-08-27T18:33:54",
-    "date": "Aug 27, 2026 06:33 PM",
-    "account": "Vermont",
-    "script": "vt_pull.py",
-    "status": "fail",
-    "error": "    return wrapped(*args, **kwargs)\n  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\googleapiclient\\http.py\", line 938, in execute\n    raise HttpError(resp, content, uri=self.uri)\ngoogleapiclient.errors.HttpError: <HttpError 503 when requesting https://sheets.googleapis.com/v4/spreadsheets/1DB-yjowB-Uiz3UdWIE8EYBsmdv4caqG1qwlv3TT3fSU/values/VT_Evaluations?alt=json returned \"The service is currently unavailable.\". Details: \"The service is currently unavailable.\">"
-  },
-  {
-    "run_id": "2026-08-27T18:33:54",
-    "date": "Aug 27, 2026 06:33 PM",
-    "account": "YCDC",
-    "script": "ycdc_pull.py",
-    "status": "not_reached",
-    "error": null
-  },
-  {
     "run_id": "2026-08-27T18:33:54",
     "date": "Aug 27, 2026 06:33 PM",
     "account": "Blueline",
@@ -2519,5 +2467,58 @@
     "status": "healed",
     "action": "guarded-preserve",
     "error": "Transient source failure protected the RAW file. Preserved local RAW has 20,837 rows vs baseline 20,837; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-11-03T21:33:32",
+    "date": "Nov 03, 2026 09:33 PM",
+    "account": "Skyline",
+    "script": "Skyline_pull.py",
+    "status": "fail",
+    "error": "r.content\nFile \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\models.py\", line 1042, in content\nself._content = b\"\".join(self.iter_content(CONTENT_CHUNK_SIZE)) or b\"\"\n~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFile \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\models.py\", line 939, in generate\nraise ChunkedEncodingError(e)\nrequests.exceptions.ChunkedEncodingError: (\"Connection broken: ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None)\", ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))\n[notify] Email sent: Report Monitoring \ufffd FAILED: Skyline_pull.py"
+  },
+  {
+    "run_id": "2026-11-03T21:33:32",
+    "date": "Nov 03, 2026 09:33 PM",
+    "account": "Hamilton",
+    "script": "Hamilton_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Transient source failure protected the RAW file. Preserved local RAW has 4,776 rows vs baseline 4,776; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-11-03T21:33:32",
+    "date": "Nov 03, 2026 09:33 PM",
+    "account": "vip_pull.py",
+    "script": "vip_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-11-03T21:33:32",
+    "date": "Nov 03, 2026 09:33 PM",
+    "account": "vt_pull.py",
+    "script": "vt_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-11-03T21:33:32",
+    "date": "Nov 03, 2026 09:33 PM",
+    "account": "ycdc_pull.py",
+    "script": "ycdc_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
+  },
+  {
+    "run_id": "2026-11-03T21:33:32",
+    "date": "Nov 03, 2026 09:33 PM",
+    "account": "ol_pull.py",
+    "script": "ol_pull.py",
+    "status": "healed",
+    "action": "retry",
+    "error": "Failed on attempt 1, recovered automatically on retry."
   }
 ]
