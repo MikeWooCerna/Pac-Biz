@@ -1,0 +1,56 @@
+--- a/Quality/Data Carz/dc_pull.py
++++ b/Quality/Data Carz/dc_pull.py
+@@ -2,1 +2,2 @@
+ import os
++import time
+@@ -40,1 +41,2 @@
+ REQUEST_TIMEOUT_SECONDS = 60
++REQUEST_MAX_ATTEMPTS = 4
+@@ -367,13 +369,34 @@
+-    response = session.get(
+-        f"{QA_BASE_URL}/api/v1/reports/evaluations",
+-        params={
+-            "start_date": start_date.isoformat(),
+-            "end_date": end_date.isoformat(),
+-            "account": QA_ACCOUNT_ID,
+-        },
+-        headers={"Authorization": f"Bearer {token}"},
+-        timeout=REQUEST_TIMEOUT_SECONDS,
+-    )
+-    response.raise_for_status()
+-    payload = response.json()
+-    return payload.get("data") or []
++    for attempt in range(1, REQUEST_MAX_ATTEMPTS + 1):
++        try:
++            response = session.get(
++                f"{QA_BASE_URL}/api/v1/reports/evaluations",
++                params={
++                    "start_date": start_date.isoformat(),
++                    "end_date": end_date.isoformat(),
++                    "account": QA_ACCOUNT_ID,
++                },
++                headers={"Authorization": f"Bearer {token}"},
++                timeout=REQUEST_TIMEOUT_SECONDS,
++            )
++            response.raise_for_status()
++            payload = response.json()
++            return payload.get("data") or []
++        except (requests.RequestException, ValueError) as exc:
++            if isinstance(exc, requests.HTTPError):
++                status = exc.response.status_code if exc.response is not None else None
++                if status is None or (status < 500 and status not in (408, 429)):
++                    raise
++            if attempt == REQUEST_MAX_ATTEMPTS:
++                raise RuntimeError(
++                    f"Data Carz API failed after {REQUEST_MAX_ATTEMPTS} attempts for "
++                    f"{start_date.isoformat()} to {end_date.isoformat()}: "
++                    f"{type(exc).__name__}"
++                ) from exc
++            delay = 3 * attempt
++            print(
++                f"Data Carz API request interrupted for {start_date.isoformat()} to "
++                f"{end_date.isoformat()} ({type(exc).__name__}, "
++                f"attempt {attempt}/{REQUEST_MAX_ATTEMPTS}); retrying in {delay}s.",
++                flush=True,
++            )
++            time.sleep(delay)
