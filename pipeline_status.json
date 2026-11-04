@@ -2,8 +2,8 @@
   "run_id": "2026-11-04T20:21:34",
   "started_at": "2026-11-04T20:21:34.380983",
   "finished_at": null,
-  "status": "running",
-  "failed_at": null,
+  "status": "failed",
+  "failed_at": "Ollies",
   "steps": [
     {
       "account": "Masterlist",
@@ -94,21 +94,22 @@
     {
       "account": "Ollies",
       "script": "ol_pull.py",
-      "status": "running",
-      "timestamp": "2026-11-04T20:39:32.305145",
+      "status": "fail",
+      "timestamp": "2026-11-04T20:44:32.450313",
       "lane": "Lane 3 - Direct QA",
-      "exit_code": null,
-      "error": null,
+      "exit_code": 1,
+      "error": "File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\sessions.py\", line 651, in request\nresp = self.send(prep, **send_kwargs)\nFile \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\sessions.py\", line 784, in send\nr = adapter.send(request, **kwargs)\nFile \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\requests\\adapters.py\", line 711, in send\nraise ConnectionError(err, request=request)\nrequests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None))\n[notify] Email sent: Report Monitoring \ufffd FAILED: ol_pull.py",
       "started_at": "2026-11-04T20:39:32.305129"
     },
     {
       "account": "Circle Taxi",
       "script": "ct_pull.py",
-      "status": "queued",
-      "timestamp": "2026-11-04T20:22:15.231155",
+      "status": "running",
+      "timestamp": "2026-11-04T20:44:32.453845",
       "lane": "Lane 3 - Direct QA",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-11-04T20:44:32.453830"
     },
     {
       "account": "YCOV",
