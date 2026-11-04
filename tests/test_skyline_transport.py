@@ -74,5 +74,9 @@ class KelownaTransportTests(SkylineTransportTests):
     script = "Kelowna/kel_pull.py"
 
 
+class OlliesTransportTests(SkylineTransportTests):
+    script = "Ollies/ol_pull.py"
+
+
 if __name__ == "__main__":
     unittest.main()

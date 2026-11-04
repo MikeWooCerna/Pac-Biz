@@ -15,6 +15,9 @@ the same handling to Data Carz and Kelowna, which failed with the same
 connection reset during the recovery run. They also add the `time` import
 needed for backoff. All three scripts are covered by the transport tests.
 
+`ollies_transport_retry.patch` adds the same proven handling for Ollies after
+the November 4 refresh exposed the identical interrupted-response failure.
+
 On another PC, apply this patch from its `PB` folder using
 `git apply --unidiff-zero Masterlist/patches/skyline_transport_retry.patch`
 (or merge the same hunks manually). Run from `Masterlist` afterward:
