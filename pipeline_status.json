@@ -34,21 +34,22 @@
     {
       "account": "Hamilton",
       "script": "Hamilton_pull.py",
-      "status": "running",
-      "timestamp": "2026-11-12T19:34:09.395506",
+      "status": "checking",
+      "timestamp": "2026-11-12T19:41:02.964052",
       "lane": "Lane 2 - Hamilton",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-11-12T19:34:09.395484"
     },
     {
       "account": "VIP",
       "script": "vip_pull.py",
-      "status": "queued",
-      "timestamp": "2026-11-12T19:33:50.737735",
+      "status": "running",
+      "timestamp": "2026-11-12T19:41:02.977750",
       "lane": "Lane 2 - Hamilton",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-11-12T19:41:02.977738"
     },
     {
       "account": "Vermont",
@@ -71,21 +72,22 @@
     {
       "account": "Data Carz",
       "script": "dc_pull.py",
-      "status": "running",
-      "timestamp": "2026-11-12T19:34:24.394872",
+      "status": "checking",
+      "timestamp": "2026-11-12T19:40:25.895137",
       "lane": "Lane 3 - Direct QA",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-11-12T19:34:24.394856"
     },
     {
       "account": "Associated Cab",
       "script": "ac_pull.py",
-      "status": "queued",
-      "timestamp": "2026-11-12T19:33:50.784746",
+      "status": "running",
+      "timestamp": "2026-11-12T19:40:25.898846",
       "lane": "Lane 3 - Direct QA",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-11-12T19:40:25.898833"
     },
     {
       "account": "Ollies",
