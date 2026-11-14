@@ -1,14 +1,5 @@
 [
   {
-    "run_id": "2026-08-28T20:59:11",
-    "date": "Aug 28, 2026 08:59 PM",
-    "account": "ycov_pull.py",
-    "script": "ycov_pull.py",
-    "status": "healed",
-    "action": "retry",
-    "error": "Failed on attempt 1, recovered automatically on retry."
-  },
-  {
     "run_id": "2026-08-31T19:10:53",
     "date": "Aug 31, 2026 07:10 PM",
     "account": "Circle Taxi",
@@ -2510,6 +2501,15 @@
   {
     "run_id": "2026-11-13T22:06:08",
     "date": "Nov 13, 2026 10:06 PM",
+    "account": "Skyline",
+    "script": "Skyline_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Transient source failure protected the RAW file. Preserved local RAW has 20,837 rows vs baseline 20,837; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-11-14T19:35:57",
+    "date": "Nov 14, 2026 07:35 PM",
     "account": "Skyline",
     "script": "Skyline_pull.py",
     "status": "healed",
