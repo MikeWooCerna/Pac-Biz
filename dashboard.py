@@ -898,6 +898,7 @@ COACHING_VALIDATION_NOTIFY_FILE = COACHING_OUTPUT_FILE.parent / "coaching_valida
 COACHING_TIMEZONE = ZoneInfo("Asia/Manila")
 COACHING_TIMEZONE_NAME = "Asia/Manila"
 EXCLUDED_COACHING_GIDS = {
+    "1219721323810776",
     "1215293220797391",
     "1215291356597096",
     "1215276162401539",
@@ -4799,6 +4800,11 @@ def transform_coaching_logs(source, masterlist):
         return pd.DataFrame(columns=COACHING_OUTPUT_COLUMNS)
 
     source = source.copy()
+    for coaching_id_column in ("Task GID", "Coaching ID"):
+        if coaching_id_column in source.columns:
+            source = source[
+                ~source[coaching_id_column].astype(str).str.strip().isin(EXCLUDED_COACHING_GIDS)
+            ].copy()
     if "Agreed Action Steps" not in source.columns and "Coaching Details" in source.columns:
         source["Agreed Action Steps"] = source["Coaching Details"]
     for optional_column in ["Title/Concern", "Incident Overview", "Employee Explanation"]:
