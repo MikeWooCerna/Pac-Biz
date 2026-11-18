@@ -34,21 +34,22 @@
     {
       "account": "Hamilton",
       "script": "Hamilton_pull.py",
-      "status": "running",
-      "timestamp": "2026-11-18T19:22:24.788209",
+      "status": "checking",
+      "timestamp": "2026-11-18T19:29:00.389844",
       "lane": "Lane 2 - Hamilton",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-11-18T19:22:24.788150"
     },
     {
       "account": "VIP",
       "script": "vip_pull.py",
-      "status": "queued",
-      "timestamp": "2026-11-18T19:22:05.661714",
+      "status": "running",
+      "timestamp": "2026-11-18T19:29:00.393588",
       "lane": "Lane 2 - Hamilton",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-11-18T19:29:00.393575"
     },
     {
       "account": "Vermont",
