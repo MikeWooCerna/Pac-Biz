@@ -34,21 +34,22 @@
     {
       "account": "Hamilton",
       "script": "Hamilton_pull.py",
-      "status": "running",
-      "timestamp": "2026-11-21T22:11:39.232252",
+      "status": "checking",
+      "timestamp": "2026-11-21T22:17:35.824617",
       "lane": "Lane 2 - Hamilton",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-11-21T22:11:39.232235"
     },
     {
       "account": "VIP",
       "script": "vip_pull.py",
-      "status": "queued",
-      "timestamp": "2026-11-21T22:11:19.027718",
+      "status": "running",
+      "timestamp": "2026-11-21T22:17:35.841707",
       "lane": "Lane 2 - Hamilton",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-11-21T22:17:35.841698"
     },
     {
       "account": "Vermont",
@@ -208,21 +209,22 @@
     {
       "account": "Reno Cab",
       "script": "rc_pull.py",
-      "status": "running",
-      "timestamp": "2026-11-21T22:12:55.497824",
+      "status": "checking",
+      "timestamp": "2026-11-21T22:17:25.399564",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-11-21T22:12:55.497811"
     },
     {
       "account": "Kelowna",
       "script": "kel_pull.py",
-      "status": "queued",
-      "timestamp": "2026-11-21T22:11:19.255801",
+      "status": "running",
+      "timestamp": "2026-11-21T22:17:25.402929",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-11-21T22:17:25.402916"
     },
     {
       "account": "YCDC",
