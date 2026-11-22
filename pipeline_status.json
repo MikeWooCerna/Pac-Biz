@@ -207,21 +207,22 @@
     {
       "account": "Reno Cab",
       "script": "rc_pull.py",
-      "status": "running",
-      "timestamp": "2026-11-22T22:08:36.096349",
+      "status": "checking",
+      "timestamp": "2026-11-22T22:13:00.901188",
       "lane": "Lane 4 - Standard and Direct",
-      "exit_code": null,
+      "exit_code": 0,
       "error": null,
       "started_at": "2026-11-22T22:08:36.096339"
     },
     {
       "account": "Kelowna",
       "script": "kel_pull.py",
-      "status": "queued",
-      "timestamp": "2026-11-22T22:06:59.613607",
+      "status": "running",
+      "timestamp": "2026-11-22T22:13:00.904650",
       "lane": "Lane 4 - Standard and Direct",
       "exit_code": null,
-      "error": null
+      "error": null,
+      "started_at": "2026-11-22T22:13:00.904635"
     },
     {
       "account": "YCDC",
