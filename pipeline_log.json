@@ -2,14 +2,6 @@
   {
     "run_id": "2026-08-31T19:10:53",
     "date": "Aug 31, 2026 07:10 PM",
-    "account": "Circle Taxi",
-    "script": "ct_pull.py",
-    "status": "fail",
-    "error": "    r = self.request(\"get\", url, params=params)\n  File \"C:\\Users\\Mike Woo Cerna\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\gspread\\http_client.py\", line 128, in request\n    raise APIError(response)\ngspread.exceptions.APIError: APIError: [503]: The service is currently unavailable."
-  },
-  {
-    "run_id": "2026-08-31T19:10:53",
-    "date": "Aug 31, 2026 07:10 PM",
     "account": "YCOV",
     "script": "ycov_pull.py",
     "status": "not_reached",
@@ -2515,5 +2507,14 @@
     "status": "healed",
     "action": "guarded-preserve",
     "error": "Transient source failure protected the RAW file. Preserved local RAW has 20,837 rows vs baseline 20,837; pipeline continued using the last healthy file."
+  },
+  {
+    "run_id": "2026-11-25T19:58:35",
+    "date": "Nov 25, 2026 07:58 PM",
+    "account": "C&H",
+    "script": "ch_pull.py",
+    "status": "healed",
+    "action": "guarded-preserve",
+    "error": "Source safety-floor failure protected the RAW file. Preserved local RAW has 488 rows vs baseline 488; pipeline continued using the last healthy file."
   }
 ]
